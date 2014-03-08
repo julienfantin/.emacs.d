@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: create table DDL
+# key: ct
+# --
+DROP TABLE IF EXISTS \`${1:NAME}\`;
+CREATE TABLE IF NOT EXISTS \`$1\` (
+    \`id\` BIGINT UNSIGNED NOT NULL auto_increment PRIMARY KEY,
+    $0
+    \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    \`updated_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
