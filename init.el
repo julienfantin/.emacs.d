@@ -445,7 +445,7 @@
   (defadvice split-window (after move-point-to-new-window activate)
     "Move to the newly created window after a split."
     (other-window 1)
-    (previous-buffer))
+    (next-buffer))
   (bind-key "C-c \\" 'window-focus-toggle)
   (bind-key "C-c |" 'window-split-toggle))
 
