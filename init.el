@@ -271,7 +271,15 @@
 
 (use-package diff-hl
   :ensure diff-hl
-  :init (add-hook 'prog-mode-hook 'diff-hl-mode))
+  :init (add-hook 'prog-mode-hook 'diff-hl-mode)
+  :config
+  (progn
+    (after git-commit-mode
+      (defadvice git-commit-commit (after git-commit-commit-after activate)
+        (dolist (buffer (buffer-list))
+          (with-current-buffer buffer
+            (when diff-hl-mode
+              (diff-hl-update))))))))
 
 ;; * Editing
 
