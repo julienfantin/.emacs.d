@@ -301,6 +301,12 @@
                                                    (temp-file
                                                     ".undo-tree-history")))))))
 
+;; * Markdown
+
+(use-package markdown-mode
+  :ensure markdown-mode
+  :mode "\\.md\\'")
+
 ;; * Org
 
 (use-package org
