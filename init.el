@@ -148,6 +148,13 @@
   :diminish (rainbow-mode "")
   :init (add-hook 'emacs-lisp-mode-hook 'rainbow-mode))
 
+;; ** Dired
+
+(use-package dired
+  :config
+  (progn
+    (setq dired-auto-revert-buffer t)))
+
 ;; ** Minibuffer completion
 
 (use-package helm-config
