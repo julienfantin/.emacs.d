@@ -640,9 +640,9 @@
       :ensure clojure-test-mode
       :init (add-hook 'clojure-mode-hook 'clojure-test-mode))
 
-    (add-hook 'clojure-mode-hook 'subword-mode)
-
     (progn
+      (add-hook 'clojure-mode-hook 'subword-mode)
+      (add-to-list 'auto-mode-alist '("\\.cljx\\'" . clojure-mode))
       ;; Defun indent special forms and macros
       (put-clojure-indent 'defmulti 'defun)
       (put-clojure-indent 'defmethod 'defun)
