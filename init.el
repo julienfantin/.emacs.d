@@ -116,6 +116,14 @@
     (dolist (hook hl-line-hooks)
       (add-hook hook 'hl-line-turn-on))))
 
+(use-package highlight-blocks
+  :ensure highlight-blocks
+  :init (add-hook 'prog-mode-hook 'highlight-blocks-mode))
+
+(use-package number-font-lock-mode
+  :ensure number-font-lock-mode
+  :init (add-hook 'prog-mode-hook 'number-font-lock-mode))
+
 ;; ** Theme
 
 (defvar dark-themes
@@ -483,12 +491,11 @@
       (toggle-truncate-lines -1))
 
     (add-hook 'prog-mode-hook 'disable-truncate-lines)
-    
-    (use-package fixmee
-      :ensure fixmee
-      :diminish ""
-      :init (add-hook 'prog-mode-hook 'fixmee-mode))
-    
+
+    (use-package hl-todo
+      :ensure hl-todo
+      :init (add-hook 'prog-mode-hook 'hl-todo-mode))
+
     (use-package flycheck
       :ensure flycheck
       :init (add-hook 'prog-mode-hook 'flycheck-mode)
