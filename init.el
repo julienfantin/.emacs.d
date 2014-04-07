@@ -602,7 +602,11 @@
 (use-package auto-indent-mode
   :ensure auto-indent-mode
   :diminish ""
-  :init (add-hook 'prog-mode-hook 'auto-indent-mode))
+  :init (add-hook 'prog-mode-hook 'auto-indent-mode)
+  :config (add-hook 'auto-indent-mode-hook
+                    #'(lambda ()
+                        (when (bound-and-true-p electric-indent-mode)
+                          (electric-indent-mode -1)))))
 
 ;; ** Structured editing
 
