@@ -520,36 +520,17 @@
       :ensure rainbow-delimiters
       :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
-    (use-package auto-complete
-      :ensure auto-complete
-      :diminish ""
-      :init
-      (progn
-        (setq tab-always-indent 'complete)
-        (defun ac-turn-on ()
-          (setq completion-at-point-functions
-                '(lambda () (auto-complete) (ac-expand-common)))
-          (auto-complete-mode))
-        (add-hook 'prog-mode-hook 'ac-turn-on))
+    (use-package company
+      :ensure company
+      :init (global-company-mode 1)
       :config
-      (progn
-        (use-package auto-complete-config
-          :init (ac-config-default)
-          :config
-          (progn
-            (bind-key "C-s" 'ac-isearch ac-completing-map)
-            (setq ac-auto-start 2
-                  ac-delay 0.15
-                  ac-quick-help-delay 1)))
-        (use-package fuzzy
-          :ensure fuzzy)
-        (use-package popup
-          :ensure popup)))
+      (setq company-idle-delay 0.1
+            company-tooltip-limit 20
+            company-minimum-prefix-length 2))
 
     (use-package yasnippet
       :ensure yasnippet
       :diminish (yas-minor-mode "")
-      :init (add-hook 'prog-mode-hook 'yas-minor-mode)
       :config
       (progn
         (setq yas-snippet-dirs `(,(user-file "snippets")))
@@ -650,10 +631,6 @@
   :ensure clojure-mode
   :config
   (progn
-    (use-package clojure-test-mode
-      :ensure clojure-test-mode
-      :init (add-hook 'clojure-mode-hook 'clojure-test-mode))
-
     (progn
       (add-hook 'clojure-mode-hook 'subword-mode)
       (add-to-list 'auto-mode-alist '("\\.cljx\\'" . clojure-mode))
@@ -662,36 +639,30 @@
       (put-clojure-indent 'defmethod 'defun)
       (put-clojure-indent 'defroutes 'defun))
 
-    (use-package ac-nrepl
-      :ensure ac-nrepl
-      :init
-      (after auto-complete
-        (after cider
-          (add-to-list 'ac-modes 'cider-repl-mode)
-          (add-to-list 'ac-modes 'cider-mode)))
-      :config
-      (after cider
-        (add-hook 'cider-repl-mode-hook 'ac-nrepl-setup)
-        (add-hook 'cider-mode-hook 'ac-nrepl-setup)
-        (bind-key "C-c C-d" 'ac-nrepl-popup-doc cider-mode-map)))
+    (use-package clojure-test-mode
+      :ensure clojure-test-mode
+      :init (add-hook 'clojure-mode-hook 'clojure-test-mode))
 
     (use-package cider
       :ensure cider
       :config
       (progn
-        ;; (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-        ;; (add-hook 'cider-repl-mode-hook 'cider-turn-on-eldoc-mode)
+        ;;(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+        ;;(add-hook 'cider-repl-mode-hook 'cider-turn-on-eldoc-mode)
         (add-hook 'cider-repl-mode-hook 'paredit-mode)
-        (add-hook 'cider-repl-mode-hook 'ac-nrepl-setup)
         (setq cider-prompt-save-file-on-load nil
               nrepl-hide-special-buffers nil
               cider-auto-select-error-buffer t
               cider-repl-print-length 400
               cider-repl-history-file "~/.emacs.d/nrepl-history"
               cider-repl-popup-stacktraces t
-              ;;cider-repl-use-clojure-font-lock t
-              ;;cider-repl-use-pretty-printing t
-              )))
+              cider-repl-use-clojure-font-lock t
+              cider-repl-use-pretty-printing t)
+        (use-package company-cider
+          :ensure company-cider
+          :init
+          (after cider
+            (add-to-list 'company-backends 'company-cider)))))
 
     (use-package clojure-cheatsheet
       :ensure clojure-cheatsheet
@@ -781,19 +752,8 @@
       :ensure elisp-slime-nav
       :diminish ""
       :config
-      (progn
-        (dolist (hook elisp-hooks)
-          (add-hook hook 'turn-on-elisp-slime-nav-mode))
-        (after popup
-          (defun popup-documentation-at-point ()
-            (interactive)
-            (let* ((position (point))
-                   (string-under-cursor (buffer-substring-no-properties
-                                         (progn (skip-syntax-backward "w_") (point))
-                                         (progn (skip-syntax-forward "w_") (point)))))
-              (goto-char position)
-              (popup-tip (ac-symbol-documentation (intern string-under-cursor)))))
-          (bind-key "C-c C-d" 'popup-documentation-at-point elisp-slime-nav-mode-map))))))
+      (dolist (hook elisp-hooks)
+        (add-hook hook 'turn-on-elisp-slime-nav-mode)))))
 
 (provide 'init)
 ;;; init.el ends here
