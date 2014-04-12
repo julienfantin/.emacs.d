@@ -211,6 +211,26 @@
         ns-control-modifier 'meta
         ns-option-modifier 'meta))
 
+(use-package sequential-command
+  :ensure sequential-command
+  :defines sequential-lispy-indent
+  :commands sequential-lispy-indent
+  :init
+  (add-hook
+   'prog-mode-hook
+   #'(lambda ()
+       (local-set-key (kbd "TAB") 'sequential-lispy-indent)))
+  :config
+  (progn
+    (defun paredit-indent-command ()
+      (interactive)
+      (save-excursion
+        (paredit-indent-sexps)))
+    (define-sequential-command sequential-lispy-indent
+      indent-for-tab-command
+      paredit-indent-command
+      cleanup-buffer-or-region)))
+
 ;; ** Files
 
 (use-package files
