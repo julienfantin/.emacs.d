@@ -44,7 +44,22 @@
 ;;; * Defaults
 
 (progn
+  (setq completion-styles
+        '(basic partial-completion substring))
   (setq-default enable-recursive-minibuffers t))
+
+(use-package savehist
+  :init
+  (progn
+    (setq savehist-additional-variables
+          '(kill-ring
+            mark-ring
+            global-mark-ring
+            search-ring
+            regexp-search-ring
+            extended-command-history))
+
+    (savehist-mode 1)))
 
 ;;; ** Paths
 
@@ -65,7 +80,7 @@
 
 (use-package exec-path-from-shell
   :ensure exec-path-from-shell
-  :init (exec-path-from-shell-initialize))
+  :idle (exec-path-from-shell-initialize))
 
 ;;; ** Fonts
 
@@ -90,6 +105,10 @@
   (setq initial-scratch-message "")
   (setq inhibit-startup-message t)
   (when window-system
+    (add-hook 'after-init-hook
+              #'(lambda ()
+                  (modify-all-frames-parameters
+                   '((fullscreen . maximized)))))
     (tool-bar-mode -1)
     (scroll-bar-mode -1)
     (setq ns-use-native-fullscreen nil
@@ -154,7 +173,6 @@
 
 (use-package automargin
   :ensure automargin
-  :disabled t
   :init (add-hook 'after-init-hook 'automargin-mode))
 
 ;;; ** Theme
@@ -163,7 +181,6 @@
   :ensure theme-changer
   :config
   (progn
-
     (setq calendar-location-name "Brooklyn, NY"
           calendar-latitude 40.71
           calendar-longitude -73.95)
@@ -248,7 +265,6 @@
   :pre-load (setq helm-command-prefix-key "s-SPC")
   :bind (("M-x" . helm-M-x)
          ("C-x b" . helm-mini)
-         ;;("C-x C-f" . helm-find-files)
          ("C-h a" . helm-apropos))
   :config
   (progn
@@ -270,7 +286,8 @@
       :init (helm-mode 1)
       :config
       (progn
-        (setq helm-ff-file-name-history-use-recentf t
+        (setq helm-buffer-details-flag nil
+              helm-ff-file-name-history-use-recentf t
               helm-ff-auto-update-initial-value nil
               helm-ff-skip-boring-files t)
         (add-to-list 'helm-boring-file-regexp-list "\\.DS_Store$")
@@ -344,7 +361,7 @@
 
 (use-package projectile
   :ensure projectile
-  :init (projectile-global-mode 1)
+  :idle (projectile-global-mode 1)
   :config
   (progn
     (setq projectile-completion-system 'helm-comp-read
@@ -408,9 +425,9 @@
 (use-package undo-tree
   :ensure undo-tree
   :diminish ""
+  :init (add-hook 'prog-mode-hook 'undo-tree-mode)
   :config
   (progn
-    (global-undo-tree-mode 1)
     (setq
      undo-tree-visualizer-timestamps nil
      undo-tree-visualizer-diff nil
@@ -450,7 +467,7 @@
 
 (use-package god-mode
   :ensure god-mode
-  :init (add-hook 'after-init-hook 'god-mode)
+  :init (add-hook 'prog-mode-hook 'god-local-mode)
   :bind (("<escape>" . god-local-mode))
   :config
   (progn
@@ -482,9 +499,6 @@
   :config
   (setq imenu-auto-rescan t))
 
-(use-package imenu-anywhere
-  :ensure imenu-anywhere)
-
 (use-package simple
   :config
   (progn
@@ -497,8 +511,13 @@
   :ensure ace-jump-mode
   :bind (("C-c C-SPC" . ace-jump-mode)))
 
+(use-package iedit
+  :ensure iedit
+  :bind ("C-;" . iedit-mode))
+
 (use-package highlight-symbol
   :ensure highlight-symbol
+  :diminish ""
   :init
   (progn
     (add-hook 'prog-mode-hook 'highlight-symbol-mode)
@@ -510,8 +529,8 @@
     (bind-key "C-%" 'highlight-symbol-query-replace highlight-symbol-nav-mode-map)))
 
 (use-package outline
-  :init (add-hook 'prog-mode-hook 'outline-minor-mode)
   :diminish (outline-minor-mode "")
+  :init (add-hook 'prog-mode-hook 'outline-minor-mode)
   :config
   (progn
     (setq outline-minor-mode-prefix "\C-c \C-o")
@@ -549,7 +568,7 @@
 
 (use-package popwin
   :ensure popwin
-  :init
+  :config
   (progn
     (setq popwin:popup-window-height 20
           popwin:popup-window-position 'top)
@@ -596,7 +615,7 @@
       :config (setq wg-morph-on nil))))
 
 (use-package windmove
-  :init (windmove-default-keybindings)
+  :idle (windmove-default-keybindings)
   :config
   (progn
     (global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
@@ -631,7 +650,6 @@
 (use-package prog-mode
   :config
   (progn
-
     (use-package hl-todo
       :ensure hl-todo
       :init (add-hook 'prog-mode-hook 'hl-todo-mode))
@@ -672,7 +690,6 @@
       :ensure rainbow-delimiters
       :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))))
 
-
 ;;; ** Syntax checking
 
 (use-package flycheck
@@ -680,6 +697,7 @@
   :init (add-hook 'prog-mode-hook 'flycheck-mode)
   :config
   (progn
+    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
     (setq flycheck-mode-line-lighter " *")
     (use-package flycheck-color-mode-line
       :ensure flycheck-color-mode-line
@@ -722,27 +740,16 @@
 
 (use-package company
   :ensure company
-  :init (global-company-mode 1)
+  :diminish ""
+  :init (add-hook 'prog-mode-hook 'company-mode)
   :config
   (progn
-    (setq completion-styles
-          '(basic partial-completion substring))
-
     (setq company-abort-manual-when-too-short t
+          company-require-match nil
           company-idle-delay 0.1
           company-tooltip-limit 20
           company-minimum-prefix-length 2)
-
-    ;; (bind-key "SPC" 'company-complete-selection company-active-map)
-
-    (defun company-match-theme ()
-      )
-
-    (defadvice load-theme (after company-match-theme activate)
-      (company-match-theme))
-
-    (defadvice disable-theme (after company-match-theme activate)
-      (company-match-theme))))
+    (bind-key "<tab>" 'company-complete-selection company-active-map)))
 
 (use-package yasnippet
   :ensure yasnippet
