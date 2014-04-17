@@ -541,6 +541,21 @@
 (bind-key "s-;" 'previous-multiframe-window)
 (bind-key "s-'" 'next-multiframe-window)
 
+;; (setq split-height-threshold 10)
+
+(use-package dedicated
+  :ensure dedicated
+  :bind ("C-M-\\" . dedicated-mode))
+
+(use-package popwin
+  :ensure popwin
+  :init
+  (progn
+    (setq popwin:popup-window-height 20
+          popwin:popup-window-position 'top)
+    (popwin-mode 1)
+    (bind-key "C-z" popwin:keymap)))
+
 (use-package perspective
   :ensure perspective
   :init (add-hook 'after-init-hook 'persp-mode)
