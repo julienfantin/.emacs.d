@@ -203,23 +203,23 @@
       :init (helm-mode 1)
       :config
       (progn
-        ;; Complete immendiately on TAB when finding files
-        (bind-key "TAB" 'helm-execute-persistent-action helm-read-file-map)
         (setq helm-ff-file-name-history-use-recentf t
-              helm-ff-auto-update-initial-value t
+              helm-ff-auto-update-initial-value nil
               helm-ff-skip-boring-files t)
         (add-to-list 'helm-boring-file-regexp-list "\\.DS_Store$")
-        (setq helm-completing-read-handlers-alist
-              '((describe-function . helm-completing-read-symbols)
-                (describe-variable . helm-completing-read-symbols)
-                (debug-on-entry . helm-comleting-read-symbols)
-                (find-function . helm-completing-read-symbols)
-                (find-tag . helm-completing-read-with-cands-in-buffer)
-                (find-file . ido)
-                (ffap-alternate-file)
-                (tmm-menubar)))))))
 
-;; ** Keys
+        (defun my-helm-ff-down ()
+          "Delete backward or go \"down\" [sic] one level when in
+          folder root."
+          (interactive)
+          (if (looking-back "/")
+              (call-interactively 'helm-find-files-down-one-level)
+            (delete-char -1)))
+        (bind-key "DEL" 'my-helm-ff-down helm-read-file-map)
+        ;; Complete immendiately on TAB when finding files
+        (bind-key "TAB" 'helm-execute-persistent-action helm-read-file-map)))))
+
+;;; ** Keys
 
 (progn
   (setq ns-command-modifier 'control
