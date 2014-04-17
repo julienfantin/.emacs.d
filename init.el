@@ -118,6 +118,7 @@
 
 (use-package highlight-blocks
   :ensure highlight-blocks
+  :disabled t
   :init (add-hook 'prog-mode-hook 'highlight-blocks-mode)
   :config
   (progn
@@ -190,6 +191,7 @@
      '(helm-source-header ((t :inherit mode-line)))
      '(helm-selection ((t :inherit hl-line)))
      '(helm-visible-mark ((t :inherit region))))
+
     (use-package helm-command
       :config
       (progn
@@ -498,18 +500,6 @@
     (bind-key "z" 'wg-switch-to-workgroup wg-prefixed-map)
     (workgroups-mode 1)))
 
-;; Would actually be kinda neat if the buffers could be filtered, but
-;; it doesn't seem like it could easily be hacked
-(use-package elscreen
-  :disabled t
-  :config
-  (progn
-    (elscreen-start)
-    (use-package helm-elscreen
-      :init
-      (progn
-        (bind-key "h" 'helm-elscreen elscreen-map)))))
-
 ;; Maybe try it again...
 (use-package persp-mode
   :disabled t
@@ -585,9 +575,7 @@
 
         (defmacro pulse-advise-command (command)
           `(defadvice ,command (around pulse-last-sexp activate)
-             (highlight-blocks--mode-off)
              (pulse-last-sexp)
-             (highlight-blocks--mode-on)
              ad-do-it))
 
         (pulse-advise-command eval-last-sexp)

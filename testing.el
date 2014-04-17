@@ -36,7 +36,7 @@
   (progn
     (setq display-buffer-alist '(("*+]" popwin:display-buffer)))
     (push '("*cider.*" :height 30 :regexp t) popwin:special-display-config)
-    (push '("*helm.*" :height 30 :regexp t) popwin:special-display-config)
+    (push '("*helm.+" :height 20 :regexp t) popwin:special-display-config)
     (push '("*Warnings*" :height 30) popwin:special-display-config)
     (push '("*Messages*" :height 30) popwin:special-display-config)
     (push '("*Backtrace*" :height 30 :noselect t) popwin:special-display-config)
