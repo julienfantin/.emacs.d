@@ -154,6 +154,9 @@
 
 ;;; ** Theme
 
+(use-package minimal-theme
+  :ensure minimal-theme)
+
 (use-package rainbow-mode
   :ensure rainbow-mode
   :diminish (rainbow-mode "")
@@ -807,6 +810,12 @@
   (progn
     (bind-key "C-c C-k" 'eval-buffer emacs-lisp-mode-map)
 
+    (add-hook 'minibuffer-setup-hook 'minibuffer-paredit-mode-maybe)
+
+    (defun minibuffer-paredit-mode-maybe ()
+      (if (eq this-command 'eval-expression)
+          (paredit-mode 1)))
+
     (use-package elisp-slime-nav
       :ensure elisp-slime-nav
       :diminish ""
@@ -819,7 +828,8 @@
 (use-package eshell
   :config
   (after esh-mode
-    (bind-key "C-l" 'eshell-clear eshell-mode-map)
+    (define-key eshell-mode-map (kbd "C-l") 'esell-clear)
+    ;;(bind-key "C-l" 'eshell-clear eshell-mode-map)
     (defun eshell-clear ()
       "Clears the shell buffer ala Unix's clear or DOS' cls"
       (interactive)
