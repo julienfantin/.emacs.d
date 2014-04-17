@@ -649,6 +649,9 @@
   :init (global-company-mode 1)
   :config
   (progn
+    (setq completion-styles
+          '(basic partial-completion substring))
+
     (setq company-abort-manual-when-too-short t
           company-idle-delay 0.1
           company-tooltip-limit 20
