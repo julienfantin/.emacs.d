@@ -42,6 +42,10 @@
        (quote (progn ,@body)))))
 
 ;;; * Defaults
+
+(progn
+  (setq-default enable-recursive-minibuffers t))
+
 ;;; ** Paths
 
 (defun temp-file (name)
@@ -95,6 +99,7 @@
 ;;; ** UI
 
 (progn
+  (setq-default cursor-in-non-selected-windows nil)
   (setq-default cursor-type 'bar)
   (setq ring-bell-function (lambda ()))
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -510,7 +515,7 @@
   :config
   (progn
     (setq outline-minor-mode-prefix "\C-c \C-o")
-    (bind-key "M-P" 'outline-pr outline-minor-mode-map)
+    (bind-key "M-P" 'outline-previous-heading outline-minor-mode-map)
     (bind-key "M-N" 'outline-next-heading outline-minor-mode-map)
     (use-package outshine
       :ensure outshine
@@ -766,7 +771,9 @@
         (add-hook 'cider-repl-mode-hook 'paredit-mode)
         (setq cider-prompt-save-file-on-load nil
               nrepl-hide-special-buffers nil
-              cider-auto-select-error-buffer t
+              cider-auto-select-error-buffer nil
+              cider-popup-stacktraces nil
+              cider-repl-popup-stacktraces nil
               cider-repl-print-length 400
               cider-repl-history-file "~/.emacs.d/nrepl-history"
               cider-repl-popup-stacktraces t
