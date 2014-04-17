@@ -154,8 +154,67 @@
 
 ;;; ** Theme
 
-(use-package minimal-theme
-  :ensure minimal-theme)
+(use-package theme-changer
+  :ensure theme-changer
+  :config
+  (progn
+
+    (setq calendar-location-name "Brooklyn, NY"
+          calendar-latitude 40.71
+          calendar-longitude -73.95)
+
+    (use-package minimal-theme
+      :ensure minimal-theme
+      :defer t
+      :init
+      (progn
+        (add-hook 'after-init-hook
+                  #'(lambda ()
+                      (change-theme 'minimal-light 'minimal)))
+
+        (defun color-contrast-name (name)
+          (let* ((bg (face-attribute 'default :background))
+                 (rgb (color-name-to-rgb bg))
+                 (hsl (apply 'color-rgb-to-hsl rgb))
+                 (lum (caddr hsl)))
+            (if (< 0.5 lum)
+                'color-lighten-name
+              'color-darken-name)))
+
+        (defun company-derive-theme ()
+          (let* ((theme (car custom-enabled-themes))
+                 (bg (face-attribute 'default :background))
+                 (color-changer (color-contrast-name bg)))
+            (when theme
+              (custom-theme-set-faces
+               theme
+               `(company-tooltip ((t (:inherit default :background ,(funcall color-changer bg 4)))))
+               `(company-tooltip-selection ((t (:inherit company-tooltip :weight bold))))
+               `(company-tooltip-common-selection ((t (:inherit company-tooltip))))
+               `(company-scrollbar-bg ((t (:background ,(funcall color-changer bg 10)))))
+               `(company-scrollbar-fg ((t (:background ,(funcall color-changer bg 5)))))
+               `(company-tooltip-common ((t (:inherit font-lock-type-face))))))))
+
+        (defun flycheck-derive-theme ()
+          (let* ((theme (car custom-enabled-themes))
+                 (bg (face-attribute 'default :background))
+                 (color-changer (color-contrast-name bg)))
+            (when theme
+              (custom-theme-set-faces
+               theme
+               `(flycheck-fringe-info-face ((t (:inherit default))))
+               `(flycheck-fringe-warning-face ((t (:inherit warning))))
+               `(flycheck-fringe-error-face ((t (:inherit error))))
+               `(flycheck-color-mode-line-info-face ((t (:inherit flycheck-fringe-info-face))))
+               `(flycheck-color-mode-line-warning-face ((t (:inherit flycheck-fringe-warning))))
+               `(flycheck-color-mode-line-error-face ((t (:inherit flycheck-fringe-error-face))))))))
+
+        (defadvice load-theme (after derive-load-theme activate)
+          (flycheck-derive-theme)
+          (company-derive-theme))
+        (defadvice load-theme (after derive-disable-theme activate)
+          (flycheck-derive-theme)
+          (company-derive-theme))))))
 
 (use-package rainbow-mode
   :ensure rainbow-mode
@@ -606,8 +665,7 @@
     (setq flycheck-mode-line-lighter " *")
     (use-package flycheck-color-mode-line
       :ensure flycheck-color-mode-line
-      :init (add-hook 'flycheck-mode-hook
-                      'flycheck-color-mode-line-mode))
+      :init (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
     (use-package helm-flycheck
       :ensure helm-flycheck
       :config
@@ -660,14 +718,7 @@
     ;; (bind-key "SPC" 'company-complete-selection company-active-map)
 
     (defun company-match-theme ()
-      (let ((bg (face-attribute 'default :background)))
-        (custom-set-faces
-         `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 4)))))
-         `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-         `(company-tooltip-common-selection ((t (:inherit font-lock-keyword-face))))
-         `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-         `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-         `(company-tooltip-common ((t (:inherit font-lock-type-face)))))))
+      )
 
     (defadvice load-theme (after company-match-theme activate)
       (company-match-theme))
