@@ -172,33 +172,31 @@
                   #'(lambda ()
                       (change-theme 'minimal-light 'minimal)))
 
-        (defun color-contrast-name (name)
+        (defun color-contrast-name (name pct)
           (let* ((bg (face-attribute 'default :background))
                  (rgb (color-name-to-rgb bg))
                  (hsl (apply 'color-rgb-to-hsl rgb))
                  (lum (caddr hsl)))
             (if (< 0.5 lum)
-                'color-lighten-name
-              'color-darken-name)))
+                (color-darken-name name pct)
+              (color-lighten-name name pct))))
 
         (defun company-derive-theme ()
           (let* ((theme (car custom-enabled-themes))
-                 (bg (face-attribute 'default :background))
-                 (color-changer (color-contrast-name bg)))
+                 (bg (face-attribute 'default :background)))
             (when theme
               (custom-theme-set-faces
                theme
-               `(company-tooltip ((t (:inherit default :background ,(funcall color-changer bg 4)))))
+               `(company-tooltip ((t (:inherit default :background ,(color-contrast-name bg 8)))))
                `(company-tooltip-selection ((t (:inherit company-tooltip :weight bold))))
-               `(company-tooltip-common-selection ((t (:inherit company-tooltip))))
-               `(company-scrollbar-bg ((t (:background ,(funcall color-changer bg 10)))))
-               `(company-scrollbar-fg ((t (:background ,(funcall color-changer bg 5)))))
-               `(company-tooltip-common ((t (:inherit font-lock-type-face))))))))
+               `(company-tooltip-common-selection ((t (:inherit default :background ,(color-contrast-name bg 5)))))
+               `(company-tooltip-common ((t (:inherit company-tooltip :weight bold))))
+               `(company-scrollbar-bg ((t (:background ,(color-contrast-name bg 15)))))
+               `(company-scrollbar-fg ((t (:background ,(color-contrast-name bg 10)))))))))
 
         (defun flycheck-derive-theme ()
           (let* ((theme (car custom-enabled-themes))
-                 (bg (face-attribute 'default :background))
-                 (color-changer (color-contrast-name bg)))
+                 (bg (face-attribute 'default :background)))
             (when theme
               (custom-theme-set-faces
                theme
@@ -212,7 +210,7 @@
         (defadvice load-theme (after derive-load-theme activate)
           (flycheck-derive-theme)
           (company-derive-theme))
-        (defadvice load-theme (after derive-disable-theme activate)
+        (defadvice disable-theme (after derive-disable-theme activate)
           (flycheck-derive-theme)
           (company-derive-theme))))))
 
