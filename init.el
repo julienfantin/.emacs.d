@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 ;;
-;; * Bootstap
+;;; * Bootstap
 
 (require 'cl-lib)
 
@@ -11,7 +11,7 @@
   (setq debug-on-error t)
   (add-hook 'after-init-hook 'toggle-debug-on-error))
 
-;; ** Elpa & use-package
+;;; ** Elpa & use-package
 
 (progn
   (setq package-archives
@@ -30,7 +30,7 @@
     (package-install 'use-package))
   (require 'use-package))
 
-;; ** Config helpers
+;;; ** Config helpers
 
 (defmacro after (mode &rest body)
   "`eval-after-load' `MODE', wrapping `BODY' in `progn'."
@@ -41,8 +41,8 @@
     `(eval-after-load ,(symbol-name mode)
        (quote (progn ,@body)))))
 
-;; * Defaults
-;; ** Paths
+;;; * Defaults
+;;; ** Paths
 
 (defun temp-file (name)
   "Return a temporary file with `NAME'."
@@ -63,7 +63,7 @@
   :ensure exec-path-from-shell
   :init (exec-path-from-shell-initialize))
 
-;; ** Fonts
+;;; ** Fonts
 
 (defvar preferred-fonts
   '("Consolas-13"
@@ -80,7 +80,7 @@
     preferred-fonts)
    t t))
 
-;; ** GUI
+;;; ** GUI
 
 (progn
   (setq initial-scratch-message "")
@@ -92,7 +92,7 @@
           use-file-dialog nil
           use-dialog-box nil)))
 
-;; ** UI
+;;; ** UI
 
 (progn
   (setq-default cursor-type 'bar)
@@ -118,52 +118,64 @@
 
 (use-package highlight-blocks
   :ensure highlight-blocks
-  :init (add-hook 'prog-mode-hook 'highlight-blocks-mode))
+  :init (add-hook 'prog-mode-hook 'highlight-blocks-mode)
+  :config
+  (progn
+    (defun highlight-blocks-match-theme ()
+      (let* ((bg (face-background 'default))
+             (bg-lum (nth 2
+                          (apply 'color-rgb-to-hsl
+                                 (color-name-to-rgb bg))))
+             (color-mod-fn (if (< bg-lum 0.5)
+                               'color-lighten-name
+                             'color-darken-name)))
+        (dotimes (i 20)
+          (set-face-background
+           (intern (format "highlight-blocks-depth-%i-face" (+ 1 i)))
+           (funcall color-mod-fn bg (+ 2 i))))))
+
+    (defadvice load-theme
+        (after highlight-blocks-match-theme activate)
+      (highlight-blocks-match-theme))
+
+    (defadvice disable-theme
+        (after highlight-blocks-match-theme activate)
+      (highlight-blocks-match-theme))))
 
 (use-package number-font-lock-mode
   :ensure number-font-lock-mode
   :init (add-hook 'prog-mode-hook 'number-font-lock-mode))
 
-;; ** Theme
-
-(defvar dark-themes
-  '(ample
-    gruvbox
-    monokai
-    spolsky
-    twilight-anti-bright))
-
-(defvar light-themes
-  '(twilight-bright
-    ample-light
-    mccarthy))
-
-(use-package solarized-theme
+(use-package automargin
+  :ensure automargin
   :disabled t
-  :ensure solarized-theme
-  :init
-  (progn
-    (setq solarized-height-minus-1 0.95
-          solarized-height-plus-1 1.03
-          solarized-height-plus-2 1.06
-          solarized-height-plus-3 1.09
-          solarized-height-plus-4 1.12)
-    (set-face-attribute 'mode-line nil :foreground "#fdf6e3" :background "#268bd2")
-    (set-face-attribute 'modeline-buffer-id nil :foreground "#268bd2" :background "#fdf6e3")))
+  :init (add-hook 'after-init-hook 'automargin-mode))
+
+;;; ** Theme
 
 (use-package rainbow-mode
   :ensure rainbow-mode
   :diminish (rainbow-mode "")
   :init (add-hook 'emacs-lisp-mode-hook 'rainbow-mode))
 
-;; ** Dired
+;;; ** Dired
 
 (use-package dired
   :config
   (progn
     (setq dired-auto-revert-buffer t)))
 
-;; ** Minibuffer completion
+;;; ** Minibuffer completion
+
+(use-package ido
+  :config
+  (progn
+    (setq-default
+     ido-auto-merge-work-directories-length -1
+     ido-everywhere t
+     ido-max-window-height 1
+     ido-enable-flex-matching t
+     ido-show-dot-for-dired t)))
 
 (use-package helm-config
   :ensure helm
@@ -174,6 +186,10 @@
          ("C-h a" . helm-apropos))
   :config
   (progn
+    (custom-set-faces
+     '(helm-source-header ((t :inherit mode-line)))
+     '(helm-selection ((t :inherit hl-line)))
+     '(helm-visible-mark ((t :inherit region))))
     (use-package helm-command
       :config
       (progn
@@ -231,7 +247,7 @@
       paredit-indent-command
       cleanup-buffer-or-region)))
 
-;; ** Files
+;;; ** Files
 
 (use-package files
   :init
@@ -243,7 +259,7 @@
 (use-package autorevert
   :init (global-auto-revert-mode 1))
 
-;; * Ineractive commands
+;;; * Ineractive commands
 
 (use-package commands
   :demand t
@@ -257,7 +273,7 @@
 (use-package free-keys
   :ensure free-keys)
 
-;; * Projects
+;;; * Projects
 
 (use-package projectile
   :ensure projectile
@@ -282,7 +298,7 @@
       (after helm-config
         (bind-key "p" 'helm-projectile helm-command-map)))))
 
-;; ** Version control
+;;;; ** Version control
 
 (use-package magit
   :ensure magit
@@ -316,7 +332,7 @@
             (when diff-hl-mode
               (diff-hl-update))))))))
 
-;; * Editing
+;;; * Editing
 
 (progn
   (pending-delete-mode 1)
@@ -336,13 +352,13 @@
                                                    (temp-file
                                                     ".undo-tree-history")))))))
 
-;; * Markdown
+;;; * Markdown
 
 (use-package markdown-mode
   :ensure markdown-mode
   :mode "\\.md\\'")
 
-;; * Org
+;;; * Org
 
 (use-package org
   :ensure org
@@ -362,8 +378,38 @@
                "* %U\n %?i\n %a"
                :kill-buffer t))))))
 
-;; * Navigation
-;; ** Buffer
+;;; * Navigation
+;;; ** Buffer
+
+(use-package god-mode
+  :ensure god-mode
+  :init (add-hook 'after-init-hook 'god-mode)
+  :bind (("<escape>" . god-local-mode))
+  :config
+  (progn
+    (add-to-list 'god-exempt-major-modes 'eshell)
+    (add-to-list 'god-exempt-major-modes 'cider-repl-mode)
+
+    (global-set-key (kbd "C-x C-1") 'delete-other-windows)
+    (global-set-key (kbd "C-x C-2") 'split-window-below)
+    (global-set-key (kbd "C-x C-3") 'split-window-right)
+    (global-set-key (kbd "C-x C-0") 'delete-window)
+
+    (define-key god-local-mode-map (kbd "z") 'repeat)
+    (define-key god-local-mode-map (kbd ".") 'repeat)
+
+    (defun god-enabled-p ()
+      (or god-local-mode buffer-read-only))
+
+    (defun god-update-cursor ()
+      (setq cursor-type (if (god-enabled-p) 'box 'bar)))
+
+    ;;(add-hook 'god-mode-enabled-hook #'(lambda () (auto-indent-mode -1)))
+    ;;(add-hook 'god-mode-disabled-hook #'(lambda () (auto-indent-mode 1)))
+    (add-hook 'god-mode-enabled-hook #'(lambda () (hl-line-mode 1)))
+    (add-hook 'god-mode-disabled-hook #'(lambda () (hl-line-mode -1)))
+    (add-hook 'god-mode-enabled-hook 'god-update-cursor)
+    (add-hook 'god-mode-disabled-hook 'god-update-cursor)))
 
 (use-package imenu
   :config
@@ -386,10 +432,14 @@
 
 (use-package highlight-symbol
   :ensure highlight-symbol
-  :init (add-hook 'prog-mode-hook 'highlight-symbol-nav-mode)
+  :init
+  (progn
+    (add-hook 'prog-mode-hook 'highlight-symbol-mode)
+    (add-hook 'prog-mode-hook 'highlight-symbol-nav-mode))
   :config
   (progn
-    (setq highlight-symbol-on-navigation-p t)
+    (setq highlight-symbol-on-navigation-p t
+          highlight-symbol-idle-delay 0.5)
     (bind-key "C-%" 'highlight-symbol-query-replace highlight-symbol-nav-mode-map)))
 
 (use-package outline
@@ -397,9 +447,13 @@
   :diminish (outline-minor-mode "")
   :config
   (progn
+    (setq outline-minor-mode-prefix "\C-c \C-o")
+    (bind-key "M-P" 'outline-pr outline-minor-mode-map)
+    (bind-key "M-N" 'outline-next-heading outline-minor-mode-map)
     (use-package outshine
       :ensure outshine
-      :pre-load (setq-default outline-cycle-emulate-tab t)
+      :disabled t ;; messes with company mode in clojure buffers!?
+      :pre-load (setq-default outline-cycle-emulate-tab nil)
       :init (add-hook 'outline-minor-mode-hook 'outshine-hook-function))))
 
 (use-package saveplace
@@ -408,7 +462,7 @@
     (setq-default save-place t)
     (setq  save-place-file (temp-file "places"))))
 
-;; ** Windows & frames
+;;; ** Windows & frames
 
 (bind-key "s-h" 'bury-buffer)
 
@@ -498,39 +552,49 @@
   (bind-key "C-c \\" 'window-focus-toggle)
   (bind-key "C-c |" 'window-split-toggle))
 
-;; * Search and replace
-;; ** Buffer
-;; ** Directory
-;; * Programming
+;;; * Search and replace
+;;; ** Buffer
+;;; ** Directory
+
+;;; * Programming
 
 (use-package prog-mode
   :config
   (progn
 
-    (defun disable-truncate-lines ()
-      (toggle-truncate-lines -1))
-
-    (add-hook 'prog-mode-hook 'disable-truncate-lines)
-
     (use-package hl-todo
       :ensure hl-todo
       :init (add-hook 'prog-mode-hook 'hl-todo-mode))
 
-    (use-package flycheck
-      :ensure flycheck
-      :init (add-hook 'prog-mode-hook 'flycheck-mode)
+    (use-package pulse
       :config
       (progn
-        (setq flycheck-mode-line-lighter " *")
-        (use-package flycheck-color-mode-line
-          :ensure flycheck-color-mode-line
-          :init (add-hook 'flycheck-mode-hook
-                          'flycheck-color-mode-line-mode))
-        (use-package helm-flycheck
-          :ensure helm-flycheck
-          :config
-          (after helm
-            (bind-key "!" 'helm-flycheck helm-command-map)))))
+        (defun pulse-line ()
+          (interactive)
+          (pulse-momentary-highlight-one-line (point) hl-line-face))
+
+        (bind-key "C-<return>" 'pulse-line)
+
+        (defun pulse-last-sexp ()
+          (let ((pulse-delay 0)
+                (pulse-iterations 6))
+            (save-excursion
+              (let ((end (point)))
+                (backward-sexp)
+                (pulse-momentary-highlight-region (point) end)))))
+
+        (defmacro pulse-advise-command (command)
+          `(defadvice ,command (around pulse-last-sexp activate)
+             (highlight-blocks--mode-off)
+             (pulse-last-sexp)
+             (highlight-blocks--mode-on)
+             ad-do-it))
+
+        (pulse-advise-command eval-last-sexp)
+        (pulse-advise-command eval-defun)
+        (after cider
+          (pulse-advise-command cider-eval-last-sexp)
+          (pulse-advise-command cider-eval-last-expression))))
 
     (use-package eldoc
       :diminish ""
@@ -538,97 +602,42 @@
 
     (use-package rainbow-delimiters
       :ensure rainbow-delimiters
-      :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+      :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))))
 
-    (use-package company
-      :ensure company
-      :init (global-company-mode 1)
-      :config
-      (setq company-idle-delay 0.1
-            company-tooltip-limit 20
-            company-minimum-prefix-length 2))
 
-    (use-package yasnippet
-      :ensure yasnippet
-      :diminish (yas-minor-mode "")
-      :config
-      (progn
-        (setq yas-snippet-dirs `(,(user-file "snippets")))
-        (unbind-key "<tab>" yas-minor-mode-map)
-        (bind-key "C-c TAB" 'yas-expand yas-minor-mode-map)))))
+;;; ** Syntax checking
 
-(use-package lispy
-  :commands (lispy-define-key lispy-nav-turn-on)
-  :pre-load
-  (progn
-    (defvar lispy-nav-map (make-sparse-keymap))
-    (easy-mmode-define-minor-mode
-     lispy-nav-mode "Lispy nav" nil nil lispy-nav-map)
-    :init
-    (progn
-      (add-hook 'clojure-mode-hook 'lispy-nav-mode)
-      (add-hook 'emacs-lisp-mode-hook 'lispy-nav-mode))
-    :config
-    (progn
-      (require 'lispy)
-      (defun lispy-escape ()
-        (interactive)
-        (insert " ")
-        (backward-char))
-      (lispy-define-key lispy-nav-map "x" 'lispy-eval)
-      (lispy-define-key lispy-nav-map "X" 'lispy-eval-and-insert)
-      (lispy-define-key lispy-nav-map "n" 'lispy-down)
-      (lispy-define-key lispy-nav-map "p" 'lispy-up)
-      (lispy-define-key lispy-nav-map "f" 'lispy-flow)
-      (lispy-define-key lispy-nav-map "b" 'lispy-backward)
-      (lispy-define-key lispy-nav-map "a" 'lispy-out-backward)
-      (lispy-define-key lispy-nav-map "e" 'lispy-out-forward)
-      (lispy-define-key lispy-nav-map "o" 'lispy-different)
-      (lispy-define-key lispy-nav-map "M-n" 'lispy-move-down)
-      (lispy-define-key lispy-nav-map "M-p" 'lispy-move-up)
-      (lispy-define-key lispy-nav-map "M-SPC" 'lispy-mark)
-      (lispy-define-key lispy-nav-map "SPC" 'lispy-escape))))
-
-(use-package pulse
+(use-package flycheck
+  :ensure flycheck
+  :init (add-hook 'prog-mode-hook 'flycheck-mode)
   :config
   (progn
-    (defun pulse-line ()
-      (interactive)
-      (pulse-momentary-highlight-one-line (point) hl-line-face))
+    (setq flycheck-mode-line-lighter " *")
+    (use-package flycheck-color-mode-line
+      :ensure flycheck-color-mode-line
+      :init (add-hook 'flycheck-mode-hook
+                      'flycheck-color-mode-line-mode))
+    (use-package helm-flycheck
+      :ensure helm-flycheck
+      :config
+      (after helm
+        (bind-key "!" 'helm-flycheck helm-command-map)))))
 
-    (bind-key "C-<return>" 'pulse-line)
-    
-    (defun pulse-last-sexp ()
-      (let ((pulse-delay 0)
-            (pulse-iterations 6))
-        (save-excursion
-          (let ((end (point)))
-            (backward-sexp)
-            (pulse-momentary-highlight-region (point) end)))))
-
-    (defmacro pulse-advise-command (command)
-      `(defadvice ,command (around pulse-last-sexp activate)
-         (pulse-last-sexp)
-         ad-do-it))
-
-    (pulse-advise-command eval-last-sexp)
-    (pulse-advise-command eval-defun)
-    (after cider
-      (pulse-advise-command cider-eval-last-sexp)
-      (pulse-advise-command cider-eval-last-expression))))
-
-;; ** Indentation
+;;; ** Indentation
 
 (use-package auto-indent-mode
   :ensure auto-indent-mode
   :diminish ""
   :init (add-hook 'prog-mode-hook 'auto-indent-mode)
-  :config (add-hook 'auto-indent-mode-hook
-                    #'(lambda ()
-                        (when (bound-and-true-p electric-indent-mode)
-                          (electric-indent-mode -1)))))
+  :config
+  (progn
+    (setq auto-indent-current-pairs t)
+    (add-hook 'auto-indent-mode-hook
+              #'(lambda ()
+                  (when (bound-and-true-p electric-indent-mode)
+                    (electric-indent-mode -1))))))
 
-;; ** Structured editing
+;;; ** Structured editing
 
 (use-package paren
   :init (add-hook 'prog-mode-hook 'show-paren-mode)
@@ -642,14 +651,52 @@
   :diminish ""
   :init (add-hook 'prog-mode-hook 'paredit-mode))
 
-;; ** Whitespace
+;;; ** Completion
+
+(use-package company
+  :ensure company
+  :init (global-company-mode 1)
+  :config
+  (progn
+    (setq company-abort-manual-when-too-short t
+          company-idle-delay 0.1
+          company-tooltip-limit 20
+          company-minimum-prefix-length 2)
+
+    ;; (bind-key "SPC" 'company-complete-selection company-active-map)
+
+    (defun company-match-theme ()
+      (let ((bg (face-attribute 'default :background)))
+        (custom-set-faces
+         `(company-tooltip ((t (:inherit default :background ,(color-lighten-name bg 4)))))
+         `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+         `(company-tooltip-common-selection ((t (:inherit font-lock-keyword-face))))
+         `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+         `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+         `(company-tooltip-common ((t (:inherit font-lock-type-face)))))))
+
+    (defadvice load-theme (after company-match-theme activate)
+      (company-match-theme))
+
+    (defadvice disable-theme (after company-match-theme activate)
+      (company-match-theme))))
+
+(use-package yasnippet
+  :ensure yasnippet
+  :config
+  (progn
+    (setq yas-snippet-dirs `(,(user-file "snippets")))
+    (unbind-key "<tab>" yas-minor-mode-map)
+    (bind-key "C-c TAB" 'yas-expand yas-minor-mode-map)))
+
+;;; ** Whitespace
 
 (use-package whitespace-cleanup-mode
   :ensure whitespace-cleanup-mode
   :diminish (whitespace-cleanup-mode "")
   :init (add-hook 'prog-mode-hook 'whitespace-cleanup-mode))
 
-;; ** Clojure
+;;; ** Clojure
 
 (use-package clojure-mode
   :ensure clojure-mode
@@ -681,7 +728,7 @@
               cider-repl-history-file "~/.emacs.d/nrepl-history"
               cider-repl-popup-stacktraces t
               cider-repl-use-clojure-font-lock t
-              cider-repl-use-pretty-printing t)
+              cider-repl-use-pretty-printing nil)
         (use-package company-cider
           :ensure company-cider
           :init
@@ -763,7 +810,7 @@
                                      (3 font-lock-function-name-face)))))
         (add-hook 'clojure-mode-hook 'typed-clojure-font-lock)))))
 
-;; ** Elisp
+;;; ** Elisp
 
 (defvar elisp-hooks '(emacs-lisp-mode-hook ielm-mode-hook))
 
@@ -778,6 +825,19 @@
       :config
       (dolist (hook elisp-hooks)
         (add-hook hook 'turn-on-elisp-slime-nav-mode)))))
+
+;;; * Eshell
+
+(use-package eshell
+  :config
+  (after esh-mode
+    (bind-key "C-l" 'eshell-clear eshell-mode-map)
+    (defun eshell-clear ()
+      "Clears the shell buffer ala Unix's clear or DOS' cls"
+      (interactive)
+      (let ((inhibit-read-only t))
+        (delete-region (point-min) (point-max)))
+      (eshell-send-input))))
 
 (provide 'init)
 ;;; init.el ends here

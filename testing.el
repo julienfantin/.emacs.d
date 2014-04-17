@@ -7,6 +7,28 @@
           (setq wg-prefix-key (kbd "C-c z"))
           (workgroups-mode 1)))
 
+(setq search-highlight t
+      query-replace-highlight t)
+
+(setq gc-cons-threshold (* 8 1024 1024))
+
+(setq byte-compile--use-old-handlers nil)
+
+(push '(width . 130) default-frame-alist)
+(push '(height . 72) default-frame-alist)
+
+(prefer-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(set-language-environment "UTF-8")
+(setq locale-coding-system 'utf-8)
+(setq-default buffer-file-coding-system 'utf-8-unix)
+
+(setq mouse-wheel-progressive-speed nil
+      scroll-step 1
+      scroll-margin 3
+      scroll-conservatively 100000
+      scroll-preserve-screen-position 'always)
+
 (use-package popwin
   :ensure popwin
   :init (popwin-mode 1)
@@ -19,6 +41,15 @@
     (push '("*Messages*" :height 30) popwin:special-display-config)
     (push '("*Backtrace*" :height 30 :noselect t) popwin:special-display-config)
     (push '("*Compile-Log*" :height 30 :noselect t) popwin:special-display-config)))
+
+(use-package evil
+  :ensure evil
+  :init (evil-mode 1)
+  :config
+  (progn
+    (use-package evil-paredit
+      :ensure evil-paredit
+      :config (add-hook 'prog-mode-hook 'evil-paredit-mode))))
 
 (use-package prodigy
   :ensure prodigy
@@ -136,3 +167,4 @@
 
 (use-package elfeed
   :ensure elfeed)
+
