@@ -392,7 +392,7 @@
   :bind (("<escape>" . god-local-mode))
   :config
   (progn
-    (add-to-list 'god-exempt-major-modes 'eshell)
+    (add-to-list 'god-exempt-major-modes 'eshell-mode)
     (add-to-list 'god-exempt-major-modes 'cider-repl-mode)
 
     (global-set-key (kbd "C-x C-1") 'delete-other-windows)
@@ -827,15 +827,40 @@
 
 (use-package eshell
   :config
-  (after esh-mode
-    (define-key eshell-mode-map (kbd "C-l") 'esell-clear)
-    ;;(bind-key "C-l" 'eshell-clear eshell-mode-map)
-    (defun eshell-clear ()
-      "Clears the shell buffer ala Unix's clear or DOS' cls"
-      (interactive)
-      (let ((inhibit-read-only t))
-        (delete-region (point-min) (point-max)))
-      (eshell-send-input))))
+  (progn
+    ;; Scrolling
+    (setq eshell-scroll-to-bottom-on-output t
+          eshell-scroll-show-maximum-output t)
+
+    (add-to-list 'eshell-output-filter-functions
+                 'eshell-postoutput-scroll-to-bottom)
+
+    (use-package esh-mode
+      :config
+      (progn
+        (defun eshell/cds ()
+          (eshell/cd (or (locate-dominating-file default-directory "src")
+                         (locate-dominating-file default-directory ".git"))))
+
+        (defun eshell/clear ()
+          (interactive)
+          (let ((inhibit-read-only t))
+            (delete-region (point-min) (point-max)))
+          (eshell-send-input))
+
+        (add-hook 'eshell-mode-hook
+                  #'(lambda ()
+                      (bind-key "C-l" 'eshell/clear eshell-mode-map)))))
+
+    (use-package em-term
+      :config
+      (setq eshell-visual-commands
+            (append '("tmux" "screen" "ssh")
+                    eshell-visual-commands)))
+
+    (use-package em-hist
+      :config
+      (setq eshell-hist-ignoredups t))))
 
 (provide 'init)
 ;;; init.el ends here
