@@ -85,19 +85,22 @@
 ;;; ** Fonts
 
 (defvar preferred-fonts
-  '("Consolas-13"
-    "Ubuntu Mono-15"
-    "Source Code Pro-11"
-    "DejaVu Sans Mono-13"
-    "Inconsolata-14"
-    "Menlo-12"))
+  '(("DejaVu Sans Mono" . 120)
+    ("Consolas" . 130)
+    ("Ubuntu Mono" . 140)
+    ("Source Code Pro" . 120)
+    ("Inconsolata" . 140)
+    ("Menlo-12" . 120)))
 
 (progn
-  (set-frame-font
-   (cl-find-if
-    (lambda (f) (find-font (font-spec :name f)))
-    preferred-fonts)
-   t t))
+  (let* ((font (cl-find-if
+                (lambda (font)
+                  (find-font (font-spec :name (car font))))
+                preferred-fonts))
+         (family (car font))
+         (height (cdr font)))
+     (set-face-attribute 'default nil :family family)
+     (set-face-attribute 'default nil :height height)))
 
 ;;; ** GUI
 
