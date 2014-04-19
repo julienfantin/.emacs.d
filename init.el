@@ -463,6 +463,7 @@
 ;;; ** Buffer
 
 (use-package god-mode
+  :disabled t
   :ensure god-mode
   :init (add-hook 'prog-mode-hook 'god-local-mode)
   :bind (("<escape>" . god-local-mode))
@@ -522,7 +523,7 @@
   :config
   (progn
     (setq highlight-symbol-on-navigation-p t
-          highlight-symbol-idle-delay 0.5)
+          highlight-symbol-idle-delay 1)
     (bind-key "C-%" 'highlight-symbol-query-replace highlight-symbol-nav-mode-map)))
 
 (use-package outline
@@ -532,12 +533,7 @@
   (progn
     (setq outline-minor-mode-prefix "\C-c \C-o")
     (bind-key "M-P" 'outline-previous-heading outline-minor-mode-map)
-    (bind-key "M-N" 'outline-next-heading outline-minor-mode-map)
-    (use-package outshine
-      :ensure outshine
-      :disabled t ;; messes with company mode in clojure buffers!?
-      :pre-load (setq-default outline-cycle-emulate-tab nil)
-      :init (add-hook 'outline-minor-mode-hook 'outshine-hook-function))))
+    (bind-key "M-N" 'outline-next-heading outline-minor-mode-map)))
 
 (use-package saveplace
   :init
@@ -583,34 +579,6 @@
       (when (< (+ 1 (persp-curr-position)) (length (persp-all-names)))
         (persp-switch (nth (1+ (persp-curr-position)) (persp-all-names)))))))
 
-;; Too intrusive, can't get the buffer list to filter properly,
-;; focuses on saving/restoring, but kinda buggy at that.
-(use-package workgroups2
-  :disabled t
-  :ensure workgroups2
-  :pre-load (setq wg-prefix-key (kbd "C-z"))
-  :config
-  (progn
-    (setq wg-default-session-file (temp-file "workgroups.el")
-          wg-buffer-auto-association 'strong)
-    (bind-key "z" 'wg-switch-to-workgroup wg-prefixed-map)
-    (workgroups-mode 1)))
-
-;; Maybe try it again...
-(use-package persp-mode
-  :disabled t
-  :ensure persp-mode
-  :init (persp-mode 1)
-  :config
-  (progn
-    (setq persp-nil-name "emacs"
-          persp-add-on-switch-or-display t
-          persp-when-kill-switch-to-buffer-in-perspective t
-          persp-save-dir temporary-file-directory)
-    (use-package workgroups
-      :ensure workgroups
-      :config (setq wg-morph-on nil))))
-
 (use-package windmove
   :idle (windmove-default-keybindings)
   :config
@@ -651,34 +619,6 @@
       :ensure hl-todo
       :init (add-hook 'prog-mode-hook 'hl-todo-mode))
 
-    (use-package pulse
-      :config
-      (progn
-        (defun pulse-line ()
-          (interactive)
-          (pulse-momentary-highlight-one-line (point) hl-line-face))
-
-        (bind-key "C-<return>" 'pulse-line)
-
-        (defun pulse-last-sexp ()
-          (let ((pulse-delay 0)
-                (pulse-iterations 6))
-            (save-excursion
-              (let ((end (point)))
-                (backward-sexp)
-                (pulse-momentary-highlight-region (point) end)))))
-
-        (defmacro pulse-advise-command (command)
-          `(defadvice ,command (around pulse-last-sexp activate)
-             (pulse-last-sexp)
-             ad-do-it))
-
-        (pulse-advise-command eval-last-sexp)
-        (pulse-advise-command eval-defun)
-        (after cider
-          (pulse-advise-command cider-eval-last-sexp)
-          (pulse-advise-command cider-eval-last-expression))))
-
     (use-package eldoc
       :diminish ""
       :init (add-hook 'prog-mode-hook 'eldoc-mode))
@@ -698,12 +638,7 @@
     (setq flycheck-mode-line-lighter " *")
     (use-package flycheck-color-mode-line
       :ensure flycheck-color-mode-line
-      :init (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
-    (use-package helm-flycheck
-      :ensure helm-flycheck
-      :config
-      (after helm
-        (bind-key "!" 'helm-flycheck helm-command-map)))))
+      :init (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))))
 
 ;;; ** Indentation
 
@@ -798,6 +733,7 @@
               cider-repl-popup-stacktraces t
               cider-repl-use-clojure-font-lock t
               cider-repl-use-pretty-printing nil)
+
         (use-package company-cider
           :ensure company-cider
           :init
