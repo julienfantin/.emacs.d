@@ -252,12 +252,13 @@
 
 (use-package helm-config
   :ensure helm
-  :pre-load (setq helm-command-prefix-key "s-SPC")
+  :pre-load (setq helm-command-prefix-key "C-h")
   :bind (("M-x" . helm-M-x)
-         ("C-x b" . helm-mini)
-         ("C-h a" . helm-apropos))
+         ("C-x b" . helm-mini))
   :config
   (progn
+    (bind-key "a" 'helm-apropos helm-command-map)
+
     (custom-set-faces
      '(helm-source-header ((t :inherit mode-line)))
      '(helm-selection ((t :inherit hl-line)))
@@ -269,13 +270,18 @@
         (setq helm-M-x-always-save-history t)
         (use-package helm-descbinds
           :ensure helm-descbinds
-          :init (bind-key "d" 'helm-descbinds helm-command-map))))
+          :init (bind-key "k" 'helm-descbinds helm-command-map))))
 
     (use-package helm-mode
       :diminish ""
       :init (helm-mode 1)
       :config
       (progn
+
+        (use-package helm-swoop
+          :ensure helm-swoop
+          :init (bind-key "s" 'helm-swoop helm-command-map))
+
         (setq helm-buffer-details-flag nil
               helm-ff-file-name-history-use-recentf t
               helm-ff-auto-update-initial-value nil
@@ -370,7 +376,7 @@
     (use-package helm-projectile
       :ensure helm-projectile
       :init
-      (after helm-config
+      (after helm-misc
         (bind-key "p" 'helm-projectile helm-command-map)))))
 
 ;;;; ** Version control
