@@ -44,22 +44,9 @@
 ;;; * Defaults
 
 (progn
-  (setq completion-styles
-        '(basic partial-completion substring))
+  (setq-default gc-cons-threshold (* 8 1024 1024))
+  (setq-default completion-styles '(basic partial-completion substring))
   (setq-default enable-recursive-minibuffers t))
-
-(use-package savehist
-  :init
-  (progn
-    (setq savehist-additional-variables
-          '(kill-ring
-            mark-ring
-            global-mark-ring
-            search-ring
-            regexp-search-ring
-            extended-command-history))
-
-    (savehist-mode 1)))
 
 ;;; ** Paths
 
@@ -80,7 +67,7 @@
 
 (use-package exec-path-from-shell
   :ensure exec-path-from-shell
-  :idle (exec-path-from-shell-initialize))
+  :init (exec-path-from-shell-initialize))
 
 ;;; ** Fonts
 
@@ -374,6 +361,7 @@
           projectile-cache-file (temp-file "projectile.cache"))
 
     (add-to-list 'projectile-globally-ignored-files ".DS_Store")
+    (add-to-list 'projectile-globally-ignored-directories "elpa")
 
     (defadvice projectile-replace
         (before projectile-save-all-and-replace activate)
@@ -731,7 +719,7 @@
   :init (add-hook 'prog-mode-hook 'show-paren-mode)
   :config
   (progn
-    (setq show-paren-style 'mixed)
+    (setq show-paren-style 'expression)
     (setq show-paren-delay 0.02)))
 
 (use-package paredit
