@@ -44,6 +44,7 @@
 ;;; * Defaults
 
 (progn
+  (setq-default truncate-lines nil)
   (setq-default gc-cons-threshold (* 8 1024 1024))
   (setq-default completion-styles '(basic partial-completion substring))
   (setq-default enable-recursive-minibuffers t))
@@ -110,9 +111,12 @@
 (progn
   (setq-default cursor-in-non-selected-windows nil)
   (setq-default cursor-type 'bar)
+  (setq echo-keystrokes 0.1)
+  (setq mouse-wheel-progressive-speed nil
+        mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
   (setq ring-bell-function (lambda ()))
-  (fset 'yes-or-no-p 'y-or-n-p)
-  (setq save-interprogram-paste-before-kill t))
+  (setq save-interprogram-paste-before-kill t)
+  (fset 'yes-or-no-p 'y-or-n-p))
 
 (use-package diminish
   :ensure diminish)
@@ -123,7 +127,7 @@
     (defvar hl-line-hooks
       '(dired-mode-hook))
     (defun hl-line-turn-on ()
-      (when (not hl-line-mode)
+      (when (not (bound-and-true-p hl-line-mode))
         (hl-line-mode 1))))
   :init
   (progn
@@ -243,12 +247,16 @@
 (use-package ido
   :config
   (progn
-    (setq-default
+    (setq
      ido-auto-merge-work-directories-length -1
      ido-everywhere t
      ido-max-window-height 1
      ido-enable-flex-matching t
-     ido-show-dot-for-dired t)))
+     ido-show-dot-for-dired t)
+    (use-package flx-ido
+      :ensure flx-ido
+      :init (flx-ido-mode 1)
+      :config (setq ido-use-faces nil))))
 
 (use-package helm-config
   :ensure helm
@@ -263,6 +271,8 @@
      '(helm-source-header ((t :inherit mode-line)))
      '(helm-selection ((t :inherit hl-line)))
      '(helm-visible-mark ((t :inherit region))))
+
+    (setq helm-yank-symbol-first t)
 
     (use-package helm-command
       :config
@@ -360,11 +370,12 @@
   :idle (projectile-global-mode 1)
   :config
   (progn
+    (add-to-list 'projectile-project-root-files-bottom-up "project.clj")
     (setq projectile-completion-system 'helm-comp-read
           projectile-use-git-grep t
           projectile-remember-window-configs t
           projectile-mode-line-lighter " P"
-          projectile-cache-file (temp-file "projectile.cache"))
+          projectile-enable-caching nil)
 
     (add-to-list 'projectile-globally-ignored-files ".DS_Store")
     (add-to-list 'projectile-globally-ignored-directories "elpa")
@@ -541,6 +552,19 @@
     (setq-default save-place t)
     (setq  save-place-file (temp-file "places"))))
 
+(use-package savehist
+  :init (savehist-mode 1)
+  :config
+  (setq savehist-additional-variables
+        '(kill-ring search-ring regexp-search-ring)))
+
+(use-package recentf
+  :init (recentf-mode 1)
+  :config
+  (progn
+    (setq recentf-max-saved-items 100
+          recentf-max-menu-items 100)))
+
 ;;; ** Windows & frames
 
 (bind-key "s-h" 'bury-buffer)
@@ -660,7 +684,7 @@
   :init (add-hook 'prog-mode-hook 'show-paren-mode)
   :config
   (progn
-    (setq show-paren-style 'expression)
+    (setq show-paren-style 'paren)
     (setq show-paren-delay 0.02)))
 
 (use-package paredit
@@ -720,9 +744,10 @@
       :ensure cider
       :config
       (progn
-        ;;(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-        ;;(add-hook 'cider-repl-mode-hook 'cider-turn-on-eldoc-mode)
+        (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+        (add-hook 'cider-repl-mode-hook 'cider-turn-on-eldoc-mode)
         (add-hook 'cider-repl-mode-hook 'paredit-mode)
+
         (setq cider-prompt-save-file-on-load nil
               nrepl-hide-special-buffers nil
               cider-auto-select-error-buffer nil
@@ -734,11 +759,21 @@
               cider-repl-use-clojure-font-lock t
               cider-repl-use-pretty-printing nil)
 
+        (use-package pulse
+          :init
+          (progn
+            (defadvice cider-eval-last-sexp (after cider-flash-last activate)
+              (pulse-momentary-highlight-region (save-excursion (backward-sexp) (point)) (point)))
+            (defadvice cider-eval-defun-at-point (after cider-flash-at activate)
+              (apply #'pulse-momentary-highlight-region (cider--region-for-defun-at-point)))))
+
         (use-package company-cider
           :ensure company-cider
           :init
           (after cider
-            (add-to-list 'company-backends 'company-cider)))))
+            (add-to-list 'company-backends 'company-cider)
+            (after cider-repl
+              (add-hook 'cider-repl-mode-hook 'company-mode))))))
 
     (use-package clojure-cheatsheet
       :ensure clojure-cheatsheet
