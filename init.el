@@ -41,6 +41,9 @@
     `(eval-after-load ,(symbol-name mode)
        (quote (progn ,@body)))))
 
+(ignore-errors
+  (use-package private))
+
 ;;; * Defaults
 
 (progn
@@ -72,6 +75,8 @@
 
 ;;; ** Fonts
 
+(defvar global-text-height-offset 0)
+
 (defvar preferred-fonts
   '(("DejaVu Sans Mono" . 120)
     ("Consolas" . 130)
@@ -80,15 +85,30 @@
     ("Inconsolata" . 140)
     ("Menlo-12" . 120)))
 
-(progn
+(defun set-preferred-font (height-offset)
   (let* ((font (cl-find-if
                 (lambda (font)
                   (find-font (font-spec :name (car font))))
                 preferred-fonts))
          (family (car font))
          (height (cdr font)))
-     (set-face-attribute 'default nil :family family)
-     (set-face-attribute 'default nil :height height)))
+    (set-face-attribute 'default nil :family family)
+    (set-face-attribute 'default nil :height (+ height height-offset))))
+
+(defun global-text-height-increase ()
+  (interactive)
+  (set-preferred-font
+   (incf global-text-height-offset 10)))
+
+(defun global-text-height-decrease ()
+  (interactive)
+  (set-preferred-font
+   (incf global-text-height-offset -10)))
+
+(bind-key "C-x C-+" 'global-text-height-increase)
+(bind-key "C-x C--" 'global-text-height-decrease)
+
+(set-preferred-font 0)
 
 ;;; ** GUI
 
@@ -134,40 +154,17 @@
     (dolist (hook hl-line-hooks)
       (add-hook hook 'hl-line-turn-on))))
 
-(use-package highlight-blocks
-  :ensure highlight-blocks
-  :disabled t
-  :init (add-hook 'prog-mode-hook 'highlight-blocks-mode)
-  :config
-  (progn
-    (defun highlight-blocks-match-theme ()
-      (let* ((bg (face-background 'default))
-             (bg-lum (nth 2
-                          (apply 'color-rgb-to-hsl
-                                 (color-name-to-rgb bg))))
-             (color-mod-fn (if (< bg-lum 0.5)
-                               'color-lighten-name
-                             'color-darken-name)))
-        (dotimes (i 20)
-          (set-face-background
-           (intern (format "highlight-blocks-depth-%i-face" (+ 1 i)))
-           (funcall color-mod-fn bg (+ 2 i))))))
-
-    (defadvice load-theme
-        (after highlight-blocks-match-theme activate)
-      (highlight-blocks-match-theme))
-
-    (defadvice disable-theme
-        (after highlight-blocks-match-theme activate)
-      (highlight-blocks-match-theme))))
-
 (use-package number-font-lock-mode
   :ensure number-font-lock-mode
   :init (add-hook 'prog-mode-hook 'number-font-lock-mode))
 
 (use-package automargin
   :ensure automargin
-  :init (add-hook 'after-init-hook 'automargin-mode))
+  :init (add-hook 'after-init-hook 'automargin-mode)
+  :config
+  (progn
+    (add-hook 'window-configuration-change-hook 'automargin-function)
+    (add-hook 'minibuffer-setup-hook 'automargin-function)))
 
 ;;; ** Theme
 
@@ -223,12 +220,22 @@
                `(flycheck-color-mode-line-warning-face ((t (:inherit flycheck-fringe-warning))))
                `(flycheck-color-mode-line-error-face ((t (:inherit flycheck-fringe-error-face))))))))
 
+        (defun show-paren-derive-theme ()
+          (let* ((theme (car custom-enabled-themes))
+                 (reg (face-attribute 'region :background)))
+            (when theme
+              (custom-theme-set-faces
+               theme
+               `(show-paren-match-face ((t (:background ,(color-contrast-name reg 3)))))))))
+
         (defadvice load-theme (after derive-load-theme activate)
           (flycheck-derive-theme)
-          (company-derive-theme))
+          (company-derive-theme)
+          (show-paren-derive-theme))
         (defadvice disable-theme (after derive-disable-theme activate)
           (flycheck-derive-theme)
-          (company-derive-theme))))))
+          (company-derive-theme)
+          (show-paren-derive-theme))))))
 
 (use-package rainbow-mode
   :ensure rainbow-mode
@@ -278,9 +285,12 @@
       :config
       (progn
         (setq helm-M-x-always-save-history t)
+        (use-package helm-swoop
+          :ensure helm-swoop
+          :init (bind-key "s" 'helm-swoop helm-command-map))
         (use-package helm-descbinds
           :ensure helm-descbinds
-          :init (bind-key "k" 'helm-descbinds helm-command-map))))
+          :init (bind-key "b" 'helm-descbinds helm-command-map))))
 
     (use-package helm-mode
       :diminish ""
@@ -288,15 +298,15 @@
       :config
       (progn
 
-        (use-package helm-swoop
-          :ensure helm-swoop
-          :init (bind-key "s" 'helm-swoop helm-command-map))
+        (setq
+         helm-buffer-details-flag nil
+         helm-ff-file-name-history-use-recentf t
+         helm-ff-auto-update-initial-value nil
+         helm-ff-skip-boring-files t)
 
-        (setq helm-buffer-details-flag nil
-              helm-ff-file-name-history-use-recentf t
-              helm-ff-auto-update-initial-value nil
-              helm-ff-skip-boring-files t)
         (add-to-list 'helm-boring-file-regexp-list "\\.DS_Store$")
+        (add-to-list 'helm-boring-file-regexp-list "\\.git$")
+        (add-to-list 'helm-boring-file-regexp-list "\\.$")
 
         (defun my-helm-ff-down ()
           "Delete backward or go \"down\" [sic] one level when in
@@ -370,7 +380,6 @@
   :idle (projectile-global-mode 1)
   :config
   (progn
-    (add-to-list 'projectile-project-root-files-bottom-up "project.clj")
     (setq projectile-completion-system 'helm-comp-read
           projectile-use-git-grep t
           projectile-remember-window-configs t
@@ -379,6 +388,7 @@
 
     (add-to-list 'projectile-globally-ignored-files ".DS_Store")
     (add-to-list 'projectile-globally-ignored-directories "elpa")
+    (add-to-list 'projectile-project-root-files-bottom-up "project.clj")
 
     (defadvice projectile-replace
         (before projectile-save-all-and-replace activate)
@@ -474,7 +484,6 @@
 ;;; ** Buffer
 
 (use-package god-mode
-  :disabled t
   :ensure god-mode
   :init (add-hook 'prog-mode-hook 'god-local-mode)
   :bind (("<escape>" . god-local-mode))
@@ -497,8 +506,8 @@
     (defun god-update-cursor ()
       (setq cursor-type (if (god-enabled-p) 'box 'bar)))
 
-    ;;(add-hook 'god-mode-enabled-hook #'(lambda () (auto-indent-mode -1)))
-    ;;(add-hook 'god-mode-disabled-hook #'(lambda () (auto-indent-mode 1)))
+    (add-hook 'god-mode-enabled-hook #'(lambda () (after auto-indent-mode (auto-indent-mode -1))))
+    (add-hook 'god-mode-disabled-hook #'(lambda () (after auto-indent-mode (auto-indent-mode 1))))
     (add-hook 'god-mode-enabled-hook #'(lambda () (hl-line-mode 1)))
     (add-hook 'god-mode-disabled-hook #'(lambda () (hl-line-mode -1)))
     (add-hook 'god-mode-enabled-hook 'god-update-cursor)
@@ -585,11 +594,12 @@
 
 (use-package popwin
   :ensure popwin
+  :init (popwin-mode 1)
   :config
   (progn
-    (setq popwin:popup-window-height 20
-          popwin:popup-window-position 'top)
-    (popwin-mode 1)
+    (setq popwin:popup-window-height 20)
+    (push '("^\*helm .+\*$" :regexp t) popwin:special-display-config)
+    (push '("^\*helm-.+\*$" :regexp t) popwin:special-display-config)
     (bind-key "C-z" popwin:keymap)))
 
 (use-package perspective
@@ -684,7 +694,9 @@
   :init (add-hook 'prog-mode-hook 'show-paren-mode)
   :config
   (progn
-    (setq show-paren-style 'paren)
+    (add-hook 'activate-mark-hook #'(lambda () (show-paren-mode -1)))
+    (add-hook 'deactivate-mark-hook #'(lambda () (show-paren-mode 1)))
+    (setq show-paren-style 'expression)
     (setq show-paren-delay 0.02)))
 
 (use-package paredit
@@ -709,11 +721,18 @@
 
 (use-package yasnippet
   :ensure yasnippet
+  :init
+  (progn
+    (add-hook
+     'prog-mode-hook
+     (lambda ()
+       (set (make-local-variable 'company-backends)
+            '((company-dabbrev-code company-yasnippet)))))
+    (add-to-list 'company-backends 'company-yasnippet t))
   :config
   (progn
-    (setq yas-snippet-dirs `(,(user-file "snippets")))
-    (unbind-key "<tab>" yas-minor-mode-map)
-    (bind-key "C-c TAB" 'yas-expand yas-minor-mode-map)))
+    (add-to-list 'yas-snippet-dirs (user-file "snippets"))
+    (yas-reload-all)))
 
 ;;; ** Whitespace
 
@@ -910,6 +929,41 @@
     (use-package em-hist
       :config
       (setq eshell-hist-ignoredups t))))
+
+(use-package multi-eshell
+  :ensure multi-eshell
+  :bind (("C-c s e" . multi-eshell)
+         ("C-c s n" . multi-eshell-go-back))
+  :config
+  (setq multi-eshell-shell-function '(eshell)))
+
+;;; * Org Mode
+
+(use-package org
+  :config
+  (progn
+    (use-package org-clock
+      :config
+      (setq org-clock-idle-time 15
+            org-clock-in-resume t
+            org-clock-persist t
+            org-clock-persist-query-resume nil
+            org-clock-clocked-in-display 'both))))
+
+(use-package erc
+  :config
+  (progn
+    ;; Joining
+    (setq erc-autojoin-timing 'ident)
+    ;; Tracking
+    (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT"))
+    ;; Filling chan buffers
+    (setq erc-fill-function 'erc-fill-static
+          erc-fill-static-center 20)
+
+    (use-package erc-hl-nicks
+      :ensure erc-hl-nicks
+      :init (add-hook 'erc-mode-hook 'erc-hl-nicks-mode))))
 
 (provide 'init)
 ;;; init.el ends here
