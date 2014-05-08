@@ -9,7 +9,7 @@
 (progn
   ;; Debug on error when loading
   (setq debug-on-error t)
-  (add-hook 'after-init-hook 'toggle-debug-on-error))
+  (add-hook 'after-init-hook #'(lambda () (toggle-debug-on-error -1))))
 
 ;;; ** Elpa & use-package
 
