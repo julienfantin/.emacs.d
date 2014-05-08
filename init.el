@@ -48,6 +48,7 @@
 
 (progn
   (setq-default truncate-lines nil)
+  (setq-default confirm-nonexistent-file-or-buffer nil)
   (setq-default gc-cons-threshold (* 8 1024 1024))
   (setq-default completion-styles '(basic partial-completion substring))
   (setq-default enable-recursive-minibuffers t))
@@ -506,10 +507,16 @@
     (defun god-update-cursor ()
       (setq cursor-type (if (god-enabled-p) 'box 'bar)))
 
-    (add-hook 'god-mode-enabled-hook #'(lambda () (after auto-indent-mode (auto-indent-mode -1))))
-    (add-hook 'god-mode-disabled-hook #'(lambda () (after auto-indent-mode (auto-indent-mode 1))))
-    (add-hook 'god-mode-enabled-hook #'(lambda () (hl-line-mode 1)))
-    (add-hook 'god-mode-disabled-hook #'(lambda () (hl-line-mode -1)))
+    (defun god-update-auto-indent ()
+      (auto-indent-mode (not (god-enabled-p))))
+
+    (defun god-update-hl-line ()
+      (hl-line-mode (god-enabled-p)))
+
+    (add-hook 'god-mode-enabled-hook 'god-update-auto-indent)
+    (add-hook 'god-mode-disabled-hook 'god-update-auto-indent)
+    (add-hook 'god-mode-enabled-hook 'god-update-hl-line)
+    (add-hook 'god-mode-disabled-hook 'god-update-hl-line)
     (add-hook 'god-mode-enabled-hook 'god-update-cursor)
     (add-hook 'god-mode-disabled-hook 'god-update-cursor)))
 
