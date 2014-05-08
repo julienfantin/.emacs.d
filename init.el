@@ -177,66 +177,11 @@
           calendar-latitude 40.71
           calendar-longitude -73.95)
 
-    (use-package minimal-theme
-      :ensure minimal-theme
-      :defer t
+    (use-package solarized-theme
       :init
-      (progn
-        (add-hook 'after-init-hook
-                  #'(lambda ()
-                      (change-theme 'minimal-light 'minimal)))
-
-        (defun color-contrast-name (name pct)
-          (let* ((bg (face-attribute 'default :background))
-                 (rgb (color-name-to-rgb bg))
-                 (hsl (apply 'color-rgb-to-hsl rgb))
-                 (lum (caddr hsl)))
-            (if (< 0.5 lum)
-                (color-darken-name name pct)
-              (color-lighten-name name pct))))
-
-        (defun company-derive-theme ()
-          (let* ((theme (car custom-enabled-themes))
-                 (bg (face-attribute 'default :background)))
-            (when theme
-              (custom-theme-set-faces
-               theme
-               `(company-tooltip ((t (:inherit default :background ,(color-contrast-name bg 8)))))
-               `(company-tooltip-selection ((t (:inherit company-tooltip :weight bold))))
-               `(company-tooltip-common-selection ((t (:inherit default :background ,(color-contrast-name bg 5)))))
-               `(company-tooltip-common ((t (:inherit company-tooltip :weight bold))))
-               `(company-scrollbar-bg ((t (:background ,(color-contrast-name bg 15)))))
-               `(company-scrollbar-fg ((t (:background ,(color-contrast-name bg 10)))))))))
-
-        (defun flycheck-derive-theme ()
-          (let* ((theme (car custom-enabled-themes))
-                 (bg (face-attribute 'default :background)))
-            (when theme
-              (custom-theme-set-faces
-               theme
-               `(flycheck-fringe-info-face ((t (:inherit default))))
-               `(flycheck-fringe-warning-face ((t (:inherit warning))))
-               `(flycheck-fringe-error-face ((t (:inherit error))))
-               `(flycheck-color-mode-line-info-face ((t (:inherit flycheck-fringe-info-face))))
-               `(flycheck-color-mode-line-warning-face ((t (:inherit flycheck-fringe-warning))))
-               `(flycheck-color-mode-line-error-face ((t (:inherit flycheck-fringe-error-face))))))))
-
-        (defun show-paren-derive-theme ()
-          (let* ((theme (car custom-enabled-themes))
-                 (reg (face-attribute 'region :background)))
-            (when theme
-              (custom-theme-set-faces
-               theme
-               `(show-paren-match-face ((t (:background ,(color-contrast-name reg 3)))))))))
-
-        (defadvice load-theme (after derive-load-theme activate)
-          (flycheck-derive-theme)
-          (company-derive-theme)
-          (show-paren-derive-theme))
-        (defadvice disable-theme (after derive-disable-theme activate)
-          (flycheck-derive-theme)
-          (company-derive-theme)
-          (show-paren-derive-theme))))))
+      (add-hook 'after-init-hook
+                #'(lambda ()
+                    (change-theme 'solarized-light 'solarized-dark))))))
 
 (use-package rainbow-mode
   :ensure rainbow-mode
