@@ -816,45 +816,36 @@
         (use-package kibit-mode
           :ensure kibit-mode
           :defines clojure-kibit
-          :defer t
           :init
           (progn
             (autoload 'clojure-kibit "kibit-mode" nil t)
             (add-hook 'clojure-mode-hook 'flycheck-mode)))
 
         ;; Eastwood, too noisy for now...
-        ;; (progn
-        ;;   (defvar  eastwood-linters
-        ;;     (vector
-        ;;      :misplaced-docstrings
-        ;;      :deprecations
-        ;;      :redefd-vars
-        ;;      :def-in-def
-        ;;      :wrong-arity
-        ;;      :suspicious-test
-        ;;      :suspicious-expression
-        ;;      :unused-ret-vals
-        ;;      :unused-ret-vals-in-try
-        ;;      :unused-fn-args ;; (disabled by default)
-        ;;      :unused-namespaces ;; (disabled by default)
-        ;;      :unlimited-use
-        ;;      :keyword-typos ;; (disabled by default)
-        ;;      ))
-        ;;   (after cider
-        ;;     (flycheck-define-checker eastwood
-        ;;       "A Clojure lint tool."
-        ;;       :command ("lein"
-        ;;                 "eastwood"
-        ;;                 (eval
-        ;;                  (format "{:namespaces [%s] :linters %s}" (cider-current-ns) eastwood-linters)))
-        ;;       :error-patterns ((error line-start
-        ;;                               "{:linter :" (one-or-more not-newline) ",\n"
-        ;;                               " :msg " (message) ",\n"
-        ;;                               " :line " line ",\n"
-        ;;                               " :column " column "}" line-end))
-        ;;       :modes clojure-mode)
-        ;;     (add-to-list 'flycheck-checkers 'eastwood)))
-        ))
+        (after cider
+          (defvar eastwood-add-linters
+            (vector
+             ;; :keyword-typos
+             ;;:unused-namespaces
+             :unused-fn-args)
+            "Really doesn't make sense to use a vector here,
+              but saves the formatting for now...")
+
+          (flycheck-define-checker eastwood
+            "A Clojure lint tool."
+            :command
+            ("lein" "eastwood"
+             (eval
+              (format "{:namespaces [%s] :add-linters []}" (cider-find-ns) eastwood-add-linters)))
+            :error-patterns
+            ((error
+              bol
+              "{:linter" (one-or-more not-newline) ",\n"
+              " :msg" (or (zero-or-one (syntax whitespace)) (zero-or-one "\n")) (message) ",\n"
+              " :line " line ",\n"
+              " :column " column "}" line-end))
+            :modes clojure-mode)
+          (add-to-list 'flycheck-checkers 'eastwood))))
 
     (use-package clj-refactor
       :ensure clj-refactor
