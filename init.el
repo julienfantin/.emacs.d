@@ -423,6 +423,16 @@
         (when magit-status?
           (jump-to-register :magit-fullscreen))))))
 
+(use-package ediff
+  :config
+  (setq
+   ;; avoid the crazy multi-frames setup
+   ediff-window-setup-function 'ediff-setup-windows-plain
+   ;; ignore whitespace
+   ediff-diff-options "-w"
+   ;; counter-intuitve naming here, but windows should be side-by-side...
+   ediff-split-window-function 'split-window-horizontally))
+
 (use-package diff-hl
   :ensure diff-hl
   :init (add-hook 'prog-mode-hook 'diff-hl-mode)
