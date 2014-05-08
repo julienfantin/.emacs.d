@@ -709,7 +709,48 @@
 (use-package paredit
   :ensure paredit
   :diminish ""
-  :init (add-hook 'prog-mode-hook 'paredit-mode))
+  :init (add-hook 'prog-mode-hook 'paredit-mode)
+  :config
+  (progn
+    (defun paredit-wrap-round-from-behind ()
+      (interactive)
+      (forward-sexp -1)
+      (paredit-wrap-round)
+      (insert " ")
+      (forward-char -1))
+
+    (defun paredit-wrap-square-from-behind ()
+      (interactive)
+      (forward-sexp -1)
+      (paredit-wrap-square))
+
+    (defun paredit-wrap-curly-from-behind ()
+      (interactive)
+      (forward-sexp -1)
+      (paredit-wrap-curly))
+
+    ;; From emacs-live
+    (defun esk-paredit-forward ()
+      (interactive)
+      (if (and (not (paredit-in-string-p))
+               (save-excursion
+                 (ignore-errors
+                   (forward-sexp)
+                   (forward-sexp)
+                   t)))
+          (progn
+            (forward-sexp)
+            (forward-sexp)
+            (backward-sexp))
+        (paredit-forward)))
+
+    (bind-key "C-M-f" 'esk-paredit-forward paredit-mode-map)
+    (bind-key "M-(" 'paredit-wrap-round paredit-mode-map)
+    (bind-key "M-)" 'paredit-wrap-round-from-behind paredit-mode-map)
+    (bind-key "M-[" 'paredit-wrap-square paredit-mode-map)
+    (bind-key "M-]" 'paredit-wrap-square-from-behind paredit-mode-map)
+    (bind-key "M-{" 'paredit-wrap-curly paredit-mode-map)
+    (bind-key "M-}" 'paredit-wrap-curly-from-behind paredit-mode-map)))
 
 ;;; ** Completion
 
