@@ -243,7 +243,9 @@
       :init (helm-mode 1)
       :config
       (progn
-
+        (bind-key "DEL" 'my-helm-ff-down helm-read-file-map)
+        ;; Complete immendiately on TAB when finding files
+        (bind-key "TAB" 'helm-execute-persistent-action helm-read-file-map)
         (setq
          helm-buffer-details-flag nil
          helm-ff-file-name-history-use-recentf t
@@ -260,10 +262,7 @@
           (interactive)
           (if (looking-back "/")
               (call-interactively 'helm-find-files-down-one-level)
-            (delete-char -1)))
-        (bind-key "DEL" 'my-helm-ff-down helm-read-file-map)
-        ;; Complete immendiately on TAB when finding files
-        (bind-key "TAB" 'helm-execute-persistent-action helm-read-file-map)))))
+            (delete-char -1)))))))
 
 ;;; ** Keys
 
@@ -658,7 +657,6 @@
   (progn
     (add-hook 'activate-mark-hook #'(lambda () (show-paren-mode -1)))
     (add-hook 'deactivate-mark-hook #'(lambda () (show-paren-mode 1)))
-    (setq show-paren-style 'expression)
     (setq show-paren-delay 0.02)))
 
 (use-package paredit
