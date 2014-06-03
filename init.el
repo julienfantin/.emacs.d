@@ -756,10 +756,6 @@
       (put-clojure-indent 'defmethod 'defun)
       (put-clojure-indent 'defroutes 'defun))
 
-    (use-package clojure-test-mode
-      :ensure clojure-test-mode
-      :init (add-hook 'clojure-mode-hook 'clojure-test-mode))
-
     (use-package cider
       :ensure cider
       :config
@@ -775,9 +771,11 @@
               cider-repl-popup-stacktraces nil
               cider-repl-print-length 400
               cider-repl-history-file "~/.emacs.d/nrepl-history"
-              cider-repl-popup-stacktraces t
-              cider-repl-use-clojure-font-lock t
+              cider-repl-use-clojure-font-lock nil
               cider-repl-use-pretty-printing nil)
+
+        (use-package cider-repl
+          :config (add-hook 'cider-repl-mode-hook 'company-mode))
 
         (use-package pulse
           :init
@@ -785,15 +783,40 @@
             (defadvice cider-eval-last-sexp (after cider-flash-last activate)
               (pulse-momentary-highlight-region (save-excursion (backward-sexp) (point)) (point)))
             (defadvice cider-eval-defun-at-point (after cider-flash-at activate)
-              (apply #'pulse-momentary-highlight-region (cider--region-for-defun-at-point)))))
+              (apply #'pulse-momentary-highlight-region (cider--region-for-defun-at-point)))))))
 
-        (use-package company-cider
-          :ensure company-cider
-          :init
-          (after cider
-            (add-to-list 'company-backends 'company-cider)
-            (after cider-repl
-              (add-hook 'cider-repl-mode-hook 'company-mode))))))
+
+    (use-package clojure-test-mode
+      :ensure clojure-test-mode
+      :init (add-hook 'clojure-mode-hook 'clojure-test-mode)
+      :config
+      (defadvice clojure-test-run-tests (before save-first activate)
+        (save-buffer)))
+
+    (use-package clj-refactor
+      :ensure clj-refactor
+      :init (add-hook 'clojure-mode-hook 'clj-refactor-mode)
+      :config
+      (progn
+        (bind-key "C-x C-r" 'cljr-rename-file clj-refactor-map)
+        (bind-key "C->" 'cljr-thread cider-mode-map)
+        (bind-key "C->" 'cljr-unwind cider-mode-map)))
+
+    (use-package slamhound
+      :ensure slamhound
+      :init (bind-key "C-c s" 'slamhound clojure-mode-map))
+
+    (use-package typed-clojure-mode
+      :ensure typed-clojure-mode
+      :init (add-hook 'clojure-mode-hook 'typed-clojure-mode)
+      :config
+      (progn
+        (defun typed-clojure-font-lock ()
+          (font-lock-add-keywords nil
+                                  '(("(\\(def\\(record\\|protocol\\)>\\)\\s-+\\(\\w+\\)"
+                                     (1 font-lock-keyword-face)
+                                     (3 font-lock-function-name-face)))))
+        (add-hook 'clojure-mode-hook 'typed-clojure-font-lock)))
 
     (use-package clojure-cheatsheet
       :ensure clojure-cheatsheet
@@ -816,50 +839,31 @@
             (add-hook 'clojure-mode-hook 'flycheck-mode)))
 
         ;; Eastwood, too noisy for now...
-        (after cider
-          (defvar eastwood-add-linters
-            (vector
-             ;; :keyword-typos
-             ;;:unused-namespaces
-             :unused-fn-args)
-            "Really doesn't make sense to use a vector here,
-              but saves the formatting for now...")
+        ;; (after cider
+        ;;   (defvar eastwood-add-linters
+        ;;     (vector
+        ;;      ;; :keyword-typos
+        ;;      ;;:unused-namespaces
+        ;;      :unused-fn-args)
+        ;;     "Really doesn't make sense to use a vector here,
+        ;;       but saves the formatting for now...")
 
-          (flycheck-define-checker eastwood
-            "A Clojure lint tool."
-            :command
-            ("lein" "eastwood"
-             (eval
-              (format "{:namespaces [%s] :add-linters []}" (cider-find-ns) eastwood-add-linters)))
-            :error-patterns
-            ((error
-              bol
-              "{:linter" (one-or-more not-newline) ",\n"
-              " :msg" (or (zero-or-one (syntax whitespace)) (zero-or-one "\n")) (message) ",\n"
-              " :line " line ",\n"
-              " :column " column "}" line-end))
-            :modes clojure-mode)
-          (add-to-list 'flycheck-checkers 'eastwood))))
-
-    (use-package clj-refactor
-      :ensure clj-refactor
-      :init (add-hook 'clojure-mode-hook 'clj-refactor-mode))
-
-    (use-package slamhound
-      :ensure slamhound
-      :init (bind-key "C-c s" 'slamhound clojure-mode-map))
-
-    (use-package typed-clojure-mode
-      :ensure typed-clojure-mode
-      :init (add-hook 'clojure-mode-hook 'typed-clojure-mode)
-      :config
-      (progn
-        (defun typed-clojure-font-lock ()
-          (font-lock-add-keywords nil
-                                  '(("(\\(def\\(record\\|protocol\\)>\\)\\s-+\\(\\w+\\)"
-                                     (1 font-lock-keyword-face)
-                                     (3 font-lock-function-name-face)))))
-        (add-hook 'clojure-mode-hook 'typed-clojure-font-lock)))))
+        ;;   (flycheck-define-checker eastwood
+        ;;     "A Clojure lint tool."
+        ;;     :command
+        ;;     ("lein" "eastwood"
+        ;;      (eval
+        ;;       (format "{:namespaces [%s] :add-linters []}" (cider-find-ns) eastwood-add-linters)))
+        ;;     :error-patterns
+        ;;     ((error
+        ;;       bol
+        ;;       "{:linter" (one-or-more not-newline) ",\n"
+        ;;       " :msg" (or (zero-or-one (syntax whitespace)) (zero-or-one "\n")) (message) ",\n"
+        ;;       " :line " line ",\n"
+        ;;       " :column " column "}" line-end))
+        ;;     :modes clojure-mode)
+        ;;   (add-to-list 'flycheck-checkers 'eastwood))
+        ))))
 
 ;;; ** Elisp
 
