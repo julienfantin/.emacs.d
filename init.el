@@ -78,23 +78,32 @@
 
 (defvar global-text-height-offset 0)
 
-(defvar preferred-fonts
-  '(("DejaVu Sans Mono" . 120)
+(defvar monospaced-fonts
+  '(("DejaVu Sans Mono" . 130)
     ("Consolas" . 130)
     ("Ubuntu Mono" . 140)
     ("Source Code Pro" . 120)
     ("Inconsolata" . 140)
     ("Menlo-12" . 120)))
 
+(defvar variable-fonts
+  '(("DejaVu Serif" . 190)))
+
 (defun set-preferred-font (height-offset)
-  (let* ((font (cl-find-if
-                (lambda (font)
-                  (find-font (font-spec :name (car font))))
-                preferred-fonts))
-         (family (car font))
-         (height (cdr font)))
-    (set-face-attribute 'default nil :family family)
-    (set-face-attribute 'default nil :height (+ height height-offset))))
+  (let* ((mono-font (cl-find-if
+                     (lambda (font)
+                       (find-font (font-spec :name (car font))))
+                     monospaced-fonts))
+         (var-font (cl-find-if
+                    (lambda (font)
+                      (find-font (font-spec :name (car font))))
+                    variable-fonts)))
+    (set-face-attribute 'default nil :family (car mono-font))
+    (set-face-attribute 'default nil :height (+ (cdr mono-font) height-offset))
+    (set-face-attribute 'variable-pitch nil :family (car var-font))
+    (set-face-attribute 'variable-pitch nil :height (+ (cdr var-font) height-offset))))
+
+(set-preferred-font 0)
 
 (defun global-text-height-increase ()
   (interactive)
@@ -109,7 +118,35 @@
 (bind-key "C-x C-+" 'global-text-height-increase)
 (bind-key "C-x C--" 'global-text-height-decrease)
 
-(set-preferred-font 0)
+;;; ** Prose-mode
+
+(defvar prose-mode-map (make-sparse-keymap))
+
+(defvar prose-mode-line-spacing 6)
+
+(easy-mmode-define-minor-mode
+ prose-mode
+ "A mode for editing and reading prose."
+ t
+ "Prose"
+ prose-mode-map
+
+ ;; Line spacing
+ (set (make-local-variable 'line-spacing)
+      (if prose-mode prose-mode-line-spacing line-spacing))
+
+ (after automargin
+   (unless (bound-and-true-p automargin-mode)
+     (automargin-mode 1)))
+
+ (variable-pitch-mode prose-mode)
+ (visual-line-mode prose-mode)
+
+ (set-preferred-font 0))
+
+(use-package adaptive-wrap
+  :ensure adaptive-wrap
+  :init (add-hook 'prose-mode-hook 'adaptive-wrap-prefix-mode))
 
 ;;; ** GUI
 
@@ -164,6 +201,7 @@
   :init (add-hook 'after-init-hook 'automargin-mode)
   :config
   (progn
+    (setq-default automargin-target-width 100)
     (add-hook 'window-configuration-change-hook 'automargin-function)
     (add-hook 'minibuffer-setup-hook 'automargin-function)))
 
