@@ -500,7 +500,8 @@
       (setq cursor-type (if (god-enabled-p) 'box 'bar)))
 
     (defun god-update-auto-indent ()
-      (auto-indent-mode (not (god-enabled-p))))
+      (after auto-indent-mode
+        (auto-indent-mode (not (god-enabled-p)))))
 
     (defun god-update-hl-line ()
       (hl-line-mode (god-enabled-p)))
