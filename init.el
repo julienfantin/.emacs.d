@@ -17,7 +17,12 @@
   (setq package-archives
         '(("org" . "http://orgmode.org/elpa/")
           ("melpa" . "http://melpa.milkbox.net/packages/")
+          ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
           ("gnu" . "http://elpa.gnu.org/packages/")))
+
+  (setq package-pinned-packages
+        '((cider . "melpa-stable")))
+
   (when (require 'package)
     (package-initialize)
     (unless package-archive-contents
@@ -281,7 +286,7 @@
       :init (helm-mode 1)
       :config
       (progn
-        (bind-key "DEL" 'my-helm-ff-down helm-read-file-map)
+        (bind-key "DEL" 'my-helm-ff-up helm-read-file-map)
         ;; Complete immendiately on TAB when finding files
         (bind-key "TAB" 'helm-execute-persistent-action helm-read-file-map)
         (setq
@@ -294,12 +299,12 @@
         (add-to-list 'helm-boring-file-regexp-list "\\.git$")
         (add-to-list 'helm-boring-file-regexp-list "\\.$")
 
-        (defun my-helm-ff-down ()
+        (defun my-helm-ff-up ()
           "Delete backward or go \"down\" [sic] one level when in
           folder root."
           (interactive)
           (if (looking-back "/")
-              (call-interactively 'helm-find-files-down-one-level)
+              (call-interactively 'helm-find-files-up-one-level)
             (delete-char -1)))))))
 
 ;;; ** Keys
