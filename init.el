@@ -221,10 +221,10 @@
           calendar-longitude -73.95)
 
     (use-package solarized-theme
-      :init
-      (add-hook 'after-init-hook
-                #'(lambda ()
-                    (change-theme 'solarized-light 'solarized-dark))))))
+      :ensure solarized-theme
+      :init (add-hook 'after-init-hook
+                      #'(lambda ()
+                          (change-theme 'solarized-light 'solarized-dark))))))
 
 (use-package rainbow-mode
   :ensure rainbow-mode
@@ -316,6 +316,7 @@
         ns-option-modifier 'meta))
 
 (use-package sequential-command
+  :disabled t
   :ensure sequential-command
   :defines sequential-lispy-indent
   :commands sequential-lispy-indent
@@ -359,6 +360,7 @@
 
 
 (use-package free-keys
+  :disabled t
   :ensure free-keys)
 
 ;;; * Projects
@@ -482,6 +484,7 @@
 ;;; ** Buffer
 
 (use-package god-mode
+  :disabled t
   :ensure god-mode
   :init (add-hook 'prog-mode-hook 'god-local-mode)
   :bind (("<escape>" . god-local-mode))
@@ -627,6 +630,7 @@
     (global-set-key (kbd "S-C-<down>") 'shrink-window)
     (global-set-key (kbd "S-C-<up>") 'enlarge-window)
     (use-package buffer-move
+      :disabled t
       :ensure buffer-move
       :bind (("<M-S-down>" . buf-move-down)
              ("<M-S-left>" . buf-move-left)
@@ -642,8 +646,8 @@
     "Move to the newly created window after a split."
     (other-window 1)
     (next-buffer))
-  (bind-key "C-c \\" 'window-focus-toggle)
-  (bind-key "C-c |" 'window-split-toggle))
+  (bind-key "C-c |" 'window-focus-toggle)
+  (bind-key "C-c \\" 'window-split-toggle))
 
 ;;; * Search and replace
 ;;; ** Buffer
@@ -766,6 +770,7 @@
 
 (use-package yasnippet
   :ensure yasnippet
+  :disabled t
   :init
   (progn
     (add-hook
@@ -781,7 +786,16 @@
 
 ;;; ** Whitespace
 
+(progn
+  (setq-default show-trailing-whitespace t))
+
+(use-package ws-butler
+  :disabled t
+  :ensure ws-butler
+  :init ws-butler-global-mode)
+
 (use-package whitespace-cleanup-mode
+  :disabled t
   :ensure whitespace-cleanup-mode
   :diminish (whitespace-cleanup-mode "")
   :init (add-hook 'prog-mode-hook 'whitespace-cleanup-mode))
@@ -829,14 +843,6 @@
             (defadvice cider-eval-defun-at-point (after cider-flash-at activate)
               (apply #'pulse-momentary-highlight-region (cider--region-for-defun-at-point)))))))
 
-
-    (use-package clojure-test-mode
-      :ensure clojure-test-mode
-      :init (add-hook 'clojure-mode-hook 'clojure-test-mode)
-      :config
-      (defadvice clojure-test-run-tests (before save-first activate)
-        (save-buffer)))
-
     (use-package clj-refactor
       :ensure clj-refactor
       :init (add-hook 'clojure-mode-hook 'clj-refactor-mode)
@@ -851,6 +857,7 @@
       :init (bind-key "C-c s" 'slamhound clojure-mode-map))
 
     (use-package typed-clojure-mode
+      :disabled t
       :ensure typed-clojure-mode
       :init (add-hook 'clojure-mode-hook 'typed-clojure-mode)
       :config
@@ -870,17 +877,27 @@
 
     ;; Linting
     (use-package flycheck
-      :init (add-hook 'clojure-mode-hook 'flycheck-mode)
       :config
       (progn
         ;; Kibit
         (use-package kibit-mode
+          :disabled t
           :ensure kibit-mode
+          :defer t
           :defines clojure-kibit
           :init
           (progn
-            (autoload 'clojure-kibit "kibit-mode" nil t)
-            (add-hook 'clojure-mode-hook 'flycheck-mode)))
+            (defun clojure-kibit-enable ()
+              (interactive)
+              (flycheck-mode 1)
+              (add-hook 'clojure-mode-hook 'flycheck-mode))
+
+            (defun clojure-kibit-disable ()
+              (interactive)
+              (flycheck-mode -1)
+              (remove-hook 'clojure-mode-hook 'flycheck-mode))
+
+            (autoload 'clojure-kibit "kibit-mode" nil t)))
 
         ;; Eastwood, too noisy for now...
         ;; (after cider
@@ -971,6 +988,7 @@
       (setq eshell-hist-ignoredups t))))
 
 (use-package multi-eshell
+  :disabled t
   :ensure multi-eshell
   :bind (("C-c s e" . multi-eshell)
          ("C-c s n" . multi-eshell-go-back))
@@ -1004,6 +1022,10 @@
     (use-package erc-hl-nicks
       :ensure erc-hl-nicks
       :init (add-hook 'erc-mode-hook 'erc-hl-nicks-mode))))
+
+(use-package hardhat
+  :ensure hardhat
+  :init (global-hardhat-mode 1))
 
 (provide 'init)
 ;;; init.el ends here
