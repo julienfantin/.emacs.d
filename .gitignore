@@ -7,3 +7,12 @@
 /custom.el
 /semanticdb/
 /nrepl-history
+/eshell/history
+/eshell/lastdir
+/url/
+/var/
+/tramp
+/private.el
+/org-clock-save.el
+/lib/private.el
+/history
