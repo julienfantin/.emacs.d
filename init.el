@@ -84,8 +84,8 @@
 (defvar global-text-height-offset 0)
 
 (defvar monospaced-fonts
-  '(("DejaVu Sans Mono" . 130)
-    ("Consolas" . 130)
+  '(("Consolas" . 120)
+    ("DejaVu Sans Mono" . 130)
     ("Ubuntu Mono" . 140)
     ("Source Code Pro" . 120)
     ("Inconsolata" . 140)
@@ -206,7 +206,7 @@
   :init (add-hook 'after-init-hook 'automargin-mode)
   :config
   (progn
-    (setq-default automargin-target-width 100)
+    (setq-default automargin-target-width 150)
     (add-hook 'window-configuration-change-hook 'automargin-function)
     (add-hook 'minibuffer-setup-hook 'automargin-function)))
 
@@ -446,6 +446,7 @@
   :init (add-hook 'prog-mode-hook 'undo-tree-mode)
   :config
   (progn
+    (bind-key "C-c TAB" 'cleanup-buffer-or-region prog-mode-map)
     (setq
      undo-tree-visualizer-timestamps nil
      undo-tree-visualizer-diff nil
@@ -761,9 +762,10 @@
   :init (add-hook 'prog-mode-hook 'company-mode)
   :config
   (progn
-    (setq company-abort-manual-when-too-short t
+    (setq company-abort-manual-when-too-short nil
           company-require-match nil
-          company-idle-delay 0.1
+          company-auto-complete t
+          company-idle-delay 0.2
           company-tooltip-limit 20
           company-minimum-prefix-length 2)
     (bind-key "<tab>" 'company-complete-selection company-active-map)))
@@ -824,13 +826,11 @@
 
         (setq cider-prompt-save-file-on-load nil
               nrepl-hide-special-buffers nil
-              cider-auto-select-error-buffer nil
-              cider-popup-stacktraces nil
-              cider-repl-popup-stacktraces nil
               cider-repl-print-length 400
+              cider-repl-pop-to-buffer-on-connect nil
               cider-repl-history-file "~/.emacs.d/nrepl-history"
-              cider-repl-use-clojure-font-lock nil
-              cider-repl-use-pretty-printing nil)
+              cider-repl-use-clojure-font-lock t
+              cider-repl-use-pretty-printing t)
 
         (use-package cider-repl
           :config (add-hook 'cider-repl-mode-hook 'company-mode))
