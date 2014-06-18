@@ -216,15 +216,23 @@
   :ensure theme-changer
   :config
   (progn
+    (use-package solarized-theme
+      :ensure solarized-theme)
+
+    (use-package monokai-theme
+      :ensure monokai-theme)
+
     (setq calendar-location-name "Brooklyn, NY"
           calendar-latitude 40.71
           calendar-longitude -73.95)
 
-    (use-package solarized-theme
-      :ensure solarized-theme
-      :init (add-hook 'after-init-hook
-                      #'(lambda ()
-                          (change-theme 'solarized-light 'solarized-dark))))))
+    (add-hook 'after-init-hook
+              #'(lambda ()
+                  (change-theme 'solarized-light 'monokai)))))
+
+(use-package powerline
+  :ensure powerline
+  :init (powerline-nano-theme))
 
 (use-package rainbow-mode
   :ensure rainbow-mode
@@ -316,7 +324,6 @@
         ns-option-modifier 'meta))
 
 (use-package sequential-command
-  :disabled t
   :ensure sequential-command
   :defines sequential-lispy-indent
   :commands sequential-lispy-indent
@@ -360,7 +367,6 @@
 
 
 (use-package free-keys
-  :disabled t
   :ensure free-keys)
 
 ;;; * Projects
@@ -446,7 +452,6 @@
   :init (add-hook 'prog-mode-hook 'undo-tree-mode)
   :config
   (progn
-    (bind-key "C-c TAB" 'cleanup-buffer-or-region prog-mode-map)
     (setq
      undo-tree-visualizer-timestamps nil
      undo-tree-visualizer-diff nil
@@ -454,6 +459,14 @@
      undo-tree-history-directory-alist `((".+" . ,(file-name-as-directory
                                                    (temp-file
                                                     ".undo-tree-history")))))))
+
+(use-package multiple-cursors
+  multiple-cursors
+  :init
+  (progn
+    (bind-key "C->" 'mc/mark-next-like-this prog-mode-map)
+    (bind-key "C-<" 'mc/mark-previous-like-this prog-mode-map)
+    (bind-key "C-c C-<" 'mc/mark-all-like-this prog-mode-map)))
 
 ;;; * Markdown
 
@@ -485,7 +498,6 @@
 ;;; ** Buffer
 
 (use-package god-mode
-  :disabled t
   :ensure god-mode
   :init (add-hook 'prog-mode-hook 'god-local-mode)
   :bind (("<escape>" . god-local-mode))
@@ -631,7 +643,6 @@
     (global-set-key (kbd "S-C-<down>") 'shrink-window)
     (global-set-key (kbd "S-C-<up>") 'enlarge-window)
     (use-package buffer-move
-      :disabled t
       :ensure buffer-move
       :bind (("<M-S-down>" . buf-move-down)
              ("<M-S-left>" . buf-move-left)
@@ -762,12 +773,12 @@
   :init (add-hook 'prog-mode-hook 'company-mode)
   :config
   (progn
-    (setq company-abort-manual-when-too-short nil
+    (setq company-abort-manual-when-too-short t
           company-require-match nil
-          company-auto-complete t
-          company-idle-delay 0.2
-          company-tooltip-limit 20
-          company-minimum-prefix-length 2)
+          company-auto-complete nil
+          company-idle-delay 0
+          company-tooltip-limit 8
+          company-minimum-prefix-length 3)
     (bind-key "<tab>" 'company-complete-selection company-active-map)))
 
 (use-package yasnippet
@@ -792,15 +803,8 @@
   (setq-default show-trailing-whitespace t))
 
 (use-package ws-butler
-  :disabled t
   :ensure ws-butler
   :init ws-butler-global-mode)
-
-(use-package whitespace-cleanup-mode
-  :disabled t
-  :ensure whitespace-cleanup-mode
-  :diminish (whitespace-cleanup-mode "")
-  :init (add-hook 'prog-mode-hook 'whitespace-cleanup-mode))
 
 ;;; ** Clojure
 
@@ -881,7 +885,6 @@
       (progn
         ;; Kibit
         (use-package kibit-mode
-          :disabled t
           :ensure kibit-mode
           :defer t
           :defines clojure-kibit
@@ -988,7 +991,6 @@
       (setq eshell-hist-ignoredups t))))
 
 (use-package multi-eshell
-  :disabled t
   :ensure multi-eshell
   :bind (("C-c s e" . multi-eshell)
          ("C-c s n" . multi-eshell-go-back))
