@@ -20,8 +20,9 @@
           ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
           ("gnu" . "http://elpa.gnu.org/packages/")))
 
-  (setq package-pinned-packages
-        '((cider . "melpa-stable")))
+  ;; (setq package-pinned-packages
+  ;;       '((cider . "melpa-stable")
+  ;;         (company . "melpa-stable")))
 
   (when (require 'package)
     (package-initialize)
@@ -52,10 +53,13 @@
 ;;; * Defaults
 
 (progn
+  (setq-default default-truncate-lines nil)
   (setq-default truncate-lines nil)
+  (setq-default truncate-partial-width-windows nil)
   (setq-default confirm-nonexistent-file-or-buffer nil)
   (setq-default gc-cons-threshold (* 8 1024 1024))
   (setq-default completion-styles '(basic partial-completion substring))
+  (setq-default completion-cycle-threshold t)
   (setq-default enable-recursive-minibuffers t))
 
 ;;; ** Paths
@@ -174,10 +178,10 @@
 (progn
   (setq-default cursor-in-non-selected-windows nil)
   (setq-default cursor-type 'bar)
-  (setq echo-keystrokes 0.1)
+  (setq echo-keystrokes 0.01)
   (setq mouse-wheel-progressive-speed nil
-        mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
-  (setq ring-bell-function (lambda ()))
+        mouse-wheel-scroll-amount '(0.01 ((shift) . 1) ((control) . nil)))
+  (setq ring-bell-function #'(lambda ()))
   (setq save-interprogram-paste-before-kill t)
   (fset 'yes-or-no-p 'y-or-n-p))
 
@@ -446,6 +450,13 @@
   (pending-delete-mode 1)
   (setq-default indent-tabs-mode nil))
 
+(use-package goto-chg
+  :ensure goto-chg
+  :init
+  (progn
+    (bind-key "C-." 'goto-last-change prog-mode-map)
+    (bind-key "C-M-." 'goto-last-change-reverse prog-mode-map)))
+
 (use-package undo-tree
   :ensure undo-tree
   :diminish ""
@@ -548,7 +559,11 @@
 
 (use-package ace-jump-mode
   :ensure ace-jump-mode
-  :bind (("C-c C-SPC" . ace-jump-mode)))
+  :bind (("C-c C-SPC" . ace-jump-mode)
+         ("C-x C-SPC" . ace-jump-mode-pop-mark))
+  :config
+  (progn
+    (ace-jump-mode-enable-mark-sync)))
 
 (use-package iedit
   :ensure iedit
@@ -773,7 +788,7 @@
   :init (add-hook 'prog-mode-hook 'company-mode)
   :config
   (progn
-    (setq company-abort-manual-when-too-short t
+    (setq company-abort-manual-when-too-short nil
           company-require-match nil
           company-auto-complete nil
           company-idle-delay 0
@@ -799,12 +814,14 @@
 
 ;;; ** Whitespace
 
-(progn
-  (setq-default show-trailing-whitespace t))
-
 (use-package ws-butler
   :ensure ws-butler
-  :init ws-butler-global-mode)
+  :init (ws-butler-global-mode 1)
+  :config
+  (progn
+    (add-hook 'prog-mode-hook
+              #'(lambda ()
+                  (setq show-trailing-whitespace t)))))
 
 ;;; ** Clojure
 
@@ -833,8 +850,9 @@
               cider-repl-print-length 400
               cider-repl-pop-to-buffer-on-connect nil
               cider-repl-history-file "~/.emacs.d/nrepl-history"
-              cider-repl-use-clojure-font-lock t
-              cider-repl-use-pretty-printing t)
+              ;;cider-repl-use-clojure-font-lock t
+              ;;cider-repl-use-pretty-printing t
+              )
 
         (use-package cider-repl
           :config (add-hook 'cider-repl-mode-hook 'company-mode))
@@ -852,9 +870,11 @@
       :init (add-hook 'clojure-mode-hook 'clj-refactor-mode)
       :config
       (progn
-        (bind-key "C-x C-r" 'cljr-rename-file clj-refactor-map)
+        (cljr-add-keybindings-with-prefix "C-c C-m")
+        (bind-key "C->" 'cljr-thread-last-all cider-repl-mode-map)
+        (bind-key "C-<" 'cljr-thread-first-all cider-repl-mode-map)
         (bind-key "C->" 'cljr-thread cider-mode-map)
-        (bind-key "C->" 'cljr-unwind cider-mode-map)))
+        (bind-key "C-<" 'cljr-unwind cider-mode-map)))
 
     (use-package slamhound
       :ensure slamhound
