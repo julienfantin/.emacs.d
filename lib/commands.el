@@ -20,7 +20,9 @@
   (interactive)
   (save-excursion
     (unless (region-active-p)
-      (mark (point-min) (point-max)))
+      (goto-char (point-min))
+      (mark)
+      (goto-char (point-max)))
     (untabify (region-beginning) (region-end))
     (indent-region (region-beginning) (region-end))
     (save-restriction
