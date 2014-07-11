@@ -6,11 +6,21 @@
 ;; * Editing
 ;;
 
-(defun cleanup-buffer-or-region ()
+(defun esk/backward-kill-word ()
+  (interactive)
+  (if (region-active-p)
+      (if (bound-and-true-p paredit-mode)
+          (call-interactively 'paredit-kill-region)
+        (call-interactively 'kill-region))
+    (if (bound-and-true-p paredit-mode)
+        (call-interactively 'paredit-backward-kill-word)
+      (call-interactively 'backward-kill-word))))
+
+(defun esk/cleanup ()
   (interactive)
   (save-excursion
     (unless (region-active-p)
-      (mark-whole-buffer))
+      (mark (point-min) (point-max)))
     (untabify (region-beginning) (region-end))
     (indent-region (region-beginning) (region-end))
     (save-restriction
@@ -18,10 +28,11 @@
       (whitespace-cleanup)))
   (message (format "%s cleaned!" (buffer-name))))
 
+
 ;; * Windows
 ;;
 
-(defun window-focus-toggle ()
+(defun esk/window-focus-toggle ()
   (interactive)
   (when (not (window-minibuffer-p (selected-window)))
     (if (= 1 (count-windows))
@@ -29,7 +40,7 @@
       (window-configuration-to-register ?u)
       (delete-other-windows))))
 
-(defun window-split-toggle ()
+(defun esk/window-split-toggle ()
   "Switch window split from horizontally to vertically, or vice
 versa. i.e. change right window to bottom, or change bottom
 window to right."

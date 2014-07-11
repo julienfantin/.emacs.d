@@ -1,4 +1,4 @@
-;;; FlatUI-theme.el --- Custom face theme for Emacs
+;;; fiatui-theme.el --- Custom face theme for Emacs
 
 ;; Copyright (C) 2010, 2011, 2012 Darksair.
 
@@ -17,15 +17,16 @@
 
 ;;; Code:
 
-(deftheme FlatUI
+(deftheme fiatui
   "Inspired by the color scheme from flatuicolors.com.")
 
 ;; Colors
+(defvar fui-white "#ffffff")
 (defvar fui-turquoise "#1abc9c")
 (defvar fui-emerald "#2ecc71")
 (defvar fui-river "#3498db")
 (defvar fui-amethyst "#9b59b6")
-;; (defvar fui-asphalt "#34495e")
+(defvar fui-asphalt "#34495e")
 (defvar fui-asphalt "#425d78")
 (defvar fui-sunflower "#f1c40f")
 (defvar fui-carrot "#e67e22")
@@ -46,13 +47,13 @@
 (defvar fui-fg fui-asphalt)
 
 (custom-theme-set-faces
- 'FlatUI
+ 'fiatui
  `(default ((t (:background ,fui-bg
                             :foreground ,fui-fg))))
- `(cursor ((t (:background ,fui-alizarin
+ `(cursor ((t (:background ,fui-amethyst
                            :foreground ,fui-fg))))
- `(region ((t (:background ,fui-dark-sunflower
-                           :foreground ,fui-fg))))
+ `(region ((t (:background ,fui-river
+                           :foreground ,fui-bg))))
  `(mode-line ((t (:background ,fui-emerald
                               :foreground ,fui-bg
                               :box nil))))
@@ -62,21 +63,21 @@
  `(fringe ((t (:background ,fui-bg))))
  `(show-paren-match ((t (:background ,fui-emerald))))
  `(show-paren-mismatch ((t (:background ,fui-alizarin))))
- `(hl-line ((t (:background ,fui-dark-clouds))))
+ `(hl-line ((t (:background ,fui-white))))
  `(minibuffer-prompt ((t (:foreground ,fui-dark-concrete))))
  `(font-lock-builtin-face ((t (:foreground ,fui-asphalt))))
  `(font-lock-type-face ((t (:foreground ,fui-river))))
- `(font-lock-doc-face ((t (:foreground ,fui-dark-river))))
- `(font-lock-comment-face ((t (:foreground ,fui-asphalt))))
+ `(font-lock-doc-face ((t (:foreground ,fui-amethyst))))
+ `(font-lock-comment-face ((t (:foreground ,fui-dark-river))))
  `(font-lock-constant-face ((t (:foreground ,fui-river))))
  `(font-lock-function-name-face ((t (:foreground ,fui-amethyst))))
  `(font-lock-keyword-face ((t (:foreground ,fui-asphalt))))
  `(font-lock-string-face ((t (:foreground ,fui-asphalt))))
  `(font-lock-variable-name-face ((t (:foreground ,fui-dark-emerald))))
  `(font-lock-warning-face ((t (:foreground ,fui-dark-carrot))))
- `(isearch ((t (:background ,fui-dark-concrete
-                            :foreground ,fui-fg))))
- `(lazy-highlight ((t (:background ,fui-concrete))))
+ `(isearch ((t (:background ,fui-amethyst
+                            :foreground ,fui-bg))))
+ `(lazy-highlight ((t (:background ,fui-emerald))))
  `(link ((t (:foreground ,fui-dark-river :underline t))))
  `(link-visited ((t (:foreground ,fui-dark-asphalt :underline t))))
  `(button ((t (:background ,fui-dark-asphalt :foreground ,fui-clouds :underline t))))
@@ -120,28 +121,32 @@
  `(magit-branch ((t (:foreground ,fui-river :background ,fui-bg))))
  `(magit-tag ((t (:foreground ,fui-river :background ,fui-bg))))
  `(magit-section-title ((t (:foreground ,fui-dark-emerald :background ,fui-bg))))
- `(magit-item-highlight ((t (:foreground ,fui-fg :background ,fui-dark-clouds))))
- 
+ `(magit-item-highlight ((t (:foreground ,fui-fg :background ,fui-white))))
+
  ;; Git-gutter-fringe
- `(git-gutter-fr:modified ((t (:foreground ,fui-amethyst))))
- `(git-gutter-fr:added ((t (:foreground ,fui-emerald))))
- `(git-gutter-fr:deleted ((t (:foreground ,fui-alizarin))))
- 
+ `(diff-hl-change ((t (:foreground ,fui-amethyst :background ,fui-amethyst))))
+ `(diff-hl-insert ((t (:foreground ,fui-emerald :background ,fui-emerald))))
+ `(diff-hl-delete ((t (:foreground ,fui-alizarin :background ,fui-alizarin))))
+
  ;; Company
  `(company-preview ((t (:foreground ,fui-fg :background ,fui-sunflower))))
- `(company-preview-common ((t (:foreground ,fui-fg :background ,fui-carrot))))
- `(company-tooltip ((t (:foreground ,fui-fg :background ,fui-dark-clouds))))
- `(company-tooltip-common ((t (:foreground ,fui-dark-carrot))))
- `(company-tooltip-selection ((t (:background ,fui-concrete))))
- `(company-tooltip-common-selection ((t (:foreground ,fui-dark-carrot))))
+ `(company-preview-common ((t (:foreground ,fui-river :background ,fui-bg))))
+ `(company-tooltip ((t (:foreground ,fui-fg :background ,fui-white))))
+ `(company-tooltip-common ((t (:foreground ,fui-dark-river))))
+ `(company-tooltip-selection ((t (:foreground ,fui-river))))
+ `(company-tooltip-common-selection ((t (:foreground ,fui-dark-river))))
+ `(company-scrollbar-fg ((t (:background ,fui-river))))
+ `(company-scrollbar-bg ((t (:background ,fui-bg))))
 
  ;; Magit
- `(magit-diff-add ((t (:background ,fui-emerald :foreground ,fui-bg))))
- `(magit-diff-del ((t (:background ,fui-alizarin :foreground ,fui-bg))))
+ `(magit-diff-add ((t (:background ,fui-bg :foreground ,fui-emerald))))
+ `(magit-diff-del ((t (:background ,fui-bg :foreground ,fui-alizarin))))
  ;; Helm
  `(helm-header ((t (:background ,fui-bg))))
- `(helm-source-header ((t (:background ,fui-dark-asphalt :foreground ,fui-bg))))
- `(helm-selection ((t (:background ,fui-dark-clouds))))
+ `(helm-source-header ((t (:background ,fui-white :foreground ,fui-fg))))
+ `(helm-selection ((t (:foreground ,fui-bg :background ,fui-river))))
+ `(helm-ff-directory ((t (:foreground ,fui-river :background ,fui-bg))))
+ `(helm-ff-executable ((t (:foreground ,fui-emerald :background ,fui-bg))))
 
  ;; Powerline
  `(powerline-active2 ((t (:foreground ,fui-fg :background ,fui-dark-clouds))))
@@ -201,10 +206,10 @@
 
 ;; (setq powerline-color2 (dv-color dv-default-bg)))
 
-(provide-theme 'FlatUI)
+(provide-theme 'fiatui)
 
 ;; Local Variables:
 ;; no-byte-compile: t
 ;; End:
 
-;;; Deviant-theme.el  ends here
+
