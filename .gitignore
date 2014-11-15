@@ -16,3 +16,6 @@
 /org-clock-save.el
 /lib/private.el
 /history
+/helm-adaptive-history
+/places
+/projectile.cache

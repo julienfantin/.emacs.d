@@ -21,59 +21,58 @@
   "Inspired by the color scheme from flatuicolors.com.")
 
 ;; Colors
-(defvar fui-white "#ffffff")
-(defvar fui-turquoise "#1abc9c")
-(defvar fui-emerald "#2ecc71")
-(defvar fui-river "#3498db")
-(defvar fui-amethyst "#9b59b6")
-(defvar fui-asphalt "#34495e")
-(defvar fui-asphalt "#425d78")
-(defvar fui-sunflower "#f1c40f")
-(defvar fui-carrot "#e67e22")
-(defvar fui-alizarin "#e74c3c")
-(defvar fui-clouds "#ecf0f1")
-(defvar fui-concrete "#95a5a6")
-(defvar fui-dark-turquoise "#16a085")
-(defvar fui-dark-emerald "#27ae60")
-(defvar fui-dark-river "#2980b9")
-(defvar fui-dark-amethyst "#8e44ad")
-(defvar fui-dark-asphalt "#2c3e50")
-(defvar fui-dark-sunflower "#f39c12")
-(defvar fui-dark-carrot "#d35400")
-(defvar fui-dark-alizarin "#c0392b")
-(defvar fui-dark-clouds "#bdc3c7")
-(defvar fui-dark-concrete "#7f8c8d")
-(defvar fui-bg fui-clouds)
-(defvar fui-fg fui-asphalt)
+(setq fui-white "#f9fafa")
+(setq fui-turquoise "#d12089")
+(setq fui-emerald "#2ecc71")
+(setq fui-river "#0086b3")
+(setq fui-amethyst "#6e5494")
+(setq fui-asphalt2 "#34495e")
+(setq fui-asphalt "#333")
+(setq fui-sunflower "#f1c40f")
+(setq fui-carrot "#e67e22")
+(setq fui-alizarin "#e74c3c")
+(setq fui-clouds "#ecf0f1")
+(setq fui-concrete "#95a5a6")
+(setq fui-dark-turquoise "#16a085")
+(setq fui-dark-emerald "#27ae60")
+(setq fui-dark-river "#2980b9")
+(setq fui-dark-amethyst "#8e44ad")
+(setq fui-dark-asphalt "#2c3e50")
+(setq fui-dark-sunflower "#f39c12")
+(setq fui-dark-carrot "#d35400")
+(setq fui-dark-alizarin "#a31515")
+(setq fui-dark-clouds "#bdc3c7")
+(setq fui-dark-concrete "#7f8c8d")
+(setq fui-bg fui-clouds)
+(setq fui-fg fui-asphalt)
 
 (custom-theme-set-faces
  'fiatui
- `(default ((t (:background ,fui-bg
-                            :foreground ,fui-fg))))
- `(cursor ((t (:background ,fui-amethyst
-                           :foreground ,fui-fg))))
- `(region ((t (:background ,fui-river
-                           :foreground ,fui-bg))))
- `(mode-line ((t (:background ,fui-emerald
-                              :foreground ,fui-bg
-                              :box nil))))
+ `(default ((t (:background ,fui-bg :foreground ,fui-fg))))
+ `(cursor ((t (:background ,fui-amethyst :foreground ,fui-fg))))
+ `(region ((t (:background ,fui-river :foreground ,fui-bg))))
+
+ `(mode-line ((t (:background ,fui-river :foreground ,fui-bg :box nil))))
  `(mode-line-buffer-id ((t (:foreground ,fui-clouds))))
- `(mode-line-inactive ((t (:background ,fui-concrete
-                                       :foreground ,fui-bg))))
+ `(mode-line-inactive ((t (:background ,fui-concrete :foreground ,fui-bg))))
+
+ `(persp-selected-face ((t (:foreground ,fui-dark-sunflower))))
+
  `(fringe ((t (:background ,fui-bg))))
  `(show-paren-match ((t (:background ,fui-emerald))))
  `(show-paren-mismatch ((t (:background ,fui-alizarin))))
  `(hl-line ((t (:background ,fui-white))))
+ `(hl-sexp-face ((t (:background ,fui-white))))
  `(minibuffer-prompt ((t (:foreground ,fui-dark-concrete))))
- `(font-lock-builtin-face ((t (:foreground ,fui-asphalt))))
- `(font-lock-type-face ((t (:foreground ,fui-river))))
- `(font-lock-doc-face ((t (:foreground ,fui-amethyst))))
- `(font-lock-comment-face ((t (:foreground ,fui-dark-river))))
+ `(font-lock-builtin-face ((t (:foreground ,fui-river))))
+ `(font-lock-type-face ((t (:foreground ,fui-amethyst))))
+ `(font-lock-doc-face ((t (:foreground ,fui-asphalt2))))
+ `(font-lock-comment-face ((t (:foreground ,fui-dark-concrete))))
  `(font-lock-constant-face ((t (:foreground ,fui-river))))
- `(font-lock-function-name-face ((t (:foreground ,fui-amethyst))))
- `(font-lock-keyword-face ((t (:foreground ,fui-asphalt))))
- `(font-lock-string-face ((t (:foreground ,fui-asphalt))))
- `(font-lock-variable-name-face ((t (:foreground ,fui-dark-emerald))))
+ `(font-lock-function-name-face ((t (:foreground ,fui-dark-amethyst :weight normal))))
+ `(font-lock-keyword-face ((t (:foreground ,fui-asphalt :weight bold))))
+ `(font-lock-string-face ((t (:foreground ,fui-amethyst))))
+ `(font-lock-variable-name-face ((t (:foreground ,fui-dark-asphalt))))
  `(font-lock-warning-face ((t (:foreground ,fui-dark-carrot))))
  `(isearch ((t (:background ,fui-amethyst
                             :foreground ,fui-bg))))
@@ -84,49 +83,51 @@
  `(header-line ((t (:background ,fui-dark-concrete
                                 :foreground ,fui-fg))))
  `(shadow ((t (:foreground ,fui-concrete))))
- 
+
+ `(highlight-symbol-face ((t (:background ,fui-sunflower))))
+
  ;; Whitespace
  `(whitespace-trailing ((t (:background ,fui-dark-clouds))))
  `(whitespace-line ((t (:background ,fui-dark-concrete :foreground ,fui-bg))))
- 
+
  ;; ERC
- `(erc-notice-face ((t (:foreground ,fui-dark-river
-                                    :weight unspecified))))
- `(erc-header-line ((t (:foreground ,fui-bg
-                                    :background ,fui-dark-clouds))))
- `(erc-timestamp-face ((t (:foreground ,fui-emerald
-                                       :weight unspecified))))
- `(erc-current-nick-face ((t (:foreground ,fui-dark-carrot
-                                          :weight unspecified))))
- `(erc-prompt-face ((t (:foreground ,fui-dark-concrete
-                                    :background nil
-                                    :slant italic
-                                    :weight unspecified))))
+ `(erc-notice-face ((t (:foreground ,fui-dark-river :weight unspecified))))
+ `(erc-header-line ((t (:foreground ,fui-bg :background ,fui-dark-clouds))))
+ `(erc-timestamp-face ((t (:foreground ,fui-emerald :weight unspecified))))
+ `(erc-current-nick-face ((t (:foreground ,fui-dark-carrot :weight unspecified))))
+ `(erc-prompt-face ((t (:foreground ,fui-dark-concrete :background nil :slant italic :weight unspecified))))
  `(erc-my-nick-face ((t (:foreground ,fui-dark-carrot))))
- `(outline-1 ((t (:foreground ,fui-bg :background ,fui-emerald))))
- `(outline-2 ((t (:foreground ,fui-bg :background ,fui-amethyst))))
- `(outline-3 ((t (:foreground ,fui-bg :background ,fui-river))))
+ `(outline-1 ((t (:foreground ,fui-fg))))
+ `(outline-2 ((t (:foreground ,fui-river))))
+ `(outline-3 ((t (:foreground ,fui-amethyst))))
+ `(outline-4 ((t (:foreground ,fui-emerald))))
+ `(outline-5 ((t (:foreground ,fui-carrot))))
+ `(outline-6 ((t (:foreground ,fui-turquoise))))
+
  ;; Rainbow delimiters
  `(rainbow-delimiters-depth-1-face ((t (:foreground ,fui-fg))))
- `(rainbow-delimiters-depth-2-face ((t (:foreground ,fui-turquoise))))
- `(rainbow-delimiters-depth-3-face ((t (:foreground ,fui-dark-river))))
- `(rainbow-delimiters-depth-4-face ((t (:foreground ,fui-dark-amethyst))))
- `(rainbow-delimiters-depth-5-face ((t (:foreground ,fui-dark-sunflower))))
- `(rainbow-delimiters-depth-6-face ((t (:foreground ,fui-dark-emerald))))
- `(rainbow-delimiters-depth-7-face ((t (:foreground ,fui-dark-concrete))))
+ `(rainbow-delimiters-depth-2-face ((t (:foreground ,fui-river))))
+ `(rainbow-delimiters-depth-3-face ((t (:foreground ,fui-amethyst))))
+ `(rainbow-delimiters-depth-4-face ((t (:foreground ,fui-emerald))))
+ `(rainbow-delimiters-depth-5-face ((t (:foreground ,fui-carrot))))
+ `(rainbow-delimiters-depth-6-face ((t (:foreground ,fui-turquoise))))
+ `(rainbow-delimiters-depth-7-face ((t (:foreground ,fui-dark-amethyst))))
  `(rainbow-delimiters-unmatched-face ((t (:foreground ,fui-alizarin))))
- 
+ `(rainbow-blocks-depth-1-face ((t (:foreground ,fui-fg))))
+ `(rainbow-blocks-depth-2-face ((t (:foreground ,fui-river))))
+ `(rainbow-blocks-depth-3-face ((t (:foreground ,fui-amethyst))))
+ `(rainbow-blocks-depth-4-face ((t (:foreground ,fui-emerald))))
+ `(rainbow-blocks-depth-5-face ((t (:foreground ,fui-carrot))))
+ `(rainbow-blocks-depth-6-face ((t (:foreground ,fui-turquoise))))
+ `(rainbow-blocks-depth-7-face ((t (:foreground ,fui-dark-amethyst))))
+ `(rainbow-blocks-unmatched-face ((t (:foreground ,fui-alizarin))))
  `(persp-selected-face ((t (:foreground ,fui-dark-river))))
+
  ;; Magit
  `(magit-branch ((t (:foreground ,fui-river :background ,fui-bg))))
  `(magit-tag ((t (:foreground ,fui-river :background ,fui-bg))))
  `(magit-section-title ((t (:foreground ,fui-dark-emerald :background ,fui-bg))))
  `(magit-item-highlight ((t (:foreground ,fui-fg :background ,fui-white))))
-
- ;; Git-gutter-fringe
- `(diff-hl-change ((t (:foreground ,fui-amethyst :background ,fui-amethyst))))
- `(diff-hl-insert ((t (:foreground ,fui-emerald :background ,fui-emerald))))
- `(diff-hl-delete ((t (:foreground ,fui-alizarin :background ,fui-alizarin))))
 
  ;; Company
  `(company-preview ((t (:foreground ,fui-fg :background ,fui-sunflower))))
@@ -141,13 +142,17 @@
  ;; Magit
  `(magit-diff-add ((t (:background ,fui-bg :foreground ,fui-emerald))))
  `(magit-diff-del ((t (:background ,fui-bg :foreground ,fui-alizarin))))
+
  ;; Helm
  `(helm-header ((t (:background ,fui-bg))))
  `(helm-source-header ((t (:background ,fui-white :foreground ,fui-fg))))
  `(helm-selection ((t (:foreground ,fui-bg :background ,fui-river))))
  `(helm-ff-directory ((t (:foreground ,fui-river :background ,fui-bg))))
+ `(helm-ff-file ((t (:foreground ,fui-dark-asphalt :background ,fui-bg))))
  `(helm-ff-executable ((t (:foreground ,fui-emerald :background ,fui-bg))))
 
+ ;; Cider
+ `(cider-stacktrace-face ((t (:background ,fui-fg))))
  ;; Powerline
  `(powerline-active2 ((t (:foreground ,fui-fg :background ,fui-dark-clouds))))
  `(powerline-active1 ((t (:foreground ,fui-bg :background ,fui-emerald))))

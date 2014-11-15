@@ -1,28 +1,27 @@
 ;;; emacs-swagger-kit --- Elisp goodness!
 ;;; Commentary:
 ;;; Code:
-;;
-;;; * Bootstap
+
+;; * Bootstap
 
 (require 'cl-lib)
 
 (progn
   ;; Debug on error when loading
-  (setq debug-on-error t)
-  (add-hook 'after-init-hook #'(lambda () (toggle-debug-on-error -1))))
+  (toggle-debug-on-error)
+  (add-hook 'after-init-hook
+            #'(lambda () (toggle-debug-on-error))))
 
-;;; ** Elpa & use-package
+;; ** Elpa & use-package
 
 (progn
   (setq package-archives
         '(("org" . "http://orgmode.org/elpa/")
           ("melpa" . "http://melpa.milkbox.net/packages/")
-          ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
           ("gnu" . "http://elpa.gnu.org/packages/")))
 
   ;; (setq package-pinned-packages
-  ;;       '((cider . "melpa-stable")
-  ;;         (company . "melpa-stable")))
+  ;;       '((cider . "melpa-stable")))
 
   (when (require 'package)
     (package-initialize)
@@ -34,9 +33,11 @@
 (progn
   (unless (package-installed-p 'use-package)
     (package-install 'use-package))
-  (require 'use-package))
+  (require 'use-package)
+  (setq use-package-idle-interval 1
+        use-package-verbose t))
 
-;;; ** Config helpers
+;; ** Config helpers
 
 (defmacro after (mode &rest body)
   "`eval-after-load' `MODE', wrapping `BODY' in `progn'."
@@ -47,22 +48,24 @@
     `(eval-after-load ,(symbol-name mode)
        (quote (progn ,@body)))))
 
-(ignore-errors
-  (use-package private))
+(ignore-errors (use-package private))
 
-;;; * Defaults
+;; * Defaults
 
 (progn
-  (setq-default default-truncate-lines nil)
-  (setq-default truncate-lines nil)
-  (setq-default truncate-partial-width-windows nil)
+  (setq-default locale-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+  (setq-default default-truncate-lines t)
+  (setq-default truncate-lines t)
   (setq-default confirm-nonexistent-file-or-buffer nil)
   (setq-default gc-cons-threshold (* 8 1024 1024))
   (setq-default completion-styles '(basic partial-completion substring))
-  (setq-default completion-cycle-threshold t)
-  (setq-default enable-recursive-minibuffers t))
+  (setq-default completion-cycle-threshold t))
 
-;;; ** Paths
+;; ** Paths
 
 (defun temp-file (name)
   "Return a temporary file with `NAME'."
@@ -83,36 +86,39 @@
   :ensure exec-path-from-shell
   :init (exec-path-from-shell-initialize))
 
-;;; ** Fonts
+;; ** Fonts
 
 (defvar global-text-height-offset 0)
 
 (defvar monospaced-fonts
-  '(("Consolas" . 120)
+  '(("Ubuntu Mono" . 120)
+    ("Consolas" . 120)
+    ("Input Mono Narrow" . 120)
     ("DejaVu Sans Mono" . 130)
-    ("Ubuntu Mono" . 140)
     ("Source Code Pro" . 120)
     ("Inconsolata" . 140)
     ("Menlo-12" . 120)))
 
 (defvar variable-fonts
-  '(("DejaVu Serif" . 190)))
+  '(("Input Serif" . 180)
+    ("DejaVu Serif" . 190)))
 
 (defun set-preferred-font (height-offset)
-  (let* ((mono-font (cl-find-if
-                     (lambda (font)
-                       (find-font (font-spec :name (car font))))
-                     monospaced-fonts))
-         (var-font (cl-find-if
-                    (lambda (font)
-                      (find-font (font-spec :name (car font))))
-                    variable-fonts)))
+  (let* ((mono-font (cl-find-if (lambda (font)
+                                  (find-font (font-spec :name (car font))))
+                                monospaced-fonts))
+         (var-font (cl-find-if (lambda (font)
+                                 (find-font (font-spec :name (car font))))
+                               variable-fonts)))
     (set-face-attribute 'default nil :family (car mono-font))
+    (set-face-attribute 'default nil :weight 'light)
     (set-face-attribute 'default nil :height (+ (cdr mono-font) height-offset))
     (set-face-attribute 'variable-pitch nil :family (car var-font))
     (set-face-attribute 'variable-pitch nil :height (+ (cdr var-font) height-offset))))
 
-(set-preferred-font 0)
+(when window-system
+  (set-preferred-font 0)
+  (setq line-spacing 0))
 
 (defun global-text-height-increase ()
   (interactive)
@@ -127,129 +133,131 @@
 (bind-key "C-x C-+" 'global-text-height-increase)
 (bind-key "C-x C--" 'global-text-height-decrease)
 
-;;; ** Prose-mode
-
-(defvar prose-mode-map (make-sparse-keymap))
-
-(defvar prose-mode-line-spacing 6)
-
-(easy-mmode-define-minor-mode
- prose-mode
- "A mode for editing and reading prose."
- t
- "Prose"
- prose-mode-map
-
- ;; Line spacing
- (set (make-local-variable 'line-spacing)
-      (if prose-mode prose-mode-line-spacing line-spacing))
-
- (after automargin
-   (unless (bound-and-true-p automargin-mode)
-     (automargin-mode 1)))
-
- (variable-pitch-mode prose-mode)
- (visual-line-mode prose-mode)
-
- (set-preferred-font 0))
-
-(use-package adaptive-wrap
-  :ensure adaptive-wrap
-  :defer t
-  :init (add-hook 'prose-mode-hook 'adaptive-wrap-prefix-mode))
-
-;;; ** GUI
+;; ** GUI
 
 (progn
   (setq initial-scratch-message "")
   (setq inhibit-startup-message t)
   (when window-system
-    ;; (add-hook 'after-init-hook
-    ;;           #'(lambda ()
-    ;;               (modify-all-frames-parameters
-    ;;                '((fullscreen . maximized)))))
+    (add-hook 'after-init-hook
+              #'(lambda () (modify-all-frames-parameters
+                       '((fullscreen . maximized)))))
     (tool-bar-mode -1)
     (scroll-bar-mode -1)
     (setq ns-use-native-fullscreen nil
           use-file-dialog nil
           use-dialog-box nil)))
 
-;;; ** UI
+(use-package fringe
+  :init (fringe-mode 8))
 
-(progn
-  (setq-default cursor-in-non-selected-windows nil)
-  (setq-default cursor-type 'bar)
-  (setq echo-keystrokes 0.01)
-  (setq mouse-wheel-progressive-speed nil
-        mouse-wheel-scroll-amount '(0.01 ((shift) . 1) ((control) . nil)))
-  (setq ring-bell-function #'(lambda ()))
-  (setq save-interprogram-paste-before-kill t)
-  (fset 'yes-or-no-p 'y-or-n-p))
+(defun toggle-transparency ()
+  (interactive)
+  (let ((default-alpha '(90 90))
+        (alpha (frame-parameter (selected-frame) 'alpha)))
+    (set-frame-parameter (selected-frame) 'alpha
+                         (if (not (eq default-alpha alpha))
+                             default-alpha
+                           '(100 100)))))
 
-(use-package diminish
-  :ensure diminish)
+(defun inc-transparency ()
+  (interactive)
+  (let ((alpha (car (frame-parameter (selected-frame) 'alpha))))
+    (set-frame-parameter (ider-pselected-frame) 'alpha (list  (- alpha 5)  (- alpha 5)))))
 
-(use-package hl-line
-  :defer t
-  :pre-load
-  (progn
-    (defvar hl-line-hooks
-      '(dired-mode-hook))
-    (defun hl-line-turn-on ()
-      (when (not (bound-and-true-p hl-line-mode))
-        (hl-line-mode 1))))
+(defun dec-transparency ()
+  (interactive)
+  (let ((alpha (car (frame-parameter (selected-frame) 'alpha))))
+    (set-frame-parameter (selected-frame) 'alpha (list  (+ alpha 5)  (+ alpha 5)))))
+
+;; ** UI
+(setq scroll-margin 5)
+(setq scroll-conservatively 10000)
+(setq-default cursor-in-non-selected-windows nil)
+(setq-default cursor-type 'bar)
+(setq echo-keystrokes 0.01)
+(setq ring-bell-function nil)
+(setq visible-bell t)
+(setq mouse-wheel-progressive-speed nil
+      mouse-wheel-scroll-amount '(0.01 ((shift) . 1) ((control) . nil)))
+(setq save-interprogram-paste-before-kill t)
+(fset 'yes-or-no-p 'y-or-n-p)
+
+(use-package diminish :ensure diminish)
+
+(use-package hl-line :init (global-hl-line-mode 1))
+
+(use-package highlight-numbers
+  :ensure highlight-numbers
+  :init (add-hook 'prog-mode-hook 'highlight-numbers-mode))
+
+(defvar esk-toggle-map nil)
+(define-prefix-command 'esk-toggle-map)
+(define-key ctl-x-map "t" 'esk-toggle-map)
+(define-key esk-toggle-map "f" 'auto-fill-mode)
+(define-key esk-toggle-map "l" 'toggle-truncate-lines)
+(define-key esk-toggle-map "r" 'read-only-mode)
+
+;; ** Theme
+
+(use-package smart-mode-line
+  :disabled t
+  :ensure smart-mode-line
   :init
   (progn
-    (dolist (hook hl-line-hooks)
-      (add-hook hook 'hl-line-turn-on))))
-
-(use-package number-font-lock-mode
-  :ensure number-font-lock-mode
-  :defer t
-  :init (add-hook 'prog-mode-hook 'number-font-lock-mode))
-
-(use-package automargin
-  :ensure automargin
-  :commands (automargin-mode)
-  :init (add-hook 'after-init-hook 'automargin-mode)
-  :config
-  (progn
-    (setq-default automargin-target-width 150)
-    (add-hook 'window-configuration-change-hook 'automargin-function)
-    (add-hook 'minibuffer-setup-hook 'automargin-function)))
-
-;;; ** Theme
+    (setq sml/theme 'respectful)
+    (add-hook 'after-init-hook 'sml/setup)))
 
 (defvar dark-themes
-  '(gruvbox soft-charcoal minimal stekene-dark zonokai tomorrow))
+  '(smyx gruvbox soft-charcoal minimal stekene-dark zonokai tomorrow))
 
 (defvar light-themes
   '(espresso flatui hemisu-light minimal-light ritchie stekene-light tomorrow-bright))
 
-(progn
-  (setq-default
-   custom-theme-directory
-   (expand-file-name "themes/" user-emacs-directory ))
-  (load-theme 'fiatui t))
-
-(use-package powerline
-  :ensure powerline
-  :init (powerline-nano-theme))
+(use-package theme-changer
+  :ensure theme-changer
+  :init
+  (progn
+    (setq custom-theme-directory (expand-file-name "themes/" user-emacs-directory)
+          calendar-location-name "Brooklyn, NY"
+          calendar-latitude 40.7
+          calendar-longitude -74.0)
+    (change-theme 'fiatui 'fiatui-dark)))
 
 (use-package rainbow-mode
   :ensure rainbow-mode
-  :defer t
   :diminish (rainbow-mode "")
   :init (add-hook 'emacs-lisp-mode-hook 'rainbow-mode))
 
-;;; ** Dired
+;; ** Dired
 
 (use-package dired
   :config
   (progn
-    (setq dired-auto-revert-buffer t)))
+    (setq dired-auto-revert-buffer t)
+    (add-hook 'dired-mode-hook 'dired-hide-details-mode)))
 
-;;; ** Minibuffer completion
+(use-package launch
+  :ensure launch
+  :idle (global-launch-mode 1)
+  :config
+  (progn
+    (defun launch-dired-dwim ()
+      (let ((marked-files (dired-get-marked-files)))
+        (if marked-files
+            (launch-files marked-files :confirm)
+          (launch-directory (dired-current-directory)))))
+    (defun stante-launch-dwim ()
+      "Open the current file externally."
+      (interactive)
+      (if (eq major-mode 'dired-mode)
+          (stante-launch-dired-dwim)
+        (when (buffer-file-name)
+          (launch-file (buffer-file-name))
+          (launch-directory default-directory))))
+    ))
+
+;; ** Minibuffer completion
 
 (use-package smex
   :disabled t
@@ -300,71 +308,68 @@
 (use-package helm-config
   :ensure helm
   :pre-load (defvar helm-command-prefix-key "C-h")
+  :demand t
   :bind (("M-x" . helm-M-x)
          ("C-x b" . helm-mini)
-         ("C-x C-f" . helm-find-files))
+         ("C-x C-f" . helm-find-files)
+         ("M-y" . helm-show-kill-ring))
   :config
   (progn
-    (bind-key "a" 'helm-apropos helm-command-map)
-    (bind-key "o" 'helm-occur helm-command-map)
+    (setq helm-yank-symbol-first t)
+    (setq helm-M-x-always-save-history t)
+
     (custom-set-faces
      '(helm-source-header ((t :inherit mode-line)))
      '(helm-selection ((t :inherit hl-line)))
      '(helm-visible-mark ((t :inherit region))))
 
-    (setq helm-yank-symbol-first t)
-
-    (use-package helm-adapt
-      :init (helm-adaptive-mode 1))
-
     (use-package helm-command
       :config
       (progn
-        (setq helm-M-x-always-save-history t)
+        (bind-key "a" 'helm-apropos helm-command-map)
+        (bind-key "o" 'helm-occur helm-command-map)
+
         (use-package helm-swoop
           :ensure helm-swoop
-          :defer t
           :init
           (progn
             (bind-key "s" 'helm-swoop helm-command-map)
             (bind-key "C-s" 'helm-multi-swoop-all helm-command-map)))
-
         (use-package helm-descbinds
           :ensure helm-descbinds
           :defer t
           :init (bind-key "b" 'helm-descbinds helm-command-map))))
 
     (use-package helm-mode
-      :diminish ""
       :init (helm-mode 1)
+      :diminish (helm-mode "")
       :config
       (progn
         (bind-key "DEL" 'my-helm-ff-up helm-read-file-map)
         ;; Complete immendiately on TAB when finding files
         (bind-key "TAB" 'helm-execute-persistent-action helm-map)
         (bind-key "C-z" 'helm-select-action helm-map)
-        (setq
-         helm-idle-delay 0.01
-         helm-input-idle-delay 0.01
-         helm-split-window-default-side 'other
-         helm-split-window-in-side-p t
-         helm-buffer-details-flag nil
-         helm-ff-file-name-history-use-recentf t
-         helm-ff-auto-update-initial-value nil
-         helm-ff-skip-boring-files t
-         helm-M-x-requires-pattern 0
-         helm-buffers-fuzzy-matching t)
+        (setq helm-quick-update t
+              helm-idle-delay 0.01
+              helm-input-idle-delay 0.01
+              helm-ff-file-name-history-use-recentf t
+              helm-ff-auto-update-initial-value nil
+              helm-ff-skip-boring-files t
+              helm-candidate-number-limit 1000
+              helm-M-x-requires-pattern 0
+              helm-buffers-fuzzy-matching t)
 
         (add-to-list 'helm-boring-file-regexp-list "\\.DS_Store$")
         (add-to-list 'helm-boring-file-regexp-list "\\.git$")
         (add-to-list 'helm-boring-file-regexp-list "\\.$")
 
         (use-package helm-eshell
-          :defer t
           :init
-          (add-hook 'eshell-mode-hook
-                    #'(lambda ()
-                        (define-key eshell-mode-map (kbd "M-l")  'helm-eshell-history))))
+          (after eshell
+            (add-hook 'eshell-hook
+                      #'(lambda ()
+                          (define-key eshell-mode-map (kbd "M-l")  'helm-eshell-history)))))
+
         (defun my-helm-ff-up ()
           "Delete backward or go \"down\" [sic] one level when in
           folder root."
@@ -373,7 +378,7 @@
               (call-interactively 'helm-find-files-up-one-level)
             (delete-char -1)))))))
 
-;;; ** Keys
+;; ** Keybindings
 
 (progn
   (setq ns-command-modifier 'control
@@ -383,25 +388,39 @@
 (use-package sequential-command
   :ensure sequential-command
   :defer t
-  :defines sequential-lispy-indent
-  :commands sequential-lispy-indent
+  :defines sequential-indent
+  :commands sequential-indent
   :init
-  (add-hook
-   'prog-mode-hook
-   #'(lambda ()
-       (local-set-key (kbd "TAB") 'sequential-lispy-indent)))
+  (bind-key "TAB" 'sequential-indent prog-mode-map)
   :config
   (progn
-    (defun paredit-indent-command ()
+    (defun esk-sexp-indent ()
       (interactive)
-      (save-excursion
-        (paredit-indent-sexps)))
-    (define-sequential-command sequential-lispy-indent
+      (cond
+       ((bound-and-true-p paredit-mode) (paredit-indent-sexps))
+       ((bound-and-true-p smartparens-mode) (call-interactively 'sp-indent-defun))
+       (t (index-sexp))))
+    (define-sequential-command sequential-indent
       indent-for-tab-command
-      paredit-indent-command
+      esk-sexp-indent
       esk/cleanup)))
 
-;;; ** Files
+(use-package key-chord
+  :ensure key-chord
+  :idle (key-chord-mode 1)
+  :config
+  (progn
+    (key-chord-define-global "ii" 'helm-semantic-or-imenu)
+    (key-chord-define-global "hh" 'helm-projectile)
+    (key-chord-define-global "jj" 'ace-jump-word-mode)
+    (key-chord-define-global "jk" 'ace-jump-two-chars-mode)))
+
+;; (use-package mykie
+;;   :ensure mykie
+;;   ;; :idle (mykie:initialize)
+;;   )
+
+;; ** Files
 
 (use-package files
   :init
@@ -413,49 +432,73 @@
 (use-package autorevert
   :idle (global-auto-revert-mode 1))
 
-;;; * Ineractive commands
+(use-package auto-save-buffers-enhanced
+  :ensure auto-save-buffers-enhanced
+  :init (auto-save-buffers-enhanced 1)
+  :config
+  (progn
+    (setq auto-save-buffers-enhanced-quiet-save-p t
+          auto-save-buffers-enhanced-interval 1)))
+
+;; * Ineractive commands
 
 (use-package commands
   :demand t
   :bind (("C-w" . esk/backward-kill-word)
-         ("C-c \\" . esk/window-split-toggle))
+	 ("C-c \\" . esk/window-split-toggle))
   :commands esk/cleanup
   :load-path "./lib")
 
+(use-package free-keys :ensure free-keys)
 
-(use-package free-keys
-  :ensure free-keys
-  :defer t)
-
-;;; * Projects
+;; * Projects
 
 (use-package projectile
   :ensure projectile
-  :idle (projectile-global-mode 1)
+  :init (add-hook 'after-init-hook 'projectile-global-mode)
+  :diminish ""
   :config
   (progn
-    (setq projectile-completion-system 'helm-comp-read
+    (setq projectile-completion-system 'helm
           projectile-use-git-grep t
           projectile-remember-window-configs t
-          projectile-mode-line-lighter " P"
-          projectile-enable-caching nil)
+          projectile-switch-project-action 'projectile-find-file))
 
-    (add-to-list 'projectile-globally-ignored-files ".DS_Store")
-    (add-to-list 'projectile-globally-ignored-directories "elpa")
-    (add-to-list 'projectile-project-root-files-bottom-up "project.clj")
+  (add-to-list 'projectile-globally-ignored-files ".DS_Store")
+  (add-to-list 'projectile-globally-ignored-directories "elpa")
+  (add-to-list 'projectile-project-root-files-bottom-up "project.clj")
 
-    (defadvice projectile-replace
-        (before projectile-save-all-and-replace activate)
-      (save-some-buffers t))
+  (defadvice projectile-replace
+      (before projectile-save-all-and-replace activate)
+    (save-some-buffers t))
 
-    (use-package helm-projectile
-      :ensure helm-projectile
-      :defer t
-      :init
-      (after helm-misc
-        (bind-key "p" 'helm-projectile helm-command-map)))))
+  (use-package helm-projectile
+    :ensure helm-projectile
+    :config
+    (setq helm-projectile-sources-list
+          '(helm-source-projectile-recentf-list
+            helm-source-projectile-buffers-list
+            helm-source-projectile-files-list)))
 
-;;;; ** Version control
+  (use-package persp-projectile
+    :disabled t
+    :ensure persp-projectile))
+
+;; ** Version control
+
+(defun git-add-current-buffer ()
+  (interactive)
+  (progn
+    (save-buffer)
+    (let* ((buffile (buffer-file-name))
+           (output (shell-command-to-string
+                    (concat "git add " (buffer-file-name)))))
+      (message
+       (if (not (string= output ""))
+           output
+         (concat "Staged " buffile))))))
+
+(bind-key "C-c a" 'git-add-current-buffer)
 
 (use-package magit
   :ensure magit
@@ -463,7 +506,10 @@
   :config
   (progn
     (setq magit-emacsclient-executable "/usr/local/Cellar/emacs/HEAD/bin/emacsclient")
-    (setq magit-save-some-buffers 'dontask)
+    (setq magit-save-some-buffers 'dontask
+          magit-stage-all-confirm nil
+          magit-unstage-all-confirm nil
+          magit-set-upstream-on-push t)
 
     ;; Only one window when showing magit, then back!
     (defadvice magit-status (around magit-fullscreen activate)
@@ -479,7 +525,7 @@
 
 (use-package git-timemachine
   :ensure git-timemachine
-  :defer t)
+  :bind ("C-c t" . git-timemachine))
 
 (use-package ediff
   :defer t
@@ -505,14 +551,22 @@
             (when diff-hl-mode
               (diff-hl-update))))))))
 
-;; ;;; * Editing
+;; * Editing
 
 (progn
   (pending-delete-mode 1)
   (setq-default indent-tabs-mode nil))
 
+(use-package hilit-chg
+  :diminish (highlight-changes-mode ""))
+
+(use-package zop-to-char
+  :ensure zop-to-char
+  :bind ("M-z" . zop-to-char))
+
 (use-package goto-chg
   :ensure goto-chg
+  :diminish ""
   :defer t
   :init
   (progn
@@ -527,8 +581,6 @@
   :config
   (progn
     (setq
-     undo-tree-visualizer-timestamps nil
-     undo-tree-visualizer-diff nil
      undo-tree-auto-save-history t
      undo-tree-history-directory-alist `((".+" . ,(file-name-as-directory
                                                    (temp-file
@@ -548,37 +600,54 @@
   :bind (("C-+" . er/expand-region)
          ("C-=" . er/contract-region)))
 
+(use-package volatile-highlights
+  :ensure volatile-highlights
+  :diminish ""
+  :idle (volatile-highlights-mode 1))
 
-;; ;;; * Markdown
+;; * Prose
+
+(defvar prose-mode-map (make-sparse-keymap))
+
+(defvar prose-mode-line-spacing 6)
+
+(easy-mmode-define-minor-mode
+ prose-mode
+ "A mode for editing and reading prose."
+ nil
+ "Prose"
+ prose-mode-map
+
+ ;; Line spacing
+ (set (make-local-variable 'line-spacing)
+      (if prose-mode prose-mode-line-spacing line-spacing))
+
+ (variable-pitch-mode prose-mode)
+ (visual-line-mode prose-mode)
+
+ (set-preferred-font 0))
+
+(use-package adaptive-wrap
+  :ensure adaptive-wrap
+  :defer t
+  :init (add-hook 'prose-mode-hook 'adaptive-wrap-prefix-mode))
+
+;; ** Markdown
 
 (use-package markdown-mode
   :ensure markdown-mode
   :mode "\\.md\\'")
 
-;; ;;; * Org
+;; * Navigation
+;; ** Buffer
 
-(use-package org-capture
-  :bind ("C-c c" . org-capture)
-  :config
-  (progn
-    (setq org-reverse-note-order t
-          org-capture-templates
-          '(("d" "Dev dump"
-             entry (file "~/org/dev.org")
-             "* %?\n  %i\n %a"
-             :kill-buffer  t)
-            ("j" "Journal"
-             entry (file "~/org/journal.org")
-             "* %U\n %?i\n %a"
-             :kill-buffer t)))))
-
-;; ;;; * Navigation
-;; ;;; ** Buffer
+(define-key isearch-mode-map [remap isearch-delete-char] 'isearch-del-char)
 
 (use-package god-mode
+  :disabled t
   :ensure god-mode
   :init (add-hook 'prog-mode-hook 'god-local-mode)
-  :bind (("<escape>" . god-local-mode))
+  :bind ("<escape>" . god-local-mode)
   :config
   (progn
     (after eshell
@@ -600,17 +669,17 @@
     (defun god-update-cursor ()
       (setq cursor-type (if (god-enabled-p) 'box 'bar)))
 
+    (defun god-update-hl-line ()
+      (hl-line-mode (if (god-enabled-p) 1 -1)))
+
     (defun god-update-auto-indent ()
       (after auto-indent-mode
-        (auto-indent-mode (not (god-enabled-p)))))
+        (auto-indent-mode (if (god-enabled-p) -1 1))))
 
-    (defun god-update-hl-line ()
-      (hl-line-mode (god-enabled-p)))
-
-    (add-hook 'god-mode-enabled-hook 'god-update-auto-indent)
-    (add-hook 'god-mode-disabled-hook 'god-update-auto-indent)
     (add-hook 'god-mode-enabled-hook 'god-update-hl-line)
     (add-hook 'god-mode-disabled-hook 'god-update-hl-line)
+    (add-hook 'god-mode-enabled-hook 'god-update-auto-indent)
+    (add-hook 'god-mode-disabled-hook 'god-update-auto-indent)
     (add-hook 'god-mode-enabled-hook 'god-update-cursor)
     (add-hook 'god-mode-disabled-hook 'god-update-cursor)))
 
@@ -618,34 +687,45 @@
   :defer t
   :config
   (progn
-    (add-to-list 'imenu-generic-expression '("*" "^;;; \\(.+\\)$" 1) t)
     (setq imenu-auto-rescan t)))
 
 (use-package imenu-anywhere
   :ensure imenu-anywhere
   :defer t
-  :commands helm-imenu-anywhere
+  :commands helm-imenu
   :init
-  (after helm-mode
+  (after helm-command
     (bind-key "C-i" 'helm-imenu-anywhere helm-command-map)))
 
 (use-package simple
   :demand t
   :config
-  (progn
-    (setq mark-ring-max 32
-          global-mark-ring-max 32)
-    (after helm-command
-      (bind-key "SPC" 'helm-all-mark-rings helm-command-map))))
+  (setq mark-ring-max 64 global-mark-ring-max 64))
 
 (use-package ace-jump-mode
   :ensure ace-jump-mode
-  :bind (("C-x j" . ace-jump-mode)
-         ("C-c j" . ace-jump-char-mode)
-         ("C-c C-j" . ace-jump-mode-pop-mark))
+  :bind ("C-c C-SPC" . ace-jump-mode)
   :config
   (progn
-    (ace-jump-mode-enable-mark-sync)))
+    (ace-jump-mode-enable-mark-sync)
+    (defun ace-jump-two-chars-mode (query-char query-char-2)
+      "AceJump two chars mode"
+      (interactive (list (read-char "First Char:")
+                         (read-char "Second:")))
+
+      (if (eq (ace-jump-char-category query-char) 'other)
+          (error "[AceJump] Non-printable character"))
+      ;; others : digit , alpha, punc
+      (let ((ace-jump-query-char query-char)
+            (ace-jump-current-mode 'ace-jump-char-mode)
+            (target (regexp-quote (concat (char-to-string query-char)
+                                          (char-to-string query-char-2)))))
+        (ace-jump-do target)))))
+
+(use-package ace-isearch
+  :disabled t
+  :ensure ace-isearch
+  :idle (global-ace-isearch-mode 1))
 
 (use-package iedit
   :ensure iedit
@@ -661,7 +741,7 @@
     (add-hook 'prog-mode-hook 'highlight-symbol-nav-mode))
   :config
   (progn
-    (setq highlight-symbol-on-navigation-p t
+    (setq highlight-symbol-on-navigation-p nil
           highlight-symbol-idle-delay 1)
     (bind-key "C-%" 'highlight-symbol-query-replace highlight-symbol-nav-mode-map)))
 
@@ -672,8 +752,14 @@
   :config
   (progn
     (setq outline-minor-mode-prefix "\C-c \C-o")
+
     (bind-key "M-P" 'outline-previous-heading outline-minor-mode-map)
     (bind-key "M-N" 'outline-next-heading outline-minor-mode-map)))
+
+(use-package outshine
+  :disabled t
+  :ensure outshine
+  :init (add-hook 'outline-minor-mode-hook 'outshine-hook-function))
 
 (use-package saveplace
   :init
@@ -682,7 +768,12 @@
     (setq  save-place-file (temp-file "places"))))
 
 (use-package savehist
-  :idle (savehist-mode 1))
+  :idle (savehist-mode 1)
+  :config
+  (progn
+    (setq savehist-additional-variables
+          '(search-ring regexp-search-ring)
+          savehist-autosave-interval 60)))
 
 (use-package recentf
   :idle (recentf-mode 1)
@@ -691,23 +782,17 @@
     (setq recentf-max-saved-items 100
           recentf-max-menu-items 100)))
 
-;;; ** Windows & frames
+;; * Windows management
 
 (bind-key "s-h" 'bury-buffer)
 
-;; ;; Scroll buffers in-window
+;; Scroll buffers in-window
 (bind-key "s-b" 'previous-buffer)
 (bind-key "s-n" 'next-buffer)
 
-;; ;; navigate windows
- (bind-key "s-;" 'previous-multiframe-window)
- (bind-key "s-'" 'next-multiframe-window)
-
- (setq split-height-threshold 10)
-
 (use-package zygospore
   :ensure zygospore
-  :bind (("C-x 1" . zygospore-toggle-delete-other-windows)))
+  :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
 
 (use-package dedicated
   :ensure dedicated
@@ -715,48 +800,74 @@
 
 (use-package popwin
   :ensure popwin
-  :defer t
-  :commands (popwin-mode)
-  :init
-  (add-hook 'after-init-hook 'popwin-mode)
+  :idle (popwin-mode 1)
   :config
   (progn
+    (advice-add
+     'popwin:stick-popup-window
+     :before #'(lambda () (unless (popwin:popup-window-live-p)
+                       (call-interactively 'popwin:popup-last-buffer))))
     (bind-key "C-z" popwin:keymap)
-    (setq popwin:popup-window-height 20)
-    (push '("*cider-error*") popwin:special-display-config)
+    (bind-key "q" 'popwin:close-popup-window popwin:keymap)
+    (setq popwin:popup-window-height 0.2
+          popwin:adjust-other-windows t)
+    (push '("^\*cider-repl .+\*$" :regexp t :stick t) popwin:special-display-config)
+    (push '("*cider-error*" :stick nil) popwin:special-display-config)
     (push '("*grep*" :stick t) popwin:special-display-config)
-    (push '("^\*helm .+\*$" :height 60 :regexp t) popwin:special-display-config)
-    (push '("^\*helm-.+\*$" :height 60 :regexp t) popwin:special-display-config)))
+    (push '("^\*helm .+\*$" :regexp t) popwin:special-display-config)
+    (push '("^\*helm-.+\*$" :regexp t) popwin:special-display-config)))
+
+(use-package simple-screen
+  :ensure simple-screen
+  :init (bind-key "C-z" 'simple-screen-map))
 
 (use-package perspective
   :ensure perspective
-  :defer t
+  :disabled t
   :init (add-hook 'after-init-hook 'persp-mode)
   :config
   (progn
-    (setq persp-initial-frame-name "emacs")
-    (defun persp-next ()
-      (interactive)
-      (when (< (+ 1 (persp-curr-position)) (length (persp-all-names)))
-        (persp-switch (nth (1+ (persp-curr-position)) (persp-all-names)))))))
-
-(use-package windmove
-  :bind (("S-C-<left>"  . shrink-window-horizontally)
-         ("S-C-<right>" . enlarge-window-horizontally)
-         ("S-C-<down>"  . shrink-window)
-         ("S-C-<up>"    . enlarge-window))
-  :init (windmove-default-keybindings))
-
-(use-package buffer-move
-  :ensure buffer-move
-  :bind (("<M-S-down>" . buf-move-down)
-         ("<M-S-left>" . buf-move-left)
-         ("<M-S-up>" . buf-move-up)
-         ("<M-S-right>" . buf-move-right)))
+    (progn
+      (bind-key "z" 'persp-switch-quick simple-screen-map)
+      (bind-key "s" 'persp-switch simple-screen-map)
+      (bind-key "n" 'persp-next simple-screen-map)
+      (bind-key "p" 'persp-prev simple-screen-map)
+      (bind-key "r" 'persp-rename simple-screen-map)
+      (bind-key "c" 'persp-kill simple-screen-map)
+      (bind-key "k" 'persp-remove-buffer simple-screen-map)
+      (bind-key "a" 'persp-add-buffer simple-screen-map)
+      (bind-key "i" 'persp-import simple-screen-map))
+    (setq persp-initial-frame-name "emacs")))
 
 (use-package win-switch
   :ensure win-switch
-  :bind ("C-x o" . win-switch-mode))
+  :init (win-switch-setup-keys-ijkl "\C-xo"))
+
+;; Switch
+(use-package windmove
+  :bind (("<left>" . windmove-left)
+         ("<right>" . windmove-right)
+         ("<up>" . windmove-up)
+         ("<down>" . windmove-down))
+  :config (setq windmove-wrap-around nil))
+
+;; Resize
+(use-package commands
+  :bind (("S-<left>" . move-border-left)
+         ("S-<right>" . move-border-right)
+         ("S-<up>" . move-border-up)
+         ("S-<down>" . move-border-down)))
+
+;; Rearrange
+(use-package buffer-move
+  :ensure buffer-move
+  :bind (("M-<down>" . buf-move-down)
+         ("M-<left>" . buf-move-left)
+         ("M-<up>" . buf-move-up)
+         ("M-<right>" . buf-move-right)))
+
+;; Uno/redo
+(use-package winner :init (winner-mode 1))
 
 (progn
   (defadvice split-window (after move-point-to-new-window activate)
@@ -764,16 +875,27 @@
     (other-window 1)
     (next-buffer)))
 
-;;; * Search and replace
-;;; ** Buffer
-;;; ** Directory
+;; * Editing
 
-;;; * Programming
+(setq-default comment-auto-fill-only-comments t)
+
+;; * Search and replace
+;; ** Buffer
+;; ** Directory
+;; * Programming
 
 (use-package prog-mode
   :defer t
   :config
   (progn
+    (use-package semantic
+      :idle (semantic-mode 1))
+
+    (use-package evil-nerd-commenter
+      :ensure evil-nerd-commenter
+      :defer t
+      :init (bind-key "M-;" 'evilnc-comment-or-uncomment-lines prog-mode-map))
+
     (use-package eldoc
       :diminish ""
       :defer t
@@ -787,40 +909,68 @@
     (use-package rainbow-delimiters
       :ensure rainbow-delimiters
       :defer t
-      :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))))
+      :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
-;;; ** Syntax checking
+    (use-package hl-sexp
+      :ensure hl-sexp
+      :defer t
+
+      :init
+      (add-hook 'prog-mode-hook 'hl-sexp-mode))))
+
+;; ** Syntax checking
 
 (use-package flycheck
   :ensure flycheck
   :defer t
+  :diminish ""
   :init (add-hook 'prog-mode-hook 'flycheck-mode)
   :config
   (progn
     (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
-    (setq flycheck-mode-line-lighter " *")
+    (defvar flycheck-mode-line-lighter " *")
     (use-package flycheck-color-mode-line
       :ensure flycheck-color-mode-line
       :init (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))))
 
-;;; ** Indentation
+;; ** Indentation
+
+(use-package aggressive-indent
+  :ensure aggressive-indent
+  :diminish ""
+  :init (add-hook 'prog-mode-hook 'aggressive-indent-mode)
+  :config
+  (progn
+    (setq aggressive-indent-comments-too t)
+    (add-to-list 'aggressive-indent-modes-to-prefer-defun 'clojure-mode)))
 
 (use-package auto-indent-mode
   :ensure auto-indent-mode
+  :disabled t
   :defer t
-  :diminish ""
-  :init (add-hook 'prog-mode-hook 'auto-indent-mode t)
+  :diminish (auto-indent-mode "")
+  :init
+  (progn
+    (defun esk-auto-indent-mode ()
+      (interactive)
+      (when (not buffer-read-only)
+        (auto-indent-mode 1)))
+    (add-hook 'prog-mode-hook 'esk-auto-indent-mode))
   :config
   (progn
-    (setq auto-indent-current-pairs t
-          kill-whole-line t)
+    (setq auto-indent-next-pair t
+          auto-indent-backward-delete-char-behavior 'all
+          auto-indent-indent-style 'moderate
+          auto-indent-blank-lines-on-move nil
+          auto-indent-kill-line-at-eol nil)))
 
-    (add-hook 'auto-indent-mode-hook
-              #'(lambda ()
-                  (when (bound-and-true-p electric-indent-mode)
-                    (electric-indent-mode -1))))))
+;; ** Structured editing
 
-;;; ** Structured editing
+(use-package poporg
+  :ensure poporg
+  :init (bind-key "C-c e" 'poporg-dwim prog-mode-map)
+  :config
+  (bind-key "C-c C-c" 'poporg-dwim poporg-mode-map))
 
 (use-package paren
   :defer t
@@ -831,13 +981,62 @@
     (add-hook 'deactivate-mark-hook #'(lambda () (show-paren-mode 1)))
     (setq show-paren-delay 0.02)))
 
+(use-package smartparens-config
+  :ensure smartparens
+  :disabled t
+  :init
+  (progn
+    (smartparens-global-strict-mode 1)
+    (show-smartparens-mode 1))
+  :config
+  (progn
+    (setq sp-autoskip-closing-pair 'always
+          sp-hybrid-kill-entire-symbol nil)
+    (setq sp-show-pair-overlays nil)
+
+    ;; Reindent sexp on newline
+    (advice-add
+     'sp-newline :after #'(lambda () (call-interactively 'sp-indent-defun)))
+    ;; More paredit-like movements:
+    (bind-key "RET" 'sp-newline)
+    (bind-key ")" 'sp-up-sexp smartparens-mode-map)
+    (bind-key "]" 'sp-up-sexp smartparens-mode-map)
+    (bind-key "}" 'sp-up-sexp smartparens-mode-map)
+    (bind-key "C-M-f" 'sp-forward-sexp smartparens-mode-map)
+    (bind-key "C-M-b" 'sp-backward-sexp smartparens-mode-map)
+    (bind-key "C-M-u" 'sp-backward-up-sexp smartparens-mode-map)
+    (bind-key "C-M-d" 'sp-down-sexp smartparens-strict-mode-map)
+    (bind-key "C-M-p" 'sp-backward-down-sexp smartparens-mode-map)
+    (bind-key "C-M-n" 'sp-up-sexp smartparens-mode-map)
+    (bind-key "C-M-k" 'sp-kill-sexp smartparens-mode-map)
+    (bind-key "C-M-w" 'sp-copy-sexp smartparens-mode-map)
+    (bind-key "M-s" 'sp-splice-sexp smartparens-mode-map)
+    (bind-key "M-<up>" 'sp-splice-sexp-killing-backward smartparens-mode-map)
+    (bind-key "M-<down>" 'sp-splice-sexp-killing-forward smartparens-mode-map)
+    (bind-key "M-r" 'sp-splice-sexp-killing-around smartparens-mode-map)
+    (bind-key "M-?" 'sp-convolute-sexp smartparens-mode-map)
+    (bind-key "C-)" 'sp-forward-slurp-sexp smartparens-mode-map)
+    (bind-key "C-<right>" 'sp-forward-slurp-sexp smartparens-mode-map)
+    (bind-key "C-}" 'sp-forward-barf-sexp smartparens-mode-map)
+    (bind-key "C-<left>" 'sp-forward-barf-sexp smartparens-mode-map)
+    (bind-key "C-(" 'sp-backward-slurp-sexp smartparens-mode-map)
+    (bind-key "C-M-<left>" 'sp-backward-slurp-sexp smartparens-mode-map)
+    (bind-key "C-{" 'sp-backward-barf-sexp smartparens-mode-map)
+    (bind-key "C-M-<right>" 'sp-backward-barf-sexp smartparens-mode-map)
+    (bind-key "M-S" 'sp-split-sexp smartparens-mode-map)
+    (bind-key "M-J" 'sp-join-sexp smartparens-mode-map)
+    (bind-key "C-M-t" 'sp-transpose-sexp smartparens-mode-map)
+    ;; extra strict bindings
+    (bind-key "M-q" 'sp-indent-defun smartparens-strict-mode-map)
+    (bind-key "C-j" 'sp-newline smartparens-strict-mode-map)))
+
 (use-package paredit
   :ensure paredit
   :defer t
   :diminish ""
-  :init (add-hook 'prog-mode-hook 'paredit-mode)
   :config
   (progn
+    (add-hook 'lisps-mode-hook 'paredit-mode)
     (defun paredit-wrap-round-from-behind ()
       (interactive)
       (forward-sexp -1)
@@ -855,23 +1054,6 @@
       (forward-sexp -1)
       (paredit-wrap-curly))
 
-    ;; From emacs-live
-    (defun esk-paredit-forward ()
-      (interactive)
-      (if (and (not (paredit-in-string-p))
-               (save-excursion
-                 (ignore-errors
-                   (forward-sexp)
-                   (forward-sexp)
-                   t)))
-          (progn
-            (forward-sexp)
-            (forward-sexp)
-            (backward-sexp))
-        (paredit-forward)))
-
-    (bind-key "C-M-f" 'esk-paredit-forward paredit-mode-map)
-
     (bind-key "M-(" 'paredit-wrap-round paredit-mode-map)
     (bind-key "M-)" 'paredit-wrap-round-from-behind paredit-mode-map)
     (bind-key "M-[" 'paredit-wrap-square paredit-mode-map)
@@ -882,9 +1064,26 @@
     (defun minibuffer-paredit-mode-maybe ()
       (if (eq this-command 'eval-expression)
           (paredit-mode 1)))
+
     (add-hook 'minibuffer-setup-hook 'minibuffer-paredit-mode-maybe)))
 
-;;; ** completion
+;; ** Completion
+
+(use-package abbrev :diminish "")
+
+(use-package hippie-exp
+  :config
+  (setq hippie-expand-try-functions-list
+        '(try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill
+          try-complete-file-name-partially
+          try-complete-file-name
+          try-expand-all-abbrevs
+          try-expand-list
+          try-expand-line
+          try-complete-lisp-symbol-partially
+          try-complete-lisp-symbol)))
 
 (use-package company
   :ensure company
@@ -893,103 +1092,137 @@
   :init (add-hook 'prog-mode-hook 'company-mode)
   :config
   (progn
-    (setq-default company-backends
-                  '((company-dabbrev-code company-capf company-keywords)
-                    company-files
-                    company-dabbrev))
-
-    (setq company-require-match t
-          company-auto-complete t
-          company-idle-delay 0
-          company-tooltip-limit 10
-          company-minimum-prefix-length 2)
-    (bind-key "<tab>" 'company-complete-selection company-active-map)))
+    (bind-key "<tab>" 'company-complete-selection company-active-map)
+    (setq company-idle-delay 0.3
+          company-minimum-prefix-length 2
+          company-require-match nil
+          ;;company-begin-commands '(self-insert-command)
+          company-show-numbers t
+          company-backends '(company-capf
+                             (company-dabbrev company-dabbrev-code company-keywords)
+                             company-yasnippet))))
 
 (use-package yasnippet
   :ensure yasnippet
-  :disabled t
-  :init
-  (progn
-    (add-hook
-     'prog-mode-hook
-     (lambda ()
-       (set (make-local-variable 'company-backends)
-            '((company-dabbrev-code company-yasnippet)))))
-    (add-to-list 'company-backends 'company-yasnippet t))
+  :init (add-hook 'prog-mode-hook 'yas-minor-mode)
+  :diminish ""
   :config
   (progn
     (add-to-list 'yas-snippet-dirs (user-file "snippets"))
+    (setq yas-indent-line 'auto
+          yas-wrap-around-region t)
     (yas-reload-all)))
 
-;;; ** Whitespace
+;; ** Whitespace
 
 (use-package ws-butler
   :ensure ws-butler
   :defer t
+  :diminish (ws-butler-mode "")
   :init
   (progn
     (add-hook 'prog-mode-hook 'ws-butler-mode)
-    (add-hook 'prog-mode-hook
-              #'(lambda ()
-                  (setq show-trailing-whitespace t)))))
+    (add-hook 'prog-mode-hook #'(lambda () (setq show-trailing-whitespace t)))))
 
-;;; ** Clojure
+;; * Languages
+;; ** Lisps
+
+(defun lisps-pretty ()
+  (progn
+    (push '("<=" . ?≤) prettify-symbols-alist)
+    (push '(">=" . ?≥) prettify-symbols-alist)
+    (push '("lambda" . ?λ) prettify-symbols-alist)
+    (push '("fn" . ?ƒ) prettify-symbols-alist)
+    (turn-on-prettify-symbols-mode)))
+
+(defun lisps-imenu-include-comments ()
+  (add-to-list 'imenu-generic-expression
+               '("*" "^;; \\(.+\\)$" 1) t))
+
+(defun lisps-insert-header-comment ()
+  (interactive)
+  (forward-line -1)
+  (newline)
+  (insert-char ?\; 72)
+  (newline)
+  (insert-char ?\; 2)
+  (newline)
+  (forward-line -1)
+  (end-of-line)
+  (insert " "))
+
+(defvar lisps-mode-map
+  (make-keymap))
+
+(easy-mmode-define-minor-mode
+ lisps-mode
+ "Minor mode for lisp-family languages"
+ :keymap lisps-mode-map
+ (progn
+   (after key-chord
+     (key-chord-define lisps-mode-map "//" 'lisps-insert-header-comment))
+   (lisps-pretty)
+   (lisps-imenu-include-comments)
+   (eldoc-mode 1)
+   (subword-mode 1)))
+
+(defun lisps-mode-turn-on ()
+  (lisps-mode 1))
+
+
+;; ** Clojure
 
 (use-package clojure-mode
   :ensure clojure-mode
   :defer t
   :config
   (progn
-    (progn
-      (add-hook 'clojure-mode-hook 'subword-mode)
-      (put-clojure-indent 'defmulti 'defun)
-      (put-clojure-indent 'defmethod 'defun)
-      (put-clojure-indent 'defroutes 'defun))
+    (put-clojure-indent 'defmulti 'defun)
+    (put-clojure-indent 'defmethod 'defun)
+    (put-clojure-indent 'defroutes 'defun)
+
+    (add-hook 'clojure-mode-hook 'lisps-mode-turn-on)
+
+    (use-package clojure-mode-extra-font-locking
+      :ensure clojure-mode-extra-font-locking)
+
+    (use-package nrepl-eval-sexp-fu
+      :ensure nrepl-eval-sexp-fu
+      :init (add-hook 'clojure-mode-hook 'nrepl-eval-sexp-fu-flash-mode))
 
     (use-package cider
       :ensure cider
-      :defer t
       :config
       (progn
         (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
         (add-hook 'cider-repl-mode-hook 'cider-turn-on-eldoc-mode)
-        (add-hook 'cider-repl-mode-hook 'paredit-mode)
         (bind-key "C-c C-t" 'cider-test-jump clojure-mode-map)
-
         (setq cider-prompt-save-file-on-load nil
+              cider-show-error-buffer t
+              cider-auto-select-error-buffer nil
+              cider-auto-jump-to-error nil
               nrepl-hide-special-buffers nil
-              cider-repl-print-length 400
-              cider-repl-pop-to-buffer-on-connect nil
-              cider-repl-history-file "~/.emacs.d/nrepl-history"
-              ;;cider-repl-use-clojure-font-lock t
-              ;;cider-repl-use-pretty-printing t
-              )
+              cider-repl-history-file "~/.emacs.d/nrepl-history")
 
         (use-package cider-repl
           :defer t
-          :config (add-hook 'cider-repl-mode-hook 'company-mode))
-
-        (use-package pulse
-          :init
+          :config
           (progn
-            (defadvice cider-eval-last-sexp (after cider-flash-last activate)
-              (pulse-momentary-highlight-region (save-excursion (backward-sexp) (point)) (point)))
-            (defadvice cider-eval-defun-at-point (after cider-flash-at activate)
-              (apply #'pulse-momentary-highlight-region (cider--region-for-defun-at-point)))))))
+            (add-hook 'cider-repl-mode-hook 'company-mode)
+            (add-hook 'cider-repl-mode-hook 'lisps-mode-turn-on)
+            (setq cider-repl-pop-to-buffer-on-connect nil)))))
 
     (use-package clj-refactor
       :ensure clj-refactor
       :defer t
+      :diminish ""
       :init (add-hook 'clojure-mode-hook 'clj-refactor-mode)
       :config
       (progn
         (cljr-add-keybindings-with-prefix "C-c C-m")
-        (after cider
-          (bind-key "C->" 'cljr-thread cider-mode-map)
-          (bind-key "C-<" 'cljr-unwind cider-mode-map))
-        (after cider-repl
-          (bind-key "C->" 'cljr-thread-last-all cider-repl-mode-map)
-          (bind-key "C-<" 'cljr-thread-first-all cider-repl-mode-map))))
+        (after clojure
+          (bind-key "C-M->" 'cljr-thread clojure-mode-map)
+          (bind-key "C-M-<" 'cljr-unwind clojure-mode-map))))
 
     (use-package slamhound
       :ensure slamhound
@@ -1010,17 +1243,11 @@
                                      (3 font-lock-function-name-face)))))
         (add-hook 'clojure-mode-hook 'typed-clojure-font-lock)))
 
-    (use-package clojure-cheatsheet
-      :ensure clojure-cheatsheet
-      :defer t
-      :init
-      (after helm
-        (bind-key "C-c C-c" 'clojure-cheatsheet helm-command-map)))
-
     ;; Linting
     (use-package kibit-mode
       :ensure kibit-mode
       :defer t
+      :defines (clojure-kibit)
       :commands (clojure-kibit)
       :pre-load
       (progn
@@ -1061,31 +1288,25 @@
     ;;   (add-to-list 'flycheck-checkers 'eastwood))
     ))
 
-;;; ** Elisp
-
-(defvar elisp-hooks '(emacs-lisp-mode-hook ielm-mode-hook))
+;; ** Elisp
 
 (use-package lisp-mode
-  :defer t
   :config
   (progn
     (bind-key "C-c C-k" 'eval-buffer emacs-lisp-mode-map)
-
-    (dolist (h elisp-hooks)
-      (add-hook h 'subword-mode))
+    (add-hook 'emacs-lisp-mode-hook 'lisps-mode-turn-on)
+    (add-hook 'ielm-mode-hook 'lisps-mode-turn-on)
 
     (use-package elisp-slime-nav
       :ensure elisp-slime-nav
       :defer t
       :diminish ""
-      :config
-      (dolist (hook elisp-hooks)
-        (add-hook hook 'turn-on-elisp-slime-nav-mode)))))
+      :init
+      (add-hook 'emacs-lisp-mode-hook 'turn-on-elisp-slime-nav-mode))))
 
-;;; * Eshell
+;; * Eshell
 
 (use-package eshell
-  :defer t
   :config
   (progn
     ;; Scrolling
@@ -1109,6 +1330,10 @@
         (add-hook 'eshell-mode-hook
                   #'(lambda ()
                       (bind-key "C-l" 'eshell/clear eshell-mode-map)))))
+    (use-package eshell-opt
+      :config
+      (use-package eshell-prompt-extras
+        :ensure eshell-prompt-extras))
 
     (use-package em-term
       :defer t
@@ -1121,19 +1346,48 @@
       :config
       (setq eshell-hist-ignoredups t))))
 
-(use-package multi-eshell
-  :ensure multi-eshell
-  :bind (("C-c s e" . multi-eshell)
-         ("C-c s n" . multi-eshell-go-back))
-  :config
-  (setq multi-eshell-shell-function '(eshell)))
-
-;;; * Org Mode
+;; * Org Mode
 
 (use-package org
   :defer t
+  :diminish (orgstruct-mode "")
   :config
   (progn
+    (setq org-catch-invisible-edits 'smart)
+    (setq org-structure-template-alist
+          '(("s" "#+begin_src ?\n\n#+end_src" "<src lang=\"?\">\n\n</src>")
+            ("e" "#+begin_example\n?\n#+end_example" "<example>\n?\n</example>")
+            ("q" "#+begin_quote\n?\n#+end_quote" "<quote>\n?\n</quote>")
+            ("v" "#+begin_verse\n?\n#+end_verse" "<verse>\n?\n</verse>")
+            ("v" "#+begin_verbatim\n?\n#+end_verbatim" "<verbatim>\n?\n</verbatim>")
+            ("c" "#+begin_center\n?\n#+end_center" "<center>\n?\n</center>")
+            ("l" "#+begin_latex\n?\n#+end_latex"
+             "<literal style=\"latex\">\n?\n</literal>")
+            ("l" "#+latex: " "<literal style=\"latex\">?</literal>")
+            ("h" "#+begin_html\n?\n#+end_html"
+             "<literal style=\"html\">\n?\n</literal>")
+            ("h" "#+html: " "<literal style=\"html\">?</literal>")
+            ("a" "#+begin_ascii\n?\n#+end_ascii" "")
+            ("a" "#+ascii: " "")
+            ("i" "#+index: ?" "#+index: ?")
+            ("i" "#+include: %file ?"
+             "<include file=%file markup=\"?\">")))
+    (add-hook 'prog-mode-hook 'turn-on-orgstruct++)
+
+    (defun orgstruct-lisps-turn-on ()
+      (setq orgstruct-heading-prefix-regexp ";; *"))
+
+    (add-hook 'lisps-mode-hook 'orgstruct-lisps-turn-on)
+
+    (use-package org-capture
+      :bind ("C-c c" . org-capture)
+      :config
+      (progn
+        (setq org-reverse-note-order t
+              org-capture-templates
+              '(("d" "Dev dump" entry (file "~/org/dev.org") "* %?\n  %i\n %a" :kill-buffer  t)
+                ("j" "Journal" entry (file "~/org/journal.org") "* %U\n %?i\n %a" :kill-buffer t)))))
+
     (use-package org-clock
       :config
       (setq org-clock-idle-time 15
@@ -1160,7 +1414,8 @@
 
 (use-package hardhat
   :ensure hardhat
-  :idle (global-hardhat-mode 1))
+  :idle (global-hardhat-mode 1)
+  :config (setq hardhat-mode-lighter nil))
 
 (provide 'init)
-;; ;;; init.el ends here
+;; init.el ends here
