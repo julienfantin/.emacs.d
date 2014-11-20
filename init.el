@@ -554,8 +554,7 @@
 ;; * Editing
 
 (progn
-  (pending-delete-mode 1)
-  (setq-default indent-tabs-mode nil))
+  (bind-key "M-j" #'(lambda () (interactive) (join-line -1))) (pending-delete-mode 1) (setq-default indent-tabs-mode nil))
 
 (use-package hilit-chg
   :diminish (highlight-changes-mode ""))
@@ -888,8 +887,6 @@
   :defer t
   :config
   (progn
-    (use-package semantic
-      :idle (semantic-mode 1))
 
     (use-package evil-nerd-commenter
       :ensure evil-nerd-commenter
