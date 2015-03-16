@@ -46,15 +46,17 @@
 (setq fui-bg fui-clouds)
 (setq fui-fg fui-asphalt)
 
+(setq mode-line-box-width 3)
+
 (custom-theme-set-faces
  'fiatui
  `(default ((t (:background ,fui-bg :foreground ,fui-fg))))
  `(cursor ((t (:background ,fui-amethyst :foreground ,fui-fg))))
  `(region ((t (:background ,fui-river :foreground ,fui-bg))))
 
- `(mode-line ((t (:background ,fui-river :foreground ,fui-bg :box nil))))
+ `(mode-line ((t (:background ,fui-river :foreground ,fui-bg :box (:line-width ,mode-line-box-width :color ,fui-river)))))
  `(mode-line-buffer-id ((t (:foreground ,fui-clouds))))
- `(mode-line-inactive ((t (:background ,fui-concrete :foreground ,fui-bg))))
+ `(mode-line-inactive ((t (:background ,fui-concrete :foreground ,fui-bg :box (:line-width ,mode-line-box-width :color ,fui-concrete)))))
 
  `(persp-selected-face ((t (:foreground ,fui-dark-sunflower))))
 
@@ -70,7 +72,7 @@
  `(font-lock-comment-face ((t (:foreground ,fui-dark-concrete))))
  `(font-lock-constant-face ((t (:foreground ,fui-river))))
  `(font-lock-function-name-face ((t (:foreground ,fui-dark-amethyst :weight normal))))
- `(font-lock-keyword-face ((t (:foreground ,fui-asphalt :weight bold))))
+ `(font-lock-keyword-face ((t (:foreground ,fui-asphalt :weight normal))))
  `(font-lock-string-face ((t (:foreground ,fui-amethyst))))
  `(font-lock-variable-name-face ((t (:foreground ,fui-dark-asphalt))))
  `(font-lock-warning-face ((t (:foreground ,fui-dark-carrot))))
@@ -89,6 +91,12 @@
  ;; Whitespace
  `(whitespace-trailing ((t (:background ,fui-dark-clouds))))
  `(whitespace-line ((t (:background ,fui-dark-concrete :foreground ,fui-bg))))
+
+ ;; Eshell
+ `(eshell-prompt ((t (:foreground ,fui-river :weight bold))))
+ `(eshell-ls-directory ((t (:inherit dired-directory))))
+ `(eshell-prompt ((t (:foreground ,fui-river :weight bold))))
+ `(eshell-ls-directory ((t (:inherit dired-directory))))
 
  ;; ERC
  `(erc-notice-face ((t (:foreground ,fui-dark-river :weight unspecified))))
@@ -121,7 +129,6 @@
  `(rainbow-blocks-depth-6-face ((t (:foreground ,fui-turquoise))))
  `(rainbow-blocks-depth-7-face ((t (:foreground ,fui-dark-amethyst))))
  `(rainbow-blocks-unmatched-face ((t (:foreground ,fui-alizarin))))
- `(persp-selected-face ((t (:foreground ,fui-dark-river))))
 
  ;; Magit
  `(magit-branch ((t (:foreground ,fui-river :background ,fui-bg))))
@@ -139,13 +146,16 @@
  `(company-scrollbar-fg ((t (:background ,fui-river))))
  `(company-scrollbar-bg ((t (:background ,fui-bg))))
 
+ ;; Pos-tip
+ `(pos-tip-foreground-color ((t (:foreground ,fui-river :background ,fui-river))))
+
  ;; Magit
  `(magit-diff-add ((t (:background ,fui-bg :foreground ,fui-emerald))))
  `(magit-diff-del ((t (:background ,fui-bg :foreground ,fui-alizarin))))
 
  ;; Helm
  `(helm-header ((t (:background ,fui-bg))))
- `(helm-source-header ((t (:background ,fui-white :foreground ,fui-fg))))
+ `(helm-source-header ((t (:background ,fui-white :foreground ,fui-fg :box (:line-width 5 :color ,fui-white)))))
  `(helm-selection ((t (:foreground ,fui-bg :background ,fui-river))))
  `(helm-ff-directory ((t (:foreground ,fui-river :background ,fui-bg))))
  `(helm-ff-file ((t (:foreground ,fui-dark-asphalt :background ,fui-bg))))
@@ -158,58 +168,6 @@
  `(powerline-active1 ((t (:foreground ,fui-bg :background ,fui-emerald))))
  `(powerline-inactive2 ((t (:foreground ,fui-bg :background ,fui-concrete))))
  `(powerline-inactive1 ((t (:foreground ,fui-fg :background ,fui-dark-clouds)))))
-
-;; Moinmoin mode
-(defun dv-moinmoin-set-face ()
-  (set-face-attribute
-   'moinmoin-wiki-link nil
-   :foreground (dv-color dv-link-fg)
-   :weight 'normal)
-  (set-face-attribute
-   'moinmoin-url nil
-   :foreground (dv-color dv-link-fg)
-   :height 1)
-  (set-face-attribute
-   'moinmoin-url-title nil
-   :foreground (dv-color dv-link-fg))
-  (set-face-attribute
-   'moinmoin-h4 nil
-   :foreground (dv-color dv-region-bg))
-  (set-face-attribute
-   'moinmoin-item nil
-   :foreground (dv-color dv-builtin-fg)
-   :weight 'normal)
-  (set-face-attribute
-   'moinmoin-tt nil
-   :foreground (dv-color dv-string-fg))
-  (set-face-attribute
-   'moinmoin-code-braces nil
-   :foreground (dv-color dv-default-fg))
-  (set-face-attribute
-   'moinmoin-code nil
-   :foreground (dv-color dv-string-fg))
-  (set-face-attribute
-   'moinmoin-rule nil
-   :foreground (dv-color dv-builtin-fg)
-   :weight 'normal)
-  (set-face-attribute
-   'moinmoin-blockquote-text nil
-   :foreground (dv-color dv-default-fg))
-  (set-face-attribute
-   'moinmoin-blockquote-indent nil
-   :background (dv-color dv-default-bg)))
-
-;; CUA
-(defun dv-cua-set-face ()
-  (set-face-attribute
-   'cua-rectangle nil
-   :foreground (dv-color dv-region-fg)
-   :background (dv-color dv-region-bg)))
-(if cua-mode
-    (dv-cua-set-face)
-  (add-hook 'cua-mode-hook 'dv-cua-set-face))
-
-;; (setq powerline-color2 (dv-color dv-default-bg)))
 
 (provide-theme 'fiatui)
 

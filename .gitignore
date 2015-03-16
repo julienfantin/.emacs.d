@@ -19,3 +19,6 @@
 /helm-adaptive-history
 /places
 /projectile.cache
+/.mc-lists.el
+/company-statistics-cache.el
+/eshell/z

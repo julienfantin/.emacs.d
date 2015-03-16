@@ -15,7 +15,7 @@
 (let ((fd-blue "#49B6FC"))
   (custom-theme-set-faces
    'fiatui-dark
-   '(default ((t (:inherit nil :stipple nil :background "#292929" :foreground "#ddd" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :width normal))))
+   '(default ((t (:inherit nil :stipple nil :background "#292929" :foreground "#eee" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :width normal))))
    '(cursor ((t (:background "#ddd" :foreground "#ddd" :underline nil :weight bold))))
    `(info ((t (:foreground "#292929" :background ,fd-blue))))
    '(error ((t (:foreground "#c0392b" :background "#292929" :weight bold))))
@@ -40,7 +40,7 @@
    '(font-lock-builtin-face ((t (:weight normal :underline nil :foreground "#ddd"))))
    '(font-lock-comment-delimiter-face ((t (:weight normal :underline nil :foreground "#555" :inherit font-lock-comment-face))))
    '(font-lock-comment-face ((t (:foreground "#757575" :background "#292929":underline nil :weight normal))))
-   '(font-lock-constant-face ((t (:foreground "#BBB" :underline nil :weight normal))))
+   `(font-lock-constant-face ((t (:foreground "#fff" :underline nil :weight normal))))
    '(font-lock-doc-face ((t (:weight normal :underline nil :858585 "#" :background "#292929" :inherit (font-lock-string-face)))))
    `(font-lock-function-name-face ((t (:foreground ,fd-blue :underline nil :weight normal))))
    `(font-lock-keyword-face ((t (:foreground "#757575" :underline nil :weight bold))))
@@ -50,7 +50,7 @@
    '(font-lock-regexp-grouping-construct ((t (:weight normal :underline nil :inherit (bold)))))
    '(font-lock-string-face ((t (:foreground "#a5a5a5" :background "#2e2e2e" :underline nil :weight normal))))
    '(font-lock-type-face ((t (:foreground "#c0c0c0" :underline nil :weight normal))))
-   '(font-lock-variable-name-face ((t (:foreground "#dfdfdf" :underline nil :weight normal))))
+   '(font-lock-variable-name-face ((t (:foreground "#fff" :underline nil :weight normal))))
    '(font-lock-warning-face ((t (:weight normal :underline nil :foreground "#c0c0c0" :inherit (error)))))
 
    '(sp-pair-overlay-face ((t (:background "#292929"))))
@@ -61,15 +61,21 @@
    '(fringe ((t (:background "#262626" :foreground "#292929" :underline nil :weight normal))))
    '(header-line ((t (:weight normal :underline nil :inherit (mode-line)))))
    '(tooltip ((t (:weight normal :underline nil :foreground "#ddd" :background "#292929" :inherit (variable-pitch)))))
-   `(persp-selected-face ((t (:foreground ,fd-blue))))
-   '(mode-line ((t (:weight normal :underline nil :box nil :foreground "#ddd" :background "#393939"))))
-   '(mode-line-buffer-id ((t (:weight normal :underline nil :foreground "#ddd"))))
+   `(persp-selected-face ((t (:inherit nil :foreground "#292929" ))))
+
+   `(mode-line ((t (:weight normal :underline nil :box (:line-width 3 :color ,fd-blue) :foreground "#fff" :background ,fd-blue))))
+   '(mode-line-buffer-id ((t (:weight normal :foreground "#fff"))))
    '(mode-line-emphasis ((t (:weight normal :underline nil))))
    '(mode-line-highlight ((t (:weight normal :underline nil :box nil))))
-   '(mode-line-inactive ((t (:weight normal :underline nil :box nil :foreground "#757575" :background  "#232323" :inherit (mode-line)))))
+   '(mode-line-inactive ((t (:weight normal :underline nil :box (:line-width 3 :color "#555") :foreground "#dfdfdf" :background  "#555" :inherit (mode-line)))))
    '(isearch ((t (:weight normal :underline nil :foreground "#ddd" :background "#2980b9"))))
    '(isearch-fail ((t (:weight normal :underline nil :foreground "#ddd" :background "#858585"))))
    '(lazy-highlight ((t (:weight normal :underline nil :foreground "#2980b9" :background "#2f2f2f"))))
+
+   `(powerline-active1 ((t (:background ,fd-blue))))
+   `(powerline-active2 ((t (:background ,fd-blue))))
+   `(powerline-inactive1 ((t (:background "#dfdfdf"))))
+   `(powerline-inactive2 ((t (:background "#555"))))
 
    '(grep-context-face ((t (:foreground "#cccccc"))))
    '(grep-error-face ((t (:foreground "#dfdfdf" :underline t))))
@@ -79,6 +85,9 @@
 
    '(next-error ((t (:weight normal :underline nil :inherit (region)))))
    '(query-replace ((t (:weight normal :underline nil :inherit (isearch)))))
+
+   `(eshell-prompt ((t (:inherit font-lock-function-name-face))))
+   `(eshell-ls-directory ((t (:inherit dired-directory))))
 
    '(ido-first-match ((t (:foreground "#dfdfdf" :weight bold))))
    '(ido-only-match ((t (:foreground "#dfdfdf" :weight bold))))
@@ -176,8 +185,8 @@
    '(w3m-lnum-minibuffer-prompt ((t (:foreground "#ddd"))))
 
    `(helm-header ((t (:background "#292929" :foreground "#757575"))))
-   `(helm-source-header ((t (:background "#292929" :foreground "#ddd"))))
-   `(helm-selection ((t (:background ,"#393939"))))
+   `(helm-source-header ((t (:background "#292929" :foreground "#ddd"  :box (:line-width 5 :color "#292929")))))
+   `(helm-selection ((t (:background "#393939"  :box nil))))
    `(helm-ff-directory ((t (:foreground ,fd-blue :background "#292929"))))
    `(helm-ff-file ((t (:foreground "#ddd" :background "#292929"))))
    `(helm-buffer-size ((t (:foreground "#757575"))))
