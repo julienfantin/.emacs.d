@@ -134,18 +134,6 @@
   (next-multiframe-window)
   (other-window -1))
 
-(use-package window-purpose
-  :disabled t
-  :ensure t
-  :defer t
-  :init  (after-init (turn-on #'purpose-mode))
-  :config
-  (progn
-    (use-package window-purpose-x
-      :init (purpose-x-popwin-setup)
-      :config
-      (comment purpose-x-popwin-buffer-name-regexps))))
-
 ;;; ** Perspectives
 
 (use-package simple-screen
@@ -231,14 +219,13 @@
 
 (use-package linum
   :init (add-hook 'prog-mode-hook (turn-on 'linum-mode))
+  :defines esk-linum-current-timer
+  :preface (defvar-local esk-linum-current-timer nil)
   :config
   (progn
-    (setq linum-delay t
-	  linum-format " %4d ")
-
+    (setq linum-delay t)
+    (setq linum-format " %4d ")
     ;; create a new var to keep track of the current update timer.
-    (defvar-local esk-linum-current-timer nil)
-
     ;; rewrite linum-schedule so it waits for 1 second of idle time
     ;; before updating, and so it only keeps one active idle timer going
     (defun linum-schedule ()
@@ -374,26 +361,41 @@
   :defer t
   :config (setq helm-ls-git-show-abs-or-relative 'relative))
 
-(comment
- ;; Helm Dash, install docsets:
- (dolist (docset '("Clojure" "OpenCV_Java" "CSS" "HTML" "Javascript" "Bash" "PostgreSQL"))
-   (helm-dash-install-docset docset)))
-
 (use-package helm-dash
   :ensure t
   :defer t
-  :defines helm-dash-docsets
-  :commands helm-dash-at-point
-  :preface
+  :defines (esk-dash-docsets
+	    esk-helm-dash-install
+	    helm-dash-docsets
+	    helm-dash-pg
+	    helm-dash-clojure
+	    helm-dash-web)
+  :commands (helm-dash-at-point esk-helm-dash-install)
+  :init
   (progn
-    (defun helm-dash-pg () (setq-local helm-dash-docsets '("PostgreSQL")))
+    (defvar esk-dash-docsets
+      '("Clojure" "OpenCV_Java" "OpenCV_C" "OCaml" "CSS" "HTML" "Bash" "PostgreSQL"))
+    (defun esk-helm-dash-install (docset-name)
+      (unless (member docset-name (helm-dash-installed-docsets))
+	(helm-dash-install-docset docset-name)))
+    (defun esk-dash-limit (docsets-names)
+      (set (make-local-variable 'helm-dash-docsets) docsets-names))
+    (defun helm-dash-bash () (esk-dash-limit '("Bash")))
+    (defun helm-dash-pg () (esk-dash-limit '("PostgreSQL")))
+    (defun helm-dash-web () (esk-dash-limit '("CSS" "HTML")))
+    (defun helm-dash-clojure () (esk-dash-limit '("Clojure"))))
+  :init
+  (progn
+    (after sh-script (add-hook 'sh-mode-hook 'helm-dash-bash))
     (after sql (add-hook 'sql-mode-hook 'helm-dash-pg))
-    (defun helm-dash-web () (setq-local helm-dash-docsets '("Javascript" "CSS" "HTML")))
-    (add-hook 'css-mode-hook 'helm-dash-web)
-    (add-hook 'html-mode-hook 'helm-dash-web))
+    (after css-mode (add-hook 'css-mode-hook 'helm-dash-web))
+    (after html-mode (add-hook 'html-mode-hook 'helm-dash-web))
+    (after clojure-mode (add-hook 'clojure-mode-hook 'helm-dash-clojure)))
   :config
-  (setq helm-dash-docsets-path "/Users/julien/.docsets"
-	helm-dash-browser-func 'eww))
+  (progn
+    (setq helm-dash-browser-func 'eww)
+    (dolist (docset esk-dash-docsets)
+      (esk-helm-dash-install docset))))
 
 ;;; ** Files
 
@@ -417,17 +419,6 @@
   :config
   (setq auto-revert-interval 2
 	auto-revert-check-vc-info nil))
-
-(use-package auto-save-buffers-enhanced
-  :ensure t
-  :defer t
-  :disabled t
-  :commands auto-save-buffers-enhanced
-  :init (after-init (turn-on 'auto-save-buffers-enhanced))
-  :config
-  (setq auto-save-buffers-enhanced-quiet-save-p t
-	auto-save-buffers-enhanced-exclude-regexps '("^.+\\.cljs" "^.+\\.cljc")))
-
 
 ;;; * Ineractive commands
 
@@ -521,15 +512,7 @@
   :defer t
   :commands (undo-tree)
   :diminish undo-tree-mode
-  :init (after-init (turn-on 'global-undo-tree-mode))
-  :config
-  (progn
-    (setq
-     undo-tree-auto-save-history t
-     undo-tree-history-directory-alist
-     `((".+" . ,(file-name-as-directory
-		 (temp-file
-		  ".undo-tree-history")))))))
+  :init (after-init (turn-on 'global-undo-tree-mode)))
 
 (use-package multiple-cursors
   :ensure t
@@ -595,9 +578,7 @@
   :defer t
   :init
   (after flyspell
-    (add-hook
-     'flyspell-mode-hook
-     #'(lambda () (bind-key "M-$" 'helm-flyspell-correct)))))
+    (add-hook 'flyspell-mode-hook #'(lambda () (bind-key "M-$" 'helm-flyspell-correct)))))
 
 ;;; ** Markdown
 
@@ -617,8 +598,8 @@
 (use-package recentf
   :init (after-init (turn-on 'recentf-mode))
   :config
-  (setq recentf-max-saved-items 100
-	recentf-max-menu-items 100))
+  (setq recentf-max-saved-items 1000
+	recentf-max-menu-items 200))
 
 (use-package savehist
   :init (after-init (turn-on 'savehist-mode))
@@ -900,12 +881,6 @@
   :config
   (progn
     (bind-key "<tab>" 'company-complete-selection company-active-map)
-    ;; (add-hook 'company-completion-started-hook
-    ;; 	      '(lambda (_) (setq auto-save-buffers-enhanced-activity-flag nil)))
-    ;; (add-hook 'company-completion-finished-hook
-    ;; 	      '(lambda (_) (setq auto-save-buffers-enhanced-activity-flag t)))
-    ;; (add-hook 'company-completion-cancelled-hook
-    ;; 	      '(lambda (_) (setq auto-save-buffers-enhanced-activity-flag t)))
     (setq company-idle-delay 0
     	  company-minimum-prefix-length 2
     	  company-show-numbers t)))

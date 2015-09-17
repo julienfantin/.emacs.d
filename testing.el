@@ -1,5 +1,31 @@
 
 ;; ---------------------------------------------------------------------
+;; Purposes
+;;
+;; Clojure config
+;; - clojure
+;; - repl
+;; - documentation
+;; - project.clj
+;; - logs
+;;
+;; Clojure(script)
+;; - clojurescript
+;;
+
+(use-package window-purpose
+  :disabled t
+  :ensure t
+  :defer t
+  :init  (after-init (turn-on #'purpose-mode))
+  :config
+  (progn
+    (use-package window-purpose-x
+      :init (purpose-x-popwin-setup)
+      :config
+      (comment purpose-x-popwin-buffer-name-regexps))))
+
+;; ---------------------------------------------------------------------
 ;; Defaults
 
 (prefer-coding-system 'utf-8)
