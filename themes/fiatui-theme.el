@@ -31,7 +31,7 @@
 (setq fui-sunflower "#f1c40f")
 (setq fui-carrot "#e67e22")
 (setq fui-alizarin "#e74c3c")
-(setq fui-clouds "#ecf0f1")
+(setq fui-clouds "##F4F9FE")
 (setq fui-concrete "#95a5a6")
 (setq fui-dark-turquoise "#16a085")
 (setq fui-dark-emerald "#27ae60")
@@ -43,20 +43,14 @@
 (setq fui-dark-alizarin "#a31515")
 (setq fui-dark-clouds "#bdc3c7")
 (setq fui-dark-concrete "#7f8c8d")
-(setq fui-bg fui-clouds)
+(setq fui-bg "#E4F1FE")
 (setq fui-fg fui-asphalt)
-
-(setq mode-line-box-width 3)
 
 (custom-theme-set-faces
  'fiatui
  `(default ((t (:background ,fui-bg :foreground ,fui-fg))))
- `(cursor ((t (:background ,fui-amethyst :foreground ,fui-fg))))
+ `(cursor ((t (:background ,fui-alizarin :foreground ,fui-fg))))
  `(region ((t (:background ,fui-river :foreground ,fui-bg))))
-
- `(mode-line ((t (:background ,fui-river :foreground ,fui-bg :box (:line-width ,mode-line-box-width :color ,fui-river)))))
- `(mode-line-buffer-id ((t (:foreground ,fui-clouds))))
- `(mode-line-inactive ((t (:background ,fui-concrete :foreground ,fui-bg :box (:line-width ,mode-line-box-width :color ,fui-concrete)))))
 
  `(persp-selected-face ((t (:foreground ,fui-dark-sunflower))))
 
@@ -64,26 +58,26 @@
  `(show-paren-match ((t (:background ,fui-emerald))))
  `(show-paren-mismatch ((t (:background ,fui-alizarin))))
  `(hl-line ((t (:background ,fui-white))))
- `(hl-sexp-face ((t (:background ,fui-white))))
+ `(hl-sexp-face ((t (:background "#EEF6FE"))))
  `(minibuffer-prompt ((t (:foreground ,fui-dark-concrete))))
- `(font-lock-builtin-face ((t (:foreground ,fui-river))))
+ `(font-lock-builtin-face ((t (:foreground ,fui-dark-river))))
+ `(tuareg-font-lock-operator-face ((t (:foreground ,fui-river))))
  `(font-lock-type-face ((t (:foreground ,fui-amethyst))))
- `(font-lock-doc-face ((t (:foreground ,fui-asphalt2))))
- `(font-lock-comment-face ((t (:foreground ,fui-dark-concrete))))
+ `(font-lock-doc-face ((t (:foreground ,fui-amethyst))))
+ `(font-lock-comment-face ((t (:foreground ,fui-asphalt2 :background "#EEF6FE"))))
  `(font-lock-constant-face ((t (:foreground ,fui-river))))
  `(font-lock-function-name-face ((t (:foreground ,fui-dark-amethyst :weight normal))))
- `(font-lock-keyword-face ((t (:foreground ,fui-asphalt :weight normal))))
+ `(font-lock-keyword-face ((t (:foreground ,fui-asphalt2 :weight normal))))
  `(font-lock-string-face ((t (:foreground ,fui-amethyst))))
  `(font-lock-variable-name-face ((t (:foreground ,fui-dark-asphalt))))
  `(font-lock-warning-face ((t (:foreground ,fui-dark-carrot))))
  `(isearch ((t (:background ,fui-amethyst
                             :foreground ,fui-bg))))
- `(lazy-highlight ((t (:background ,fui-emerald))))
+ `(lazy-highlight ((t (:background ,fui-dark-turquoise))))
  `(link ((t (:foreground ,fui-dark-river :underline t))))
  `(link-visited ((t (:foreground ,fui-dark-asphalt :underline t))))
  `(button ((t (:background ,fui-dark-asphalt :foreground ,fui-clouds :underline t))))
- `(header-line ((t (:background ,fui-dark-concrete
-                                :foreground ,fui-fg))))
+ `(header-line ((t (:background ,fui-bg :foreground ,fui-fg))))
  `(shadow ((t (:foreground ,fui-concrete))))
 
  `(highlight-symbol-face ((t (:background ,fui-sunflower))))
@@ -101,9 +95,9 @@
  ;; ERC
  `(erc-notice-face ((t (:foreground ,fui-dark-river :weight unspecified))))
  `(erc-header-line ((t (:foreground ,fui-bg :background ,fui-dark-clouds))))
- `(erc-timestamp-face ((t (:foreground ,fui-emerald :weight unspecified))))
+ `(erc-timestamp-face ((t (:foreground ,fui-turquoise :weight unspecified))))
  `(erc-current-nick-face ((t (:foreground ,fui-dark-carrot :weight unspecified))))
- `(erc-prompt-face ((t (:foreground ,fui-dark-concrete :background nil :slant italic :weight unspecified))))
+ `(erc-prompt-face ((t (:foreground ,fui-dark-concrete :background nil :weight unspecified))))
  `(erc-my-nick-face ((t (:foreground ,fui-dark-carrot))))
  `(outline-1 ((t (:foreground ,fui-fg))))
  `(outline-2 ((t (:foreground ,fui-river))))
@@ -153,21 +147,28 @@
  `(magit-diff-add ((t (:background ,fui-bg :foreground ,fui-emerald))))
  `(magit-diff-del ((t (:background ,fui-bg :foreground ,fui-alizarin))))
 
+ `(mode-line ((t (:background ,fui-river :foreground ,fui-bg :box nil))))
+ `(mode-line-buffer-id ((t (:foreground ,fui-clouds))))
+ `(mode-line-inactive ((t (:background ,fui-concrete :foreground ,fui-bg nil))))
+
  ;; Helm
  `(helm-header ((t (:background ,fui-bg))))
- `(helm-source-header ((t (:background ,fui-white :foreground ,fui-fg :box (:line-width 5 :color ,fui-white)))))
+ `(helm-source-header ((t (:background ,fui-clouds :foreground ,fui-fg))))
  `(helm-selection ((t (:foreground ,fui-bg :background ,fui-river))))
  `(helm-ff-directory ((t (:foreground ,fui-river :background ,fui-bg))))
  `(helm-ff-file ((t (:foreground ,fui-dark-asphalt :background ,fui-bg))))
  `(helm-ff-executable ((t (:foreground ,fui-emerald :background ,fui-bg))))
 
+ `(helm-ls-git-added-modified-face ((t (:foreground ,fui-amethyst))))
+ `(helm-ls-git-added-copied-face ((t (:foreground ,fui-sunflower))))
+ `(helm-ls-git-deleted-and-staged-face ((t (:foreground ,fui-amethyst))))
+ `(helm-ls-git-deleted-not-staged-face ((t (:foreground ,fui-alizarin))))
+ `(helm-ls-git-modified-and-staged-face ((t (:foreground ,fui-dark-emerald))))
+ `(helm-ls-git-modified-not-staged-face ((t (:foreground ,fui-carrot))))
+ `(helm-ls-git-untracked-face ((t (:foreground ,fui-amethyst))))
+
  ;; Cider
- `(cider-stacktrace-face ((t (:background ,fui-fg))))
- ;; Powerline
- `(powerline-active2 ((t (:foreground ,fui-fg :background ,fui-dark-clouds))))
- `(powerline-active1 ((t (:foreground ,fui-bg :background ,fui-emerald))))
- `(powerline-inactive2 ((t (:foreground ,fui-bg :background ,fui-concrete))))
- `(powerline-inactive1 ((t (:foreground ,fui-fg :background ,fui-dark-clouds)))))
+ `(cider-stacktrace-face ((t (:background ,fui-fg)))))
 
 (provide-theme 'fiatui)
 

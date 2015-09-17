@@ -1,41 +1,29 @@
-;;; emacs-swagger-kit --- Elisp goodness!
+;;; emacs-swagger-kit
 ;;; Commentary:
 ;;; Code:
+;;; * Tasks
+;;; ** In-buffer navigation
+;;; *** TODO Comment outlines
+;;; - [ ] Cycling visibility
+;;; - [ ] Quick overview
+;;; *** TODO Quick motions
+;;; - [ ] swiper
+;;; - [ ] avy
+;;; - [ ] lispy ace motions in lisps
+;;; *** TODO Search motions
+;;; - [ ] imenu
+;;; - [ ] flycheck error
+;;; - [ ] comment headlines
+;;;
+;;;
 
-;; * Bootstap
+;;; * Initialization helpers
 
 (require 'cl-lib)
-
-(progn
-  ;; Debug on error when loading
-  (toggle-debug-on-error)
-  (add-hook 'after-init-hook
-            #'(lambda () (toggle-debug-on-error))))
-
-;; ** Elpa & use-package
-
-(progn
-  (setq package-archives
-        '(("org" . "http://orgmode.org/elpa/")
-          ("melpa" . "http://melpa.milkbox.net/packages/")
-          ("gnu" . "http://elpa.gnu.org/packages/")))
-
-  (when (require 'package)
-    (package-initialize)
-    (unless package-archive-contents
-      (package-refresh-contents))
-    (unless (package-installed-p 'org-plus-contrib)
-      (package-install 'org-plus-contrib))))
-
-(progn
-  (unless (package-installed-p 'use-package)
-    (package-install 'use-package))
-  (require 'use-package)
-
-  (setq use-package-idle-interval 1
-        use-package-verbose t))
-
-;; ** Config helpers
+(require 'cl-macs)
+(require 'package)
+(require 'diminish nil t)
+(require 'bind-key nil t)
 
 (defmacro after (mode &rest body)
   "`eval-after-load' `MODE', wrapping `BODY' in `progn'."
@@ -46,10 +34,58 @@
     `(eval-after-load ,(symbol-name mode)
        (quote (progn ,@body)))))
 
+(defun turn-on    (f) `(lambda () (funcall #',f +1)))
+(defun turn-off   (f) `(lambda () (funcall #',f -1)))
+(defun after-init (f) (if after-init-time (funcall f) (add-hook 'after-init-hook f)))
+(defmacro comment (&rest body))
+
+(toggle-debug-on-error)
+(after-init 'toggle-debug-on-error)
+
+;;; ** ELPA
+
+(setq package-archives
+      '(("org"		. "http://orgmode.org/elpa/")
+	("melpa"	. "http://melpa.org/packages/")
+	("gnu"		. "http://elpa.gnu.org/packages/")))
+
+(package-initialize)
+
+(unless package-archive-contents
+  (package-refresh-contents))
+
+;;; ** use-package
+
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
+(eval-when-compile (require 'use-package))
+(setq use-package-verbose t)
 (ignore-errors (use-package private))
 
-;; * Defaults
-;; ** Paths
+(use-package diminish :ensure t :demand t)
+
+;;; * Emacs defaults
+
+(setq-default gc-cons-threshold 200000000)
+(setq-default cursor-type 'bar)
+(setq-default blink-cursor-delay 0.84)
+(setq-default blink-cursor-interval 0.42)
+(setq initial-scratch-message ""
+      inhibit-startup-message t
+      scroll-margin 5
+      scroll-conservatively 10000
+      cursor-in-non-selected-windows nil
+      echo-keystrokes 0.
+      ;; mouse-wheel-progressive-speed nil
+      ;; mouse-wheel-scroll-amount '(0.01 ((shift) . 1) ((control) . nil))
+      ring-bell-function nil
+      visible-bell t
+      save-interprogram-paste-before-kill t)
+
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;;; ** Paths
 
 (defun temp-file (name)
   "Return a temporary file with `NAME'."
@@ -59,344 +95,394 @@
   "Return a file with `NAME' in `user-emacs-directory'."
   (expand-file-name name user-emacs-directory))
 
-(progn
-  (setq user-emacs-directory
-        (file-name-directory
-         (or load-file-name
-             buffer-file-name)))
-  (setq custom-file (user-file "custom.el")))
+(setq user-emacs-directory (file-name-directory (or load-file-name buffer-file-name))
+      custom-file (user-file "custom.el"))
 
 (use-package exec-path-from-shell
-  :ensure exec-path-from-shell
-  :config (exec-path-from-shell-initialize))
+  :ensure t
+  :init (exec-path-from-shell-initialize))
 
-;; ** Fonts
+;;; * Key-bindings
 
-(defvar global-text-height-offset 0)
+(use-package hydra :ensure t)
 
-(defvar monospaced-fonts
-  '(("Menlo" . 90)
-    ("Monaco" . 100)
-    ("DejaVu Sans Mono" . 90)
-    ("Ubuntu Mono" . 100)
-    ("Consolas" . 100)
-    ("Source Code Pro" . 120)
-    ("Inconsolata" . 140)
-    ("Menlo-12" . 120)))
+(use-package free-keys :ensure t :defer t)
 
-(defvar variable-fonts
-  '(("DejaVu Serif" . 190)))
+(use-package key-chord
+  :ensure t
+  :defer t
+  :commands key-chord-mode
+  :init (after-init (turn-on 'key-chord-mode))
+  :config (setq key-chord-two-keys-delay 0.1))
 
-(defun set-preferred-font (height-offset)
-  (let* ((mono-font (cl-find-if (lambda (font)
-                                  (find-font (font-spec :name (car font))))
-                                monospaced-fonts))
-         (var-font (cl-find-if (lambda (font)
-                                 (find-font (font-spec :name (car font))))
-                               variable-fonts)))
-    (set-face-attribute 'default nil :family (car mono-font))
-    (set-face-attribute 'default nil :weight 'light)
-    (set-face-attribute 'default nil :height (+ (cdr mono-font) height-offset))
-    (set-face-attribute 'variable-pitch nil :family (car var-font))
-    (set-face-attribute 'variable-pitch nil :height (+ (cdr var-font) height-offset))))
+(use-package which-key
+  :ensure t
+  :diminish ""
+  :defer t
+  :init	(after-init (turn-on 'which-key-mode))
+  :config (which-key-setup-side-window-right))
 
-(when window-system (set-preferred-font 0))
+;;; * Windows management
+;;; ** Windows
 
-(defun global-text-height-increase ()
+(defun esk-alternate-buffer ()
   (interactive)
-  (set-preferred-font
-   (incf global-text-height-offset 10)))
+  (switch-to-buffer (other-buffer (current-buffer) t)))
 
-(defun global-text-height-decrease ()
+(defun esk-alternate-window ()
   (interactive)
-  (set-preferred-font
-   (incf global-text-height-offset -10)))
+  (next-multiframe-window)
+  (other-window -1))
 
-(bind-key "C-x C-+" 'global-text-height-increase)
-(bind-key "C-x C--" 'global-text-height-decrease)
+(use-package window-purpose
+  :disabled t
+  :ensure t
+  :defer t
+  :init  (after-init (turn-on #'purpose-mode))
+  :config
+  (progn
+    (use-package window-purpose-x
+      :init (purpose-x-popwin-setup)
+      :config
+      (comment purpose-x-popwin-buffer-name-regexps))))
 
-;; ** GUI
+;;; ** Perspectives
 
-(progn
-  (setq initial-scratch-message "")
-  (setq inhibit-startup-message t)
-  (when window-system
-    (tool-bar-mode -1)
-    (scroll-bar-mode -1)
-    (setq ns-use-native-fullscreen nil
-          use-file-dialog nil
-          use-dialog-box nil)))
+(use-package simple-screen
+  :ensure t
+  :defer t
+  :commands
+  (simple-screen-0
+   simple-screen-1
+   simple-screen-2
+   simple-screen-3
+   simple-screen-4))
 
-(use-package fringe
-  :config (fringe-mode 8))
+(use-package perspective
+  :ensure t
+  :defer t
+  :commands persp-mode
+  :init (after-init (turn-on 'persp-mode))
+  :config (setq persp-show-modestring t))
 
-(defun toggle-transparency ()
-  (interactive)
-  (let ((default-alpha '(90 90))
-        (alpha (frame-parameter (selected-frame) 'alpha)))
-    (set-frame-parameter (selected-frame) 'alpha
-                         (if (not (eq default-alpha alpha))
-                             default-alpha
-                           '(100 100)))))
+;;; ** Windows
+
+(use-package winner
+  :init (after-init (turn-on 'winner-mode)) :defer t)
+
+(use-package zygospore :ensure t :defer t)
+
+(use-package ace-window
+  :ensure t
+  :defer t
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l ?\;)
+	aw-scope 'frame))
+
+;;; * Looks
+;;; ** Fonts
+
+(defun set-font (family &optional height)
+  (set-face-attribute 'default nil :family family)
+  (when height (set-face-attribute 'default nil :height height)))
+
+(defun set-font-height (delta)
+  (set-face-attribute
+   'default nil
+   :height (+ (face-attribute 'default :height) delta)))
+
+(when window-system (set-font "Hack" 100))
+
+;;; ** GUI
+
+(use-package powerline
+  :ensure t
+  :defer t
+  :init (after-init #'powerline-default-theme)
+  :config
+  (advice-add 'load-theme :after (lambda (theme &optional no-confirm no-enable) (powerline-reset))))
+
+(when window-system
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (setq use-file-dialog nil
+	use-dialog-box nil))
+
+(use-package fringe :config (fringe-mode 8))
 
 (defun inc-transparency ()
   (interactive)
-  (let ((alpha (car (frame-parameter (selected-frame) 'alpha))))
+  (let ((alpha (or (car (frame-parameter (selected-frame) 'alpha)) 100)))
     (set-frame-parameter (selected-frame) 'alpha (list  (- alpha 5)  (- alpha 5)))))
 
 (defun dec-transparency ()
   (interactive)
-  (let ((alpha (car (frame-parameter (selected-frame) 'alpha))))
+  (let ((alpha (or (car (frame-parameter (selected-frame) 'alpha)) 100)))
     (set-frame-parameter (selected-frame) 'alpha (list  (+ alpha 5)  (+ alpha 5)))))
 
-;; ** UI
-
-(setq scroll-margin 5)
-(setq scroll-conservatively 10000)
-(setq-default cursor-in-non-selected-windows nil)
-(setq-default cursor-type 'bar)
-(setq echo-keystrokes 0.01)
-(setq ring-bell-function nil)
-(setq visible-bell t)
-(setq mouse-wheel-progressive-speed nil
-      mouse-wheel-scroll-amount '(0.01 ((shift) . 1) ((control) . nil)))
-(setq save-interprogram-paste-before-kill t)
-(fset 'yes-or-no-p 'y-or-n-p)
-
-(use-package diminish
-  :ensure diminish)
+;;; ** UI
 
 (use-package hl-line
-  :config (global-hl-line-mode 1))
+  :init
+  (progn
+    (add-hook 'prog-mode-hook (turn-on 'hl-line-mode))
+    (add-hook 'dired-mode-hook (turn-on 'hl-line-mode))
+    (after magit (add-hook 'magit-mode-hook (turn-on 'hl-line-mode)))))
+
+(use-package linum
+  :init (add-hook 'prog-mode-hook (turn-on 'linum-mode))
+  :config
+  (progn
+    (setq linum-delay t
+	  linum-format " %4d ")
+
+    ;; create a new var to keep track of the current update timer.
+    (defvar-local esk-linum-current-timer nil)
+
+    ;; rewrite linum-schedule so it waits for 1 second of idle time
+    ;; before updating, and so it only keeps one active idle timer going
+    (defun linum-schedule ()
+      (when (timerp esk-linum-current-timer)
+        (cancel-timer esk-linum-current-timer))
+      (setq esk-linum-current-timer
+            (run-with-idle-timer 1 nil #'linum-update-current)))))
 
 (use-package highlight-numbers
-  :ensure highlight-numbers
+  :ensure t
+  :defer t
+  :commands highlight-numbers-mode
   :init (add-hook 'prog-mode-hook 'highlight-numbers-mode))
 
-(defvar esk-toggle-map nil)
-(define-prefix-command 'esk-toggle-map)
-(define-key ctl-x-map "t" 'esk-toggle-map)
-(define-key esk-toggle-map "f" 'auto-fill-mode)
-(define-key esk-toggle-map "l" 'toggle-truncate-lines)
-(define-key esk-toggle-map "r" 'read-only-mode)
-
-;; ** Theme
+;;; ** Theme
 
 (use-package theme-changer
-  :ensure theme-changer
-  :init
-  (setq
-   custom-theme-directory (expand-file-name "themes/" user-emacs-directory)
-   calendar-location-name "Brooklyn, NY"
-   calendar-latitude 40.7
-   calendar-longitude -74.0)
+  :disabled t
+  :ensure t
+  :preface
+  (progn
+    (defun esk-semibold-faces (_ &optional _ _)
+      (mapc (lambda (face)
+	      (if (eq 'bold (face-attribute face :weight))
+		  (set-face-attribute face nil :weight 'semibold)
+		face))
+	    (face-list)))
+    (advice-add 'load-theme :after 'esk-semibold-faces))
   :config
-  (change-theme 'fiatui 'fiatui-dark))
+  (progn
+    (setq
+     custom-theme-directory (expand-file-name "themes/" user-emacs-directory)
+     calendar-location-name "Brooklyn, NY"
+     calendar-latitude 40.7
+     calendar-longitude -74.0)
+    (change-theme 'fiatui 'fiatui-dark)))
+
+(comment
+ (use-package plan9-theme :ensure t)
+ (use-package spacemacs-theme :ensure t)
+ (use-package darktooth-theme :ensure t)
+ (use-package zerodark-theme :ensure t)
+ (use-package gruvbox-theme :ensure t))
+
+(use-package helm-themes :ensure t :defer t)
 
 (use-package rainbow-mode
-  :ensure rainbow-mode
-  :diminish (rainbow-mode . "")
-  :init (add-hook 'emacs-lisp-mode-hook 'rainbow-mode))
+  :ensure t
+  :defer t
+  :commands rainbow-mode
+  :diminish rainbow-mode
+  :init
+  (progn
+    (add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
+    (add-hook 'css-mode-hook 'rainbow-mode)
+    (after web-mode (add-hook 'web-mode-hook 'rainbow-mode))))
 
-;; ** Dired
+;;; ** Dired
 
 (use-package dired
+  :defer t
   :config
   (progn
     (setq dired-auto-revert-buffer t)
     (add-hook 'dired-mode-hook 'dired-hide-details-mode)))
 
-;; ** Minibuffer completion
+;;; ** Minibuffer completion
 
-(use-package helm-config
-  :ensure helm
-  :preface (defvar helm-command-prefix-key "C-h")
-  :demand t
-  :bind (("M-x" . helm-M-x)
-         ("C-x b" . helm-mini)
-         ("C-x C-f" . helm-find-files)
-         ("M-y" . helm-show-kill-ring))
+(use-package psession :ensure t :init (psession-mode 1))
+
+(use-package helm
+  :ensure t
+  :commands (helm-M-x
+	     helm-mini
+	     helm-find-files
+	     helm-show-kill-ring)
+  :init (after-init (turn-on 'helm-mode))
   :config
   (progn
-    (setq helm-yank-symbol-first t
-	  helm-M-x-always-save-history t
-	  helm-display-header-line nil)
-    (setq helm-split-window-in-side-p t)
-
+    ;; Remap persistent action to TAB
+    (bind-keys :map helm-map
+               ("C-z" . helm-select-action)
+               ("<tab>" . helm-execute-persistent-action)
+               ("C-i" . helm-execute-persistent-action))
+    ;; Window setup
+    (setq helm-echo-input-in-header-line t
+	  helm-autoresize-max-height 38
+	  helm-autoresize-min-height 38
+	  helm-split-window-default-side 'below
+	  helm-split-window-in-side-p t
+	  helm-full-frame nil
+	  helm-always-two-windows nil)
+    (helm-autoresize-mode 1)
+    ;; Fuzzy matching
+    (setq helm-recentf-fuzzy-match t
+    	  helm-buffers-fuzzy-matching t
+    	  helm-locate-fuzzy-match t
+    	  helm-M-x-fuzzy-match t
+    	  helm-apropos-fuzzy-match t
+    	  helm-lisp-fuzzy-completion t
+    	  helm-M-x-always-save-history t)
+    ;; Sub-packages
+    (use-package helm-config :demand t)
     (use-package helm-command
+      :defer t
       :config
       (progn
-        (bind-key "a" 'helm-apropos helm-command-map)
-        (bind-key "o" 'helm-occur helm-command-map)
-
-        (use-package helm-swoop
-          :ensure helm-swoop
-	  :disabled t
-          :init
-          (progn
-            (bind-key "s" 'helm-swoop helm-command-map)
-            (bind-key "C-s" 'helm-multi-swoop-all helm-command-map)))
-        (use-package helm-descbinds
-          :ensure helm-descbinds
-          :init (bind-key "b" 'helm-descbinds helm-command-map))))
-
+	(bind-key "a" 'helm-apropos helm-command-map)
+	(bind-key "o" 'helm-occur helm-command-map)))
+    ;; Helm completing-read
     (use-package helm-mode
-      :init (helm-mode 1)
-      :diminish (helm-mode . "")
+      :diminish helm-mode
+      :defer t
       :config
       (progn
-        (bind-key "DEL" 'my-helm-ff-up helm-read-file-map)
-        ;; Complete immendiately on TAB when finding files
-        (bind-key "TAB" 'helm-execute-persistent-action helm-map)
-        (bind-key "C-z" 'helm-select-action helm-map)
-        (setq helm-quick-update t
-              helm-idle-delay 0.01
-              helm-input-idle-delay 0.01
-              helm-ff-file-name-history-use-recentf t
-              helm-ff-auto-update-initial-value nil
-              helm-ff-skip-boring-files t
-              helm-candidate-number-limit 1000
-              helm-M-x-requires-pattern 0
-              helm-buffers-fuzzy-matching t)
+	(setq helm-quick-update t
+	      helm-idle-delay 0
+	      helm-input-idle-delay 0
+	      helm-ff-transformer-show-only-basename t
+	      helm-ff-file-name-history-use-recentf t
+	      helm-ff-skip-boring-files t
+	      helm-M-x-requires-pattern 0)
+	(add-to-list 'helm-boring-file-regexp-list "\\.DS_Store$")
+	(add-to-list 'helm-boring-file-regexp-list "\\.git$")))
+    (use-package helm-org
+      :defer t
+      :commands helm-org-in-buffer-headings)))
 
-        (add-to-list 'helm-boring-file-regexp-list "\\.DS_Store$")
-        (add-to-list 'helm-boring-file-regexp-list "\\.git$")
-        (add-to-list 'helm-boring-file-regexp-list "\\.$")
+(use-package helm-descbinds :ensure t :defer t)
+(use-package helm-unicode :ensure t :defer t)
+(use-package helm-ls-git
+  :ensure t
+  :defer t
+  :config (setq helm-ls-git-show-abs-or-relative 'relative))
 
-        (use-package helm-eshell
-          :init
-          (after esh-mode
-            (add-hook 'eshell-mode-hook
-                      #'(lambda ()
-                          (define-key eshell-mode-map (kbd "M-l")  'helm-eshell-history)))))
+(comment
+ ;; Helm Dash, install docsets:
+ (dolist (docset '("Clojure" "OpenCV_Java" "CSS" "HTML" "Javascript" "Bash" "PostgreSQL"))
+   (helm-dash-install-docset docset)))
 
-        (defun my-helm-ff-up ()
-          "Delete backward or go \"down\" [sic] one level when in
-          folder root."
-          (interactive)
-          (if (looking-back "/")
-              (call-interactively 'helm-find-files-up-one-level)
-            (delete-char -1)))))))
-
-;; ** Keybindings
-
-(progn
-  (setq ns-command-modifier 'control
-        ns-control-modifier 'meta
-        ns-option-modifier 'super))
-
-(use-package free-keys
-  :ensure free-keys)
-
-(use-package key-chord
-  :ensure key-chord
-  :config
+(use-package helm-dash
+  :ensure t
+  :defer t
+  :defines helm-dash-docsets
+  :commands helm-dash-at-point
+  :preface
   (progn
-    (setq key-chord-two-keys-delay 0.05)
-    (key-chord-define-global ",," 'helm-semantic-or-imenu)
-    (key-chord-define-global "hh" 'helm-projectile)
-    (key-chord-define-global "jj" 'ace-jump-word-mode)
-    (key-chord-define-global "kj" 'ace-jump-two-chars-mode)
-    (key-chord-mode 1)))
+    (defun helm-dash-pg () (setq-local helm-dash-docsets '("PostgreSQL")))
+    (after sql (add-hook 'sql-mode-hook 'helm-dash-pg))
+    (defun helm-dash-web () (setq-local helm-dash-docsets '("Javascript" "CSS" "HTML")))
+    (add-hook 'css-mode-hook 'helm-dash-web)
+    (add-hook 'html-mode-hook 'helm-dash-web))
+  :config
+  (setq helm-dash-docsets-path "/Users/julien/.docsets"
+	helm-dash-browser-func 'eww))
 
-;; ** Files
+;;; ** Files
+
+(setq-default delete-by-moving-to-trash t)
 
 (use-package files
-  :init
-  (progn
-    (setq backup-by-copying t
-          backup-directory-alist `((".*" . ,temporary-file-directory))
-          auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))))
+  :defer t
+  :config
+  (setq backup-by-copying t
+	backup-directory-alist `((".*" . ,temporary-file-directory))
+	auto-save-file-name-transforms `((".*" ,temporary-file-directory t))))
+
+(use-package auto-save
+  :config
+  (setq auto-save-default t
+	auto-save-interval 20
+	auto-save-timeout 1))
 
 (use-package autorevert
-  :config (global-auto-revert-mode 1))
+  :init (after-init (turn-on 'global-auto-revert-mode))
+  :config
+  (setq auto-revert-interval 2
+	auto-revert-check-vc-info nil))
 
 (use-package auto-save-buffers-enhanced
-  :ensure auto-save-buffers-enhanced
-  :init (auto-save-buffers-enhanced 1)
+  :ensure t
+  :defer t
+  :disabled t
+  :commands auto-save-buffers-enhanced
+  :init (after-init (turn-on 'auto-save-buffers-enhanced))
   :config
-  (progn
-    (setq auto-save-buffers-enhanced-quiet-save-p t
-          auto-save-buffers-enhanced-exclude-regexps '("^.+\\.cljs"))))
+  (setq auto-save-buffers-enhanced-quiet-save-p t
+	auto-save-buffers-enhanced-exclude-regexps '("^.+\\.cljs" "^.+\\.cljc")))
 
-;; * Ineractive commands
 
-(use-package commands
-  :demand t
-  :bind (("C-w" . esk/backward-kill-word)
-         ("C-c \\" . esk/window-split-toggle))
-  :commands esk/cleanup
-  :load-path "./lib")
+;;; * Ineractive commands
 
-;; * Projects
+(use-package commands :load-path "./lib")
+
+;;; * Projects
 
 (use-package projectile
-  :ensure projectile
-  :init (add-hook 'after-init-hook 'projectile-global-mode)
+  :ensure t
+  :defer t
+  :commands projectile-golbal-mode
+  :init (after-init (turn-on 'projectile-global-mode))
   :diminish ""
   :config
   (progn
     (setq projectile-completion-system 'helm
-          projectile-use-git-grep t
-          projectile-switch-project-action 'projectile-find-file))
+	  projectile-use-git-grep t
+	  projectile-switch-project-action 'projectile-find-file
+	  projectile-globally-ignored-files
+	  (append projectile-globally-ignored-directories '("elpa" ".repl-0.0-3211")))
+    (add-to-list 'projectile-globally-ignored-files ".DS_Store")
+    (add-to-list 'projectile-project-root-files-bottom-up "project.clj")
+    (defadvice projectile-replace
+	(before projectile-save-all-and-replace activate)
+      (save-some-buffers t))
+    (defadvice projectile-switch-project (after projectile-sync-default-directory)
+      (when (projectile-project-p)
+        (setq default-directory (projectile-project-root))))))
 
-  (add-to-list 'projectile-globally-ignored-files ".DS_Store")
-  (add-to-list 'projectile-globally-ignored-directories "elpa")
-  (add-to-list 'projectile-project-root-files-bottom-up "project.clj")
+(use-package persp-projectile
+  :ensure t
+  :defer t
+  :init (after projectile (require 'persp-projectile)))
 
-  (defadvice projectile-replace
-      (before projectile-save-all-and-replace activate)
-    (save-some-buffers t))
-
-  (use-package helm-projectile
-    :ensure helm-projectile)
-
-  (use-package persp-projectile
-    :ensure persp-projectile))
-
-;; ** Version control
-
-(defun git-add-current-buffer ()
-  (interactive)
-  (progn
-    (save-buffer)
-    (let* ((buffile (buffer-file-name))
-           (output (shell-command-to-string
-                    (concat "git add " (buffer-file-name)))))
-      (message
-       (if (not (string= output ""))
-           output
-         (concat "Staged " buffile))))))
-
-(bind-key "C-c a" 'git-add-current-buffer)
+;;; ** Version control
 
 (use-package magit
-  :ensure magit
-  :bind ("C-c g" . magit-status)
+  :ensure t
+  :defer t
   :config
   (progn
-    (setq magit-save-some-buffers 'dontask
-          magit-stage-all-confirm nil
-          magit-unstage-all-confirm nil
-          magit-set-upstream-on-push t)
-
-    ;; Only one window when showing magit, then back!
     (defadvice magit-status (around magit-fullscreen activate)
       (window-configuration-to-register :magit-fullscreen)
       ad-do-it
       (delete-other-windows))
-
     (defadvice magit-mode-quit-window (around magit-restore-screen activate)
       (let ((magit-status? (string-match-p "\\magit:.+" (buffer-name))))
         ad-do-it
         (when magit-status?
           (jump-to-register :magit-fullscreen))))))
 
-(use-package git-timemachine
-  :ensure git-timemachine
-  :bind ("C-c t" . git-timemachine))
+(use-package git-timemachine :ensure t :defer t)
 
 (use-package ediff
+  :defer t
   :config
   (setq
    ;; avoid the crazy multi-frames setup
@@ -407,54 +493,65 @@
    ediff-split-window-function 'split-window-horizontally))
 
 (use-package diff-hl
-  :ensure diff-hl
-  :init (add-hook 'prog-mode-hook 'diff-hl-mode)
+  :ensure t
+  :defer t
+  :commands diff-hl-mode
+  :preface (add-hook 'prog-mode-hook 'diff-hl-mode)
   :config
   (progn
-    (after git-commit-mode
-      (defadvice git-commit-commit (after git-commit-commit-after activate)
+    (setq diff-hl-draw-borders nil)
+    (after magit
+      (defadvice magit-commit (after magit-commit-update-diff-hl activate)
         (dolist (buffer (buffer-list))
           (with-current-buffer buffer
-            (when diff-hl-mode (diff-hl-update))))))))
+            (when (bound-and-true-p diff-hl-mode)
+	      (diff-hl-update))))))))
 
-;; * Editing
-
-(use-package hilit-chg
-  :diminish (highlight-changes-mode . ""))
+;;; * Editing
 
 (use-package volatile-highlights
-  :ensure volatile-highlights
-  :diminish ""
-  :config
-  (volatile-highlights-mode 1))
+  :ensure t
+  :defer t
+  :commands volatile-highlights-mode
+  :diminish volatile-highlights-mode
+  :init (add-hook 'prog-mode-hook 'volatile-highlights-mode))
 
 (use-package undo-tree
-  :ensure undo-tree
-  :diminish ""
-  :init (add-hook 'prog-mode-hook 'undo-tree-mode)
+  :ensure t
+  :defer t
+  :commands (undo-tree)
+  :diminish undo-tree-mode
+  :init (after-init (turn-on 'global-undo-tree-mode))
   :config
   (progn
     (setq
      undo-tree-auto-save-history t
-     undo-tree-history-directory-alist `((".+" . ,(file-name-as-directory
-                                                   (temp-file
-                                                    ".undo-tree-history")))))))
+     undo-tree-history-directory-alist
+     `((".+" . ,(file-name-as-directory
+		 (temp-file
+		  ".undo-tree-history")))))))
 
 (use-package multiple-cursors
-  :ensure multiple-cursors
-  :init
+  :ensure t
+  :defer t
+  :config
   (progn
-    (bind-key "C->" 'mc/mark-next-like-this prog-mode-map)
-    (bind-key "C-<" 'mc/mark-previous-like-this prog-mode-map)
-    (bind-key "C-c C-<" 'mc/mark-all-like-this prog-mode-map)
-    (bind-key "C-c %" 'mc/mark-all-like-this-dwim)))
+    ;; Hydra workarounds
+    (setq mc/cmds-to-run-once
+	  '(hydra-multiple-cursors/mc/skip-to-next-like-this
+	    hydra-multiple-cursors/mc/edit-lines-and-exit
+	    hydra-multiple-cursors/mc/mark-all-like-this-dwim-and-exit
+	    hydra-multiple-cursors/mc/mark-next-like-this
+	    hydra-multiple-cursors/mc/skip-to-next-like-this
+	    hydra-multiple-cursors/mc/unmark-next-like-this
+	    hydra-multiple-cursors/mc/mark-previous-like-this
+	    hydra-multiple-cursors/mc/skip-to-previous-like-this
+	    hydra-multiple-cursors/mc/unmark-previous-like-this
+	    hydra-multiple-cursors/mc/mark-all-in-region-regexp-and-exit
+	    hydra-multiple-cursors/mc/mark-sgml-tag-pair
+	    hydra-multiple-cursors/mc/mark-more-like-this-extended))))
 
-(use-package expand-region
-  :ensure expand-region
-  :bind (("C-+" . er/expand-region)
-         ("C-=" . er/contract-region)))
-
-;; * Prose
+;;; * Prose
 
 (defvar prose-mode-map (make-sparse-keymap))
 
@@ -477,59 +574,83 @@
  (set-preferred-font 0))
 
 (use-package adaptive-wrap
-  :ensure adaptive-wrap
+  :defer t
+  :commands adaptive-wrap-prefix-mode
   :init (add-hook 'prose-mode-hook 'adaptive-wrap-prefix-mode))
 
-;; ** Markdown
+;;; ** Spell checking
 
-(use-package markdown-mode
-  :ensure markdown-mode
-  :mode "\\.md\\'")
-
-;; * Navigation
-;; ** Buffer
-
-(define-key isearch-mode-map [remap isearch-delete-char] 'isearch-del-char)
-
-(use-package imenu
-  :config
-  (progn
-    (setq imenu-auto-rescan t)))
-
-(use-package imenu-anywhere
-  :ensure imenu-anywhere
-  :commands helm-imenu
+(use-package flyspell
+  :ensure t
+  :defer t
   :init
-  (after helm-command
-    (bind-key "C-i" 'helm-imenu-anywhere helm-command-map)))
+  (after org
+    (add-hook 'org-mode-hook 'flyspell-mode))
+  :config
+  (setq flyspell-issue-welcome-flag nil
+	flyspell-issue-message-flag nil))
+
+(use-package helm-flyspell
+  :ensure t
+  :defer t
+  :init
+  (after flyspell
+    (add-hook
+     'flyspell-mode-hook
+     #'(lambda () (bind-key "M-$" 'helm-flyspell-correct)))))
+
+;;; ** Markdown
+
+(use-package markdown-mode :mode "\\.md\\'")
+
+;;; * Navigation
+;;; ** Bookmarks
+;;; ** Mark ring
 
 (use-package simple
-  :demand t
+  :defer t
   :config
   (setq mark-ring-max 64 global-mark-ring-max 64))
 
-(use-package ace-jump-mode
-  :ensure ace-jump-mode
-  :config
-  (progn
-    (ace-jump-mode-enable-mark-sync)
-    (defun ace-jump-two-chars-mode (query-char query-char-2)
-      "AceJump two chars mode"
-      (interactive (list (read-char "First Char:")
-                         (read-char "Second:")))
+;;; ** Files
 
-      (if (eq (ace-jump-char-category query-char) 'other)
-          (error "[AceJump] Non-printable character"))
-      ;; others : digit , alpha, punc
-      (let ((ace-jump-query-char query-char)
-            (ace-jump-current-mode 'ace-jump-char-mode)
-            (target (regexp-quote (concat (char-to-string query-char)
-                                          (char-to-string query-char-2)))))
-        (ace-jump-do target)))))
+(use-package recentf
+  :init (after-init (turn-on 'recentf-mode))
+  :config
+  (setq recentf-max-saved-items 100
+	recentf-max-menu-items 100))
+
+(use-package savehist
+  :init (after-init (turn-on 'savehist-mode))
+  :config
+  (setq savehist-additional-variables '(search-ring regexp-search-ring)
+	savehist-autosave-interval 60))
+
+(use-package saveplace
+  :defer t
+  :init (setq-default save-place t)
+  :config (setq save-place-file (temp-file "places")))
+
+;;; * In-buffer search
+
+(define-key isearch-mode-map [remap isearch-delete-char] 'isearch-del-char)
+
+(use-package avy-zap :ensure t :defer t)
+
+(use-package avy
+  :ensure t
+  :defer t
+  :commands (avy-goto-char-2)
+  :init (avy-setup-default))
+
+(use-package swiper :ensure t :defer t)
+(use-package swiper-helm :ensure t :defer t)
 
 (use-package highlight-symbol
-  :ensure highlight-symbol
-  :diminish ""
+  :ensure t
+  :defer t
+  :diminish highlight-symbol-mode
+  :commands highlight-symbol-mode
   :init
   (progn
     (add-hook 'prog-mode-hook 'highlight-symbol-mode)
@@ -539,186 +660,85 @@
     (setq highlight-symbol-on-navigation-p nil
           highlight-symbol-idle-delay 1)))
 
-(use-package saveplace
-  :init
-  (progn
-    (setq-default save-place t)
-    (setq  save-place-file (temp-file "places"))))
+(use-package imenu
+  :defer t
+  :config (setq-default imenu-auto-rescan t))
 
-(use-package savehist
-  :init (savehist-mode 1)
-  :config
-  (progn
-    (setq savehist-additional-variables
-          '(search-ring regexp-search-ring)
-          savehist-autosave-interval 60)))
+;;; * Outlines
 
-(use-package recentf
-  :init (recentf-mode 1)
-  :config
-  (progn
-    (setq recentf-max-saved-items 100
-          recentf-max-menu-items 100)))
+(defvar esk-lisps-outline-regexp "^[\s\t]*;;;?\s[*]+\s")
 
-;; * Windows management
+(defvar esk-lisps-org-headlines-regexp
+  "^\\(;;;? \\*+\\)\\(?: +\\(TODO\\|DONE\\|MAYBE\\|DONE\\)\\)?\\(?: +\\(\\[#.\\]\\)\\)?\\(?: +\\(.*?\\)\\)??\\(?:[ 	]+\\(:[[:alnum:]_@#%:]+:\\)\\)?[ 	]*$")
 
-(bind-key "s-h" 'bury-buffer)
-(bind-key "s-b" 'previous-buffer)
-(bind-key "s-n" 'next-buffer)
+(defvar esk-outline-regexp-alist
+  `((clojure-mode . ,esk-lisps-outline-regexp)
+    (emacs-lisp-mode . ,esk-lisps-outline-regexp)))
 
-(use-package zygospore
-  :ensure zygospore
-  :bind ("C-x 1" . zygospore-toggle-delete-other-windows))
+(defvar esk-org-headings-regexp-alist
+  `((clojure-mode . ,esk-lisps-org-headlines-regexp)
+    (emacs-lisp-mode . ,esk-lisps-org-headlines-regexp)))
 
-(use-package dedicated
-  :ensure dedicated
-  :bind ("C-M-\\" . dedicated-mode))
+(defun esk-outline-set-regexp ()
+  "And here is a docsting"
+  (let ((cons (assoc major-mode esk-outline-regexp-alist)))
+    (when cons
+      (setq outline-regexp (cdr cons))
+      (setq orgstruct-heading-prefix-regexp (cdr cons)))))
 
-(use-package popwin
-  :ensure popwin
-  :config
-  (progn
-    (advice-add
-     'popwin:stick-popup-window
-     :before #'(lambda () (unless (popwin:popup-window-live-p)
-                       (call-interactively 'popwin:popup-last-buffer))))
-    (bind-key "C-z" popwin:keymap)
-    (bind-key "q" 'popwin:close-popup-window popwin:keymap)
-    (setq popwin:popup-window-height 0.2
-          popwin:adjust-other-windows t)
-    (push '("^\*cider-repl .+\*$" :regexp t :stick t) popwin:special-display-config)
-    (push '("*cider-error*" :stick nil) popwin:special-display-config)
-    (push '("*grep*" :stick t) popwin:special-display-config)
-    (push '("^\*helm .+\*$" :regexp t) popwin:special-display-config)
-    (push '("^\*helm-.+\*$" :regexp t) popwin:special-display-config)
-    (popwin-mode 1)))
+(defun esk-org-headings-set-regexp ()
+  (let ((cons (assoc major-mode esk-org-headings-regexp-alist)))
+    (when cons (setq org-complex-heading-regexp (cdr cons)))))
 
-(use-package simple-screen
-  :ensure simple-screen
-  :init (bind-key "C-z" 'simple-screen-map))
+(add-hook 'prog-mode-hook 'esk-outline-set-regexp)
+(add-hook 'prog-mode-hook 'esk-org-headings-set-regexp)
 
-(use-package perspective
-  :ensure perspective
-  :init (add-hook 'after-init-hook 'persp-mode)
-  :config
-  (progn
-    (progn
-      (bind-key "z" 'persp-switch-quick simple-screen-map)
-      (bind-key "s" 'persp-switch simple-screen-map)
-      (bind-key "n" 'persp-next simple-screen-map)
-      (bind-key "p" 'persp-prev simple-screen-map)
-      (bind-key "r" 'persp-rename simple-screen-map)
-      (bind-key "c" 'persp-kill simple-screen-map)
-      (bind-key "k" 'persp-remove-buffer simple-screen-map)
-      (bind-key "a" 'persp-add-buffer simple-screen-map)
-      (bind-key "i" 'persp-import simple-screen-map))
-    (setq persp-initial-frame-name "emacs")))
+(advice-add #'outline-show-all :after #'recenter)
 
-(use-package win-switch
-  :ensure win-switch
-  :init (win-switch-setup-keys-ijkl "\C-xo"))
-
-;; Switch
-(use-package windmove
-  :bind (("<left>" . windmove-left)
-         ("<right>" . windmove-right)
-         ("<up>" . windmove-up)
-         ("<down>" . windmove-down))
-  :config (setq windmove-wrap-around nil))
-
-;; Resize
-(use-package commands
-  :load-path "./lib"
-  :bind (("S-<left>" . move-border-left)
-         ("S-<right>" . move-border-right)
-         ("S-<up>" . move-border-up)
-         ("S-<down>" . move-border-down)))
-
-;; Rearrange
-(use-package buffer-move
-  :ensure buffer-move
-  :bind (("M-S-<down>" . buf-move-down)
-         ("M-S-<left>" . buf-move-left)
-         ("M-S-<up>" . buf-move-up)
-         ("M-S-<right>" . buf-move-right)))
-
-;; Uno/redo
-(use-package winner
-  :init (winner-mode 1))
-
-(progn
-  (defadvice split-window (after move-point-to-new-window activate)
-    "Move to the newly created window after a split."
-    (other-window 1)))
-
-;; * Editing
+;;; * Editing
 
 (setq-default comment-auto-fill-only-comments t)
 (delete-selection-mode 1)
 
-;; * Search and replace
-;; ** Buffer
-;; ** Directory
-;; * Programming
+;;; * Programming
 
-(use-package prog-mode
-  :config
-  (progn
-    (use-package evil-nerd-commenter
-      :ensure evil-nerd-commenter
-      :init (bind-key "M-;" 'evilnc-comment-or-uncomment-lines prog-mode-map))
+(use-package evil-nerd-commenter
+  :ensure t
+  :defer t
+  :commands evilnc-comment-or-uncomment-lines)
 
-    (use-package eldoc
-      :diminish ""
-      :init (add-hook 'prog-mode-hook 'eldoc-mode))
+(use-package eldoc
+  :ensure t
+  :defer t
+  :diminish eldoc-mode
+  :init (add-hook 'prog-mode-hook 'eldoc-mode))
 
-    (use-package hl-todo
-      :ensure hl-todo
-      :init (add-hook 'prog-mode-hook 'hl-todo-mode))
+(use-package hl-todo
+  :ensure t
+  :defer t
+  :commands hl-todo-mode
+  :init (add-hook 'prog-mode-hook 'hl-todo-mode))
 
-    (use-package rainbow-delimiters
-      :ensure rainbow-delimiters
-      :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+(use-package rainbow-delimiters
+  :ensure t
+  :defer t
+  :commands rainbow-delimiters-mode
+  :init (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
-    (use-package hl-sexp
-      :ensure hl-sexp
-      :init
-      (add-hook 'prog-mode-hook 'hl-sexp-mode))))
-
-;; ** Syntax checking
-
-(use-package flycheck
-  :ensure flycheck
-  :diminish ""
-  :init (add-hook 'prog-mode-hook 'flycheck-mode)
-  :config
-  (progn
-    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
-    (defvar flycheck-mode-line-lighter " *")
-    (use-package flycheck-color-mode-line
-      :ensure flycheck-color-mode-line
-      :init (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))))
-
-;; ** Indentation
-
-(use-package aggressive-indent
-  :ensure aggressive-indent
-  :diminish ""
-  :init (add-hook 'prog-mode-hook 'aggressive-indent-mode)
-  :config
-  (progn
-    (setq aggressive-indent-comments-too nil)
-    (add-to-list 'aggressive-indent-modes-to-prefer-defun 'clojure-mode)))
-
-;; ** Structured editing
+(use-package hl-sexp
+  :ensure t
+  :defer t
+  :commands hl-sexp-mode
+  :init (add-hook 'prog-mode-hook 'hl-sexp-mode))
 
 (use-package poporg
-  :ensure poporg
-  :init (bind-key "C-c e" 'poporg-dwim prog-mode-map)
-  :config
-  (bind-key "C-c C-c" 'poporg-dwim poporg-mode-map))
+  :ensure t
+  :defer t
+  :commands poporg-dwim
+  :config (bind-key "C-c C-c" 'poporg-dwim poporg-mode-map))
 
 (use-package paren
+  :defer t
   :init (add-hook 'prog-mode-hook 'show-paren-mode)
   :config
   (progn
@@ -726,118 +746,210 @@
     (add-hook 'deactivate-mark-hook #'(lambda () (show-paren-mode 1)))
     (setq show-paren-delay 0.02)))
 
-(use-package paredit
-  :ensure paredit
-  :diminish ""
+;;; ** Syntax checking
+
+(use-package flycheck
+  :ensure t
+  :defer t
+  :diminish flycheck-mode
+  :commands flycheck-mode
+  :init (add-hook 'prog-mode-hook 'flycheck-mode)
+  :preface (defvar flycheck-mode-line-lighter " *")
+  :config (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+
+(use-package helm-flycheck :ensure t :defer t)
+
+;;; ** Indentation & whitespace
+
+(use-package aggressive-indent
+  :ensure t
+  :defer t
+  :commands esk-aggressive-indent-mode-maybe
+  :diminish aggressive-indent-mode
+  :commands aggressive-indent-mode
   :config
   (progn
-    (add-hook 'lisps-mode-hook 'paredit-mode)
+    (setq aggressive-indent-comments-too t)
+    (add-to-list 'aggressive-indent-modes-to-prefer-defun 'clojure-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'tuareg-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'makefile-mode)
+    (defun esk-aggressive-indent-mode-maybe (flag)
+      (if (member major-mode aggressive-indent-excluded-modes)
+	  (aggressive-indent-mode -1)
+	(aggressive-indent-mode flag)))))
+
+(use-package auto-indent-mode
+  :ensure t
+  :defer t
+  :config
+  (setq auto-indent-indent-style 'aggressive
+	auto-indent-blank-lines-on-move nil
+	auto-indent-current-pairs nil))
+
+(use-package ws-butler
+  :ensure t
+  :defer t
+  :diminish ws-butler-mode
+  :commands ws-butler-mode)
+
+(easy-mmode-define-minor-mode
+ esk-savage-indent-mode
+ "Savage indent mode"
+ nil nil nil
+ (progn
+   (setq show-trailing-whitespace esk-savage-indent-mode)
+   (auto-indent-mode esk-savage-indent-mode)
+   (esk-aggressive-indent-mode-maybe esk-savage-indent-mode)
+   (ws-butler-mode esk-savage-indent-mode)))
+
+(add-hook 'prog-mode-hook 'esk-savage-indent-mode)
+
+;;; ** Structured editing
+
+(use-package paredit
+  :ensure t
+  :defer t
+  :diminish paredit-mode
+  :commands paredit-mode
+  :preface
+  (progn
+    (defun minibuffer-paredit-mode-maybe ()
+      (if (eq this-command 'eval-expression)
+	  (paredit-mode 1)))
     (defun paredit-wrap-round-from-behind ()
       (interactive)
       (forward-sexp -1)
       (paredit-wrap-round)
       (insert " ")
       (forward-char -1))
-
     (defun paredit-wrap-square-from-behind ()
       (interactive)
       (forward-sexp -1)
       (paredit-wrap-square))
-
     (defun paredit-wrap-curly-from-behind ()
       (interactive)
       (forward-sexp -1)
-      (paredit-wrap-curly))
+      (paredit-wrap-curly)))
+  :init
+  (progn
+    (add-hook 'minibuffer-setup-hook 'minibuffer-paredit-mode-maybe)
+    (add-hook 'lisps-mode-hook 'paredit-mode))
+  :config
+  (bind-keys
+   :map paredit-mode-map
+   ("M-(" . 'paredit-wrap-round)
+   ("M-)" . 'paredit-wrap-round-from-behind)
+   ("M-[" . 'paredit-wrap-square)
+   ("M-]" . 'paredit-wrap-square-from-behind)
+   ("M-{" . 'paredit-wrap-curly)
+   ("M-}" . 'paredit-wrap-curly-from-behind)))
 
-    (bind-key "M-(" 'paredit-wrap-round paredit-mode-map)
-    (bind-key "M-)" 'paredit-wrap-round-from-behind paredit-mode-map)
-    (bind-key "M-[" 'paredit-wrap-square paredit-mode-map)
-    (bind-key "M-]" 'paredit-wrap-square-from-behind paredit-mode-map)
-    (bind-key "M-{" 'paredit-wrap-curly paredit-mode-map)
-    (bind-key "M-}" 'paredit-wrap-curly-from-behind paredit-mode-map)
+(comment
+ (use-package paxedit
+   :ensure t
+   :defer t
+   :diminish paxedit-mode
+   :commands paxedit-mode
+   :init (add-hook 'lisps-mode-hook 'paxedit-mode)
+   :config
+   (defhydra paxedit-hydra (:color red)
+     ("u" paxedit-backward-up)
+     ("e" paxedit-backward-end)
+     ("f" paxedit-transpose-forward)
+     ("b" paxedit-transpose-backward)
+     ("w" paxedit-copy)
+     ("k" paxedit-kill)
+     ("d" paxedit-delete)
+     ("r" paxedit-sexp-raise)
+     ("c" paxedit-symbol-change-case)
+     ("w" paxedit-symbol-copy)
+     ("k" paxedit-symbol-kill))
+   (bind-key "C-`" 'paxedit-hydra/body lisps-mode-map)))
 
-    (defun minibuffer-paredit-mode-maybe ()
-      (if (eq this-command 'eval-expression)
-          (paredit-mode 1)))
+(use-package lispy
+  :ensure t
+  :defer t
+  :init (add-hook 'lisps-mode-hook 'lispy-mode t)
+  :config (setq lispy-no-permanent-semantic t))
 
-    (add-hook 'minibuffer-setup-hook 'minibuffer-paredit-mode-maybe)))
+(use-package clojure
+  :load-path "./lib/clojure-semantic"
+  :defer t
+  :init
+  (after lispy
+    (after clojure-mode
+      (load-library "clojure"))))
 
-;; ** Completion
+;;;** Completion
 
 (use-package abbrev
-  :diminish "")
-
-(use-package hippie-exp
+  :defer t
+  :diminish abbrev-mode
   :config
-  (setq hippie-expand-try-functions-list
-        '(try-expand-dabbrev
-          try-expand-dabbrev-all-buffers
-          try-expand-dabbrev-from-kill
-          try-complete-file-name-partially
-          try-complete-file-name
-          try-expand-all-abbrevs
-          try-expand-list
-          try-expand-line
-          try-complete-lisp-symbol-partially
-          try-complete-lisp-symbol)))
+  (progn
+    (setq-default abbrev-mode t)
+    (when (file-exists-p abbrev-file-name)
+      (quietly-read-abbrev-file))))
 
 (use-package company
-  :ensure company
-  :diminish ""
+  :ensure t
+  :defer t
+  :diminish company-mode
+  :commands company-mode
   :init (add-hook 'prog-mode-hook 'company-mode)
   :config
   (progn
     (bind-key "<tab>" 'company-complete-selection company-active-map)
-    (add-hook 'company-completion-started-hook
-	      '(lambda (_) (setq auto-save-buffers-enhanced-activity-flag nil)))
-    (add-hook 'company-completion-finished-hook
-	      '(lambda (_) (setq auto-save-buffers-enhanced-activity-flag t)))
-    (add-hook 'company-completion-cancelled-hook
-	      '(lambda (_) (setq auto-save-buffers-enhanced-activity-flag t)))
-    ;; (setq
-    ;;  company-idle-delay 0.3
-    ;;  company-minimum-prefix-length 2
-    ;;  company-require-match nil
-    ;;  company-show-numbers t
-    ;;  company-backends
-    ;;  '(company-capf
-    ;;    (company-dabbrev company-dabbrev-code company-keywords)
-    ;;    company-yasnippet))
+    ;; (add-hook 'company-completion-started-hook
+    ;; 	      '(lambda (_) (setq auto-save-buffers-enhanced-activity-flag nil)))
+    ;; (add-hook 'company-completion-finished-hook
+    ;; 	      '(lambda (_) (setq auto-save-buffers-enhanced-activity-flag t)))
+    ;; (add-hook 'company-completion-cancelled-hook
+    ;; 	      '(lambda (_) (setq auto-save-buffers-enhanced-activity-flag t)))
+    (setq company-idle-delay 0
+    	  company-minimum-prefix-length 2
+    	  company-show-numbers t)))
 
-    (use-package company-quickhelp
-      :ensure company-quickhelp
-      :init
-      (company-quickhelp-mode 1))
+(use-package company-dabbrev
+  :defer t
+  :config
+  (setq company-dabbrev-ignore-case t
+	company-dabbrev-ignore-invisible t
+	company-dabbrev-downcase nil))
 
-    (use-package company-statistics
-      :ensure company-statistics
-      :init
-      (company-statistics-mode 1))))
+(use-package company-quickhelp
+  :ensure t
+  :defer t
+  :init (after company (bind-key "C-h" 'company-quickhelp-mode company-active-map))
+  :config (setq company-quickhelp-delay 0.2))
+
+(use-package company-statistics
+  :ensure t
+  :defer t
+  :init (after company (add-hook 'company-mode (turn-on 'company-statistics-mode))))
 
 (use-package yasnippet
-  :disabled t
-  :ensure yasnippet
-  :init (setq yas-snippet-dirs `(,(user-file "snippets")))
-  :diminish ""
+  :ensure t
+  :defer t
+  :diminish yas-minor-mode
+  :commands yas-minor-mode
+  :init (add-hook 'prog-mode-hook 'yas-minor-mode)
   :config
   (progn
-    (add-hook 'prog-mode-hook 'yas-minor-mode)
-    (setq yas-indent-line 'auto
-          yas-wrap-around-region t)
+    (setq yas-snippet-dirs `(,(user-file "snippets"))
+	  yas-indent-line 'auto
+	  yas-wrap-around-region t)
     (yas-reload-all)))
 
-;; ** Whitespace
+(use-package auto-yasnippet
+  :ensure t
+  :defer t
+  :commands aya-open-line)
 
-(use-package ws-butler
-  :ensure ws-butler
-  :diminish (ws-butler-mode . "")
-  :init
-  (progn
-    (add-hook 'prog-mode-hook 'ws-butler-mode)
-    (add-hook 'prog-mode-hook #'(lambda () (setq show-trailing-whitespace t)))))
+;;; * Languages
+;;; ** Lisps
 
-;; * Languages
-;; ** Lisps
+(defvar lisps-mode-map (make-keymap))
 
 (defun lisps-pretty ()
   (progn
@@ -846,274 +958,279 @@
     (push '("lambda" . ?λ) prettify-symbols-alist)
     (turn-on-prettify-symbols-mode)))
 
-(defun lisps-imenu-include-comments ()
-  (add-to-list 'imenu-generic-expression
-               '("*" "^;; \\(.+\\)$" 1) t))
-
-(defun lisps-insert-header-comment ()
-  (interactive)
-  (forward-line -1)
-  (newline)
-  (insert-char ?\; 2)
-  (insert-char ?\s 1)
-  (insert-char ?\- 69)
-  (newline)
-  (insert-char ?\; 2)
-  (newline)
-  (forward-line -1)
-  (end-of-line))
-
-(defvar lisps-mode-map
-  (make-keymap))
+(use-package subword :defer t :diminish subword-mode)
 
 (easy-mmode-define-minor-mode
- lisps-mode
- "Minor mode for lisp-family languages"
+ lisps-mode "Minor mode for lisp-family languages"
  :keymap lisps-mode-map
  (progn
-   (after key-chord
-     (key-chord-define lisps-mode-map ";'" 'lisps-insert-header-comment))
    (lisps-pretty)
-   (lisps-imenu-include-comments)
    (eldoc-mode 1)
    (subword-mode 1)))
 
-(defun lisps-mode-turn-on ()
-  (lisps-mode 1))
-
-
-;; ** Clojure
+;;; ** Clojure
 
 (use-package clojure-mode
-  :ensure clojure-mode
+  :ensure t
+  :defer t
+  :config (add-hook 'clojure-mode-hook (turn-on 'lisps-mode)))
+
+(use-package clojure-mode-extra-font-locking :ensure t)
+
+(use-package cider
+  :ensure t
+  :defer t
+  :preface
+  (defun esk-cider-repl-redo-last-input ()
+    (interactive)
+    (save-window-excursion
+      (cider-switch-to-current-repl-buffer)
+      (cider-repl-previous-input)
+      (cider-repl-return)))
   :config
   (progn
-    (add-hook 'clojure-mode-hook 'lisps-mode-turn-on)
-
-    (use-package clojure-mode-extra-font-locking
-      :ensure clojure-mode-extra-font-locking)
-
-    (use-package nrepl-eval-sexp-fu
-      :ensure nrepl-eval-sexp-fu
-      :init (add-hook 'clojure-mode-hook 'nrepl-eval-sexp-fu-flash-mode))
-
-    (use-package cider
-      :ensure cider
+    (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+    (add-hook 'cider-repl-mode-hook 'cider-turn-on-eldoc-mode)
+    (bind-key "C-c C-t" 'cider-test-jump clojure-mode-map)
+    (bind-key "C-c RET" 'esk-cider-repl-redo-last-input cider-mode-map)
+    (setq cider-prompt-save-file-on-load nil
+	  cider-show-error-buffer t
+	  cider-auto-jump-to-error nil
+	  nrepl-hide-special-buffers nil
+	  cider-repl-use-pretty-printing t
+	  cider-repl-history-file "~/.emacs.d/nrepl-history")
+    (use-package cider-repl
       :config
       (progn
-        (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-        (add-hook 'cider-repl-mode-hook 'cider-turn-on-eldoc-mode)
-        (bind-key "C-c C-t" 'cider-test-jump clojure-mode-map)
-        (setq cider-prompt-save-file-on-load nil
-              cider-show-error-buffer t
-              cider-auto-select-error-buffer nil
-              cider-auto-jump-to-error nil
-              nrepl-hide-special-buffers nil
-              cider-repl-history-file "~/.emacs.d/nrepl-history")
+	(add-hook 'cider-repl-mode-hook 'company-mode)
+	(add-hook 'cider-repl-mode-hook (turn-on 'lisps-mode))
+	(setq cider-repl-pop-to-buffer-on-connect nil)
+	))))
 
-        (use-package cider-repl
-          :config
-          (progn
-            (add-hook 'cider-repl-mode-hook 'company-mode)
-            (add-hook 'cider-repl-mode-hook 'lisps-mode-turn-on)
-            (setq cider-repl-pop-to-buffer-on-connect nil)))))
+(use-package clj-refactor
+  :ensure t
+  :disabled t
+  :defer t
+  :diminish clj-refactor-mode
+  :init (add-hook 'clojure-mode-hook 'clj-refactor-mode)
+  :config
+  (cljr-add-keybindings-with-prefix "C-c C-m"))
 
-    (use-package clj-refactor
-      :ensure clj-refactor
-      :diminish ""
-      :init (add-hook 'clojure-mode-hook 'clj-refactor-mode)
-      :config
-      (progn
-        (cljr-add-keybindings-with-prefix "C-c C-m")
-        (after clojure
-          (bind-key "C-M->" 'cljr-thread clojure-mode-map)
-          (bind-key "C-M-<" 'cljr-unwind clojure-mode-map))))
 
-    (use-package slamhound
-      :ensure slamhound
-      :init (bind-key "C-c s" 'slamhound clojure-mode-map))
+(use-package typed-clojure-mode
+  :ensure t
+  :disabled t
+  :init (add-hook 'clojure-mode-hook 'typed-clojure-mode)
+  :config
+  (progn
+    (defun typed-clojure-font-lock ()
+      (font-lock-add-keywords
+       nil
+       '(("(\\(def\\(record\\|protocol\\)>\\)\\s-+\\(\\w+\\)"
+	  (1 font-lock-keyword-face)
+	  (3 font-lock-function-name-face)))))
+    (add-hook 'clojure-mode-hook 'typed-clojure-font-lock)))
 
-    (use-package typed-clojure-mode
-      :ensure typed-clojure-mode
-      :disabled t
-      :init (add-hook 'clojure-mode-hook 'typed-clojure-mode)
-      :config
-      (progn
-        (defun typed-clojure-font-lock ()
-          (font-lock-add-keywords nil
-                                  '(("(\\(def\\(record\\|protocol\\)>\\)\\s-+\\(\\w+\\)"
-                                     (1 font-lock-keyword-face)
-                                     (3 font-lock-function-name-face)))))
-        (add-hook 'clojure-mode-hook 'typed-clojure-font-lock)))
-
-    ;; Linting
-    (use-package kibit-mode
-      :disabled t
-      :ensure kibit-mode
-      :defines (clojure-kibit)
-      :commands (clojure-kibit)
-      :preface
-      (progn
-        (defun clojure-kibit-enable ()
-          (interactive)
-          (flycheck-mode 1)
-          (add-hook 'clojure-mode-hook 'flycheck-mode))
-
-        (defun clojure-kibit-disable ()
-          (interactive)
-          (flycheck-mode -1)
-          (remove-hook 'clojure-mode-hook 'flycheck-mode))))))
-
-;; ** Elisp
+;;; ** Elisp
 
 (use-package lisp-mode
+  :defer t
+  :preface
+  (defun esk-imenu-add-use-package ()
+    "Recognize `use-package` in imenu"
+    (when (string= buffer-file-name (expand-file-name "init.el" "~/.emacs.d"))
+      (add-to-list
+       'imenu-generic-expression
+       '("Packages" "^\\s-*(\\(use-package\\)\\s-+\\(\\(\\sw\\|\\s_\\)+\\)" 2)
+       t)))
   :config
   (progn
     (bind-key "C-c C-k" 'eval-buffer emacs-lisp-mode-map)
-    (add-hook 'emacs-lisp-mode-hook 'lisps-mode-turn-on)
-    (add-hook 'ielm-mode-hook 'lisps-mode-turn-on)
+    (add-hook 'emacs-lisp-mode-hook 'esk-imenu-add-use-package)
+    (add-hook 'emacs-lisp-mode-hook (turn-on 'lisps-mode))
+    (add-hook 'ielm-mode-hook (turn-on 'lisps-mode))))
 
-    (use-package elisp-slime-nav
-      :ensure elisp-slime-nav
-      :diminish ""
-      :init
-      (add-hook 'emacs-lisp-mode-hook 'turn-on-elisp-slime-nav-mode))))
+(use-package elisp-slime-nav
+  :ensure t
+  :defer t
+  :diminish ""
+  :init (add-hook 'emacs-lisp-mode-hook 'turn-on-elisp-slime-nav-mode))
 
-;; ;; ** SQL
+;;; ** SQL
 
 (use-package sql-indent
-  :ensure sql-indent
+  :ensure t
+  :defer t
+  :init (after sql (require 'sql-indent))
+  :config
+  (setq sql-indent-offset 2
+	sql-indent-first-column-regexp
+	(regexp-opt
+ 	 '("create" "declare" "begin" "end"
+	   ))))
+
+(use-package edbi :ensure t :defer t)
+
+;;; ** OCaml
+
+(use-package opam
+  :ensure t
+  :defer t
+  :init (after tuareg (opam-init)))
+
+(use-package tuareg
+  :ensure t
+  :commands (tuareg tuareg-mode)
+  :mode "\\.ml[ily]?$")
+
+(use-package ocp-indent
+  :disabled t
+  :ensure t
+  :defer t
+  :init (after tuareg (require 'ocp-indent nil t)))
+
+(use-package merlin
+  :ensure t
+  :defer t
   :init
-  (after sql-mode
-    (setq sql-indent-offset 2
-          sql-indent-first-column-regexp
-          (concat "^\\s-*"
-                  (regexp-opt
-                   '("create" "drop" "truncate"
-                     "select" "update" "insert" "delete"
-		     "intersect"
-                     "from"
-                     "where" "into"
-                     "group" "having" "order"
-                     "limit" "offset"
-                     "set"
-                     "begin" "commit"
-                     "--") t)
-                  "\\(\\b\\|\\s-\\)"))
-    (require 'sql-indent)))
+  (progn
+    ;; NOTE: from the merlin docs
+    ;;
+    ;; To use merlin-locate to go to the source of things installed with
+    ;; opam, you first of all need to keep the source around when
+    ;; installing, and let opam create .cmt files:
+    ;; Set this in ~/.bash_profile:
+    ;; export OPAMKEEPBUILDDIR=true
+    ;; export OCAMLPARAM="_,bin-annot=1"
+    ;; export OPAMBUILDDOC=true
+    (setenv "OPAMKEEPBUILDDIR" "true")
+    (setenv "OCAMLPARAM" "_,bin-annot=1")
+    (setenv "OPAMBUILDDOC" "true")
+    (after tuareg (add-hook 'tuareg-mode-hook 'merlin-mode)))
+  :config
+  (progn
+    (setq merlin-command 'opam)
+    (after company (add-to-list 'company-backends 'merlin-company-backend))
+    (define-key merlin-mode-map (kbd "C-c <up>") 'merlin-type-enclosing-go-up)
+    (define-key merlin-mode-map (kbd "C-c <down>") 'merlin-type-enclosing-go-down)))
 
-(use-package edbi
-  :ensure edbi)
+(use-package flycheck-ocaml
+  :ensure t
+  :init
+  (after merlin (flycheck-ocaml-setup))
+  :config
+  (after merlin (setq merlin-error-after-save nil)))
 
-;; ;; * Eshell
+(use-package makefile
+  :init
+  (progn
+    (defun makefile-setup ()
+      (set (make-local-variable 'indent-tabs-mode) t)
+      (set (make-local-variable 'tab-width) 4))
+    (add-hook 'makefile-mode-hook 'makefile-setup)))
+
+;;; * Eshell
 
 (use-package eshell
+  :defer t
+  :commands eshell
   :config
   (progn
     (setq eshell-scroll-to-bottom-on-output t
 	  eshell-scroll-show-maximum-output t)
+    (add-hook 'eshell-mode-hook 'paredit-mode)))
 
-    (add-hook 'eshell-mode-hook 'paredit-mode)
+(use-package em-unix
+  :defer t
+  :config
+  (setq eshell-cp-interactive-query t
+	eshell-ln-interactive-query t
+	eshell-mv-interactive-query t
+	eshell-rm-interactive-query t
+	eshell-mv-overwrite-files nil))
 
-    (use-package esh-mode
-      :config
-      (progn
-	(defun eshell/cdd ()
-	  (eshell/cd (or (locate-dominating-file default-directory "src")
-			 (locate-dominating-file default-directory ".git"))))
+(use-package em-cmpl
+  :defer t
+  :config
+  (setq eshell-cmpl-ignore-case t))
 
-	(defun eshell/clear ()
-	  (interactive)
-	  (let ((inhibit-read-only t))
-	    (delete-region (point-min) (point-max)))
-	  (eshell-send-input))
+(use-package em-term
+  :defer t
+  :config
+  (setq eshell-visual-commands
+	(append '("tmux" "screen" "ssh") eshell-visual-commands)))
 
-	(add-hook 'eshell-mode-hook
-		  #'(lambda ()
-		      (bind-key "C-l" 'eshell/clear eshell-mode-map)))))
-
-    (use-package em-unix
-      :config
-      (setq eshell-cp-interactive-query t
-	    eshell-ln-interactive-query t
-	    eshell-mv-interactive-query t
-	    eshell-rm-interactive-query t
-	    eshell-mv-overwrite-files nil))
-
-    (use-package em-cmpl
-      :config
-      (setq eshell-cmpl-ignore-case t))
-
-    (use-package em-prompt
-      :config
-      (use-package eshell-prompt-extras
-	:ensure eshell-prompt-extras
-	:config
-	(setq eshell-highlight-prompt nil
-	      eshell-prompt-function 'epe-theme-lambda)))
-
-    (use-package em-term
-      :config
-      (setq eshell-visual-commands
-	    (append '("tmux" "screen" "ssh") eshell-visual-commands)))
-
-    (use-package em-hist
-      :config
-      (setq eshell-hist-ignoredups t))))
+(use-package em-hist
+  :defer t
+  :config
+  (setq eshell-hist-ignoredups t))
 
 (use-package eshell-z
-  :load-path "./lib")
+  :defer t
+  :ensure t)
 
-;; ;; * Org Mode
+;;; * Org Mode
 
 (use-package org
-  :diminish (orgstruct-mode . "")
+  :ensure org-plus-contrib
+  :defer t
+  :diminish orgstruct-mode
+  :commands (turn-on-orgstruct)
+  :init (add-hook 'prog-mode-hook 'turn-on-orgstruct)
   :config
   (progn
     (setq org-catch-invisible-edits 'smart)
-    (setq org-structure-template-alist
-          '(("s" "#+begin_src ?\n\n#+end_src" "<src lang=\"?\">\n\n</src>")
-            ("e" "#+begin_example\n?\n#+end_example" "<example>\n?\n</example>")
-            ("q" "#+begin_quote\n?\n#+end_quote" "<quote>\n?\n</quote>")
-            ("v" "#+begin_verse\n?\n#+end_verse" "<verse>\n?\n</verse>")
-            ("v" "#+begin_verbatim\n?\n#+end_verbatim" "<verbatim>\n?\n</verbatim>")
-            ("c" "#+begin_center\n?\n#+end_center" "<center>\n?\n</center>")
-            ("l" "#+begin_latex\n?\n#+end_latex"
-             "<literal style=\"latex\">\n?\n</literal>")
-            ("l" "#+latex: " "<literal style=\"latex\">?</literal>")
-            ("h" "#+begin_html\n?\n#+end_html"
-             "<literal style=\"html\">\n?\n</literal>")
-            ("h" "#+html: " "<literal style=\"html\">?</literal>")
-            ("a" "#+begin_ascii\n?\n#+end_ascii" "")
-            ("a" "#+ascii: " "")
-            ("i" "#+index: ?" "#+index: ?")
-            ("i" "#+include: %file ?"
-             "<include file=%file markup=\"?\">")))
-    (add-hook 'prog-mode-hook 'turn-on-orgstruct)
+    (add-to-list 'org-structure-template-alist
+		 '("el" "#+begin_src emacs-lisp\n  ?\n#+end_src" "<src lang=\"emacs-lisp\">\n?\n</src>"))))
 
-    (defun orgstruct-lisps-turn-on ()
-      (setq orgstruct-heading-prefix-regexp ";; "))
+(use-package org-capture
+  :defer t
+  :config
+  (progn
+    (setq org-reverse-note-order t
+          org-capture-templates
+          '(("d" "Dev dump" entry (file "~/org/dev.org") "* %?\n  %i\n %a" :kill-buffer  t)
+            ("j" "Journal" entry (file "~/org/journal.org") "* %U\n %?i\n %a" :kill-buffer t)))))
 
-    (add-hook 'lisps-mode-hook 'orgstruct-lisps-turn-on)
+(use-package org-clock
+  :defer t
+  :bind ("C-c C-c" . hydra-org-clock/body)
+  :preface
+  (defvar esk-projects-clock-file
+    (expand-file-name "~/projects/clock.org"))
+  :config
+  (setq org-clock-idle-time 15
+        org-clock-in-resume t
+        org-clock-persist t
+        org-clock-persist-query-resume nil
+        org-clock-clocked-in-display 'both))
 
-    (use-package org-capture
-      :bind ("C-c c" . org-capture)
-      :config
-      (progn
-        (setq org-reverse-note-order t
-              org-capture-templates
-              '(("d" "Dev dump" entry (file "~/org/dev.org") "* %?\n  %i\n %a" :kill-buffer  t)
-                ("j" "Journal" entry (file "~/org/journal.org") "* %U\n %?i\n %a" :kill-buffer t)))))
+(use-package worf
+  :ensure t
+  :defer t
+  :init
+  (after org
+    (add-hook 'org-mode-hook 'worf-mode)))
 
-    (use-package org-clock
-      :config
-      (setq org-clock-idle-time 15
-            org-clock-in-resume t
-            org-clock-persist t
-            org-clock-persist-query-resume nil
-            org-clock-clocked-in-display 'both))))
+(use-package org-projectile
+  :ensure t
+  :disabled t
+  :init
+  (after org-capture
+    (require 'org-projectile)
+    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p")))
+  :config
+  (setq org-projectile:projects-file "~/projects/TODOs.org"
+	org-agenda-files (append org-agenda-files (org-projectile:todo-files))))
+
+(use-package deft
+  :ensure t
+  )
+(use-package outline-magic :ensure t :defer t)
 
 (use-package erc
+  :defer t
+  :commands erc
   :config
   (progn
     ;; Joining
@@ -1125,13 +1242,46 @@
           erc-fill-static-center 20)
 
     (use-package erc-hl-nicks
-      :ensure erc-hl-nicks
+      :defer t
       :init (add-hook 'erc-mode-hook 'erc-hl-nicks-mode))))
 
+;;; * External
+
+(use-package vagrant-tramp
+  :ensure t
+  :disabled t
+  :defer t
+  :commands vagrant-tramp-enable
+  :init
+  (progn
+    ;; TODO Projectile ends up trying to use the local shell
+    (setq shell-file-name "/bin/bash")
+    (after tramp (vagrant-tramp-enable))))
+
 (use-package hardhat
-  :ensure hardhat
-  :init (global-hardhat-mode 1)
-  :config (setq hardhat-mode-lighter nil))
+  :ensure t
+  :defer t
+  :init (after-init (turn-on 'global-hardhat-mode)))
+
+(load-file (expand-file-name "keybindings.el" user-emacs-directory))
+
+;;; * SSH
+
+(setq vc-ignore-dir-regexp
+      (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
 
 (provide 'init)
 ;; init.el ends here
+
+;; (custom-theme-set-faces
+;;  'plan9
+;;  (plan9/with-color-variables
+;;    `(mode-line ((t (:background ,blue-light))))
+;;    `(mode-line-inactive ((t (:background ,blue :foreground ,blue))))
+;;    `(powerline-active ((t (:background ,blue))))
+;;    `(powerline-active1 ((t (:background ,blue-light))))
+;;    `(powerline-active2 ((t (:background ,bg-alt))))
+
+;;    ;; `(powerline-inactive1 ((t (:background ,fg))))
+;;    ;; `(powerline-inactive2 ((t (:background ,fg))))
+;;    `(fringe ((t (:background ,bg-alt))))))

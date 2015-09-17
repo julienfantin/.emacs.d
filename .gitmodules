@@ -1,0 +1,9 @@
+[submodule "lib/smex"]
+	path = lib/smex
+	url = https://github.com/abo-abo/smex.git
+[submodule "lib/lispy-mnemonic"]
+	path = lib/lispy-mnemonic
+	url = https://github.com/itsjeyd/lispy-mnemonic.git
+[submodule "lib/clojure-semantic"]
+	path = lib/clojure-semantic
+	url = https://github.com/kototama/clojure-semantic.git

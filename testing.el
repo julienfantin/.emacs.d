@@ -491,3 +491,38 @@ Eastwood, too noisy for now...
 (define-key input-decode-map "\M-[1;9B" [M-down])
 (define-key input-decode-map "\M-[1;9C" [M-right])
 (define-key input-decode-map "\M-[1;9D" [M-left])
+
+;; ---------------------------------------------------------------------
+;; Purpose
+
+(use-package purpose
+  :ensure purpose
+  :init
+  (setq purpose-user-mode-purposes
+	'((term-mode . terminal)
+	  (shell-mode . terminal)
+	  (ansi-term-mode . terminal)
+	  (tuareg-mode . coding)
+	  (clojure-mode . coding)
+	  (cider-repl-mode . clojure-repl)
+	  (css-mode . coding)
+	  (html-mode . coding)
+	  (compilation-mode . messages)))
+  :config
+  (purpose-mode 1)
+  (purpose-compile-user-configuration))
+
+(setf company-idle-delay 0
+      company-minimum-prefix-length 2
+      company-show-numbers t
+      company-selection-wrap-around t
+      company-dabbrev-ignore-case t
+      company-dabbrev-ignore-invisible t
+      company-dabbrev-downcase nil
+      company-backends (list #'company-css
+			     #'company-clang
+			     #'company-capf
+			     (list #'company-dabbrev-code
+				   #'company-keywords)
+			     #'company-files
+			     #'company-dabbrev))

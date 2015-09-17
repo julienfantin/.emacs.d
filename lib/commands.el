@@ -6,6 +6,7 @@
 ;; * Editing
 ;;
 
+;; ###autoload
 (defun esk/backward-kill-word ()
   (interactive)
   (if (region-active-p)
@@ -16,6 +17,7 @@
         (call-interactively 'paredit-backward-kill-word)
       (call-interactively 'backward-kill-word))))
 
+;; ###autoload
 (defun esk/cleanup ()
   (interactive)
   (save-excursion
@@ -30,10 +32,10 @@
       (whitespace-cleanup)))
   (message (format "%s cleaned!" (buffer-name))))
 
-
 ;; * Windows
 ;;
 
+;; ###autoload
 (defun esk/window-focus-toggle ()
   (interactive)
   (when (not (window-minibuffer-p (selected-window)))
@@ -42,6 +44,7 @@
       (window-configuration-to-register ?u)
       (delete-other-windows))))
 
+;; ###autoload
 (defun esk/window-split-toggle ()
   "Switch window split from horizontally to vertically, or vice
 versa. i.e. change right window to bottom, or change bottom
@@ -95,18 +98,22 @@ t, then move up, otherwise move down."
         (shrink-window arg nil)
       (enlarge-window arg nil))))
 
+;; ###autoload
 (defun move-border-left (arg)
   (interactive "P")
   (move-border-left-or-right arg t))
 
+;; ###autoload
 (defun move-border-right (arg)
   (interactive "P")
   (move-border-left-or-right arg nil))
 
+;; ###autoload
 (defun move-border-up (arg)
   (interactive "P")
   (move-border-up-or-down arg t))
 
+;; ###autoload
 (defun move-border-down (arg)
   (interactive "P")
   (move-border-up-or-down arg nil))
