@@ -507,14 +507,6 @@
 
 ;;; * Editing
 
-(use-package volatile-highlights
-  :disabled t
-  :ensure t
-  :defer t
-  :commands volatile-highlights-mode
-  :diminish volatile-highlights-mode
-  :init (add-hook 'prog-mode-hook 'volatile-highlights-mode))
-
 (use-package undo-tree
   :ensure t
   :defer t
@@ -1017,21 +1009,6 @@
   :init (add-hook 'clojure-mode-hook 'clj-refactor-mode)
   :config (cljr-add-keybindings-with-prefix "C-c C-m"))
 
-
-(use-package typed-clojure-mode
-  :ensure t
-  :disabled t
-  :init (add-hook 'clojure-mode-hook 'typed-clojure-mode)
-  :config
-  (progn
-    (defun typed-clojure-font-lock ()
-      (font-lock-add-keywords
-       nil
-       '(("(\\(def\\(record\\|protocol\\)>\\)\\s-+\\(\\w+\\)"
-	  (1 font-lock-keyword-face)
-	  (3 font-lock-function-name-face)))))
-    (add-hook 'clojure-mode-hook 'typed-clojure-font-lock)))
-
 ;;; ** Elisp
 
 (use-package lisp-mode
@@ -1211,17 +1188,6 @@
   (after org
     (add-hook 'org-mode-hook 'worf-mode)))
 
-(use-package org-projectile
-  :ensure t
-  :disabled t
-  :init
-  (after org-capture
-    (require 'org-projectile)
-    (add-to-list 'org-capture-templates (org-projectile:project-todo-entry "p")))
-  :config
-  (setq org-projectile:projects-file "~/projects/TODOs.org"
-	org-agenda-files (append org-agenda-files (org-projectile:todo-files))))
-
 (use-package deft
   :ensure t
   :defer t
@@ -1229,8 +1195,6 @@
   (setq deft-recursive t
         deft-use-filename-as-title t
         deft-default-extension "org"))
-
-(use-package outline-magic :disabled t :ensure t :defer t)
 
 (use-package erc
   :defer t
@@ -1244,26 +1208,10 @@
     ;; Filling chan buffers
     (setq erc-fill-function 'erc-fill-static
           erc-fill-static-center 20)
-
     (use-package erc-hl-nicks
       :ensure t
       :defer t
       :init (add-hook 'erc-mode-hook 'erc-hl-nicks-mode))))
-
-;;; * External
-
-(use-package vagrant-tramp
-  :disabled t
-  :ensure t
-  :defer t
-  :commands vagrant-tramp-enable
-  :init
-  (progn
-    ;; TODO Projectile ends up trying to use the local shell
-    (setq shell-file-name "/bin/bash")
-    (after tramp (vagrant-tramp-enable))))
-
-(load-file (expand-file-name "keybindings.el" user-emacs-directory))
 
 ;;; * SSH
 
@@ -1276,6 +1224,10 @@
   :defer t
   :config
   (setq url-configuration-directory (user-var-file "url/")))
+
+;;; * Keyboindings
+
+(load-file (expand-file-name "keybindings.el" user-emacs-directory))
 
 (provide 'init)
 ;; init.el ends here
