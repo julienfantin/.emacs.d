@@ -87,7 +87,7 @@
 
 ;; ** Windows/screens/perspectives
 
-(defhydra hydra-persp (:color red :columns 3)
+(defhydra hydra-persp (:color red :columns 3 :hint nil)
   "Screens, perspectives"
   ("1" simple-screen-0 "1")
   ("2" simple-screen-1 "2")

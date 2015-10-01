@@ -95,6 +95,11 @@
   "Return a file with `NAME' in `user-emacs-directory'."
   (expand-file-name name user-emacs-directory))
 
+(defvar user-var-directory (expand-file-name "var/" user-emacs-directory))
+
+(defun user-var-file (name)
+  (expand-file-name name user-var-directory))
+
 (setq user-emacs-directory (file-name-directory (or load-file-name buffer-file-name))
       custom-file (user-file "custom.el"))
 
@@ -183,10 +188,14 @@
 
 ;;; ** GUI
 
-(use-package powerline
-  :ensure t
-  :defer t
-  :init (after-init #'powerline-default-theme)
+(use-package spacemacs-theme
+  :ensure spacemacs-theme
+  :init (after-init (load-theme 'spacemacs-light t nil)))
+
+(use-package spaceline
+  :ensure spaceline
+  :functions (spaceline-emacs-theme)
+  :init (use-package spaceline-config :config (spaceline-emacs-theme))
   :config
   (advice-add 'load-theme :after (lambda (theme &optional no-confirm no-enable) (powerline-reset))))
 
@@ -219,13 +228,14 @@
 
 (use-package linum
   :init (add-hook 'prog-mode-hook (turn-on 'linum-mode))
-  :defines esk-linum-current-timer
+  :defines (esk-linum-current-timer)
+  :functions (linum-update-current)
   :preface (defvar-local esk-linum-current-timer nil)
   :config
   (progn
     (setq linum-delay t)
     (setq linum-format " %4d ")
-    ;; create a new var to keep track of the current update timer.
+    ;; coreate a new var to keep track of the current update timer.
     ;; rewrite linum-schedule so it waits for 1 second of idle time
     ;; before updating, and so it only keeps one active idle timer going
     (defun linum-schedule ()
@@ -242,26 +252,10 @@
 
 ;;; ** Theme
 
-(use-package theme-changer
-  :disabled t
-  :ensure t
-  :preface
-  (progn
-    (defun esk-semibold-faces (_ &optional _ _)
-      (mapc (lambda (face)
-	      (if (eq 'bold (face-attribute face :weight))
-		  (set-face-attribute face nil :weight 'semibold)
-		face))
-	    (face-list)))
-    (advice-add 'load-theme :after 'esk-semibold-faces))
+(use-package custom
   :config
-  (progn
-    (setq
-     custom-theme-directory (expand-file-name "themes/" user-emacs-directory)
-     calendar-location-name "Brooklyn, NY"
-     calendar-latitude 40.7
-     calendar-longitude -74.0)
-    (change-theme 'fiatui 'fiatui-dark)))
+  (setq custom-theme-directory
+	(expand-file-name "themes" user-emacs-directory)))
 
 (comment
  (use-package plan9-theme :ensure t)
@@ -294,10 +288,16 @@
 
 ;;; ** Minibuffer completion
 
-(use-package psession :ensure t :init (psession-mode 1))
+(use-package psession
+  :ensure t
+  :defer t
+  :init (after-init (turn-on #'psession-mode))
+  :config
+  (setq psession-elisp-objects-default-directory (user-var-file "elisp-objects/")))
 
 (use-package helm
   :ensure t
+  :functions (helm-autoresize-mode)
   :commands (helm-M-x
 	     helm-mini
 	     helm-find-files
@@ -314,6 +314,7 @@
     (setq helm-echo-input-in-header-line t
 	  helm-autoresize-max-height 38
 	  helm-autoresize-min-height 38
+          helm-candidate-number-limit 300
 	  helm-split-window-default-side 'below
 	  helm-split-window-in-side-p t
 	  helm-full-frame nil
@@ -359,33 +360,35 @@
 (use-package helm-ls-git
   :ensure t
   :defer t
-  :config (setq helm-ls-git-show-abs-or-relative 'relative))
+  :config
+  (progn
+    (setq helm-ls-git-show-abs-or-relative 'relative)
+    (set-face-attribute 'helm-ls-git-added-copied-face nil :inherit 'magit-diff-added)
+    (set-face-attribute 'helm-ls-git-modified-not-staged-face nil :inherit 'magit-filename)))
 
 (use-package helm-dash
   :ensure t
   :defer t
-  :defines (esk-dash-docsets
-	    esk-helm-dash-install
-	    helm-dash-docsets
-	    helm-dash-pg
-	    helm-dash-clojure
-	    helm-dash-web)
+  :defines (helm-dash-docsets helm-dash-installed-docsets)
+  :functions (esk-helm-dash-install helm-dash-pg helm-dash-clojure helm-dash-web)
   :commands (helm-dash-at-point esk-helm-dash-install)
-  :init
+  :preface
   (progn
     (defvar esk-dash-docsets
-      '("Clojure" "OpenCV_Java" "OpenCV_C" "OCaml" "CSS" "HTML" "Bash" "PostgreSQL"))
+      '("Ansible" "Clojure" "OpenCV_Java" "OpenCV_C" "OCaml" "CSS" "HTML" "Bash" "PostgreSQL"))
     (defun esk-helm-dash-install (docset-name)
       (unless (member docset-name (helm-dash-installed-docsets))
-	(helm-dash-install-docset docset-name)))
+        (helm-dash-install-docset docset-name)))
     (defun esk-dash-limit (docsets-names)
       (set (make-local-variable 'helm-dash-docsets) docsets-names))
+    (defun helm-dash-ocaml () (esk-dash-limit '("OCaml")))
     (defun helm-dash-bash () (esk-dash-limit '("Bash")))
     (defun helm-dash-pg () (esk-dash-limit '("PostgreSQL")))
     (defun helm-dash-web () (esk-dash-limit '("CSS" "HTML")))
     (defun helm-dash-clojure () (esk-dash-limit '("Clojure"))))
   :init
   (progn
+    (after tuareg (add-hook 'tuareg-mode-hook 'helm-dash-ocaml))
     (after sh-script (add-hook 'sh-mode-hook 'helm-dash-bash))
     (after sql (add-hook 'sql-mode-hook 'helm-dash-pg))
     (after css-mode (add-hook 'css-mode-hook 'helm-dash-web))
@@ -401,18 +404,24 @@
 
 (setq-default delete-by-moving-to-trash t)
 
-(use-package files
-  :defer t
+(use-package simple
+  :init
+  (add-hook 'find-file-hook (turn-on 'auto-save-mode))
   :config
-  (setq backup-by-copying t
-	backup-directory-alist `((".*" . ,temporary-file-directory))
-	auto-save-file-name-transforms `((".*" ,temporary-file-directory t))))
-
-(use-package auto-save
-  :config
-  (setq auto-save-default t
-	auto-save-interval 20
-	auto-save-timeout 1))
+  (progn
+    (defun save-buffer-if-visiting-file (&optional args)
+      (interactive)
+      (when (and (buffer-file-name) (buffer-modified-p))
+        (do-auto-save t t)))
+    (add-hook 'auto-save-hook 'save-buffer-if-visiting-file)
+    (setq create-lockfiles nil
+          make-backup-files nil
+          backup-directory-alist `((".*" . ,temporary-file-directory))
+          auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
+          auto-save-default t
+          auto-save-visited-file-name t
+          auto-save-interval 1
+          auto-save-timeout 1)))
 
 (use-package autorevert
   :init (after-init (turn-on 'global-auto-revert-mode))
@@ -434,11 +443,14 @@
   :diminish ""
   :config
   (progn
-    (setq projectile-completion-system 'helm
-	  projectile-use-git-grep t
-	  projectile-switch-project-action 'projectile-find-file
-	  projectile-globally-ignored-files
-	  (append projectile-globally-ignored-directories '("elpa" ".repl-0.0-3211")))
+    (setq
+     projectile-cache-file (user-var-file "projectile.cache")
+     projectile-known-projects-file (user-var-file "projectile-bookmarks.eld")
+     projectile-completion-system 'helm
+     projectile-use-git-grep t
+     projectile-switch-project-action 'projectile-find-file
+     projectile-globally-ignored-files
+     (append projectile-globally-ignored-directories '("elpa" ".repl-0.0-3211")))
     (add-to-list 'projectile-globally-ignored-files ".DS_Store")
     (add-to-list 'projectile-project-root-files-bottom-up "project.clj")
     (defadvice projectile-replace
@@ -491,16 +503,12 @@
   :config
   (progn
     (setq diff-hl-draw-borders nil)
-    (after magit
-      (defadvice magit-commit (after magit-commit-update-diff-hl activate)
-        (dolist (buffer (buffer-list))
-          (with-current-buffer buffer
-            (when (bound-and-true-p diff-hl-mode)
-	      (diff-hl-update))))))))
+    (diff-hl-flydiff-mode 1)))
 
 ;;; * Editing
 
 (use-package volatile-highlights
+  :disabled t
   :ensure t
   :defer t
   :commands volatile-highlights-mode
@@ -520,7 +528,8 @@
   :config
   (progn
     ;; Hydra workarounds
-    (setq mc/cmds-to-run-once
+    (setq mc/list-file (user-var-file ".mc-lists.el")
+	  mc/cmds-to-run-once
 	  '(hydra-multiple-cursors/mc/skip-to-next-like-this
 	    hydra-multiple-cursors/mc/edit-lines-and-exit
 	    hydra-multiple-cursors/mc/mark-all-like-this-dwim-and-exit
@@ -552,9 +561,7 @@
       (if prose-mode prose-mode-line-spacing line-spacing))
 
  (variable-pitch-mode prose-mode)
- (visual-line-mode prose-mode)
-
- (set-preferred-font 0))
+ (visual-line-mode prose-mode))
 
 (use-package adaptive-wrap
   :defer t
@@ -586,6 +593,11 @@
 
 ;;; * Navigation
 ;;; ** Bookmarks
+(use-package bookmark
+  :defer t
+  :config
+  (setq bookmark-default-file (user-var-file "bookmarks")))
+
 ;;; ** Mark ring
 
 (use-package simple
@@ -596,16 +608,19 @@
 ;;; ** Files
 
 (use-package recentf
+  :defer t
   :init (after-init (turn-on 'recentf-mode))
   :config
   (setq recentf-max-saved-items 1000
 	recentf-max-menu-items 200))
 
 (use-package savehist
+  :defer t
   :init (after-init (turn-on 'savehist-mode))
   :config
   (setq savehist-additional-variables '(search-ring regexp-search-ring)
-	savehist-autosave-interval 60))
+	savehist-autosave-interval 60
+	savehist-file (user-var-file "savehist")))
 
 (use-package saveplace
   :defer t
@@ -742,6 +757,14 @@
 
 ;;; ** Indentation & whitespace
 
+(setq-default fill-column 80)
+(setq-default indent-tabs-mode nil)
+
+(use-package page-break-lines
+  :ensure t
+  :init
+  (after-init (turn-on 'global-page-break-lines-mode)))
+
 (use-package aggressive-indent
   :ensure t
   :defer t
@@ -756,8 +779,8 @@
     (add-to-list 'aggressive-indent-excluded-modes 'makefile-mode)
     (defun esk-aggressive-indent-mode-maybe (flag)
       (if (member major-mode aggressive-indent-excluded-modes)
-	  (aggressive-indent-mode -1)
-	(aggressive-indent-mode flag)))))
+          (aggressive-indent-mode -1)
+        (aggressive-indent-mode flag)))))
 
 (use-package auto-indent-mode
   :ensure t
@@ -778,6 +801,7 @@
  "Savage indent mode"
  nil nil nil
  (progn
+   (electric-indent-mode (if esk-savage-indent-mode -1 1))
    (setq show-trailing-whitespace esk-savage-indent-mode)
    (auto-indent-mode esk-savage-indent-mode)
    (esk-aggressive-indent-mode-maybe esk-savage-indent-mode)
@@ -811,6 +835,10 @@
       (interactive)
       (forward-sexp -1)
       (paredit-wrap-curly)))
+  :functions
+  (paredit-wrap-round
+   paredit-wrap-square
+   paredit-wrap-curly)
   :init
   (progn
     (add-hook 'minibuffer-setup-hook 'minibuffer-paredit-mode-maybe)
@@ -955,11 +983,12 @@
 (use-package cider
   :ensure t
   :defer t
+  :functions (esk-cider-repl-redo-last-input)
   :preface
   (defun esk-cider-repl-redo-last-input ()
     (interactive)
     (save-window-excursion
-      (cider-switch-to-current-repl-buffer)
+      (cider-switch-to-default-repl-buffer)
       (cider-repl-previous-input)
       (cider-repl-return)))
   :config
@@ -973,23 +1002,20 @@
 	  cider-auto-jump-to-error nil
 	  nrepl-hide-special-buffers nil
 	  cider-repl-use-pretty-printing t
-	  cider-repl-history-file "~/.emacs.d/nrepl-history")
+	  cider-repl-history-file (user-var-file "nrepl-history"))
     (use-package cider-repl
       :config
       (progn
 	(add-hook 'cider-repl-mode-hook 'company-mode)
 	(add-hook 'cider-repl-mode-hook (turn-on 'lisps-mode))
-	(setq cider-repl-pop-to-buffer-on-connect nil)
-	))))
+	(setq cider-repl-pop-to-buffer-on-connect nil)))))
 
 (use-package clj-refactor
   :ensure t
-  :disabled t
   :defer t
   :diminish clj-refactor-mode
   :init (add-hook 'clojure-mode-hook 'clj-refactor-mode)
-  :config
-  (cljr-add-keybindings-with-prefix "C-c C-m"))
+  :config (cljr-add-keybindings-with-prefix "C-c C-m"))
 
 
 (use-package typed-clojure-mode
@@ -1040,9 +1066,7 @@
   :config
   (setq sql-indent-offset 2
 	sql-indent-first-column-regexp
-	(regexp-opt
- 	 '("create" "declare" "begin" "end"
-	   ))))
+	(regexp-opt '("create" "declare" "begin" "end"))))
 
 (use-package edbi :ensure t :defer t)
 
@@ -1055,11 +1079,10 @@
 
 (use-package tuareg
   :ensure t
-  :commands (tuareg tuareg-mode)
-  :mode "\\.ml[ily]?$")
+  :defer t
+  :mode ("\\.ml[ily]?$" . tuareg-mode))
 
 (use-package ocp-indent
-  :disabled t
   :ensure t
   :defer t
   :init (after tuareg (require 'ocp-indent nil t)))
@@ -1067,6 +1090,7 @@
 (use-package merlin
   :ensure t
   :defer t
+  :diminish ""
   :init
   (progn
     ;; NOTE: from the merlin docs
@@ -1108,7 +1132,6 @@
 
 (use-package eshell
   :defer t
-  :commands eshell
   :config
   (progn
     (setq eshell-scroll-to-bottom-on-output t
@@ -1142,7 +1165,8 @@
 
 (use-package eshell-z
   :defer t
-  :ensure t)
+  :ensure t
+  :init (after eshell (require 'eshell-z nil t)))
 
 ;;; * Org Mode
 
@@ -1200,16 +1224,21 @@
 
 (use-package deft
   :ensure t
-  )
-(use-package outline-magic :ensure t :defer t)
+  :defer t
+  :config
+  (setq deft-recursive t
+        deft-use-filename-as-title t
+        deft-default-extension "org"))
+
+(use-package outline-magic :disabled t :ensure t :defer t)
 
 (use-package erc
   :defer t
   :commands erc
   :config
   (progn
-    ;; Joining
-    (setq erc-autojoin-timing 'ident)
+    ;; Ignoring
+    (setq erc-hide-list '("JOIN" "PART" "QUIT"))
     ;; Tracking
     (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT"))
     ;; Filling chan buffers
@@ -1217,14 +1246,15 @@
           erc-fill-static-center 20)
 
     (use-package erc-hl-nicks
+      :ensure t
       :defer t
       :init (add-hook 'erc-mode-hook 'erc-hl-nicks-mode))))
 
 ;;; * External
 
 (use-package vagrant-tramp
-  :ensure t
   :disabled t
+  :ensure t
   :defer t
   :commands vagrant-tramp-enable
   :init
@@ -1233,11 +1263,6 @@
     (setq shell-file-name "/bin/bash")
     (after tramp (vagrant-tramp-enable))))
 
-(use-package hardhat
-  :ensure t
-  :defer t
-  :init (after-init (turn-on 'global-hardhat-mode)))
-
 (load-file (expand-file-name "keybindings.el" user-emacs-directory))
 
 ;;; * SSH
@@ -1245,18 +1270,12 @@
 (setq vc-ignore-dir-regexp
       (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
 
+;;; * Communication
+
+(use-package url
+  :defer t
+  :config
+  (setq url-configuration-directory (user-var-file "url/")))
+
 (provide 'init)
 ;; init.el ends here
-
-;; (custom-theme-set-faces
-;;  'plan9
-;;  (plan9/with-color-variables
-;;    `(mode-line ((t (:background ,blue-light))))
-;;    `(mode-line-inactive ((t (:background ,blue :foreground ,blue))))
-;;    `(powerline-active ((t (:background ,blue))))
-;;    `(powerline-active1 ((t (:background ,blue-light))))
-;;    `(powerline-active2 ((t (:background ,bg-alt))))
-
-;;    ;; `(powerline-inactive1 ((t (:background ,fg))))
-;;    ;; `(powerline-inactive2 ((t (:background ,fg))))
-;;    `(fringe ((t (:background ,bg-alt))))))
