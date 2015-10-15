@@ -111,3 +111,25 @@
     ;; TODO Projectile ends up trying to use the local shell
     (setq shell-file-name "/bin/bash")
     (after tramp (vagrant-tramp-enable))))
+
+;; Haven't found some useful bindings for this
+(use-package paxedit
+  :ensure t
+  :defer t
+  :diminish paxedit-mode
+  :commands paxedit-mode
+  :init (add-hook 'lisps-mode-hook 'paxedit-mode)
+  :config
+  (defhydra paxedit-hydra (:color red)
+    ("u" paxedit-backward-up)
+    ("e" paxedit-backward-end)
+    ("f" paxedit-transpose-forward)
+    ("b" paxedit-transpose-backward)
+    ("w" paxedit-copy)
+    ("k" paxedit-kill)
+    ("d" paxedit-delete)
+    ("r" paxedit-sexp-raise)
+    ("c" paxedit-symbol-change-case)
+    ("w" paxedit-symbol-copy)
+    ("k" paxedit-symbol-kill))
+  (bind-key "C-`" 'paxedit-hydra/body lisps-mode-map))

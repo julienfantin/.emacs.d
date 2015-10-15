@@ -87,7 +87,7 @@
 
 ;; ** Windows/screens/perspectives
 
-(defhydra hydra-persp (:color red :columns 3 :hint nil)
+(defhydra hydra-persp (:color red :columns 3 :hint "")
   "Screens, perspectives"
   ("1" simple-screen-0 "1")
   ("2" simple-screen-1 "2")
@@ -113,7 +113,6 @@
   ("c" org-clock-in-last "clock-in-last")
   ("e" org-clock-modify-effort-estimate "modify-effort-estimate")
   ("q" org-clock-cancel "cancel")
-  ("p" (find-file esk-projects-clock-file) "clock project")
   ("g" org-clock-goto "clock-goto")
   ("d" org-clock-display "clock-display")
   ("r" org-clock-report "clock-report")
@@ -181,38 +180,42 @@
 ;; ---------------------------------------------------------------------
 ;; * Global keychords
 
-;; ---------------------------------------------------------------------
-;; * Global bindings
+(defun outline-up-cycle ()
+  (interactive)
+  (ignore-errors
+    (outline-up-heading)
+    (outline-cycle)))
 
 (bind-keys
- ("C-o"     . aya-open-line)
+ ("C-o"       . aya-open-line)
  ;; Hydras
- ("C-z"     . hydra-persp/body)
- ("C-c t"   . hydra-toggle/body)
- ("C-c f"   . hydra-fonts/body)
- ("C-c g"   . git-hydra/body)
- ("M-g"     . hydra-goto/body)
+ ("C-z"       . hydra-persp/body)
+ ("C-c t"     . hydra-toggle/body)
+ ("C-c f"     . hydra-fonts/body)
+ ("C-c g"     . git-hydra/body)
+ ("M-g"       . hydra-goto/body)
  ;; Helm
- ("M-x"     . helm-M-x)
- ("C-x C-m" . execute-extended-command)
- ("C-x b"   . helm-mini)
- ("C-x C-f" . helm-find-files)
- ("M-y"     . helm-show-kill-ring)
- ("C-c C-b" . helm-descbinds)
- ("C-c SPC" . helm-browse-project)
- ("C-x o"   . ace-window)
+ ("M-x"       . helm-M-x)
+ ("C-x C-m"   . execute-extended-command)
+ ("C-x b"     . helm-mini)
+ ("C-x C-f"   . helm-find-files)
+ ("M-y"       . helm-show-kill-ring)
+ ("C-c C-b"   . helm-descbinds)
+ ("C-c SPC"   . helm-browse-project)
+ ("C-x o"     . ace-window)
  ;; Editing
- ("C-w"     . esk/backward-kill-word)
- ("C-x u"   . undo-tree)
- ("C-c m"   . hydra-multiple-cursors/body)
- ("M-z"     . avy-zap-to-char-dwim)
- ("M-Z"     . avy-zap-up-to-char-dwim)
- ("C-c s"   . avy-goto-char-2)
- ("M-<tab>" . esk-alternate-buffer)
- ("S-<tab>" . esk-alternate-window)
- ("C-x 1"   . zygospore-toggle-delete-other-windows)
- ("C-c C-n" . org-capture)
- ("s-<tab>" . outline-cycle))
+ ("C-w"       . esk/backward-kill-word)
+ ("C-x u"     . undo-tree)
+ ("C-c m"     . hydra-multiple-cursors/body)
+ ("M-z"       . avy-zap-to-char-dwim)
+ ("M-Z"       . avy-zap-up-to-char-dwim)
+ ("C-c s"     . avy-goto-char-2)
+ ("M-<tab>"   . esk-alternate-buffer)
+ ("S-<tab>"   . esk-alternate-window)
+ ("C-x 1"     . zygospore-toggle-delete-other-windows)
+ ("C-c C-n"   . org-capture)
+ ("s-<tab>"   . outline-cycle)
+ ("M-s-<tab>" . outline-up-cycle))
 
 ;; ** Super
 
@@ -228,7 +231,6 @@
  ("s-k" . windmove-up)
  ("s-l" . windmove-right))
 
-
 ;; ---------------------------------------------------------------------
 ;; * Prog mode
 
@@ -239,6 +241,26 @@
  ("M-p"   . highlight-symbol-prev)
  ("M-;"   . evilnc-comment-or-uncomment-lines)
  ("C-c e" . poporg-dwim)
- ("C-o"   . aya-open-line))
+ ("C-o"   . aya-open-line)
+ ("M-i"   . mc/mark-all-symbols-like-this-in-defun)
+ ("C-;"   . mc/mark-all-symbols-like-this))
+
+(defhydra hydra-next-error
+  (global-map "C-x")
+  "
+Compilation errors:
+_n_: next error        _u_: first error    _q_uit
+_p_: previous error    _l_: last error
+"
+  ("`" next-error     nil)
+  ("n" next-error     nil :bind nil)
+  ("p" previous-error nil :bind nil)
+  ("u" first-error    nil :bind nil)
+  ("l" (condition-case err
+           (while t
+             (next-error))
+         (user-error nil))
+   nil :bind nil)
+  ("q" nil            nil :color blue))
 
 (provide 'keybindings)
