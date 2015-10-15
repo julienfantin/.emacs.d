@@ -1,23 +1,25 @@
 ;;; emacs-swagger-kit
 ;;; Commentary:
 ;;; Code:
-;;; * Tasks
-;;; ** In-buffer navigation
-;;; *** TODO Comment outlines
-;;; - [ ] Cycling visibility
-;;; - [ ] Quick overview
-;;; *** TODO Quick motions
-;;; - [ ] swiper
-;;; - [ ] avy
-;;; - [ ] lispy ace motions in lisps
-;;; *** TODO Search motions
-;;; - [ ] imenu
-;;; - [ ] flycheck error
-;;; - [ ] comment headlines
-;;;
+;; * TODOs
+;; - TODO Fix outlines and orgstruct
 ;;;
 
-;;; * Initialization helpers
+;; * Feature flags
+
+(defvar esk-emacs-lisp t)
+(defvar esk-clojure t)
+(defvar esk-ocaml t)
+(defvar esk-org t)
+(defvar esk-notes t)
+(defvar esk-irc t)
+(defvar esk-shell t)
+(defvar esk-sql t)
+(defvar esk-gui t)
+(defvar esk-spell-check t)
+(defvar esk-private t)
+
+;; * Initialization
 
 (require 'cl-lib)
 (require 'cl-macs)
@@ -42,50 +44,51 @@
 (toggle-debug-on-error)
 (after-init 'toggle-debug-on-error)
 
-;;; ** ELPA
+;; ** ELPA
 
 (setq package-archives
-      '(("org"		. "http://orgmode.org/elpa/")
-	("melpa"	. "http://melpa.org/packages/")
-	("gnu"		. "http://elpa.gnu.org/packages/")))
+      '(("org"   . "http://orgmode.org/elpa/")
+        ("melpa" . "http://melpa.org/packages/")
+        ("gnu"   . "http://elpa.gnu.org/packages/")))
 
 (package-initialize)
 
 (unless package-archive-contents
   (package-refresh-contents))
 
-;;; ** use-package
+;; ** use-package
 
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
 (eval-when-compile (require 'use-package))
 (setq use-package-verbose t)
-(ignore-errors (use-package private))
+
+(use-package private
+  :if esk-private-
+  :load-path "./lib/private.el")
 
 (use-package diminish :ensure t :demand t)
 
-;;; * Emacs defaults
+;; * Emacs defaults
 
 (setq-default gc-cons-threshold 200000000)
 (setq-default cursor-type 'bar)
-(setq-default blink-cursor-delay 0.84)
-(setq-default blink-cursor-interval 0.42)
 (setq initial-scratch-message ""
       inhibit-startup-message t
       scroll-margin 5
       scroll-conservatively 10000
       cursor-in-non-selected-windows nil
       echo-keystrokes 0.
-      ;; mouse-wheel-progressive-speed nil
-      ;; mouse-wheel-scroll-amount '(0.01 ((shift) . 1) ((control) . nil))
+      mouse-wheel-progressive-speed nil
+      mouse-wheel-scroll-amount '(0.02 ((shift) . 2) ((control) . nil))
       ring-bell-function nil
       visible-bell t
       save-interprogram-paste-before-kill t)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;;; ** Paths
+;; ** Paths
 
 (defun temp-file (name)
   "Return a temporary file with `NAME'."
@@ -107,7 +110,7 @@
   :ensure t
   :init (exec-path-from-shell-initialize))
 
-;;; * Key-bindings
+;; * Key-bindings
 
 (use-package hydra :ensure t)
 
@@ -127,8 +130,8 @@
   :init	(after-init (turn-on 'which-key-mode))
   :config (which-key-setup-side-window-right))
 
-;;; * Windows management
-;;; ** Windows
+;; * Windows management
+;; ** Windows
 
 (defun esk-alternate-buffer ()
   (interactive)
@@ -139,7 +142,7 @@
   (next-multiframe-window)
   (other-window -1))
 
-;;; ** Perspectives
+;; ** Perspectives
 
 (use-package simple-screen
   :ensure t
@@ -158,7 +161,7 @@
   :init (after-init (turn-on 'persp-mode))
   :config (setq persp-show-modestring t))
 
-;;; ** Windows
+;; ** Windows
 
 (use-package winner
   :init (after-init (turn-on 'winner-mode)) :defer t)
@@ -172,25 +175,31 @@
   (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l ?\;)
 	aw-scope 'frame))
 
-;;; * Looks
-;;; ** Fonts
+;; * Looks
+;; ** Fonts
 
-(defun set-font (family &optional height)
-  (set-face-attribute 'default nil :family family)
-  (when height (set-face-attribute 'default nil :height height)))
+(defvar esk-fonts
+  '("-*-M+ 1mn-normal-normal-normal-*-11-*-*-*-p-0-iso10646-1"
+    "-*-Fira Code-normal-normal-normal-*-11-*-*-*-m-0-iso10646-1"))
 
-(defun set-font-height (delta)
-  (set-face-attribute
-   'default nil
-   :height (+ (face-attribute 'default :height) delta)))
+;; (defun font-existsp (font)
+;;   (if (null (x-list-fonts font))
+;;       nil t))
 
-(when window-system (set-font "Hack" 100))
+(when window-system
+  (ignore-errors
+    (set-default-font (car esk-fonts))))
 
-;;; ** GUI
+;; ** GUI
 
 (use-package spacemacs-theme
+  :if esk-gui
   :ensure spacemacs-theme
-  :init (after-init (load-theme 'spacemacs-light t nil)))
+  :init
+  (progn
+    (setq spacemacs-theme-org-highlight nil
+          spacemacs-theme-org-height nil)
+    (after-init (load-theme 'spacemacs-light t nil))))
 
 (use-package spaceline
   :ensure spaceline
@@ -205,7 +214,7 @@
   (setq use-file-dialog nil
 	use-dialog-box nil))
 
-(use-package fringe :config (fringe-mode 8))
+(use-package fringe :init (fringe-mode 4))
 
 (defun inc-transparency ()
   (interactive)
@@ -217,7 +226,7 @@
   (let ((alpha (or (car (frame-parameter (selected-frame) 'alpha)) 100)))
     (set-frame-parameter (selected-frame) 'alpha (list  (+ alpha 5)  (+ alpha 5)))))
 
-;;; ** UI
+;; ** UI
 
 (use-package hl-line
   :init
@@ -250,7 +259,7 @@
   :commands highlight-numbers-mode
   :init (add-hook 'prog-mode-hook 'highlight-numbers-mode))
 
-;;; ** Theme
+;; ** Theme
 
 (use-package custom
   :config
@@ -277,7 +286,7 @@
     (add-hook 'css-mode-hook 'rainbow-mode)
     (after web-mode (add-hook 'web-mode-hook 'rainbow-mode))))
 
-;;; ** Dired
+;; ** Dired
 
 (use-package dired
   :defer t
@@ -286,7 +295,7 @@
     (setq dired-auto-revert-buffer t)
     (add-hook 'dired-mode-hook 'dired-hide-details-mode)))
 
-;;; ** Minibuffer completion
+;; ** Minibuffer completion
 
 (use-package psession
   :ensure t
@@ -294,6 +303,10 @@
   :init (after-init (turn-on #'psession-mode))
   :config
   (setq psession-elisp-objects-default-directory (user-var-file "elisp-objects/")))
+
+(use-package helm-flx
+  :ensure t
+  :init (helm-flx-mode 1))
 
 (use-package helm
   :ensure t
@@ -342,7 +355,7 @@
       :defer t
       :config
       (progn
-	(setq helm-quick-update t
+        (setq helm-quick-update nil
 	      helm-idle-delay 0
 	      helm-input-idle-delay 0
 	      helm-ff-transformer-show-only-basename t
@@ -400,11 +413,27 @@
     (dolist (docset esk-dash-docsets)
       (esk-helm-dash-install docset))))
 
-;;; ** Files
+;; ** Files
 
 (setq-default delete-by-moving-to-trash t)
 
+(use-package tramp-cache
+  :config
+  (setq tramp-persistency-file-name (user-var-file "tramp")))
+
+(use-package auto-save-buffers-enhanced
+  :disabled t
+  :ensure t
+  :defer t
+  :init (auto-save-buffers-enhanced 1)
+  :config
+  (setq
+   auto-save-buffers-enhanced-interval 3
+   auto-save-buffers-enhanced-quiet-save-p t
+   auto-save-buffers-enhanced-exclude-regexps '("^.+\\.cljs" "^.+\\.cljc")))
+
 (use-package simple
+  :disabled t
   :init
   (add-hook 'find-file-hook (turn-on 'auto-save-mode))
   :config
@@ -424,16 +453,17 @@
           auto-save-timeout 1)))
 
 (use-package autorevert
+  :disabled t
   :init (after-init (turn-on 'global-auto-revert-mode))
   :config
   (setq auto-revert-interval 2
 	auto-revert-check-vc-info nil))
 
-;;; * Ineractive commands
+;; * Ineractive commands
 
 (use-package commands :load-path "./lib")
 
-;;; * Projects
+;; * Projects
 
 (use-package projectile
   :ensure t
@@ -465,7 +495,7 @@
   :defer t
   :init (after projectile (require 'persp-projectile)))
 
-;;; ** Version control
+;; ** Version control
 
 (use-package magit
   :ensure t
@@ -503,9 +533,9 @@
   :config
   (progn
     (setq diff-hl-draw-borders nil)
-    (diff-hl-flydiff-mode 1)))
+    (comment (diff-hl-flydiff-mode 1))))
 
-;;; * Editing
+;; * Editing
 
 (use-package undo-tree
   :ensure t
@@ -535,34 +565,46 @@
 	    hydra-multiple-cursors/mc/mark-sgml-tag-pair
 	    hydra-multiple-cursors/mc/mark-more-like-this-extended))))
 
-;;; * Prose
+(use-package iedit
+  :disabled t
+  :ensure t
+  :config
+  (progn
+    (defun esk-iedit-bind ()
+      (interactive)
+      (unless (bound-and-true-p lispy-mode)
+        (local-set-key (kbd "M-i") 'iedit-mode)))
+    (add-hook 'prog-mode-hook 'esk-iedit-bind)))
+
+;; * Prose
 
 (defvar prose-mode-map (make-sparse-keymap))
 
 (defvar prose-mode-line-spacing 8)
 
 (easy-mmode-define-minor-mode
- prose-mode
- "A mode for editing and reading prose."
- nil
- "Prose"
- prose-mode-map
+    prose-mode
+  "A mode for editing and reading prose."
+  nil
+  "Prose"
+  prose-mode-map
 
- ;; Line spacing
- (set (make-local-variable 'line-spacing)
-      (if prose-mode prose-mode-line-spacing line-spacing))
+  ;; Line spacing
+  (set (make-local-variable 'line-spacing)
+       (if prose-mode prose-mode-line-spacing line-spacing))
 
- (variable-pitch-mode prose-mode)
- (visual-line-mode prose-mode))
+  (variable-pitch-mode prose-mode)
+  (visual-line-mode prose-mode))
 
 (use-package adaptive-wrap
   :defer t
   :commands adaptive-wrap-prefix-mode
   :init (add-hook 'prose-mode-hook 'adaptive-wrap-prefix-mode))
 
-;;; ** Spell checking
+;; ** Spell checking
 
 (use-package flyspell
+  :if esk-spell-check
   :ensure t
   :defer t
   :init
@@ -573,31 +615,32 @@
 	flyspell-issue-message-flag nil))
 
 (use-package helm-flyspell
+  :if esk-spell-check
   :ensure t
   :defer t
   :init
   (after flyspell
     (add-hook 'flyspell-mode-hook #'(lambda () (bind-key "M-$" 'helm-flyspell-correct)))))
 
-;;; ** Markdown
+;; ** Markdown
 
 (use-package markdown-mode :mode "\\.md\\'")
 
-;;; * Navigation
-;;; ** Bookmarks
+;; * Navigation
+;; ** Bookmarks
 (use-package bookmark
   :defer t
   :config
   (setq bookmark-default-file (user-var-file "bookmarks")))
 
-;;; ** Mark ring
+;; ** Mark ring
 
 (use-package simple
   :defer t
   :config
   (setq mark-ring-max 64 global-mark-ring-max 64))
 
-;;; ** Files
+;; ** Files
 
 (use-package recentf
   :defer t
@@ -619,9 +662,16 @@
   :init (setq-default save-place t)
   :config (setq save-place-file (temp-file "places")))
 
-;;; * In-buffer search
+;; * In-buffer search
 
-(define-key isearch-mode-map [remap isearch-delete-char] 'isearch-del-char)
+(use-package isearch
+  :defer t
+  :config
+  (progn
+    ;; Reveal content of subtrees during isearch, alse see reveal-mode
+    (setq isearch-invisible 'open)
+    ;; Allow deleting chars in the search string, use C-r to search backwards
+    (define-key isearch-mode-map [remap isearch-delete-char] 'isearch-del-char)))
 
 (use-package avy-zap :ensure t :defer t)
 
@@ -652,9 +702,9 @@
   :defer t
   :config (setq-default imenu-auto-rescan t))
 
-;;; * Outlines
+;; * Outlines
 
-(defvar esk-lisps-outline-regexp "^[\s\t]*;;;?\s[*]+\s")
+(setq esk-lisps-outline-regexp "^[\s\t]*;;;?\s[*]+\s.+")
 
 (defvar esk-lisps-org-headlines-regexp
   "^\\(;;;? \\*+\\)\\(?: +\\(TODO\\|DONE\\|MAYBE\\|DONE\\)\\)?\\(?: +\\(\\[#.\\]\\)\\)?\\(?: +\\(.*?\\)\\)??\\(?:[ 	]+\\(:[[:alnum:]_@#%:]+:\\)\\)?[ 	]*$")
@@ -668,7 +718,6 @@
     (emacs-lisp-mode . ,esk-lisps-org-headlines-regexp)))
 
 (defun esk-outline-set-regexp ()
-  "And here is a docsting"
   (let ((cons (assoc major-mode esk-outline-regexp-alist)))
     (when cons
       (setq outline-regexp (cdr cons))
@@ -683,12 +732,12 @@
 
 (advice-add #'outline-show-all :after #'recenter)
 
-;;; * Editing
+;; * Editing
 
 (setq-default comment-auto-fill-only-comments t)
 (delete-selection-mode 1)
 
-;;; * Programming
+;; * Programming
 
 (use-package evil-nerd-commenter
   :ensure t
@@ -734,7 +783,7 @@
     (add-hook 'deactivate-mark-hook #'(lambda () (show-paren-mode 1)))
     (setq show-paren-delay 0.02)))
 
-;;; ** Syntax checking
+;; ** Syntax checking
 
 (use-package flycheck
   :ensure t
@@ -747,7 +796,7 @@
 
 (use-package helm-flycheck :ensure t :defer t)
 
-;;; ** Indentation & whitespace
+;; ** Indentation & whitespace
 
 (setq-default fill-column 80)
 (setq-default indent-tabs-mode nil)
@@ -766,9 +815,8 @@
   :config
   (progn
     (setq aggressive-indent-comments-too t)
-    (add-to-list 'aggressive-indent-modes-to-prefer-defun 'clojure-mode)
-    (add-to-list 'aggressive-indent-excluded-modes 'tuareg-mode)
     (add-to-list 'aggressive-indent-excluded-modes 'makefile-mode)
+    (add-to-list 'aggressive-indent-excluded-modes 'tuareg-mode)
     (defun esk-aggressive-indent-mode-maybe (flag)
       (if (member major-mode aggressive-indent-excluded-modes)
           (aggressive-indent-mode -1)
@@ -801,7 +849,7 @@
 
 (add-hook 'prog-mode-hook 'esk-savage-indent-mode)
 
-;;; ** Structured editing
+;; ** Structured editing
 
 (use-package paredit
   :ensure t
@@ -838,34 +886,12 @@
   :config
   (bind-keys
    :map paredit-mode-map
-   ("M-(" . 'paredit-wrap-round)
-   ("M-)" . 'paredit-wrap-round-from-behind)
-   ("M-[" . 'paredit-wrap-square)
-   ("M-]" . 'paredit-wrap-square-from-behind)
-   ("M-{" . 'paredit-wrap-curly)
-   ("M-}" . 'paredit-wrap-curly-from-behind)))
-
-(comment
- (use-package paxedit
-   :ensure t
-   :defer t
-   :diminish paxedit-mode
-   :commands paxedit-mode
-   :init (add-hook 'lisps-mode-hook 'paxedit-mode)
-   :config
-   (defhydra paxedit-hydra (:color red)
-     ("u" paxedit-backward-up)
-     ("e" paxedit-backward-end)
-     ("f" paxedit-transpose-forward)
-     ("b" paxedit-transpose-backward)
-     ("w" paxedit-copy)
-     ("k" paxedit-kill)
-     ("d" paxedit-delete)
-     ("r" paxedit-sexp-raise)
-     ("c" paxedit-symbol-change-case)
-     ("w" paxedit-symbol-copy)
-     ("k" paxedit-symbol-kill))
-   (bind-key "C-`" 'paxedit-hydra/body lisps-mode-map)))
+   ("M-(" . paredit-wrap-round)
+   ("M-)" . paredit-wrap-round-from-behind)
+   ("M-[" . paredit-wrap-square)
+   ("M-]" . paredit-wrap-square-from-behind)
+   ("M-{" . paredit-wrap-curly)
+   ("M-}" . paredit-wrap-curly-from-behind)))
 
 (use-package lispy
   :ensure t
@@ -874,6 +900,7 @@
   :config (setq lispy-no-permanent-semantic t))
 
 (use-package clojure
+  :if esk-clojure
   :load-path "./lib/clojure-semantic"
   :defer t
   :init
@@ -881,16 +908,16 @@
     (after clojure-mode
       (load-library "clojure"))))
 
-;;;** Completion
+;; ** Completion
 
 (use-package abbrev
   :defer t
   :diminish abbrev-mode
+  :if (file-exists-p abbrev-file-name)
   :config
   (progn
     (setq-default abbrev-mode t)
-    (when (file-exists-p abbrev-file-name)
-      (quietly-read-abbrev-file))))
+    (quietly-read-abbrev-file)))
 
 (use-package company
   :ensure t
@@ -941,8 +968,8 @@
   :defer t
   :commands aya-open-line)
 
-;;; * Languages
-;;; ** Lisps
+;; * Languages
+;; ** Lisps
 
 (defvar lisps-mode-map (make-keymap))
 
@@ -951,6 +978,7 @@
     (push '("<=" . ?≤) prettify-symbols-alist)
     (push '(">=" . ?≥) prettify-symbols-alist)
     (push '("lambda" . ?λ) prettify-symbols-alist)
+    (push '("fn" . ?λ) prettify-symbols-alist)
     (turn-on-prettify-symbols-mode)))
 
 (use-package subword :defer t :diminish subword-mode)
@@ -963,16 +991,22 @@
    (eldoc-mode 1)
    (subword-mode 1)))
 
-;;; ** Clojure
+;; ** Clojure
 
 (use-package clojure-mode
+  :if esk-clojure
   :ensure t
   :defer t
   :config (add-hook 'clojure-mode-hook (turn-on 'lisps-mode)))
 
-(use-package clojure-mode-extra-font-locking :ensure t)
+(use-package clojure-mode-extra-font-locking
+  :if esk-clojure
+  :ensure t
+  :defer t
+  :init (after clojure-mode (require 'clojure-mode-extra-font-locking nil t)))
 
 (use-package cider
+  :if esk-clojure
   :ensure t
   :defer t
   :functions (esk-cider-repl-redo-last-input)
@@ -990,6 +1024,9 @@
     (bind-key "C-c C-t" 'cider-test-jump clojure-mode-map)
     (bind-key "C-c RET" 'esk-cider-repl-redo-last-input cider-mode-map)
     (setq cider-prompt-save-file-on-load nil
+          cider-prompt-for-project-on-connect nil
+          cider-prompt-for-symbol nil
+          cider-prompt-for-symbol-function nil
 	  cider-show-error-buffer t
 	  cider-auto-jump-to-error nil
 	  nrepl-hide-special-buffers nil
@@ -1003,13 +1040,19 @@
 	(setq cider-repl-pop-to-buffer-on-connect nil)))))
 
 (use-package clj-refactor
+  :if esk-clojure
   :ensure t
   :defer t
   :diminish clj-refactor-mode
   :init (add-hook 'clojure-mode-hook 'clj-refactor-mode)
-  :config (cljr-add-keybindings-with-prefix "C-c C-m"))
+  :config
+  (progn
+    (cljr-add-keybindings-with-prefix "C-c C-m")
+    (use-package cljr-helm
+      :ensure t
+      :config (bind-key "C-c <RET> h" 'clojure-mode-map))))
 
-;;; ** Elisp
+;; ** Elisp
 
 (use-package lisp-mode
   :defer t
@@ -1034,37 +1077,86 @@
   :diminish ""
   :init (add-hook 'emacs-lisp-mode-hook 'turn-on-elisp-slime-nav-mode))
 
-;;; ** SQL
+;; ** SQL
 
 (use-package sql-indent
+  :if esk-sql
   :ensure t
   :defer t
   :init (after sql (require 'sql-indent))
   :config
-  (setq sql-indent-offset 2
-	sql-indent-first-column-regexp
-	(regexp-opt '("create" "declare" "begin" "end"))))
+  (progn
+    (add-hook 'sql-mode-hook 'esk-savage-indent-mode)
+    (after paredit (add-hook 'sql-mode-hook 'paredit-mode))
+    (setq sql-indent-offset 2
+          sql-indent-first-column-regexp
+          (concat "\\(^\\s-*" (regexp-opt '("with" "window" "inner" "left" "outer" "right"
+                                            "select" "update" "insert" "delete"
+                                            "union" "intersect"
+                                            "from" "where" "into" "group" "having" "order"
+                                            "set"
+                                            "create" "drop" "truncate"
+                                            "--") t) "\\(\\b\\|\\s-\\)\\)\\|\\(^```$\\)"))))
 
-(use-package edbi :ensure t :defer t)
+(use-package edbi :if esk-sql :ensure t :defer t)
 
-;;; ** OCaml
+;; ** OCaml
 
 (use-package opam
+  :if esk-ocaml
   :ensure t
   :defer t
   :init (after tuareg (opam-init)))
 
 (use-package tuareg
+  :if esk-ocaml
   :ensure t
   :defer t
-  :mode ("\\.ml[ily]?$" . tuareg-mode))
+  :commands esk-tuareg-eval
+  :mode (("\\.ml[ily]?$" . tuareg-mode)
+         ("\\.topml$" . tuareg-mode))
+  :config
+  (progn
+    (defun ocaml-bind-paredit (keymap)
+      (bind-keys
+       :map keymap
+       ("C-M-f" . smie-forward-sexp-command)
+       ("C-M-b" . smie-backward-sexp-command)
+       ("[" . paredit-open-square)
+       ("]" . paredit-close-square)
+       ("{" . paredit-open-curly)
+       ("}" . paredit-close-curly)
+       ("}" . paredit-close-curly)
+       ("<backspace>" . paredit-backward-delete)))
+    (add-hook 'tuareg-mode-hook (turn-off 'eldoc-mode))
+    (after paredit
+      (add-hook 'tuareg-mode-hook 'paredit-mode)
+      (add-hook 'tuareg-mode-hook  #'(lambda () (ocaml-bind-paredit tuareg-mode-map)))
+      (bind-keys
+       :map tuareg-mode-map
+       ("RET" . reindent-then-newline-and-indent)
+       ("C-c C-k" . tuareg-eval-buffer)
+       ("C-c C-s" . utop)))))
+
+(use-package utop
+  :if esk-ocaml
+  :commands utop-setup-ocaml-buffer
+  :init (after tuareg (add-hook 'tuareg-mode-hook 'utop-minor-mode))
+  :config
+  (progn
+    (after paredit
+      (add-hook 'utop-mode-hook 'paredit-mode)
+      (add-hook 'utop-mode-hook  #'(lambda () (ocaml-bind-paredit utop-mode-map))))))
 
 (use-package ocp-indent
+  :disabled t
+  :if esk-ocaml
   :ensure t
   :defer t
   :init (after tuareg (require 'ocp-indent nil t)))
 
 (use-package merlin
+  :if esk-ocaml
   :ensure t
   :defer t
   :diminish ""
@@ -1084,13 +1176,22 @@
     (setenv "OPAMBUILDDOC" "true")
     (after tuareg (add-hook 'tuareg-mode-hook 'merlin-mode)))
   :config
-  (progn
-    (setq merlin-command 'opam)
-    (after company (add-to-list 'company-backends 'merlin-company-backend))
+  (after tuareg
+    (require 'merlin-company)
+    (setq
+     merlin-completion-types nil
+     merlin-completion-arg-type nil
+     merlin-completion-with-doc t
+     merlin-completion-dwim nil
+     merlin-error-after-save nil
+     merlin-command 'opam
+     merlin-default-flags '("-principal"))
     (define-key merlin-mode-map (kbd "C-c <up>") 'merlin-type-enclosing-go-up)
     (define-key merlin-mode-map (kbd "C-c <down>") 'merlin-type-enclosing-go-down)))
 
 (use-package flycheck-ocaml
+  :disabled t
+  :if esk-ocaml
   :ensure t
   :init
   (after merlin (flycheck-ocaml-setup))
@@ -1105,9 +1206,10 @@
       (set (make-local-variable 'tab-width) 4))
     (add-hook 'makefile-mode-hook 'makefile-setup)))
 
-;;; * Eshell
+;; * Eshell
 
 (use-package eshell
+  :if esk-shell
   :defer t
   :config
   (progn
@@ -1116,6 +1218,7 @@
     (add-hook 'eshell-mode-hook 'paredit-mode)))
 
 (use-package em-unix
+  :if esk-shell
   :defer t
   :config
   (setq eshell-cp-interactive-query t
@@ -1125,50 +1228,67 @@
 	eshell-mv-overwrite-files nil))
 
 (use-package em-cmpl
+  :if esk-shell
   :defer t
   :config
   (setq eshell-cmpl-ignore-case t))
 
 (use-package em-term
+  :if esk-shell
   :defer t
   :config
   (setq eshell-visual-commands
 	(append '("tmux" "screen" "ssh") eshell-visual-commands)))
 
 (use-package em-hist
+  :if esk-shell
   :defer t
   :config
   (setq eshell-hist-ignoredups t))
 
 (use-package eshell-z
+  :if esk-shell
   :defer t
   :ensure t
   :init (after eshell (require 'eshell-z nil t)))
 
-;;; * Org Mode
+;; * Org Mode
 
 (use-package org
-  :ensure org-plus-contrib
+  :if esk-org
+  :ensure org
   :defer t
   :diminish orgstruct-mode
   :commands (turn-on-orgstruct)
   :init (add-hook 'prog-mode-hook 'turn-on-orgstruct)
   :config
   (progn
-    (setq org-catch-invisible-edits 'smart)
+    (setq org-catch-invisible-edits 'smart
+          org-hide-leading-stars t)
     (add-to-list 'org-structure-template-alist
-		 '("el" "#+begin_src emacs-lisp\n  ?\n#+end_src" "<src lang=\"emacs-lisp\">\n?\n</src>"))))
+                 '("el"
+                   "#+begin_src emacs-lisp\n  ?\n#+end_src"
+                   "<src lang=\"emacs-lisp\">\n?\n</src>"))))
+
+(use-package ob-core
+  :if esk-org
+  :defer t
+  :config
+  (setq org-confirm-babel-evaluate nil))
 
 (use-package org-capture
+  :if esk-org
   :defer t
   :config
   (progn
-    (setq org-reverse-note-order t
-          org-capture-templates
-          '(("d" "Dev dump" entry (file "~/org/dev.org") "* %?\n  %i\n %a" :kill-buffer  t)
-            ("j" "Journal" entry (file "~/org/journal.org") "* %U\n %?i\n %a" :kill-buffer t)))))
+    (setq
+     org-reverse-note-order t
+     org-capture-templates
+     '(("d" "Dev dump" entry (file "~/org/dev.org") "* %?\n  %i\n %a" :kill-buffer  t)
+       ("j" "Journal" entry (file "~/org/journal.org") "* %U\n %?i\n %a" :kill-buffer t)))))
 
 (use-package org-clock
+  :if esk-org
   :defer t
   :bind ("C-c C-c" . hydra-org-clock/body)
   :preface
@@ -1182,6 +1302,7 @@
         org-clock-clocked-in-display 'both))
 
 (use-package worf
+  :if esk-org
   :ensure t
   :defer t
   :init
@@ -1189,6 +1310,7 @@
     (add-hook 'org-mode-hook 'worf-mode)))
 
 (use-package deft
+  :if esk-notes
   :ensure t
   :defer t
   :config
@@ -1197,6 +1319,7 @@
         deft-default-extension "org"))
 
 (use-package erc
+  :if esk-irc
   :defer t
   :commands erc
   :config
@@ -1207,25 +1330,25 @@
     (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT"))
     ;; Filling chan buffers
     (setq erc-fill-function 'erc-fill-static
-          erc-fill-static-center 20)
+          erc-fill-static-center 15)
     (use-package erc-hl-nicks
       :ensure t
       :defer t
       :init (add-hook 'erc-mode-hook 'erc-hl-nicks-mode))))
 
-;;; * SSH
+;; * SSH
 
 (setq vc-ignore-dir-regexp
       (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp))
 
-;;; * Communication
+;; * Communication
 
 (use-package url
   :defer t
   :config
   (setq url-configuration-directory (user-var-file "url/")))
 
-;;; * Keyboindings
+;; * Keyboindings
 
 (load-file (expand-file-name "keybindings.el" user-emacs-directory))
 
