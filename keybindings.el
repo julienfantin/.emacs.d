@@ -202,6 +202,7 @@
  ("M-y"       . helm-show-kill-ring)
  ("C-c C-b"   . helm-descbinds)
  ("C-c SPC"   . helm-browse-project)
+ ("C-h SPC"   . helm-all-mark-rings)
  ("C-x o"     . ace-window)
  ;; Editing
  ("C-w"       . esk/backward-kill-word)

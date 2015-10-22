@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; Code:
 ;; * TODOs
-;; - TODO Fix outlines and orgstruct
 ;;;
 
 ;; * Feature flags
@@ -64,9 +63,19 @@
 (eval-when-compile (require 'use-package))
 (setq use-package-verbose t)
 
+(use-package paradox
+  :ensure t
+  :defer t
+  :commands paradox-enable
+  :init (after-init #'paradox-enable)
+  :config
+  (setq paradox-execute-asynchronously t
+        paradox-automatically-star nil))
+
 (use-package private
-  :if esk-private-
-  :load-path "./lib/private.el")
+  :if esk-private
+  :demand t
+  :load-path "./lib/")
 
 (use-package diminish :ensure t :demand t)
 
@@ -112,7 +121,7 @@
 
 ;; * Key-bindings
 
-(use-package hydra :ensure t)
+(use-package hydra :ensure t :defer t)
 
 (use-package free-keys :ensure t :defer t)
 
@@ -120,14 +129,14 @@
   :ensure t
   :defer t
   :commands key-chord-mode
-  :init (after-init (turn-on 'key-chord-mode))
+  :init (after-init (turn-on #'key-chord-mode))
   :config (setq key-chord-two-keys-delay 0.1))
 
 (use-package which-key
   :ensure t
-  :diminish ""
   :defer t
-  :init	(after-init (turn-on 'which-key-mode))
+  :diminish ""
+  :init	(after-init (turn-on #'which-key-mode))
   :config (which-key-setup-side-window-right))
 
 ;; * Windows management
@@ -158,13 +167,14 @@
   :ensure t
   :defer t
   :commands persp-mode
-  :init (after-init (turn-on 'persp-mode))
+  :init (after-init (turn-on #'persp-mode))
   :config (setq persp-show-modestring t))
 
 ;; ** Windows
 
 (use-package winner
-  :init (after-init (turn-on 'winner-mode)) :defer t)
+  :defer t
+  :init (after-init (turn-on #'winner-mode)) :defer t)
 
 (use-package zygospore :ensure t :defer t)
 
@@ -179,8 +189,8 @@
 ;; ** Fonts
 
 (defvar esk-fonts
-  '("-*-M+ 1mn-normal-normal-normal-*-11-*-*-*-p-0-iso10646-1"
-    "-*-Fira Code-normal-normal-normal-*-11-*-*-*-m-0-iso10646-1"))
+  '("-*-Fira Mono-normal-normal-normal-*-10-*-*-*-m-0-iso10646-1"
+    "-*-M+ 1mn-normal-normal-normal-*-11-*-*-*-p-0-iso10646-1"))
 
 ;; (defun font-existsp (font)
 ;;   (if (null (x-list-fonts font))
@@ -188,7 +198,7 @@
 
 (when window-system
   (ignore-errors
-    (set-default-font (car esk-fonts))))
+    (set-frame-font (car esk-fonts))))
 
 ;; ** GUI
 
@@ -199,10 +209,11 @@
   (progn
     (setq spacemacs-theme-org-highlight nil
           spacemacs-theme-org-height nil)
-    (after-init (load-theme 'spacemacs-light t nil))))
+    (after-init (lambda () (load-theme 'spacemacs-light t nil)))))
 
 (use-package spaceline
   :ensure spaceline
+  :defer t
   :functions (spaceline-emacs-theme)
   :init (use-package spaceline-config :config (spaceline-emacs-theme))
   :config
@@ -214,7 +225,16 @@
   (setq use-file-dialog nil
 	use-dialog-box nil))
 
-(use-package fringe :init (fringe-mode 4))
+(use-package fringe
+  :init (fringe-mode 4)
+  :config
+  (progn
+    (setq overflow-newline-into-fringe nil
+          indicate-empty-lines t
+          indicate-buffer-boundaries t
+          indicate-unused-lines t)
+    (setf (cdr (assq 'continuation fringe-indicator-alist))
+          '(nil right-curly-arrow))))
 
 (defun inc-transparency ()
   (interactive)
@@ -229,14 +249,16 @@
 ;; ** UI
 
 (use-package hl-line
+  :defer t
   :init
   (progn
-    (add-hook 'prog-mode-hook (turn-on 'hl-line-mode))
-    (add-hook 'dired-mode-hook (turn-on 'hl-line-mode))
-    (after magit (add-hook 'magit-mode-hook (turn-on 'hl-line-mode)))))
+    (add-hook 'prog-mode-hook (turn-on #'hl-line-mode))
+    (add-hook 'dired-mode-hook (turn-on #'hl-line-mode))
+    (after magit (add-hook 'magit-mode-hook (turn-on #'hl-line-mode)))))
 
 (use-package linum
-  :init (add-hook 'prog-mode-hook (turn-on 'linum-mode))
+  :defer t
+  :init (add-hook 'prog-mode-hook (turn-on #'linum-mode))
   :defines (esk-linum-current-timer)
   :functions (linum-update-current)
   :preface (defvar-local esk-linum-current-timer nil)
@@ -262,6 +284,7 @@
 ;; ** Theme
 
 (use-package custom
+  :defer t
   :config
   (setq custom-theme-directory
 	(expand-file-name "themes" user-emacs-directory)))
@@ -298,6 +321,7 @@
 ;; ** Minibuffer completion
 
 (use-package psession
+  :disabled t
   :ensure t
   :defer t
   :init (after-init (turn-on #'psession-mode))
@@ -306,7 +330,8 @@
 
 (use-package helm-flx
   :ensure t
-  :init (helm-flx-mode 1))
+  :defer t
+  :init (after helm (helm-flx-mode 1)))
 
 (use-package helm
   :ensure t
@@ -315,7 +340,7 @@
 	     helm-mini
 	     helm-find-files
 	     helm-show-kill-ring)
-  :init (after-init (turn-on 'helm-mode))
+  :init (after-init (turn-on #'helm-mode))
   :config
   (progn
     ;; Remap persistent action to TAB
@@ -347,7 +372,11 @@
       :defer t
       :config
       (progn
-	(bind-key "a" 'helm-apropos helm-command-map)
+        (setq helm-command-prefix-key "C-c h")
+        (bind-key "C-i" 'helm-execute-persistent-action helm-map)
+        (bind-key "C-M-p" 'helm-follow-action-backward helm-map)
+        (bind-key "C-M-n" 'helm-follow-action-forward helm-map)
+        (bind-key "a" 'helm-apropos helm-command-map)
 	(bind-key "o" 'helm-occur helm-command-map)))
     ;; Helm completing-read
     (use-package helm-mode
@@ -355,7 +384,7 @@
       :defer t
       :config
       (progn
-        (setq helm-quick-update nil
+        (setq helm-quick-update t
 	      helm-idle-delay 0
 	      helm-input-idle-delay 0
 	      helm-ff-transformer-show-only-basename t
@@ -375,9 +404,7 @@
   :defer t
   :config
   (progn
-    (setq helm-ls-git-show-abs-or-relative 'relative)
-    (set-face-attribute 'helm-ls-git-added-copied-face nil :inherit 'magit-diff-added)
-    (set-face-attribute 'helm-ls-git-modified-not-staged-face nil :inherit 'magit-filename)))
+    (setq helm-ls-git-show-abs-or-relative 'relative)))
 
 (use-package helm-dash
   :ensure t
@@ -422,7 +449,6 @@
   (setq tramp-persistency-file-name (user-var-file "tramp")))
 
 (use-package auto-save-buffers-enhanced
-  :disabled t
   :ensure t
   :defer t
   :init (auto-save-buffers-enhanced 1)
@@ -435,7 +461,7 @@
 (use-package simple
   :disabled t
   :init
-  (add-hook 'find-file-hook (turn-on 'auto-save-mode))
+  (add-hook 'find-file-hook (turn-on #'auto-save-mode))
   :config
   (progn
     (defun save-buffer-if-visiting-file (&optional args)
@@ -454,7 +480,7 @@
 
 (use-package autorevert
   :disabled t
-  :init (after-init (turn-on 'global-auto-revert-mode))
+  :init (after-init (turn-on #'global-auto-revert-mode))
   :config
   (setq auto-revert-interval 2
 	auto-revert-check-vc-info nil))
@@ -465,11 +491,15 @@
 
 ;; * Projects
 
+(use-package skeletor
+  :ensure t
+  :config (setq skeletor-project-directory "~/projects/"))
+
 (use-package projectile
   :ensure t
   :defer t
   :commands projectile-golbal-mode
-  :init (after-init (turn-on 'projectile-global-mode))
+  :init (after-init (turn-on #'projectile-global-mode))
   :diminish ""
   :config
   (progn
@@ -502,6 +532,7 @@
   :defer t
   :config
   (progn
+    (setq magit-save-repository-buffers 'dontask)
     (defadvice magit-status (around magit-fullscreen activate)
       (window-configuration-to-register :magit-fullscreen)
       ad-do-it
@@ -542,7 +573,7 @@
   :defer t
   :commands (undo-tree)
   :diminish undo-tree-mode
-  :init (after-init (turn-on 'global-undo-tree-mode)))
+  :init (after-init (turn-on #'global-undo-tree-mode)))
 
 (use-package multiple-cursors
   :ensure t
@@ -603,6 +634,15 @@
 
 ;; ** Spell checking
 
+(use-package ispell
+  :defer t
+  :config
+  (setq ispell-program-name (executable-find "aspell")
+        ispell-extra-args '("--sug-mode=fast"
+                            "--lang=en_US"
+                            "--add-filter=url"
+                            "--add-filter=email")))
+
 (use-package flyspell
   :if esk-spell-check
   :ensure t
@@ -624,7 +664,7 @@
 
 ;; ** Markdown
 
-(use-package markdown-mode :mode "\\.md\\'")
+(use-package markdown-mode :ensure t :defer t :mode "\\.md\\'")
 
 ;; * Navigation
 ;; ** Bookmarks
@@ -644,14 +684,14 @@
 
 (use-package recentf
   :defer t
-  :init (after-init (turn-on 'recentf-mode))
+  :init (after-init (turn-on #'recentf-mode))
   :config
   (setq recentf-max-saved-items 1000
 	recentf-max-menu-items 200))
 
 (use-package savehist
   :defer t
-  :init (after-init (turn-on 'savehist-mode))
+  :init (after-init (turn-on #'savehist-mode))
   :config
   (setq savehist-additional-variables '(search-ring regexp-search-ring)
 	savehist-autosave-interval 60
@@ -704,7 +744,7 @@
 
 ;; * Outlines
 
-(setq esk-lisps-outline-regexp "^[\s\t]*;;;?\s[*]+\s.+")
+(defvar esk-lisps-outline-regexp "^;;;?\s[*]+\s.+")
 
 (defvar esk-lisps-org-headlines-regexp
   "^\\(;;;? \\*+\\)\\(?: +\\(TODO\\|DONE\\|MAYBE\\|DONE\\)\\)?\\(?: +\\(\\[#.\\]\\)\\)?\\(?: +\\(.*?\\)\\)??\\(?:[ 	]+\\(:[[:alnum:]_@#%:]+:\\)\\)?[ 	]*$")
@@ -781,7 +821,8 @@
   (progn
     (add-hook 'activate-mark-hook #'(lambda () (show-paren-mode -1)))
     (add-hook 'deactivate-mark-hook #'(lambda () (show-paren-mode 1)))
-    (setq show-paren-delay 0.02)))
+    (setq show-paren-delay 0.02)
+    (setq show-paren-style 'mixed)))
 
 ;; ** Syntax checking
 
@@ -803,8 +844,9 @@
 
 (use-package page-break-lines
   :ensure t
+  :defer t
   :init
-  (after-init (turn-on 'global-page-break-lines-mode)))
+  (after-init (turn-on #'global-page-break-lines-mode)))
 
 (use-package aggressive-indent
   :ensure t
@@ -927,10 +969,37 @@
   :init (add-hook 'prog-mode-hook 'company-mode)
   :config
   (progn
-    (bind-key "<tab>" 'company-complete-selection company-active-map)
-    (setq company-idle-delay 0
-    	  company-minimum-prefix-length 2
-    	  company-show-numbers t)))
+    ;; 1. When typing, do not start auto-completion
+    ;; 2. On TAB, complete as much as possible inline
+    ;; 3. On TAB again, cycle
+    ;; 4. Use C-; to open helm company
+    (defun esk-overloaded-tab ()
+      (interactive)
+      (if (and (bound-and-true-p outline-regexp) (looking-at outline-regexp))
+          (call-interactively 'outline-cycle)
+        (call-interactively 'company-indent-or-complete-common)))
+    (bind-key "<tab>" 'esk-overloaded-tab company-mode-map)
+    (bind-key "<tab>" 'company-complete-common-or-cycle company-active-map)
+    (setq company-tooltip-align-annotations t
+          company-auto-complete 'company-explicit-action-p
+          company-idle-delay nil
+          company-minimum-prefix-length nil
+          company-abort-manual-when-too-short t)))
+
+(use-package company-quickhelp
+  :defer t
+  :config
+  (setq company-quickhelp-delay 0.4))
+
+(use-package company-flx
+  :ensure t
+  :defer t
+  :init (after company (company-flx-mode 1)))
+
+(use-package helm-company
+  :ensure t
+  :defer t
+  :init (after company (bind-key "C-;" 'helm-company company-active-map)))
 
 (use-package company-dabbrev
   :defer t
@@ -942,13 +1011,15 @@
 (use-package company-quickhelp
   :ensure t
   :defer t
-  :init (after company (bind-key "C-h" 'company-quickhelp-mode company-active-map))
-  :config (setq company-quickhelp-delay 0.2))
+  :init (after company (bind-key "C-h" 'company-quickhelp-mode company-active-map)))
 
 (use-package company-statistics
   :ensure t
   :defer t
-  :init (after company (add-hook 'company-mode (turn-on 'company-statistics-mode))))
+  :init (after company (add-hook 'company-mode-hook (turn-on #'company-statistics-mode)))
+  :config
+  (setq company-statistics-file (user-var-file "company-statistics-cache.el")
+        company-statistics-size 2000))
 
 (use-package yasnippet
   :ensure t
@@ -997,7 +1068,7 @@
   :if esk-clojure
   :ensure t
   :defer t
-  :config (add-hook 'clojure-mode-hook (turn-on 'lisps-mode)))
+  :config (add-hook 'clojure-mode-hook (turn-on #'lisps-mode)))
 
 (use-package clojure-mode-extra-font-locking
   :if esk-clojure
@@ -1026,17 +1097,17 @@
     (setq cider-prompt-save-file-on-load nil
           cider-prompt-for-project-on-connect nil
           cider-prompt-for-symbol nil
-          cider-prompt-for-symbol-function nil
-	  cider-show-error-buffer t
+          cider-show-error-buffer t
 	  cider-auto-jump-to-error nil
 	  nrepl-hide-special-buffers nil
 	  cider-repl-use-pretty-printing t
 	  cider-repl-history-file (user-var-file "nrepl-history"))
     (use-package cider-repl
+      :defer t
       :config
       (progn
 	(add-hook 'cider-repl-mode-hook 'company-mode)
-	(add-hook 'cider-repl-mode-hook (turn-on 'lisps-mode))
+        (add-hook 'cider-repl-mode-hook (turn-on #'lisps-mode))
 	(setq cider-repl-pop-to-buffer-on-connect nil)))))
 
 (use-package clj-refactor
@@ -1050,7 +1121,10 @@
     (cljr-add-keybindings-with-prefix "C-c C-m")
     (use-package cljr-helm
       :ensure t
-      :config (bind-key "C-c <RET> h" 'clojure-mode-map))))
+      :defer t
+      :init
+      (after clojure-mode
+        (bind-key "C-c <RET> h" 'clojure-mode-map)))))
 
 ;; ** Elisp
 
@@ -1068,8 +1142,8 @@
   (progn
     (bind-key "C-c C-k" 'eval-buffer emacs-lisp-mode-map)
     (add-hook 'emacs-lisp-mode-hook 'esk-imenu-add-use-package)
-    (add-hook 'emacs-lisp-mode-hook (turn-on 'lisps-mode))
-    (add-hook 'ielm-mode-hook (turn-on 'lisps-mode))))
+    (add-hook 'emacs-lisp-mode-hook (turn-on #'lisps-mode))
+    (add-hook 'ielm-mode-hook (turn-on #'lisps-mode))))
 
 (use-package elisp-slime-nav
   :ensure t
@@ -1090,13 +1164,27 @@
     (after paredit (add-hook 'sql-mode-hook 'paredit-mode))
     (setq sql-indent-offset 2
           sql-indent-first-column-regexp
-          (concat "\\(^\\s-*" (regexp-opt '("with" "window" "inner" "left" "outer" "right"
-                                            "select" "update" "insert" "delete"
-                                            "union" "intersect"
-                                            "from" "where" "into" "group" "having" "order"
-                                            "set"
-                                            "create" "drop" "truncate"
-                                            "--") t) "\\(\\b\\|\\s-\\)\\)\\|\\(^```$\\)"))))
+          (concat "\\(^\\s-*"
+                  (regexp-opt '("with" "window" "inner" "left" "outer" "right"
+                                "select" "update" "insert" "delete"
+                                "union" "intersect"
+                                "from" "where" "into" "group" "having" "order"
+                                "set"
+                                "create" "drop" "truncate"
+                                "--"
+                                ) t)
+                  "\\(\\b\\|\\s-\\)\\)\\|\\(^```$\\)"))))
+
+(use-package sql
+  :defer t
+  :config
+  (setq sql-product 'postgres
+        sql-send-terminator t))
+
+(use-package sqlup-mode
+  :ensure t
+  :defer t
+  :init (add-hook 'sql-mode-hook 'sqlup-mode))
 
 (use-package edbi :if esk-sql :ensure t :defer t)
 
@@ -1140,6 +1228,7 @@
 
 (use-package utop
   :if esk-ocaml
+  :defer t
   :commands utop-setup-ocaml-buffer
   :init (after tuareg (add-hook 'tuareg-mode-hook 'utop-minor-mode))
   :config
@@ -1190,15 +1279,16 @@
     (define-key merlin-mode-map (kbd "C-c <down>") 'merlin-type-enclosing-go-down)))
 
 (use-package flycheck-ocaml
-  :disabled t
   :if esk-ocaml
   :ensure t
+  :defer t
   :init
   (after merlin (flycheck-ocaml-setup))
   :config
   (after merlin (setq merlin-error-after-save nil)))
 
 (use-package makefile
+  :defer t
   :init
   (progn
     (defun makefile-setup ()
@@ -1348,9 +1438,13 @@
   :config
   (setq url-configuration-directory (user-var-file "url/")))
 
-;; * Keyboindings
+;; * Keybindings
 
 (load-file (expand-file-name "keybindings.el" user-emacs-directory))
+
+;; * Documentation
+
+(use-package know-your-http-well :ensure t :defer t)
 
 (provide 'init)
 ;; init.el ends here

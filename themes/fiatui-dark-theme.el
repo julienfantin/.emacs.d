@@ -13,7 +13,7 @@
 (deftheme fiatui-dark "Phoenix Dark Mono color theme")
 
 (let ((fd-blue "#49B6FC")
-      (fd-yellow ""))
+      (fd-yellow "wheat"))
   (custom-theme-set-faces
    'fiatui-dark
    '(default ((t (:inherit nil :stipple nil :background "#292929" :foreground "#fff" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :width normal))))
