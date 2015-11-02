@@ -40,28 +40,46 @@
 (defun after-init (f) (if after-init-time (funcall f) (add-hook 'after-init-hook f)))
 (defmacro comment (&rest body))
 
-(toggle-debug-on-error)
-(after-init 'toggle-debug-on-error)
+(defun esk-debug-init ()
+  (toggle-debug-on-error)
+  (after-init 'toggle-debug-on-error))
+
+;; ** Path
+
+(defvar homebrew-site-lisp "/usr/local/share/emacs/site-lisp/")
+
+(defun esk-setup-path ()
+  (cond
+   ((eq system-type 'darwin)
+    (let ((default-directory homebrew-site-lisp))
+      (normal-top-level-add-subdirs-to-load-path)))))
+
+(progn
+  (esk-debug-init)
+  (esk-setup-path))
 
 ;; ** ELPA
 
 (setq package-archives
-      '(("org"   . "http://orgmode.org/elpa/")
-        ("melpa" . "http://melpa.org/packages/")
-        ("gnu"   . "http://elpa.gnu.org/packages/")))
+      '(("org"          . "http://orgmode.org/elpa/")
+        ("melpa"        . "http://melpa.org/packages/")
+	("melpa-stable" . "http://stable.melpa.org/packages/")
+        ("gnu"          . "http://elpa.gnu.org/packages/")))
+
+;; (add-to-list 'package-pinned-packages '(cider . "melpa-stable") t)
+;; (add-to-list 'package-pinned-packages '(clj-refactor . "melpa-stable") t)
+;; (add-to-list 'package-pinned-packages '(cljr-helm . "melpa-stable") t)
 
 (package-initialize)
-
-(unless package-archive-contents
-  (package-refresh-contents))
 
 ;; ** use-package
 
 (unless (package-installed-p 'use-package)
+  (package-refresh-contents)
   (package-install 'use-package))
+(require 'use-package)
 
-(eval-when-compile (require 'use-package))
-(setq use-package-verbose t)
+(use-package diminish :ensure t :demand t)
 
 (use-package paradox
   :ensure t
@@ -75,9 +93,7 @@
 (use-package private
   :if esk-private
   :demand t
-  :load-path "./lib/")
-
-(use-package diminish :ensure t :demand t)
+  :load-path "./lib")
 
 ;; * Emacs defaults
 
@@ -89,11 +105,13 @@
       scroll-conservatively 10000
       cursor-in-non-selected-windows nil
       echo-keystrokes 0.
-      mouse-wheel-progressive-speed nil
-      mouse-wheel-scroll-amount '(0.02 ((shift) . 2) ((control) . nil))
       ring-bell-function nil
-      visible-bell t
-      save-interprogram-paste-before-kill t)
+      visible-bell t)
+
+(use-package mwheel
+  :config
+  (setq mouse-wheel-progressive-speed nil
+        mouse-wheel-scroll-amount '(0.02 ((shift) . 2) ((control) . nil))))
 
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -188,17 +206,35 @@
 ;; * Looks
 ;; ** Fonts
 
+(defun font-exists-p (font)
+  (if (null (x-list-fonts font)) nil t))
+
 (defvar esk-fonts
   '("-*-Fira Mono-normal-normal-normal-*-10-*-*-*-m-0-iso10646-1"
     "-*-M+ 1mn-normal-normal-normal-*-11-*-*-*-p-0-iso10646-1"))
 
-;; (defun font-existsp (font)
-;;   (if (null (x-list-fonts font))
-;;       nil t))
+(defvar esk-font
+  (cl-find-if #'font-exists-p esk-fonts))
 
-(when window-system
-  (ignore-errors
-    (set-frame-font (car esk-fonts))))
+(defun esk-text-scale-increase ()
+  (interactive)
+  (let ((old-face-attribute (face-attribute 'default :height)))
+    (set-face-attribute 'default nil :height (+ old-face-attribute 10))))
+
+(defun esk-text-scale-decrease ()
+  (interactive)
+  (let ((old-face-attribute (face-attribute 'default :height)))
+    (set-face-attribute 'default nil :height (- old-face-attribute 10))))
+
+(use-package frames
+  :if (and window-system esk-font)
+  :init
+  (progn
+    (set-frame-font esk-font)
+    (tool-bar-mode -1)
+    (scroll-bar-mode -1)
+    (setq use-file-dialog nil
+          use-dialog-box nil)))
 
 ;; ** GUI
 
@@ -206,10 +242,12 @@
   :if esk-gui
   :ensure spacemacs-theme
   :init
-  (progn
+  (after-init (lambda () (load-theme 'spacemacs-light t nil)))
+  :config
+  (use-package spacemacs-common
+    :config
     (setq spacemacs-theme-org-highlight nil
-          spacemacs-theme-org-height nil)
-    (after-init (lambda () (load-theme 'spacemacs-light t nil)))))
+          spacemacs-theme-org-height nil)))
 
 (use-package spaceline
   :ensure spaceline
@@ -219,18 +257,11 @@
   :config
   (advice-add 'load-theme :after (lambda (theme &optional no-confirm no-enable) (powerline-reset))))
 
-(when window-system
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-  (setq use-file-dialog nil
-	use-dialog-box nil))
-
 (use-package fringe
   :init (fringe-mode 4)
   :config
   (progn
-    (setq overflow-newline-into-fringe nil
-          indicate-empty-lines t
+    (setq indicate-empty-lines t
           indicate-buffer-boundaries t
           indicate-unused-lines t)
     (setf (cdr (assq 'continuation fringe-indicator-alist))
@@ -266,9 +297,7 @@
   (progn
     (setq linum-delay t)
     (setq linum-format " %4d ")
-    ;; coreate a new var to keep track of the current update timer.
-    ;; rewrite linum-schedule so it waits for 1 second of idle time
-    ;; before updating, and so it only keeps one active idle timer going
+    ;; Great hack to keep linum from slowing down scrolling
     (defun linum-schedule ()
       (when (timerp esk-linum-current-timer)
         (cancel-timer esk-linum-current-timer))
@@ -332,6 +361,11 @@
   :ensure t
   :defer t
   :init (after helm (helm-flx-mode 1)))
+
+(use-package helm-fuzzier
+  :ensure t
+  :defer t
+  :init (after helm-flx (helm-fuzzier-mode 1)))
 
 (use-package helm
   :ensure t
@@ -404,20 +438,23 @@
   :defer t
   :config
   (progn
-    (setq helm-ls-git-show-abs-or-relative 'relative)))
+    (setq helm-ls-git-show-abs-or-relative 'absolute)))
 
 (use-package helm-dash
   :ensure t
   :defer t
-  :defines (helm-dash-docsets helm-dash-installed-docsets)
-  :functions (esk-helm-dash-install helm-dash-pg helm-dash-clojure helm-dash-web)
+  :defines (helm-dash-docsets)
+  :functions (esk-helm-dash-install
+              helm-dash-pg
+              helm-dash-clojure
+              helm-dash-web helm-dash-installed-docsets)
   :commands (helm-dash-at-point esk-helm-dash-install)
   :preface
   (progn
     (defvar esk-dash-docsets
-      '("Ansible" "Clojure" "OpenCV_Java" "OpenCV_C" "OCaml" "CSS" "HTML" "Bash" "PostgreSQL"))
+      '("Ansible" "Clojure" "Java_SE8" "OpenCV_Java" "OpenCV_C" "OCaml" "CSS" "HTML" "Bash" "PostgreSQL"))
     (defun esk-helm-dash-install (docset-name)
-      (unless (member docset-name (helm-dash-installed-docsets))
+      (unless (memberm docset-name (helm-dash-installed-docsets))
         (helm-dash-install-docset docset-name)))
     (defun esk-dash-limit (docsets-names)
       (set (make-local-variable 'helm-dash-docsets) docsets-names))
@@ -425,7 +462,7 @@
     (defun helm-dash-bash () (esk-dash-limit '("Bash")))
     (defun helm-dash-pg () (esk-dash-limit '("PostgreSQL")))
     (defun helm-dash-web () (esk-dash-limit '("CSS" "HTML")))
-    (defun helm-dash-clojure () (esk-dash-limit '("Clojure"))))
+    (defun helm-dash-clojure () (esk-dash-limit '("Clojure" "Java_SE8"))))
   :init
   (progn
     (after tuareg (add-hook 'tuareg-mode-hook 'helm-dash-ocaml))
@@ -448,28 +485,27 @@
   :config
   (setq tramp-persistency-file-name (user-var-file "tramp")))
 
+(use-package autorevert
+  :init (after-init (turn-on #'global-auto-revert-mode))
+  :config
+  (setq auto-revert-interval 2
+        auto-revert-check-vc-info nil))
+
 (use-package auto-save-buffers-enhanced
   :ensure t
   :defer t
-  :init (auto-save-buffers-enhanced 1)
+  :init (after-init (turn-on #'auto-save-buffers-enhanced))
   :config
-  (setq
-   auto-save-buffers-enhanced-interval 3
-   auto-save-buffers-enhanced-quiet-save-p t
-   auto-save-buffers-enhanced-exclude-regexps '("^.+\\.cljs" "^.+\\.cljc")))
+  (setq auto-save-buffers-enhanced-interval 3
+        auto-save-buffers-enhanced-quiet-save-p t))
 
 (use-package simple
   :disabled t
-  :init
-  (add-hook 'find-file-hook (turn-on #'auto-save-mode))
+  :defer t
   :config
   (progn
-    (defun save-buffer-if-visiting-file (&optional args)
-      (interactive)
-      (when (and (buffer-file-name) (buffer-modified-p))
-        (do-auto-save t t)))
-    (add-hook 'auto-save-hook 'save-buffer-if-visiting-file)
-    (setq create-lockfiles nil
+    (setq save-interprogram-paste-before-kill t
+          create-lockfiles nil
           make-backup-files nil
           backup-directory-alist `((".*" . ,temporary-file-directory))
           auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
@@ -477,13 +513,6 @@
           auto-save-visited-file-name t
           auto-save-interval 1
           auto-save-timeout 1)))
-
-(use-package autorevert
-  :disabled t
-  :init (after-init (turn-on #'global-auto-revert-mode))
-  :config
-  (setq auto-revert-interval 2
-	auto-revert-check-vc-info nil))
 
 ;; * Ineractive commands
 
@@ -493,6 +522,7 @@
 
 (use-package skeletor
   :ensure t
+  :defer t
   :config (setq skeletor-project-directory "~/projects/"))
 
 (use-package projectile
@@ -564,7 +594,7 @@
   :config
   (progn
     (setq diff-hl-draw-borders nil)
-    (comment (diff-hl-flydiff-mode 1))))
+    (diff-hl-flydiff-mode 1)))
 
 ;; * Editing
 
@@ -599,13 +629,12 @@
 (use-package iedit
   :disabled t
   :ensure t
+  :defines esk-iedit-bind
+  :init (add-hook 'prog-mode-hook 'esk-iedit-bind)
   :config
-  (progn
-    (defun esk-iedit-bind ()
-      (interactive)
-      (unless (bound-and-true-p lispy-mode)
-        (local-set-key (kbd "M-i") 'iedit-mode)))
-    (add-hook 'prog-mode-hook 'esk-iedit-bind)))
+  (defun esk-iedit-bind ()
+    (unless (bound-and-true-p lispy-mode)
+      (local-set-key (kbd "M-i") 'iedit-mode))))
 
 ;; * Prose
 
@@ -664,7 +693,7 @@
 
 ;; ** Markdown
 
-(use-package markdown-mode :ensure t :defer t :mode "\\.md\\'")
+(use-package markdown-mode :ensure t :mode "\\.md\\'")
 
 ;; * Navigation
 ;; ** Bookmarks
@@ -770,7 +799,7 @@
 (add-hook 'prog-mode-hook 'esk-outline-set-regexp)
 (add-hook 'prog-mode-hook 'esk-org-headings-set-regexp)
 
-(advice-add #'outline-show-all :after #'recenter)
+(comment (advice-add #'outline-show-all :after #'recenter))
 
 ;; * Editing
 
@@ -939,7 +968,10 @@
   :ensure t
   :defer t
   :init (add-hook 'lisps-mode-hook 'lispy-mode t)
-  :config (setq lispy-no-permanent-semantic t))
+  :config
+  (progn
+    (setq lispy-no-permanent-semantic t)
+    (unbind-key "#" lispy-mode-map-lispy)))
 
 (use-package clojure
   :if esk-clojure
@@ -1070,6 +1102,10 @@
   :defer t
   :config (add-hook 'clojure-mode-hook (turn-on #'lisps-mode)))
 
+(use-package latest-clojure-libraries
+  :ensure t
+  :defer t)
+
 (use-package clojure-mode-extra-font-locking
   :if esk-clojure
   :ensure t
@@ -1189,12 +1225,27 @@
 (use-package edbi :if esk-sql :ensure t :defer t)
 
 ;; ** OCaml
+;;
+;; NOTE: ocp-indent, merlin and utop all have emacs-lisp code shipped as part of
+;; their opam packages. It's prefereable to use those files rather than elpa
+;; packages in order to ensure compatibility between emacs and the external
+;; tools.
+;;
+;; TODO: What's a robust way to sync with `opam switch` commands?
 
 (use-package opam
   :if esk-ocaml
   :ensure t
   :defer t
-  :init (after tuareg (opam-init)))
+  :preface
+  (defun add-opam-load-path ()
+    (interactive)
+    (let ((opam-switch (string-trim (shell-command-to-string "opam config var prefix"))))
+      (add-to-list 'load-path (expand-file-name "share/emacs/site-lisp" opam-switch))))
+  :init
+  (after tuareg
+    (opam-init)
+    (add-opam-load-path)))
 
 (use-package tuareg
   :if esk-ocaml
@@ -1229,7 +1280,7 @@
 (use-package utop
   :if esk-ocaml
   :defer t
-  :commands utop-setup-ocaml-buffer
+  :commands utop-minor-mode
   :init (after tuareg (add-hook 'tuareg-mode-hook 'utop-minor-mode))
   :config
   (progn
@@ -1238,15 +1289,13 @@
       (add-hook 'utop-mode-hook  #'(lambda () (ocaml-bind-paredit utop-mode-map))))))
 
 (use-package ocp-indent
-  :disabled t
   :if esk-ocaml
-  :ensure t
   :defer t
-  :init (after tuareg (require 'ocp-indent nil t)))
+  :init
+  (after tuareg (require 'ocp-indent nil t)))
 
 (use-package merlin
   :if esk-ocaml
-  :ensure t
   :defer t
   :diminish ""
   :init
@@ -1354,7 +1403,14 @@
   :config
   (progn
     (setq org-catch-invisible-edits 'smart
-          org-hide-leading-stars t)
+          org-hide-leading-stars t
+          org-babel-load-languages
+          (quote ((clojure . t) (sh . t) (emacs-lisp . t))))
+
+    ;; (org-babel-do-load-languages
+    ;;  'org-babel-load-languages
+    ;;  '((clojure . t)
+    ;;    (sh . t)))
     (add-to-list 'org-structure-template-alist
                  '("el"
                    "#+begin_src emacs-lisp\n  ?\n#+end_src"

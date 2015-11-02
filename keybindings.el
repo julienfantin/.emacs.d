@@ -226,11 +226,15 @@
  ("s-h" . bury-buffer)
  ("s-b" . previous-buffer)
  ("s-n" . next-buffer)
+ ("s-u" . revert-buffer)
  ;; Window movements
  ("s-h" . windmove-left)
  ("s-j" . windmove-down)
  ("s-k" . windmove-up)
- ("s-l" . windmove-right))
+ ("s-l" . windmove-right)
+ ;; Text
+ ("s--" . esk-text-scale-decrease)
+ ("s-+" . esk-text-scale-increase))
 
 ;; ---------------------------------------------------------------------
 ;; * Prog mode

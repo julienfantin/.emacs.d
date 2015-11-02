@@ -1,1 +1,2 @@
 alias ll ls -lha $*
+alias ff find-file $1
