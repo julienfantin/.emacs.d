@@ -208,8 +208,9 @@
   (if (null (x-list-fonts font)) nil t))
 
 (defvar esk-fonts
-  '("-*-Fira Mono-normal-normal-normal-*-10-*-*-*-m-0-iso10646-1"
-    "-*-M+ 1mn-normal-normal-normal-*-11-*-*-*-p-0-iso10646-1"))
+  '("-*-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+    "-*-M+ 1mn-normal-normal-normal-*-11-*-*-*-p-0-iso10646-1"
+    "-*-Fira Mono-normal-normal-normal-*-10-*-*-*-m-0-iso10646-1"))
 
 (defvar esk-font
   (cl-find-if #'font-exists-p esk-fonts))
