@@ -489,16 +489,7 @@
   (setq auto-revert-interval 2
         auto-revert-check-vc-info nil))
 
-(use-package auto-save-buffers-enhanced
-  :ensure t
-  :defer t
-  :init (after-init (turn-on #'auto-save-buffers-enhanced))
-  :config
-  (setq auto-save-buffers-enhanced-interval 3
-        auto-save-buffers-enhanced-quiet-save-p t))
-
 (use-package simple
-  :disabled t
   :defer t
   :config
   (progn
@@ -509,8 +500,8 @@
           auto-save-file-name-transforms `((".*" ,temporary-file-directory t))
           auto-save-default t
           auto-save-visited-file-name t
-          auto-save-interval 1
-          auto-save-timeout 1)))
+          auto-save-interval 30
+          auto-save-timeout 10)))
 
 ;; * Ineractive commands
 
