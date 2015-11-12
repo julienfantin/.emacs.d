@@ -318,8 +318,10 @@
 	(expand-file-name "themes" user-emacs-directory)))
 
 (comment
+ ;; light
  (use-package plan9-theme :ensure t)
  (use-package spacemacs-theme :ensure t)
+ ;; dark
  (use-package darktooth-theme :ensure t)
  (use-package zerodark-theme :ensure t)
  (use-package gruvbox-theme :ensure t))
@@ -538,12 +540,16 @@
       (save-some-buffers t))
     (defadvice projectile-switch-project (after projectile-sync-default-directory)
       (when (projectile-project-p)
-        (setq default-directory (projectile-project-root))))))
+        (setq default-directory (projectile-project-root))))
+    (projectile-load-known-projects)))
 
 (use-package persp-projectile
   :ensure t
   :defer t
-  :init (after projectile (require 'persp-projectile)))
+  :init
+  (after projectile
+    (require 'persp-projectile nil t)
+    (persp-mode 1)))
 
 ;; ** Version control
 
@@ -583,8 +589,7 @@
   :preface (add-hook 'prog-mode-hook 'diff-hl-mode)
   :config
   (progn
-    (setq diff-hl-draw-borders nil)
-    (diff-hl-flydiff-mode 1)))
+    (setq diff-hl-draw-borders nil)))
 
 ;; * Editing
 
@@ -1393,14 +1398,15 @@
   :config
   (progn
     (setq org-catch-invisible-edits 'smart
-          org-hide-leading-stars t
-          org-babel-load-languages
-          (quote ((clojure . t) (sh . t) (emacs-lisp . t))))
-
-    ;; (org-babel-do-load-languages
-    ;;  'org-babel-load-languages
-    ;;  '((clojure . t)
-    ;;    (sh . t)))
+          org-hide-leading-stars t)
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (sql . t)
+       (ocaml . t)
+       (clojure . t)
+       (js . t)
+       (sh . t)))
     (add-to-list 'org-structure-template-alist
                  '("el"
                    "#+begin_src emacs-lisp\n  ?\n#+end_src"
@@ -1492,5 +1498,8 @@
 
 (use-package know-your-http-well :ensure t :defer t)
 
+;; Profile
+
+(profiler-start 'cpu+mem)
 (provide 'init)
 ;; init.el ends here
