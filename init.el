@@ -42,7 +42,7 @@
 
 (defun esk-debug-init ()
   (toggle-debug-on-error)
-  (after-init 'toggle-debug-on-error))
+  (after-init #'toggle-debug-on-error))
 
 ;; ** Path
 
@@ -153,7 +153,7 @@
   :ensure t
   :defer t
   :diminish ""
-  :init	(after-init (turn-on #'which-key-mode))
+  :init	(after-init #'which-key-mode)
   :config (which-key-setup-side-window-right))
 
 ;; * Windows management
@@ -184,14 +184,13 @@
   :ensure t
   :defer t
   :commands persp-mode
-  :init (after-init (turn-on #'persp-mode))
   :config (setq persp-show-modestring t))
 
 ;; ** Windows
 
 (use-package winner
   :defer t
-  :init (after-init (turn-on #'winner-mode)) :defer t)
+  :init (after-init #'winner-mode) :defer t)
 
 (use-package zygospore :ensure t :defer t)
 
@@ -349,10 +348,9 @@
 ;; ** Minibuffer completion
 
 (use-package psession
-  :disabled t
   :ensure t
   :defer t
-  :init (after-init (turn-on #'psession-mode))
+  :init (after-init #'psession-mode)
   :config
   (setq psession-elisp-objects-default-directory (user-var-file "elisp-objects/")))
 
@@ -373,7 +371,7 @@
 	     helm-mini
 	     helm-find-files
 	     helm-show-kill-ring)
-  :init (after-init (turn-on #'helm-mode))
+  :init (after-init #'helm-mode)
   :config
   (progn
     ;; Remap persistent action to TAB
@@ -484,8 +482,9 @@
   :config
   (setq tramp-persistency-file-name (user-var-file "tramp")))
 
+
 (use-package autorevert
-  :init (after-init (turn-on #'global-auto-revert-mode))
+  :init (after-init #'global-auto-revert-mode)
   :config
   (setq auto-revert-interval 2
         auto-revert-check-vc-info nil))
@@ -528,13 +527,13 @@
   :ensure t
   :defer t
   :commands projectile-golbal-mode
-  :init (after-init (turn-on #'projectile-global-mode))
+  :init (after-init #'projectile-global-mode)
   :diminish ""
   :config
   (progn
     (setq
      projectile-cache-file (user-var-file "projectile.cache")
-     projectile-known-projects-file (user-var-file "projectile-bookmarks.eld")
+     projectile-known-projects-file (user-var-file "projectile-bookmarks.el")
      projectile-completion-system 'helm
      projectile-use-git-grep t
      projectile-switch-project-action 'projectile-find-file
@@ -602,7 +601,7 @@
   :defer t
   :commands (undo-tree)
   :diminish undo-tree-mode
-  :init (after-init (turn-on #'global-undo-tree-mode)))
+  :init (after-init #'global-undo-tree-mode))
 
 (use-package multiple-cursors
   :ensure t
@@ -626,7 +625,6 @@
 	    hydra-multiple-cursors/mc/mark-more-like-this-extended))))
 
 (use-package iedit
-  :disabled t
   :ensure t
   :defines esk-iedit-bind
   :init (add-hook 'prog-mode-hook 'esk-iedit-bind)
@@ -712,14 +710,14 @@
 
 (use-package recentf
   :defer t
-  :init (after-init (turn-on #'recentf-mode))
+  :init (after-init #'recentf-mode)
   :config
   (setq recentf-max-saved-items 1000
 	recentf-max-menu-items 200))
 
 (use-package savehist
   :defer t
-  :init (after-init (turn-on #'savehist-mode))
+  :init (after-init #'savehist-mode)
   :config
   (setq savehist-additional-variables '(search-ring regexp-search-ring)
 	savehist-autosave-interval 60
@@ -874,7 +872,7 @@
   :ensure t
   :defer t
   :init
-  (after-init (turn-on #'global-page-break-lines-mode)))
+  (after-init #'global-page-break-lines-mode))
 
 (use-package aggressive-indent
   :ensure t
@@ -970,7 +968,8 @@
   :config
   (progn
     (setq lispy-no-permanent-semantic t)
-    (unbind-key "#" lispy-mode-map-lispy)))
+    (unbind-key "#" lispy-mode-map-lispy)
+    (unbind-key "(" lispy-mode-map-lispy)))
 
 (use-package clojure
   :if esk-clojure
