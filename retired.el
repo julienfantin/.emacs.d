@@ -133,3 +133,100 @@
     ("w" paxedit-symbol-copy)
     ("k" paxedit-symbol-kill))
   (bind-key "C-`" 'paxedit-hydra/body lisps-mode-map))
+
+;; Visually noisy and not that useful with auto-indentation
+(use-package hl-sexp
+  :disabled t
+  :ensure t
+  :defer t
+  :commands hl-sexp-mode
+  :init (add-hook 'prog-mode-hook 'hl-sexp-mode))
+
+;; Not really useful without search, better to use helm-descbinds
+(use-package which-key
+  :disabled t
+  :ensure t
+  :defer t
+  :diminish ""
+  :init (after-init #'which-key-mode)
+  :config (which-key-setup-side-window-right))
+
+;; superseded by outorg
+
+(use-package poporg
+  :ensure t
+  :defer t
+  :commands poporg-dwim
+  :config (bind-key "C-c C-c" 'poporg-dwim poporg-mode-map))
+
+;; counter productive, better to use company search through candidates
+
+(use-package company-flx
+  :disabled t
+  :ensure t
+  :defer t
+  :init (after company (company-flx-mode 1)))
+
+;; haven't used that in a long time
+
+(use-package yasnippet
+  :disabled t
+  :ensure t
+  :defer t
+  :diminish yas-minor-mode
+  :commands yas-minor-mode
+  :init (add-hook 'prog-mode-hook 'yas-minor-mode)
+  :config
+  (progn
+    (setq yas-snippet-dirs `(,(user-file "snippets"))
+          yas-indent-line 'auto
+          yas-wrap-around-region t)
+    (yas-reload-all)))
+
+(use-package auto-yasnippet
+  :disabled t
+  :ensure t
+  :defer t
+  :commands aya-open-line)
+
+;; Better to make use of the super key
+
+(defun disable-key-chord-mode ()
+  (set (make-local-variable 'input-method-function) nil))
+(add-hook 'minibuffer-setup-hook #'disable-key-chord-mode)
+
+(use-package space-chord
+  :init (key-chord-mode 1)
+  :config
+  (progn
+    (setq space-chord-delay 0.04)
+    (space-chord-define-global ?s 'save-buffer)
+    (space-chord-define-global ?i 'imenu-anywhere)
+    (space-chord-define-global ?w 'avy-goto-word-1)
+    (space-chord-define-global ?c 'avy-goto-char)
+    (space-chord-define-global ?g 'avy-goto-line)
+    (space-chord-define-global ?l 'link-hint-open-link)
+    (space-chord-define-global ?o 'helm-org-in-buffer-headings)
+    ;; M-g M-n
+    ;; (space-chord-define-global ?n 'flycheck-next-error)
+    ;; (space-chord-define-global ?p 'flycheck-previous-error)
+    ;; C-c ! l
+    ;; (space-chord-define-global ?e 'esk-flycheck-list-errors)
+    (space-chord-define-global ?b 'helm-bookmarks)
+    (space-chord-define-global ?f 'helm-find-files)
+
+    (space-chord-define-global ?m 'helm-all-mark-rings)
+    (space-chord-define-global ?i 'helm-imenu-anywhere)
+    (space-chord-define-global ?/ 'swiper-helm)))
+
+;; that was just a bad idea...
+
+(use-package sqlup-mode
+  :disabled t
+  :if esk-sql
+  :ensure t
+  :defer t
+  :init
+  (progn
+    (after sql  (add-hook 'sql-mode-hook 'sqlup-mode))
+    (after edbi (add-hook 'edbi:sql-mode-hook 'sqlup-mode))))
