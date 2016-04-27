@@ -29,17 +29,6 @@
         (cider-pprint-eval-last-sexp      . pulse-eval-highlight-sexp-advice)
         (cider-eval-defun-at-point        . pulse-eval-highlight-defun-advice)
         (cider-pprint-eval-defun-at-point . pulse-eval-highlight-defun-advice))))
-  "Alist of functions to advise.
-
-The cons cells are composed of:
-
-1. a major or minor-mode that will detemine when the advice is enabled
-2. an alist of advice mappings where:
-  2.1 the car is a function to be advised
-  2.2 the cdr is an around advice function (presumably from this package).
-
-When 'pulse-eval-mode' is enabled it will advise all functions in
-2.1 with the corresponding functions in 2.2 if 1 is t."
   :type 'alist
   :group 'pulse-eval)
 

@@ -1,4 +1,4 @@
-;;; chroma.el --- Hide package namespace in your emacs-lisp code -*- lexical-binding: t ; -*-
+;;; chroma.el --- Eieio color interface -*- lexical-binding: t ; -*-
 ;; Copyright (C) 2015 Free Software Foundation, Inc.
 ;; Author:
 ;; URL:
