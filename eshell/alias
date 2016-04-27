@@ -1,2 +1,9 @@
-alias ll ls -lha $*
+alias l ls -lh $*
+alias ll ls -lhA $*
 alias ff find-file $1
+alias e find-file $1
+alias d dired $1
+alias ...... cd ../../../../..
+alias ..... cd ../../../..
+alias .... cd ../../..
+alias ... cd ../..

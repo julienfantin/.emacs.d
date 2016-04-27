@@ -12,44 +12,97 @@
 ;; Clojure(script)
 ;; - clojurescript
 ;;
+;; ** Hippie expand
 
-(use-package window-purpose
-  :disabled t
-  :ensure t
+(use-package hippie-expand
+  :disabled t ; WTF is going on with the crazy parens expansions??
   :defer t
-  :init  (after-init (turn-on #'purpose-mode))
   :config
   (progn
-    (use-package window-purpose-x
-      :init (purpose-x-popwin-setup)
-      :config
-      (comment purpose-x-popwin-buffer-name-regexps))))
+    (setq hippie-expand-try-functions-list
+          '(try-expand-dabbrev
+            try-expand-dabbrev-all-buffers
+            try-complete-file-name-partially
+            try-complete-file-name
+            try-expand-all-abbrevs
+            try-expand-list
+            try-complete-lisp-symbol-partially
+            try-complete-lisp-symbol))
+    (defun config-completion-hippie-remove-trailing-paren ()
+      (if (and (bound-and-true-p paredit-mode)
+               (equal (substring str -1) ")"))
+          (progn (backward-delete-char 1) (forward-char))))
+    (advice-add #'he-substitute-string :after #'config-completion-hippie-remove-trailing-paren)))
+
+
+;; ** Packages
+
+(use-package bm
+  :ensure t
+  :defines (config-marks-load)
+  :init (after-init #'config-marks-load)
+  :preface
+  (defun config-marks-load ()
+    (when (file-exists-p bm-repository-file)
+      (bm-repository-load)))
+  (defun config-marks-bm-save-all ()
+    (bm-buffer-save-all)
+    (bm-repository-save))
+  :config
+  (progn
+    (setq-default bm-buffer-persistence t)
+    (setq
+     bm-repository-file (user-var-file "bm-repository")
+     bm-highlight-style 'bm-highlight-only-fringe
+     bm-cycle-all-buffers t)
+    ;; Saving bookmarks:
+    (add-hook 'kill-buffer-hook #'bm-buffer-save)
+    ;; Saving the repository to file when on exit.
+    ;; kill-buffer-hook is not called when Emacs is killed, so we
+    ;; must save all bookmarks first.
+    (add-hook 'kill-emacs-hook #'config-marks-bm-save-all)
+    (add-hook 'after-save-hook #'bm-buffer-save)
+    ;; The `after-save-hook' is not necessary to use to achieve persistence,
+    ;; but it makes the bookmark data in repository more in sync with the file
+    ;; state.
+    ;; Restoring bookmarks:
+    (add-hook 'find-file-hooks   #'bm-buffer-restore)
+    (add-hook 'after-revert-hook #'bm-buffer-restore)
+    ;; The `after-revert-hook' is not necessary to use to achieve persistence,
+    ;; but it makes the bookmark data in repository more in sync with the file
+    ;; state. This hook might cause trouble when using packages
+    ;; that automatically reverts the buffer (like vc after a check-in).
+    ;; This can easily be avoided if the package provides a hook that is
+    ;; called before the buffer is reverted (like `vc-before-checkin-hook').
+    ;; Then new bookmarks can be saved before the buffer is reverted.
+    ;; Make sure bookmarks is saved before check-in (and revert-buffer)
+    (add-hook 'vc-before-checkin-hook #'bm-buffer-save)
+    (define-fringe-bitmap
+      'bm-marker-left
+      [#xF8                             ; ▮ ▮ ▮ ▮ ▮ 0 0 0
+       #xFC                             ; ▮ ▮ ▮ ▮ ▮ ▮ 0 0
+       #xFE                             ; ▮ ▮ ▮ ▮ ▮ ▮ ▮ 0
+       #x0F                             ; 0 0 0 0 ▮ ▮ ▮ ▮
+       #x0F                             ; 0 0 0 0 ▮ ▮ ▮ ▮
+       #xFE                             ; ▮ ▮ ▮ ▮ ▮ ▮ ▮ 0
+       #xFC                             ; ▮ ▮ ▮ ▮ ▮ ▮ 0 0
+       #xF8])                           ; ▮ ▮ ▮ ▮ ▮ 0 0 0
+    ))
+
+(use-package bookmark+
+  :ensure t
+  :defer t
+  :commands (bmkp-desktop-jump))
+
 
 ;; ---------------------------------------------------------------------
 ;; Defaults
 
-(prefer-coding-system 'utf-8)
-(set-selection-coding-system 'utf-8)
-(set-language-environment "UTF-8")
-(setq locale-coding-system 'utf-8)
-(setq-default buffer-file-coding-system 'utf-8-unix)
-
-(setq mouse-wheel-progressive-speed nil
-      scroll-step 1
-      scroll-margin 3
-      scroll-conservatively 100000
-      scroll-preserve-screen-position 'always)
-
 (progn
-  (setq-default locale-coding-system 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-keyboard-coding-system 'utf-8)
-  (set-selection-coding-system 'utf-8)
-  (prefer-coding-system 'utf-8)
   (setq-default default-truncate-lines t)
   (setq-default truncate-lines t)
   (setq-default confirm-nonexistent-file-or-buffer nil)
-  (setq-default gc-cons-threshold (* 32 1024 1024))
+  (setq-default gc-cons-threshold (* 80 1024 1024))
   (setq-default completion-styles '(basic partial-completion substring))
   (setq-default completion-cycle-threshold t))
 
@@ -62,38 +115,8 @@
           (setq wg-prefix-key (kbd "C-c z"))
           (workgroups-mode 1)))
 
-(use-package owdriver
-  :pre-laod
-  (progn
-    (global-unset-key (kbd "M-o")))
-  :init
-  (progn
-    (setq owdriver-prefix-key "M-o")
-    (owdriver-config-default)
-    (owdriver-mode 1))
-  :config
-  (progn
-    (global-set-key (kbd "M-h") 'owdriver-do-scroll-right)
-    (global-set-key (kbd "M-j") 'owdriver-do-scroll-up)
-    (global-set-key (kbd "M-k") 'owdriver-do-scroll-down)
-    (global-set-key (kbd "M-l") 'owdriver-do-scroll-left)))
-
-(use-package shackle
-  :ensure shackle
-  :disabled t
-  :init (shackle-mode 1)
-  :config
-  (progn
-    (setq shackle-default-ratio 0.168)
-    (setq shackle-rules
-          '(("*helm.+" :regexp t :align 'below :defer t)))))
-
 ;; ---------------------------------------------------------------------
 ;; Keymaps
-
-
-(use-package hydra
-  :ensure hydra)
 
 (use-package sequential-command
   :ensure sequential-command
@@ -190,16 +213,6 @@
      :cwd "~/projects/beta-api/web/"
      :commads '("lein" "repl" ":headless" ":port" "56789"))))
 
-(use-package navorski
-  :ensure navorski
-  :init
-  (progn
-    (nav/defterminal
-     beta-api
-     :interactive t
-     :buffer-name "*beta-api console*"
-     :init-script ("cd ~/projects/beta-api" "lein ring server-headless"))))
-
 ;; ---------------------------------------------------------------------
 ;; Minibuffer
 
@@ -291,7 +304,7 @@
     (setq
      user-mail-address "julienfantin@gmail.com"
      user-full-name  "Julien Fantin"
-     message-signature "- Julien")
+     message-signature "― Julien")
 
     ;; sending mail -- replace USERNAME with your gmail username
     ;; also, make sure the gnutls command line utils are installed
@@ -306,12 +319,6 @@
           smtpmail-smtp-service 587)
     ;; don't keep message buffers around
     (setq message-kill-buffer-on-exit t)))
-
-;; ---------------------------------------------------------------------
-;; News
-
-(use-package elfeed
-  :ensure elfeed)
 
 ;; ---------------------------------------------------------------------
 ;; Editing
@@ -424,84 +431,6 @@
   :ensure zop-to-char
   :bind ("M-z" . zop-to-char))
 
-(use-package goto-chg
-  :ensure goto-chg
-  :diminish ""
-  :defer t
-  :init
-  (progn
-    (bind-key "C-." 'goto-last-change prog-mode-map)
-    (bind-key "C-M-." 'goto-last-change-reverse prog-mode-map)))
-
-(use-package ace-isearch
-  :disabled t
-  :ensure ace-isearch
-  :init (global-ace-isearch-mode 1))
-
-
-(use-package outline
-  :defer t
-  :diminish (outline-minor-mode "")
-  :init (add-hook 'prog-mode-hook 'outline-minor-mode)
-  :config
-  (progn
-    (setq outline-minor-mode-prefix "\C-c \C-o")
-
-    (bind-key "M-P" 'outline-previous-heading outline-minor-mode-map)
-    (bind-key "M-N" 'outline-next-heading outline-minor-mode-map)))
-
-(use-package outshine
-  :disabled t
-  :ensure outshine
-  :init (add-hook 'outline-minor-mode-hook 'outshine-hook-function))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Eastwood, too noisy for now...
-(after cider
-  (defvar eastwood-add-linters
-    (vector
-     ;; :keyword-typos
-     ;;:unused-namespaces
-     :unused-fn-args)
-    "Really doesn't make sense to use a vector here,
-      but saves the formatting for now...")
-
-  (flycheck-define-checker eastwood
-    "A Clojure lint tool."
-    :command
-    ("lein" "eastwood"
-     (eval
-      (format "{:namespaces [%s] :add-linters []}" (cider-find-ns) eastwood-add-linters)))
-    :error-patterns
-    ((error
-      bol
-      "{:linter" (one-or-more not-newline) ",\n"
-      " :msg" (or (zero-or-one (syntax whitespace)) (zero-or-one "\n")) (message) ",\n"
-      " :line " line ",\n"
-      " :column " column "}" line-end))
-    :modes clojure-mode)
-  (add-to-list 'flycheck-checkers 'eastwood))
-
-;; Terminal stuff
-
 ;; Paredit fixes
 (define-key input-decode-map "\M-[1;5A" [C-up])
 (define-key input-decode-map "\M-[1;5B" [C-down])
@@ -527,7 +456,8 @@ Eastwood, too noisy for now...
   (setq purpose-user-mode-purposes
 	'((term-mode . terminal)
 	  (shell-mode . terminal)
-	  (ansi-term-mode . terminal)
+          (ansi-term-mode . terminal)
+          (eshell-mode . terminal)
 	  (tuareg-mode . coding)
 	  (clojure-mode . coding)
 	  (cider-repl-mode . clojure-repl)
@@ -552,3 +482,199 @@ Eastwood, too noisy for now...
 				   #'company-keywords)
 			     #'company-files
 			     #'company-dabbrev))
+
+(require 'em-smart)
+(setq eshell-where-to-jump 'begin)
+(setq eshell-review-quick-commands nil)
+(setq eshell-smart-space-goes-to-end t)
+
+(eshell-smart-initialize)
+
+(use-package popwin
+  :ensure t
+  :commands popwin-mode
+  :init (after-init #'popwin-mode)
+  :config
+  (setq
+   popwin:popup-window-position 'bottom
+   helm-display-function 'popwin:pop-to-buffer
+   popwin:special-display-config
+   '(("\\*Navi.+" :regexp t :height 0.25)
+     "*Warning*"
+     "*Help*"
+     "*Backtrace*"
+     "*Compile-Log*"
+     "*Buffer List*")))
+
+(require 'em-smart)
+(setq eshell-where-to-jump 'begin)
+(setq eshell-review-quick-commands nil)
+(setq eshell-smart-space-goes-to-end t)
+
+
+
+;; Paxedit
+
+;; C code
+
+(require 'cc-mode)
+(require 'semantic)
+
+(global-semanticdb-minor-mode 1)
+(global-semantic-idle-scheduler-mode 1)
+
+(semantic-mode 1)
+
+(use-package workgroups2
+  :ensure t
+  :init (after-init #'workgroups-mode)
+  :config
+  (setq
+   wg-mess-with-buffer-list nil
+   wg-mode-line-use-faces nil
+   wg-session-load-on-start nil))
+
+
+(use-package project-persist
+  :ensure t
+  :init (after-init #'project-persist-mode)
+  :preface
+  (progn
+    ;; Projectile integration
+    ;;
+    ;; Use projectile for project navigation and make sure we have a persistent
+    ;; project available on demand
+    (defun esk-project-persist-projectile-open-hook ()
+      (after projectile
+        (message (format">> syncing pp: %s %s" (projectile-project-root) (projectile-project-name)))
+        (let ((root-dir (projectile-project-root))
+              (name (projectile-project-name)))
+          (if (project-persist--project-exists name)
+              (progn
+                (message (format ">> open pp:" name))
+                (project-persist--project-open name))
+            (progn
+              (message (format ">> create pp:" name))
+              (condition-case err
+                  (progn
+                    (project-persist--project-setup root-dir name)
+                    (project-persist--project-open name))
+                (error (project-persist--signal-error err))))))))
+    (defun esk-project-persist-projectile-close-hook ()
+      (after projectile
+        (when-let ((name (projectile-project-name)))
+          (when (project-persist--has-open-project)
+            (project-persist-save)))))
+    ;; Workgroups integration
+    ;;
+    ;; Load and save sessions as we open and close persistent projects
+    (defun esk-project-persist-workgroups-file ()
+      (expand-file-name
+       "workgroups"
+       (project-persist--settings-dir-from-name project-persist-current-project-name)))
+    (defun esk-project-persist-create-workgroups ()
+      (wg-create-workgroup project-persist-current-project-name))
+    (defun esk-project-persist-load-workgroups ()
+      (message (format">> loading wg: %s" (esk-project-persist-workgroups-file)))
+      (if-let ((file (esk-project-persist-workgroups-file)))
+          (wg-open-session file)
+        (message "Load workgroups: No workgroups found")))
+    (defun esk-project-persist-save-workgroups ()
+      (message (format">> saving wg: %s" (esk-project-persist-workgroups-file)))
+      (if-let ((file (esk-project-persist-workgroups-file)))
+          (wg-save-session-as file nil)
+        (message "Save workgroups: No workgroups found"))))
+  :config
+  (progn
+    (setq project-persist-settings-dir (user-var-file "project-persist"))
+    ;; Projectile
+    (add-hook 'projectile-after-switch-project-hook #'esk-project-persist-projectile-open-hook)
+    (add-hook 'projectile-before-switch-project-hook #'esk-project-persist-projectile-close-hook)
+    ;; Workgroups
+    (add-hook 'project-persist-after-create-hook #'esk-project-persist-create-workgroups)
+    (add-hook 'project-persist-after-load-hook #'esk-project-persist-load-workgroups)
+    (add-hook 'project-persist-after-save-hook #'esk-project-persist-save-workgroups)))
+
+
+
+
+;; Project shitshow
+
+(use-package project-persist
+  :ensure t
+  :init (after-init #'project-persist-mode)
+  :config
+  (progn
+    (add-hook 'project-persist-before-create-hook
+              #'(lambda () (message (format "======= %s" 'project-persist-before-create-hook))))
+    (add-hook 'project-persist-after-create-hook
+              #'(lambda () (message (format "======= %s" 'project-persist-after-create-hook))))
+    (add-hook 'project-persist-before-save-hook
+              #'(lambda () (message (format "======= %s" 'project-persist-before-save-hook))))
+    (add-hook 'project-persist-after-save-hook
+              #'(lambda () (message (format "======= %s" 'project-persist-after-save-hook))))
+    (add-hook 'project-persist-before-load-hook
+              #'(lambda () (message (format "======= %s" 'project-persist-before-load-hook))))
+    (add-hook 'project-persist-after-load-hook
+              #'(lambda () (message (format "======= %s" 'project-persist-after-load-hook))))
+    (add-hook 'project-persist-before-close-hook
+              #'(lambda () (message (format "======= %s" 'project-persist-before-close-hook))))
+    (add-hook 'project-persist-after-close-hook
+              #'(lambda () (message (format "======= %s" 'project-persist-after-close-hook))))
+
+    (setq project-persist-settings-dir (user-var-file "project-persist"))
+
+    ;; (defun esk-project-after-create ()
+    ;;   ;; (message (format"====== esk-project-after-create %s" (project-persist--settings-get 'name)))
+    ;;   ;; (desktop+-create-auto ;; (project-persist--settings-get 'name)
+    ;;   ;;  )
+    ;;   )
+
+    ;; (defun esk-project-after-load ()
+    ;;   (message
+    ;;    (format "======= esk-project-after-load %s" (project-persist--settings-get 'name)))
+    ;;   (let* ((project-name (project-persist--settings-get 'name))
+    ;;          (dirname (desktop+--dirname project-name)))
+    ;;     (if (file-exists-p dirname)
+    ;;         (desktop+-load dirname)
+    ;;       (desktop+-create dirname))))
+
+    ;; (defun esk-project-before-close ()
+    ;;   (message
+    ;;    (format "====== esk-project-before-close %s" (project-persist--settings-get 'name)))
+    ;;   (save-some-buffers t))
+
+    ;; (defun esk-project-persist-file (&optional filename)
+    ;;   (assert (project-persist--settings-get 'name))
+    ;;   (let* ((project-name (project-persist--settings-get 'name))
+    ;;          (settings-dir (project-persist--settings-dir-from-name project-name)))
+    ;;     (if (null filename)
+    ;;         settings-dir
+    ;;       (let ((f (expand-file-name filename settings-dir)))
+    ;;         (when (directory-name-p f) (make-directory f t))
+    ;;         f))))
+
+    ;; (defun esk-project-root ()
+    ;;   (cond
+    ;;    ((project-persist--has-open-project) project-persist-current-project-root-dir)
+    ;;    ((projectile-project-p) (projectile-project-root))
+    ;;    (t default-directory)))
+
+    ;; (defun esk-project-name (&optional dir)
+    ;;   (let ((project-root (or dir (esk-project-root))))
+    ;;     (cond
+    ;;      ((directory-name-p project-root) (file-name-nondirectory (directory-file-name project-root)))
+    ;;      (t (file-name-nondirectory project-root)))))
+
+    ;; (add-to-list 'project-persist-before-close-hook #'esk-project-before-close)
+    ;; (add-to-list 'project-persist-after-create-hook #'esk-project-after-create)
+    ;; (add-to-list 'project-persist-after-load-hook #'esk-project-after-load t)
+
+
+    ;; Projectile integration
+    ;;
+    ;; (after projectile
+
+
+    ;;   (setq projectile-switch-project-action #'helm-projectile))
+    ))

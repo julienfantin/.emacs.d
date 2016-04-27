@@ -17,11 +17,35 @@
 
 ;;; Code:
 
+(defun colir-join (r g b)
+  "Build a color from R G B.
+Inverse of `color-values'."
+  (format "#%02x%02x%02x"
+          (ash r -8)
+          (ash g -8)
+          (ash b -8)))
+
+(defun colir-blend (c1 c2 &optional alpha)
+  "Blend the two colors C1 and C2 with ALPHA.
+C1 and C2 are in the format of `color-values'.
+ALPHA is a number between 0.0 and 1.0 which corresponds to the
+influence of C1 on the result."
+  (setq alpha (or alpha 0.5))
+  (apply #'colir-join
+         (cl-mapcar
+          (lambda (x y)
+            (round (+ (* x alpha) (* y (- 1 alpha)))))
+          c1 c2)))
+
+(defun blend (a b &optional alpha)
+  (colir-blend (color-values a) (color-values b) alpha))
+
+
 (deftheme fiatui
   "Inspired by the color scheme from flatuicolors.com.")
 
 ;; Colors
-(setq fui-white "#f9fafa")
+(setq fui-light "#f9fafa")
 (setq fui-turquoise "#d12089")
 (setq fui-emerald "#2ecc71")
 (setq fui-river "#2980b9")
@@ -31,12 +55,11 @@
 (setq fui-sunflower "#f1c40f")
 (setq fui-carrot "#e67e22")
 (setq fui-alizarin "#e74c3c")
-(setq fui-clouds "#F4F9FE")
+(setq fui-clouds "#F6fdfd")
 (setq fui-concrete "#95a5a6")
 (setq fui-dark-turquoise "#16a085")
 (setq fui-dark-emerald "#27ae60")
 (setq fui-dark-river "#1C587F")
-(setq fui-dark-amethyst "#8e44ad")
 (setq fui-dark-asphalt "#2c3e50")
 (setq fui-dark-sunflower "#f39c12")
 (setq fui-dark-carrot "#d35400")
@@ -46,34 +69,36 @@
 (setq fui-bg fui-clouds)
 (setq fui-fg fui-asphalt)
 
+(defun blend-bg (a &optional alpha)
+  (colir-blend (color-values fui-bg) (color-values a) (or alpha 0.97)))
+
+(defun blend-bg+ (a &optional alpha)
+  (blend-bg a 0.68))
+
 (custom-theme-set-faces
  'fiatui
  `(default ((t (:background ,fui-bg :foreground ,fui-fg))))
- `(cursor ((t (:background ,fui-alizarin :foreground ,fui-fg))))
- `(region ((t (:background ,fui-river :foreground ,fui-bg))))
-
- `(persp-selected-face ((t (:foreground ,fui-dark-sunflower))))
-
- `(fringe ((t (:background ,fui-bg))))
+ `(cursor ((t (:background ,fui-amethyst :foreground ,fui-fg))))
+ `(region ((t (:background ,(blend-bg+ fui-river) :foreground nil))))
+ `(persp-selected-face ((t (:background ,fui-bg :foreground ,fui-river))))
+ `(fringe ((t (:background ,fui-light :foreground ,fui-light))))
  `(show-paren-match-face ((t (:foreground ,fui-turquoise :weight bold :underline nil))))
  `(show-paren-mismatch ((t (:background ,fui-alizarin))))
- `(hl-line ((t (:background ,fui-white))))
- `(hl-sexp-face ((t (:background "#EEF6FE"))))
+ `(hl-line ((t (:background ,fui-light))))
  `(minibuffer-prompt ((t (:foreground ,fui-dark-concrete))))
- `(font-lock-builtin-face ((t (:foreground ,fui-river))))
+ `(font-lock-builtin-face ((t (:foreground ,fui-river :background ,fui-bg))))
  `(tuareg-font-lock-operator-face ((t (:foreground ,fui-river))))
  `(font-lock-type-face ((t (:foreground ,fui-amethyst))))
- `(font-lock-doc-face ((t (:foreground ,fui-amethyst :background ,fui-clouds))))
- `(font-lock-comment-face ((t (:foreground ,fui-asphalt2 :background "#F5FAFF"))))
- `(font-lock-function-name-face ((t (:foreground ,fui-dark-amethyst))))
+ `(font-lock-doc-face ((t (:foreground ,fui-amethyst :background ,(blend-bg fui-amethyst 0.95)))))
+ `(font-lock-comment-face ((t (:foreground ,fui-asphalt2 :background nil))))
+ `(font-lock-function-name-face ((t (:foreground ,fui-amethyst :background ,(blend-bg fui-amethyst)))))
  `(font-lock-constant-face ((t (:foreground ,fui-dark-river))))
- `(font-lock-keyword-face ((t (:foreground ,fui-river :weight bold))))
+ `(font-lock-keyword-face ((t (:foreground ,fui-river :weight normal :background ,(blend-bg fui-river)))))
  `(font-lock-string-face ((t (:foreground ,fui-amethyst))))
- `(font-lock-variable-name-face ((t (:foreground ,fui-dark-asphalt))))
+ `(font-lock-variable-name-face ((t (:foreground ,fui-dark-river :background ,(blend-bg fui-dark-river)))))
  `(font-lock-warning-face ((t (:foreground ,fui-dark-carrot))))
- `(isearch ((t (:background ,fui-amethyst
-                            :foreground ,fui-bg))))
- `(lazy-highlight ((t (:background ,fui-dark-turquoise))))
+ `(isearch ((t (:foreground ,fui-turquoise :background ,(blend-bg+ fui-turquoise)))))
+ `(lazy-highlight ((t (:foreground ,fui-amethyst :background ,(blend-bg+ fui-amethyst)))))
  `(link ((t (:foreground ,fui-dark-river :underline t))))
  `(link-visited ((t (:foreground ,fui-dark-asphalt :underline t))))
  `(button ((t (:background ,fui-dark-asphalt :foreground ,fui-clouds :underline t))))
@@ -82,7 +107,9 @@
  `(beacon-color ((t (:background ,fui-river))))
  `(beacon-fallback-background ((t (:background ,fui-river))))
  `(eval-sexp-fu-flash ((t (:background ,fui-bg :foreground ,fui-river))))
- `(page-break-lines ((t (:foreground ,fui-dark-river))))
+ `(page-break-lines ((t (:foreground ,fui-dark-clouds))))
+
+ `(iedit-occurrence ((t (:background ,(blend-bg+ fui-turquoise)))))
 
  ;; Whitespace
  `(whitespace-trailing ((t (:background ,fui-dark-clouds))))
@@ -101,7 +128,7 @@
  `(erc-current-nick-face ((t (:foreground ,fui-dark-carrot :weight unspecified))))
  `(erc-prompt-face ((t (:foreground ,fui-dark-concrete :background nil :weight unspecified))))
  `(erc-my-nick-face ((t (:foreground ,fui-dark-carrot))))
- `(outline-1 ((t (:foreground ,fui-dark-amethyst))))
+ `(outline-1 ((t (:foreground ,fui-amethyst))))
  `(outline-2 ((t (:foreground ,fui-river))))
  `(outline-3 ((t (:foreground ,fui-fg))))
  `(outline-4 ((t (:foreground ,fui-emerald))))
@@ -110,24 +137,24 @@
 
  ;; Rainbow delimiters
  `(rainbow-delimiters-depth-1-face ((t (:foreground ,fui-fg))))
- `(rainbow-delimiters-depth-2-face ((t (:foreground ,fui-river))))
- `(rainbow-delimiters-depth-3-face ((t (:foreground ,fui-carrot))))
- `(rainbow-delimiters-depth-4-face ((t (:foreground ,fui-dark-river))))
- `(rainbow-delimiters-depth-5-face ((t (:foreground ,fui-amethyst))))
- `(rainbow-delimiters-depth-6-face ((t (:foreground ,fui-turquoise))))
- `(rainbow-delimiters-depth-7-face ((t (:foreground ,fui-dark-amethyst))))
+ `(rainbow-delimiters-depth-2-face ((t (:foreground ,fui-turquoise))))
+ `(rainbow-delimiters-depth-3-face ((t (:foreground ,fui-river))))
+ `(rainbow-delimiters-depth-4-face ((t (:foreground ,fui-carrot))))
+ `(rainbow-delimiters-depth-5-face ((t (:foreground ,fui-dark-river))))
+ `(rainbow-delimiters-depth-6-face ((t (:foreground ,fui-carrot))))
+ `(rainbow-delimiters-depth-7-face ((t (:foreground ,fui-dark-concrete))))
  `(rainbow-delimiters-unmatched-face ((t (:foreground ,fui-alizarin))))
 
  ;; Magit
  `(magit-branch ((t (:foreground ,fui-river :background ,fui-bg))))
  `(magit-tag ((t (:foreground ,fui-river :background ,fui-bg))))
  `(magit-section-title ((t (:foreground ,fui-dark-emerald :background ,fui-bg))))
- `(magit-item-highlight ((t (:foreground ,fui-fg :background ,fui-white))))
+ `(magit-item-highlight ((t (:foreground ,fui-fg :background ,fui-light))))
 
  ;; Company
  `(company-preview ((t (:foreground ,fui-fg :background ,fui-sunflower))))
  `(company-preview-common ((t (:foreground ,fui-river :background ,fui-bg))))
- `(company-tooltip ((t (:foreground ,fui-fg :background ,fui-white))))
+ `(company-tooltip ((t (:foreground ,fui-fg :background ,fui-light))))
  `(company-tooltip-common ((t (:foreground ,fui-dark-river))))
  `(company-tooltip-selection ((t (:foreground ,fui-river))))
  `(company-tooltip-common-selection ((t (:foreground ,fui-dark-river))))
@@ -146,13 +173,15 @@
  `(mode-line-inactive ((t (:background ,fui-concrete :foreground ,fui-bg nil))))
  `(powerline-active1 ((t (:background ,fui-river :foreground ,fui-bg :box nil))))
  `(powerline-active2 ((t (:background ,fui-dark-clouds :foreground ,fui-bg :box nil))))
- `(powerline-inactive1 ((t (:background ,fui-asphalt :foreground ,fui-bg :box nil))))
- `(powerline-inactive2 ((t (:background ,fui-asphalt :foreground ,fui-bg :box nil))))
+ `(powerline-inactive1 ((t (:background ,fui-dark-clouds :foreground ,fui-bg :box nil))))
+ `(powerline-inactive2 ((t (:background ,fui-dark-clouds :foreground ,fui-bg :box nil))))
+ `(spaceline-highlight-face ((t (:background ,fui-amethyst :foreground ,fui-bg))))
 
  ;; Helm
  `(helm-header ((t (:background ,fui-bg))))
  `(helm-source-header ((t (:background ,fui-clouds :foreground ,fui-fg))))
- `(helm-selection ((t (:foreground ,fui-bg :background ,fui-river))))
+ `(helm-selection ((t (:foreground nil :background ,(blend-bg+ fui-amethyst)))))
+ `(helm-ff-dotted-directory ((t (:foreground ,fui-river :background ,fui-bg))))
  `(helm-ff-directory ((t (:foreground ,fui-river :background ,fui-bg))))
  `(helm-ff-file ((t (:foreground ,fui-dark-asphalt :background ,fui-bg))))
  `(helm-ff-executable ((t (:foreground ,fui-emerald :background ,fui-bg))))

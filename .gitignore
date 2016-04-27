@@ -1,3 +1,4 @@
+*.elc
 /elpa/
 /persp-confs/
 /projectile-bookmarks.eld
@@ -24,3 +25,4 @@
 /eshell/z
 /lib/elfeed.org
 /.persistent-scratch
+/lib/private.gpg

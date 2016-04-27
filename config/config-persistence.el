@@ -1,0 +1,43 @@
+;;; config-persistence.el --- Emacs data persistence  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2016  Julien Fantin
+
+;; Author: Julien Fantin(require 'use-config) <julienfantin@gmail.com>
+;; Keywords: internal, convenience, extensions
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;;
+
+;;; Code:
+(require 'use-config)
+(require 'config-path)
+
+(use-package savehist
+  :defer t
+  :init (after-init #'savehist-mode)
+  :config
+  (setq savehist-additional-variables '(search-ring regexp-search-ring)
+        savehist-autosave-interval 60
+        savehist-file (user-var-file "savehist")))
+
+(use-package saveplace
+  :defer t
+  :init (setq-default save-place t)
+  :config (setq save-place-file (user-var-file "places")))
+
+(provide 'config-persistence)
+;;; config-persistence.el ends here
