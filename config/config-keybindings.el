@@ -248,7 +248,6 @@ _d_: dired        _a_: ag
 
 (defhydra hydra-project (:color blue :hint nil)
   "
-
 Project: %(projectile-project-root)
 
     _p_: switch project
@@ -290,7 +289,6 @@ _C-c f_: file            _a_: ag               _i_: Ibuffer           _c_: cache
 
 (defhydra hydra-vc (:color blue :hint nil)
   "
-
 Version control
 
    ^^Actions          ^^Popups
@@ -508,7 +506,6 @@ _C-c <tab>_: last    _<tab>_: last
 
 (defhydra hydra-goto (:color red :hint nil)
   "
-
 Goto
 
 ^Positions^    ^Edit^             ^Errors
@@ -555,24 +552,24 @@ _p_: prev
 
 ;; ** Symbols
 
-(advice-add #'ahs-edit-mode :before
-            (lambda (arg &optional temporary)
-              (unless (bound-and-true-p auto-highlight-symbol-mode)
-                (auto-highlight-symbol-mode 1))))
+(advice-add
+ #'ahs-edit-mode :before
+ (lambda (arg &optional temporary)
+   (unless (bound-and-true-p auto-highlight-symbol-mode)
+     (auto-highlight-symbol-mode 1))))
 
-(advice-add #'ahs-edit-mode-off :after
-            (lambda (nomsg interactive)
-              (auto-highlight-symbol-mode -1)))
+(advice-add
+ #'ahs-edit-mode-off :after
+ (lambda (nomsg interactive)
+   (auto-highlight-symbol-mode -1)))
 
-(defhydra hydra-ahs
-  (:color
-   red
-   :pre
-   (progn
-     ;; Movement functions won't work unless the mode is enabled
-     (unless (bound-and-true-p auto-highlight-symbol-mode)
-       (auto-highlight-symbol-mode 1))
-     (ahs-highlight-now)))
+(defun config-ahs-pre ()
+  "Start `auto-highlight-symbol-mode` and highlight."
+  (unless (bound-and-true-p auto-highlight-symbol-mode)
+    (auto-highlight-symbol-mode 1))
+  (ahs-highlight-now))
+
+(defhydra hydra-ahs (:color red :pre (config-ahs-pre))
   "Symbol"
   ("M-n" ahs-forward "next")
   ("n" ahs-forward "next")

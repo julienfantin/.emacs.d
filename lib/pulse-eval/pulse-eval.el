@@ -29,6 +29,7 @@
         (cider-pprint-eval-last-sexp      . pulse-eval-highlight-sexp-advice)
         (cider-eval-defun-at-point        . pulse-eval-highlight-defun-advice)
         (cider-pprint-eval-defun-at-point . pulse-eval-highlight-defun-advice))))
+  "Advices alist, (mode . (function . around-advice))"
   :type 'alist
   :group 'pulse-eval)
 
