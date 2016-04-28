@@ -86,7 +86,7 @@
               (e (progn (end-of-defun) (line-number-at-pos))))
           (and b e (<= config-indentation-aggressive-indent-max-lines (- e b)))))))
   :commands aggressive-indent-mode
-  :init (add-hook 'prog-mode-hook #'aggressive-indent-mode)
+  :init (after-init 'global-aggressive-indent-mode)
   :config
   (progn
     (setq aggressive-indent-comments-too t)
