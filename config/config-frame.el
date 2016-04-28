@@ -94,7 +94,12 @@
                    (font                 . ,(config-frame-mono-font))))))
     (setq default-frame-alist config
           initial-frame-alist config))
-  (blink-cursor-mode 1))
+  :config
+  (progn
+    (menu-bar-mode -1)
+    (scroll-bar-mode -1)
+    (tool-bar-mode -1)
+    (blink-cursor-mode 1)))
 
 (use-package mwheel
   :defer t
