@@ -162,17 +162,17 @@ _TAB_: last buffer   _k_: kill this buffer
   _h_: bury
   _t_: temp buffer
 "
-  ("C-c b" hydra-buffers/-switch-to-last-buffer)
-  ("TAB" hydra-buffers/-switch-to-last-buffer)
+  ("C-c b" -switch-to-last-buffer)
+  ("TAB" -switch-to-last-buffer)
   ("w" hydra-windows/body :exit t)
   ("b" ivy-switch-buffer)
-  ("k" hydra-buffers/kill-this-buffer :color red)
-  ("K" hydra-buffers/kill-buffer-and-window :color red)
-  ("t" hydra-buffers/-temp-buffer)
-  ("o" hydra-buffers/-switch-to-last-window)
-  ("n" hydra-buffers/next-buffer :color red)
-  ("p" hydra-buffers/previous-buffer :color red)
-  ("h" hydra-buffers/bury-buffer :color red)
+  ("k" kill-this-buffer :color red)
+  ("K" kill-buffer-and-window :color red)
+  ("t" -temp-buffer)
+  ("o" -switch-to-last-window)
+  ("n" next-buffer :color red)
+  ("p" previous-buffer :color red)
+  ("h" bury-buffer :color red)
   ("u" revert-buffer "revert"))
 
 ;; ** Editing
