@@ -113,6 +113,7 @@
 
 ;; ** Langs
 
+(use-config config-cl)
 (use-config config-clojure)
 (use-config config-emacs-lisp)
 (use-config config-nix)
