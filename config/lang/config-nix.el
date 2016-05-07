@@ -47,7 +47,8 @@
 
 (use-package nix-sandbox :ensure t :defer t)
 
-(after (ivy nixos-options)
+(after (ivy nix-mode)
+  (require 'nixos-options)
   (defun nixos-options-show-description (f)
     "Show description buffer for NixOS option 'f'."
     (switch-to-buffer-other-window
