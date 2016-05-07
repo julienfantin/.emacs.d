@@ -12,6 +12,9 @@
 (defvar lisp-minor-mode-modes-list
   '((elisp-mode   . emacs-lisp-mode)
     (ielm         . ielm-mode)
+    (lisp-mode    . lisp-mode)
+    (lisp-mode    . common-lisp-mode)
+    (scheme       . scheme-mode)
     (cider        . cider-repl-mode)
     (clojure-mode . clojure-mode)
     (clojure-mode . clojurec-mode)
