@@ -73,10 +73,8 @@
 
 (defun config-completion-add-backends (mode &rest backends)
   "Add 'MODE' specific 'BACKENDS' to 'config-completion-backends-alist'."
-  (let* ((map config-completion-backends-alist)
-         (existing (map-elt config-completion-backends-alist mode)))
-    (setq config-completion-backends-alist
-          (map-put map mode (append existing backends)))))
+  (let* ((existing (map-elt config-completion-backends-alist mode)))
+    (map-put config-completion-backends-alist mode (append existing backends))))
 
 (use-package company
   :ensure t
@@ -117,12 +115,12 @@
       (setq-local smart-tab-completion-functions-alist
                   `((,major-mode . company-complete-common)))
       ;; Smart-tab is our completion entry point
-      (smart-tab-mode 1)))
-  :init (after-init 'global-company-mode)
+      (smart-tab-mode 1)
+      (company-mode 1)))
+  :init (add-hook 'prog-mode-hook 'config-completion-company-turn-on)
   :config
   (progn
     (bind-key "TAB" #'company-complete-common-or-cycle company-active-map)
-    (add-hook 'company-mode-hook 'config-completion-company-turn-on)
     (setq
      company-idle-delay 0.2
      company-minimum-prefix-length 3
@@ -146,7 +144,8 @@
   (after 'company
     (add-hook 'company-mode-hook #'company-statistics-mode))
   :config
-  (setq company-statistics-file (user-var-file "company-statistics-cache.el")
+  (setq company-statistics-file
+        (expand-file-name "company-statistics.el" user-var-directory)
         company-statistics-size 200))
 
 (use-package yasnippet
