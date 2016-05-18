@@ -28,6 +28,8 @@
 
 ;; * Built-ins
 
+(setq window-resize-pixelwise t)
+
 (use-package fringe
   :init (fringe-mode 4)
   :config
