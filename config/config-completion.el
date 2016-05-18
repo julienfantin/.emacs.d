@@ -122,8 +122,9 @@
   (progn
     (bind-key "TAB" #'company-complete-common-or-cycle company-active-map)
     (setq
-     company-idle-delay 0.2
-     company-minimum-prefix-length 3
+     company-idle-delay .2
+     company-minimum-prefix-length 2
+     company-tooltip-align-annotations t
      company-require-match 'never)))
 
 (use-package company-elisp
