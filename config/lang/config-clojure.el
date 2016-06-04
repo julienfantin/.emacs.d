@@ -28,7 +28,12 @@
 
 ;; * clojure-mode
 
-(use-package clojure-mode :ensure t :defer t)
+(use-package clojure-mode
+  :ensure t
+  :defer t
+  :config
+  (after 'config-completion
+    (config-completion-add-backends 'clojure-mode 'company-capf)))
 
 (use-package clojure-mode-extra-font-locking
   :ensure t
@@ -57,7 +62,9 @@
       (defun config-clojure--set-lispy-pp-eval-function ()
         (setq-local lispy-pp-eval-sexp-function #'(lambda (&optional _) (cider-pprint-eval-last-sexp))))
       (add-hook 'cider-mode-hook #'config-clojure--set-lispy-pp-eval-function)
-      (add-hook 'cider-repl-mode-hook #'config-clojure--set-lispy-pp-eval-function))))
+      (add-hook 'cider-repl-mode-hook #'config-clojure--set-lispy-pp-eval-function))
+    (after 'config-completion
+      (config-completion-add-backends 'cider-mode 'company-capf))))
 
 (use-package cider-repl
   :defer t
@@ -67,7 +74,9 @@
     (setq cider-repl-pop-to-buffer-on-connect nil
           cider-repl-use-pretty-printing t
           cider-repl-history-file (user-var-file "nrepl-history")
-          cider-repl-display-help-banner nil)))
+          cider-repl-display-help-banner nil)
+    (after 'config-completion
+      (config-completion-add-backends 'cider-repl-mode 'company-capf))))
 
 
 ;; * clj-refactor
@@ -109,16 +118,15 @@
     (add-to-list 'flycheck-disabled-checkers 'clojure-cider-typed)
     (add-to-list 'flycheck-disabled-checkers 'clojure-cider-kibit))
   :init
-  (after (clojure-mode cider flycheck)
+  (after (clojure-mode flycheck)
     (flycheck-clojure-setup)
     (add-hook 'clojure-mode-hook 'config-clojure-disable-checkers)))
 
 
 ;; * semantic (used by lispy.el)
 
-(after 'clojure
-  (after 'semantic
-    (load-library "clojure")))
+(after (clojure semantic)
+  (load-library "clojure"))
 
 (provide 'config-clojure)
 ;;; config-clojure.el ends here
