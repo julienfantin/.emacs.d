@@ -30,7 +30,14 @@
 
 ;; * Customs
 
-(defvar config-last-selected-layout nil
+(defcustom config-layouts-restore-on-init nil
+  "Restore the last perspectives when emacs initializes."
+  :group 'config-layouts
+  :type 'boolean)
+
+;; * Vars
+
+(defvar config-layouts--last-selected-layout nil
   "Previously selected layout.")
 
 
@@ -56,19 +63,19 @@
   :config
   (progn
     (setq
-     persp-auto-resume-time 0.01
+     persp-auto-resume-time (if config-layouts-restore-on-init 0.01 0)
      persp-nil-name "emacs"
      persp-reset-windows-on-nil-window-conf nil
-     persp-set-last-persp-for-new-frames nil
-     persp-save-dir (user-var-directory "persp/"))
+     persp-set-last-persp-for-new-frames nil)
     ;; Ensures the auto-save file is created or persp-mode will error
-    (let ((file (expand-file-name persp-auto-save-fname persp-save-dir)))
-      (unless (file-exists-p file)
-        (user-var-file file)
-        (persp-save-state-to-file)))
+    (when config-layouts-restore-on-init
+      (let ((file (expand-file-name persp-auto-save-fname persp-save-dir)))
+        (unless (file-exists-p file)
+          (user-var-file file)
+          (persp-save-state-to-file))))
     ;; Track the last persp so we can toggle back and forth
     (defun config-layouts--sync-last-layout (persp &optional _frame-or-window _new-frame)
-      (setq config-last-selected-layout persp-last-persp-name))
+      (setq config-layouts--last-selected-layout persp-last-persp-name))
     (advice-add #'persp-activate :before #'config-layouts--sync-last-layout)
     ;; Generate commands to switch by position
     (defun config-layouts--switch-by-pos (pos)
@@ -234,9 +241,9 @@ perspective."
     "Switch to the previous layout, if it exists."
     (interactive)
     (unless (eq 'non-existent
-                (gethash config-last-selected-layout
+                (gethash config-layouts--last-selected-layout
                          *persp-hash* 'non-existent))
-      (persp-switch config-last-selected-layout))))
+      (persp-switch config-layouts--last-selected-layout))))
 
 (after (persp-mode ivy)
   (defun -layouts-current-layout-buffers ()
