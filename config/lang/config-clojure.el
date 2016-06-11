@@ -110,14 +110,17 @@
 ;; * flycheck
 
 (use-package flycheck-clojure
+  :disabled t ;; stopped working recently :-/
   :ensure t
   :defer t
+  :functions (config-clojure-disable-checkers)
   :preface
   (defun config-clojure-disable-checkers ()
     "Disable kibit and core.typed checkers."
-    (add-to-list 'flycheck-disabled-checkers 'clojure-cider-typed)
-    (add-to-list 'flycheck-disabled-checkers 'clojure-cider-kibit))
+    (flycheck-disable-checker 'clojure-cider-typed)
+    (flycheck-disable-checker 'clojure-cider-kibit))
   :init
+  ;; This doesn't even seem to work...
   (after (clojure-mode flycheck)
     (flycheck-clojure-setup)
     (add-hook 'clojure-mode-hook 'config-clojure-disable-checkers)))
