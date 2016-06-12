@@ -25,6 +25,21 @@
 ;;; Code:
 (require 'use-config)
 
+(defcustom config-doc-default-docsets
+  '((common-lisp-mode-hook   . (("Common_Lisp" "Common Lisp")))
+    (clojure-mode-hook       . ("Clojure" ("Java_SE8" "Java")))
+    (clojurescript-mode-hook . ("Clojure" "JavaScript" "HTML" "CSS"))
+    (clojurec-mode-hook      . ("Clojure"))
+    (lfe-mode-hook           . ("Erlang"))
+    (sql-mode-hook           . ("PostgreSQL"))
+    (tuareg-mode-hook        . ("OCaml")))
+  "Alist of mode-hook to list of docsets.
+
+  Docsets are either a string or a list where the car is the name
+  of the docset to install, and the cadr is the name of the
+  docset to use."
+  :group 'config-doc
+  :type 'alist)
 
 (use-package eldoc
   :ensure t
@@ -41,6 +56,38 @@
        'paredit-close-round))))
 
 (use-package know-your-http-well :ensure t :defer t)
+
+(defvar config-completion-system)       ; silence warning
+
+(use-package counsel-dash
+  :if (eq config-completion-system 'ivy)
+  :ensure t
+  :defer t
+  :after config-completion
+  :functions (config-doc-set-docsets)
+  :config
+  (progn
+    (defun config-doc--docset-install-name (docset)
+      (if (listp docset) (car docset) docset))
+    (defun config-doc--docset-enable-name (docset)
+      (if (listp docset) (cadr docset) docset))
+    (defun config-docs--docset-installed-p (docset)
+      (member
+       (config-doc--docset-enable-name docset)
+       (helm-dash-installed-docsets)))
+    (defun config-doc--ensure-installed (docset)
+      (unless (config-docs--docset-installed-p docset)
+	(counsel-dash-install-docset (config-doc--docset-install-name docset))))
+    (defun config-doc--enable-docsets (docsets)
+      (setq counsel-dash-docsets 
+	    (mapcar #'config-doc--docset-enable-name docsets)))
+    (defun config-doc-set-docsets (mode-hook docsets)
+      (mapc 'config-doc--ensure-installed docsets)
+      (add-hook mode-hook #'(lambda () (config-doc--enable-docsets docsets))))
+    (mapc
+     (lambda (cell)
+       (config-doc-set-docsets (car cell) (cdr cell)))
+     config-doc-default-docsets)))
 
 (provide 'config-doc)
 ;;; config-doc.el ends here
