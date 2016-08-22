@@ -61,7 +61,18 @@
           ;; Like recentf when switching buffers
           ivy-use-virtual-buffers t
           ;; Allow matching at any point in the term
-          ivy-initial-inputs-alist nil)))
+          ivy-initial-inputs-alist nil)
+    (defun -ivy-switch-buffer ()
+      "Switch to another buffer, default to the previous one."
+      (interactive)
+      (let ((this-command 'ivy-switch-buffer))
+        (ivy-read "Switch to buffer: " 'internal-complete-buffer
+                  :matcher #'ivy--switch-buffer-matcher
+                  :preselect (buffer-name (other-buffer (current-buffer) t))
+                  :action #'ivy--switch-buffer-action
+                  :keymap ivy-switch-buffer-map
+                  :caller 'ivy-switch-buffer)))
+    (bind-key "C-x b" '-ivy-switch-buffer ivy-mode-map)))
 
 (use-package counsel
   :ensure t
