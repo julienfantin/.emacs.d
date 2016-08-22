@@ -136,7 +136,12 @@ theme. Remap all faces when called with a prefix argument."
          (cursor                           ((t (:b ,accent))))
          (region                           ((t (:b ,(chroma-blend uno-2 bg blend)))))
          (highlight-numbers-number         ((t (:f ,duo-1))))
+         (org-document-title               ((t (:f ,duo-1))))
+         (org-document-info-keyword        ((t (:f ,duo-3))))
          (org-code                         ((t (:f ,uno-2))))
+         (org-block-begin-line             ((t (:f ,uno-4))))
+         (org-block-end-line               ((t (:f ,uno-4))))
+
          (outline-1                        ((t (:w semibold))))
          (org-level-1                      ((t (:w semibold))))
          (outshine-level-1                 ((t (:= org-level-1))))
