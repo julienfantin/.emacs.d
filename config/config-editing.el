@@ -95,5 +95,14 @@
       (whitespace-cleanup)))
   (message (format "%s cleaned!" (buffer-name))))
 
+;;;###autoload
+(defun -unfill-paragraph (&optional region)
+  "Turn a multi-line paragraph into a single line of text."
+  (interactive (progn (barf-if-buffer-read-only) '(t)))
+  (let ((fill-column (point-max))
+        ;; This would override `fill-column' if it's an integer.
+        (emacs-lisp-docstring-fill-column t))
+    (fill-paragraph nil region)))
+
 (provide 'config-editing)
 ;;; config-editing.el ends here

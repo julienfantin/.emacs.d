@@ -661,6 +661,12 @@ _d_: subtree
  ("C-x 1" . zygospore-toggle-delete-other-windows))
 
 
+;; * Global map
+
+(bind-keys
+ ("M-Q" . -unfill-paragraph))
+
+
 ;; * Local maps
 
 (bind-keys
