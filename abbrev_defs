@@ -21,7 +21,9 @@
 
 (define-abbrev-table 'autoconf-mode-abbrev-table '())
 
-(define-abbrev-table 'awk-mode-abbrev-table '())
+(define-abbrev-table 'awk-mode-abbrev-table
+  '(
+   ))
 
 (define-abbrev-table 'bat-mode-abbrev-table '())
 
@@ -49,9 +51,13 @@
 
 (define-abbrev-table 'bubbles-mode-abbrev-table '())
 
-(define-abbrev-table 'c++-mode-abbrev-table '())
+(define-abbrev-table 'c++-mode-abbrev-table
+  '(
+   ))
 
-(define-abbrev-table 'c-mode-abbrev-table '())
+(define-abbrev-table 'c-mode-abbrev-table
+  '(
+   ))
 
 (define-abbrev-table 'calc-trail-mode-abbrev-table '())
 
@@ -60,6 +66,8 @@
 (define-abbrev-table 'change-log-mode-abbrev-table '())
 
 (define-abbrev-table 'cider-browse-ns-mode-abbrev-table '())
+
+(define-abbrev-table 'cider-clojure-interaction-mode-abbrev-table '())
 
 (define-abbrev-table 'cider-connections-buffer-mode-abbrev-table '())
 
@@ -176,6 +184,8 @@
 
 (define-abbrev-table 'fundamental-mode-abbrev-table '())
 
+(define-abbrev-table 'gdb-script-mode-abbrev-table '())
+
 (define-abbrev-table 'gfm-mode-abbrev-table '())
 
 (define-abbrev-table 'global-abbrev-table
@@ -191,7 +201,7 @@
     ("accomodate" "accommodate" nil 0)
     ("accordingto" "according to" nil 0)
     ("accountt" "account" nil 1)
-    ("accross" "across" nil 0)
+    ("accross" "across" nil 2)
     ("acheive" "achieve" nil 0)
     ("acheived" "achieved" nil 0)
     ("acheiving" "achieving" nil 0)
@@ -246,7 +256,7 @@
     ("andthe" "and the" nil 0)
     ("anothe" "another" nil 0)
     ("anual" "annual" nil 0)
-    ("apache" "Apache" nil 0)
+    ("apache" "Apache" nil 1)
     ("apparant" "apparent" nil 0)
     ("apparrent" "apparent" nil 0)
     ("appearence" "appearance" nil 0)
@@ -1120,6 +1130,8 @@
 
 (define-abbrev-table 'grep-mode-abbrev-table '())
 
+(define-abbrev-table 'gud-mode-abbrev-table '())
+
 (define-abbrev-table 'helm-apt-show-mode-abbrev-table '())
 
 (define-abbrev-table 'helm-grep-mode-abbrev-table '())
@@ -1144,6 +1156,10 @@
 
 (define-abbrev-table 'inferior-emacs-lisp-mode-abbrev-table '())
 
+(define-abbrev-table 'inferior-lisp-mode-abbrev-table '())
+
+(define-abbrev-table 'inferior-python-mode-abbrev-table '())
+
 (define-abbrev-table 'inferior-tcl-mode-abbrev-table '())
 
 (define-abbrev-table 'internal-ange-ftp-mode-abbrev-table '())
@@ -1152,7 +1168,9 @@
 
 (define-abbrev-table 'ivy-occur-mode-abbrev-table '())
 
-(define-abbrev-table 'java-mode-abbrev-table '())
+(define-abbrev-table 'java-mode-abbrev-table
+  '(
+   ))
 
 (define-abbrev-table 'js-jsx-mode-abbrev-table '())
 
@@ -1196,6 +1214,8 @@
 
 (define-abbrev-table 'magit-refs-mode-abbrev-table '())
 
+(define-abbrev-table 'magit-repolist-mode-abbrev-table '())
+
 (define-abbrev-table 'magit-revision-mode-abbrev-table '())
 
 (define-abbrev-table 'magit-stash-mode-abbrev-table '())
@@ -1232,7 +1252,9 @@
 
 (define-abbrev-table 'nxml-mode-abbrev-table '())
 
-(define-abbrev-table 'objc-mode-abbrev-table '())
+(define-abbrev-table 'objc-mode-abbrev-table
+  '(
+   ))
 
 (define-abbrev-table 'occur-edit-mode-abbrev-table '())
 
@@ -1240,7 +1262,11 @@
 
 (define-abbrev-table 'org-export-stack-mode-abbrev-table '())
 
-(define-abbrev-table 'org-mode-abbrev-table '())
+(define-abbrev-table 'org-mode-abbrev-table
+  '(
+    ("tradeoffs" "trade-offs" nil 0)
+    ("visualisations" "visualizations" nil 0)
+   ))
 
 (define-abbrev-table 'outline-mode-abbrev-table '())
 
@@ -1250,7 +1276,9 @@
 
 (define-abbrev-table 'paradox-menu-mode-abbrev-table '())
 
-(define-abbrev-table 'pike-mode-abbrev-table '())
+(define-abbrev-table 'pike-mode-abbrev-table
+  '(
+   ))
 
 (define-abbrev-table 'plain-tex-mode-abbrev-table '())
 
@@ -1259,6 +1287,12 @@
 (define-abbrev-table 'profiler-report-mode-abbrev-table '())
 
 (define-abbrev-table 'prog-mode-abbrev-table '())
+
+(define-abbrev-table 'python-mode-abbrev-table '())
+
+(define-abbrev-table 'python-mode-skeleton-abbrev-table
+  '(
+   ))
 
 (define-abbrev-table 'reb-lisp-mode-abbrev-table '())
 
@@ -1283,6 +1317,24 @@
 (define-abbrev-table 'sieve-mode-abbrev-table '())
 
 (define-abbrev-table 'simula-mode-abbrev-table '())
+
+(define-abbrev-table 'sldb-mode-abbrev-table '())
+
+(define-abbrev-table 'slime-compiler-notes-mode-abbrev-table '())
+
+(define-abbrev-table 'slime-connection-list-mode-abbrev-table '())
+
+(define-abbrev-table 'slime-fuzzy-completions-mode-abbrev-table '())
+
+(define-abbrev-table 'slime-inspector-mode-abbrev-table '())
+
+(define-abbrev-table 'slime-thread-control-mode-abbrev-table '())
+
+(define-abbrev-table 'slime-trace-dialog--detail-mode-abbrev-table '())
+
+(define-abbrev-table 'slime-trace-dialog-mode-abbrev-table '())
+
+(define-abbrev-table 'slime-xref-mode-abbrev-table '())
 
 (define-abbrev-table 'slitex-mode-abbrev-table '())
 
@@ -1324,10 +1376,10 @@
     ("afaict" "as far as I can tell" nil 1)
     ("afaik" "as far as I know" nil 1)
     ("conspicu" "conspire" nil 0)
-    ("i" "I" nil 5)
+    ("i" "I" nil 8)
     ("kno" "know" nil 0)
     ("lookup" "look up" nil 0)
-    ("online" "on-line" nil 0)
+    ("online" "on-line" nil 1)
     ("ttest" "test" nil 0)
    ))
 
