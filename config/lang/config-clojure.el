@@ -45,6 +45,8 @@
 
 ;; * cider
 
+(add-to-list 'package-pinned-packages '(cider . "melpa-stable"))
+
 (use-package cider
   :ensure t
   :defer t
