@@ -50,6 +50,7 @@
 ;;; Code:
 (eval-when-compile
   (require 'cl-lib))
+(require 'map)
 (require 'seq)
 (require 'subr-x)
 (require 'color)
@@ -68,23 +69,44 @@
 (defvar theme-sync-on-enable t
   "Sync faces when the mode is enabled.")
 
-(defvar theme-sync-fallback-to-default-bg t)
+(defvar theme-sync-fallback-to-default-bg nil)
 
-(defvar theme-sync-color-visible-distance-min 8
-  "Like 'shr-color-visible-distance-min' default was 5.")
+(defvar theme-sync-color-visible-distance-min 10
+  "Like `shr-color-visible-distance-min' default was 5.")
 
-(defvar theme-sync-color-visible-luminance-min 60
-  "Like 'shr-color-visible-luminance-min' default was 40.")
+(defvar theme-sync-color-visible-luminance-min 50
+  "Like `shr-color-visible-luminance-min' default was 40.")
+
+
+;; * Internal state
+
+(defvar theme-sync--original-faces nil)
+
+(defun theme-sync--remember-original-face (face attr)
+  "Add `FACE' to the `theme-sync--original-faces' alist and put
+`ATTR` and `VALUE' in a plist at that key."
+  (let ((value (face-attribute face attr))
+        (plist (map-elt theme-sync--original-faces face)))
+    (map-put theme-sync--original-faces face (plist-put plist attr value))))
+
+(defun theme-sync--restore-all-faces ()
+  "Restore faces in `theme-sync--original-faces' and set it to
+nil."
+  (setq theme-sync--original-faces
+        (dolist (elt theme-sync--original-faces)
+          (let ((face  (car elt))
+                (props (cdr elt)))
+            (apply #'set-face-attribute face nil props)))))
 
 
 ;; * Faces helpers
 
 (defun theme-sync--theme-face-p (spec)
-  "Return t if 'SPEC' is a theme-face spec."
+  "Return t if `SPEC' is a theme-face spec."
   (eq 'theme-face (car spec)))
 
 (defun theme-sync--get-face-attribute (face attr)
-  "Return 'FACE' 'ATTR' unless it is 'unspecified."
+  "Return `FACE' `ATTR' unless it is 'unspecified."
   (let ((value (face-attribute face attr)))
     (unless (equal 'unspecified value) value)))
 
@@ -92,23 +114,23 @@
 ;; * Colors
 
 (defun theme-sync--color-to-cielab (color)
-  "Return the cielab representation of 'COLOR'."
+  "Return the cielab representation of `COLOR'."
   (cl-destructuring-bind (r g b) (color-name-to-rgb color)
     (color-srgb-to-lab r g b)))
 
 (defun theme-sync--cielab-to-color (cielab)
-  "Return an hex representation of 'CIELAB'."
+  "Return an hex representation of `CIELAB'."
   (cl-destructuring-bind (l a b) cielab
     (cl-destructuring-bind (r g b) (color-lab-to-srgb l a b)
       (color-rgb-to-hex r g b))))
 
 (defun theme-sync--get-face-cielab-color (face attr)
-  "Return 'FACE' 'ATTR' in cielab unless it is 'unspecified."
+  "Return `FACE' `ATTR' in cielab unless it is 'unspecified."
   (when-let (color (theme-sync--get-face-attribute face attr))
     (theme-sync--color-to-cielab color)))
 
 (defun theme-sync--current-theme-colors ()
-  "Return all colors defined in 'custom-enabled-themes'.
+  "Return all colors defined in `custom-enabled-themes'.
 
 Colors are lists in the Cielab color space."
   (thread-last custom-enabled-themes
@@ -129,7 +151,7 @@ Colors are lists in the Cielab color space."
     (cl-mapcar #'theme-sync--color-to-cielab)))
 
 (defun theme-sync--make-visible (fg-cielab bg-cielab)
-  "Adaptation of 'shr-color-visible' with fixed background and no
+  "Adaptation of `shr-color-visible' with fixed background and no
 color space conversions."
   (unless (or (null fg-cielab) (null bg-cielab))
     (let* ( ;; Compute color distance using CIE DE 2000
@@ -146,32 +168,37 @@ color space conversions."
           (cons (cadr Ls) (cdr fg-cielab)))))))
 
 (defun theme-sync--visible-p (fg bg)
-  "Return t if 'FG' is visible over 'BG'."
+  "Return t if `FG' is visible over `BG'."
   (let ((visible (theme-sync--make-visible fg bg)))
     (and (equal fg (car visible)) (equal bg (cadr visible)))))
 
-(defun theme-sync--colors-sorted-p (reference a b)
-  "Return t if 'REFERENCE' is closer to 'A' than it is to 'B'."
+(defun theme-sync--colors-ordered-p (reference a b)
+  "Return t if `REFERENCE' is closer to `A' than it is to `B'."
   (<= (color-cie-de2000 a reference) (color-cie-de2000 b reference)))
 
 (defun theme-sync--closest-color (palette cielab)
-  "Return the color in 'PALETTE' that minimizes the distance to 'COLOR'.
+  "Return the color in `PALETTE' that minimizes the distance to `CIELAB'.
 
-The color distance function used is 'color-cie-de2000', all
+The color distance function used is `color-cie-de2000', all
 colors should be in the cielab color space as lists of (l a b)."
-  (car (sort palette (apply-partially #'theme-sync--colors-sorted-p cielab))))
+  (car (sort palette (apply-partially #'theme-sync--colors-ordered-p cielab))))
+
+(defun theme-sync--set-face-attribute (face attr value)
+  (progn
+    (theme-sync--remember-original-face face attr)
+    (set-face-attribute face nil attr value)))
 
 (defun theme-sync--quantize-bg (face palette)
-  "Quantize the :background attribute of 'FACE' to the closest color in 'PALETTE'."
+  "Quantize the :background attribute of `FACE' to the closest color in `PALETTE'."
   (when-let ((original (theme-sync--get-face-cielab-color face :background))
              (closest (theme-sync--closest-color palette original))
              (hex (theme-sync--cielab-to-color closest)))
-    (set-face-attribute face nil :background hex)
+    (theme-sync--set-face-attribute face :background hex)
     closest))
 
 (defun theme-sync--quantize-fg-1 (fg-cielab bg-cielab palette)
-  "Recursive search for the closest color in 'PALETTE' for
-'FG-CIELAB' visible over 'BG-CIELAB'."
+  "Recursive search for the closest color in `PALETTE' for
+`FG-CIELAB' that's visible over `BG-CIELAB'."
   (if (null palette)
       ;; Couldn't find a visible fg in palette, just let shr decide
       (theme-sync--make-visible fg-cielab bg-cielab)
@@ -182,12 +209,12 @@ colors should be in the cielab color space as lists of (l a b)."
         (theme-sync--quantize-fg-1 fg-cielab bg-cielab (remove fg-cielab* palette))))))
 
 (defun theme-sync--quantize-fg (face palette bg-cielab)
-  "Quantize 'FACE' :foreground to the closest color in 'PALETTE'
-visible over 'BG-CIELAB."
+  "Quantize `FACE' :foreground to the closest color in `PALETTE'
+visible over `BG-CIELAB."
   (when-let ((fg-cielab (theme-sync--get-face-cielab-color face :foreground))
              (fg-cielab* (theme-sync--quantize-fg-1 fg-cielab bg-cielab palette))
              (hex (theme-sync--cielab-to-color fg-cielab*)))
-    (set-face-attribute face nil :foreground hex)))
+    (theme-sync--set-face-attribute face :foreground hex)))
 
 (defun theme-sync--quantize-face (face palette default-bg-cielab)
   (when palette
@@ -195,13 +222,13 @@ visible over 'BG-CIELAB."
       (theme-sync--quantize-fg face palette bg-cielab))))
 
 (defun theme-sync--customized-p (face)
-  "Return t if 'FACE' is customized by the user or a theme."
+  "Return t if `FACE' is customized by the user or a theme."
   (or (get face 'theme-face)
       (get face 'customized-face)
       (get face 'saved-face)))
 
 (defun theme-sync--sync-faces (faces)
-  "Sync 'FACES' workhorse"
+  "Sync `FACES' workhorse."
   (when-let
       ((uncustomized-faces (cl-remove-if #'theme-sync--customized-p faces))
        (palette (theme-sync--current-theme-colors))
@@ -210,20 +237,20 @@ visible over 'BG-CIELAB."
       (theme-sync--quantize-face face palette default-bg-cielab))))
 
 
-;; * nLoadhist integration
+;; * Loadhist integration
 
 (defun theme-sync--face-symbol (elt)
-  "Return 'ELT' if it's a face symbol."
+  "Retur `ELT' if it's a face symbol."
   (when (and elt (symbolp elt) (facep elt)) elt))
 
 (defun theme-sync--defface-symbol (elt)
-  "Return the cdr of 'ELT' if it's a 'deffface' form."
+  "Return the cdr of `ELT' if it's a `deffface' form."
   (when (and elt (listp elt) (equal (car elt) 'defface)) (cdr elt)))
 
 (defun theme-sync--file-faces (file)
-  "Return a list of faces defined in 'FILE'.
+  "Return a list of faces defined in `FILE'.
 
-This relies on 'loadhist.el' so 'FILE' needs to be loaded."
+This relies on `loadhist.el' so `FILE' needs to be loaded."
   (thread-last (file-loadhist-lookup file)
     (mapcar
      (lambda (elt)
@@ -232,32 +259,39 @@ This relies on 'loadhist.el' so 'FILE' needs to be loaded."
     (cl-remove-if #'null)))
 
 (defun theme-sync--sync-file-faces (file)
-  "Sync faces defined in 'FILE' when 'theme-sync-load-history' is t."
+  "Sync faces defined in `FILE' when `theme-sync-load-history' is t."
   (when theme-sync-load-history
     (theme-sync--sync-faces (theme-sync--file-faces file))))
 
 
 ;; * Load theme advice
 
-(defun theme-sync--load-theme-advice (_theme &optional _ no-enable)
-  "Sync faces after loading 'THEME' unless 'NO-ENABLE'."
-  (unless no-enable (theme-sync--sync-faces (face-list))))
+(defun theme-sync--load-theme-advice (_theme &optional _ _)
+  "Sync faces after loading `THEME'."
+  (theme-sync--sync-faces (face-list)))
+
+(defun theme-sync--unload-theme-advice (_theme &optional _ _)
+  "Restore faces before loading `THEME'."
+  (theme-sync--restore-all-faces))
 
 
 ;; * Minor mode
 
 (defun theme-sync-mode--enable ()
-  "Internal, use 'theme-sync-mode' instead."
+  "Internal, use `theme-sync-mode' instead."
   (when theme-sync-on-enable
     (theme-sync--sync-faces (face-list)))
   (when theme-sync-load-history
     (add-hook 'after-load-functions #'theme-sync--sync-file-faces))
   (when theme-sync-load-theme
+    (advice-add #'load-theme :before #'theme-sync--unload-theme-advice)
     (advice-add #'load-theme :after #'theme-sync--load-theme-advice)))
 
 (defun theme-sync-mode--disable ()
-  "Internal, use 'theme-sync-mode' instead."
+  "Internal, use `theme-sync-mode' instead."
+  (theme-sync--restore-all-faces)
   (remove-hook 'after-load-functions #'theme-sync--sync-file-faces)
+  (advice-remove #'load-theme #'theme-sync--unload-theme-advice)
   (advice-remove #'load-theme #'theme-sync--load-theme-advice))
 
 ;;;###autoload
