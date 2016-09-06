@@ -16,12 +16,12 @@
 
 ;; * Customs
 
-(defcustom duotone-background-comments t
+(defcustom duotone-background-comments nil
   "Blend the background of comments."
   :group 'duotone
   :type 'boolean)
 
-(defcustom duotone-background-doc t
+(defcustom duotone-background-doc nil
   "Blend the background of documentation strings."
   :group 'duotone
   :type 'boolean)
@@ -40,8 +40,8 @@
 
 ;; * Commands
 
-(defun duotone--set-palette (palette &optional remap-faces-p)
-  "Set the default 'PALETTE' optionally remapping faces."
+(defun duotone--set-palette (palette &optional remap-p)
+  "Set the default `PALETTE' optionally and remap faces if `remap-p'."
   (disable-theme 'duotone)
   (setq duotone-default-palette palette)
   (load-theme 'duotone t))
@@ -50,7 +50,7 @@
   (interactive)
   (duotone--set-palette (duotone-palette-invert duotone-default-palette)))
 
-(defun duotone-select-palette (&optional remap-faces-p)
+(defun duotone-select-palette (&optional remap-p)
   "Interactively select a duotone palette and (re)load the
 theme. Remap all faces when called with a prefix argument."
   (interactive "P")
@@ -58,7 +58,7 @@ theme. Remap all faces when called with a prefix argument."
    "Palette:" duotone-palette-default-palettes
    :action
    (lambda (selection)
-     (duotone--set-palette (symbol-value (intern selection )) remap-faces-p))))
+     (duotone--set-palette (symbol-value (intern selection )) remap-p))))
 
 
 ;; * Hierarchical faces mapping
@@ -133,7 +133,7 @@ theme. Remap all faces when called with a prefix argument."
          ;; Faces
          ;;
          (default                          ((t (:f ,uno-1 :b ,bg))))
-         (cursor                           ((t (:b ,accent))))
+         (cursor                           ((t (:b ,uno-1))))
          (region                           ((t (:b ,(chroma-blend uno-2 bg blend)))))
          (highlight-numbers-number         ((t (:f ,duo-1))))
          (org-document-title               ((t (:f ,duo-1))))
@@ -216,17 +216,17 @@ theme. Remap all faces when called with a prefix argument."
          (,duotone-constants               ((t (:f ,duo-2))))
          (,duotone-properties              ((t (:f ,uno-3))))
          (,values                          ((t (:f ,duo-1))))
-         (,duotone-variables               ((t (:f ,uno-3 :w semibold))))
+         (,duotone-variables               ((t (:f ,duo-2 :w normal))))
          (,duotone-functions               ((t (:f ,uno-2 :w semibold))))
          (,duotone-methods                 ((t (:f ,duo-1))))
-         (,duotone-types                   ((t (:f ,uno-2))))
-         (,duotone-keywords                ((t (:f ,duo-2 :w semibold))))
+         (,duotone-types                   ((t (:f ,duo-1))))
+         (,duotone-keywords                ((t (:f ,duo-1 :w normal))))
          (,duotone-tags                    ((t (:f ,uno-1))))
          (,duotone-imports                 ((t (:f ,duo-2))))
          (,duotone-builtins                ((t (:f ,uno-2 :w semibold))))
-         (,duotone-comments                ((t (:f ,uno-4 :b ,(when duotone-background-comments (chroma-blend bg uno-4 sblend))))))
-         (,duotone-strings                 ((t (:f ,uno-1))))
-         (,duotone-doc                     ((t (:f ,duo-1 :b ,(when duotone-background-doc      (chroma-blend bg duo-1 sblend))))))
+         (,duotone-comments                ((t (:f ,uno-2 :b ,(when duotone-background-comments (chroma-blend bg uno-2 sblend))))))
+         (,duotone-strings                 ((t (:f ,duo-3))))
+         (,duotone-doc                     ((t (:f ,uno-2 :b ,(when duotone-background-doc      (chroma-blend bg uno-2 sblend))))))
          (,duotone-tags                    ((t (:f ,uno-1))))
          (,duotone-additions               ((t (:f ,added))))
          (,duotone-deletions               ((t (:f ,removed))))

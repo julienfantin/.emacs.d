@@ -11,12 +11,12 @@
 
 ;; * Customs
 
-(defcustom duotone-palette-blend 0.9
+(defcustom duotone-palette-blend 0.96
   "Default blend value."
   :group 'duotone
   :type 'float)
 
-(defcustom duotone-palette-sblend 0.02
+(defcustom duotone-palette-sblend 0.01
   "Default subtle blend value.
 Used in blending background of strings and docstrings when the
 duotone-background-* options are enabled."

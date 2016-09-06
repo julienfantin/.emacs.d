@@ -183,7 +183,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
    :duo      220
    :duo-1    '(0.92 0.3)
    :duo-2    '(0.46 0.52)
-   :duo-3    '(0.06 0.7)
+   :duo-3    '(0.23 0.52)
    :bg       '(.33 .97)
    :accent   '(.80 .60)
    :renamed  '(208 1.00 .60)
@@ -256,6 +256,45 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
+(defcustom duotone-two-watch-light
+  (make-instance
+   'duotone-palette
+   :uno-1    (chroma-hex :hex "#2d2006")
+   :uno-2    (chroma-hex :hex "#896724")
+   :uno-3    (chroma-hex :hex "#B29762")
+   :uno-4    (chroma-hex :hex "#B6ad9a")
+   :duo-1    (chroma-hex :hex "#065289")
+   :duo-2    (chroma-hex :hex "#718ecd")
+   :duo-3    (chroma-hex :hex "#aeb3b7")
+   :renamed  (chroma-hex :hex "#33a0ff")
+   :added    (chroma-hex :hex "#43d08a")
+   :modified (chroma-hex :hex "#e0c285")
+   :removed  (chroma-hex :hex "#e05252")
+   :bg       (chroma-hex :hex "#FAF8F5")
+   :accent   (chroma-hex :hex "#447EBB"))
+  "Duotone palette two-watch dark."
+  :group 'duotone
+  :type 'duotone-palette)
+
+(defcustom duotone-two-watch-dark
+  (make-instance
+   'duotone-palette
+   :uno-1    (chroma-hex :hex "#d6e9ff")
+   :uno-2    (chroma-hex :hex "#abb2bf")
+   :uno-3    (chroma-hex :hex "#6e88a6")
+   :uno-4    (chroma-hex :hex "#55606d")
+   :duo-1    (chroma-hex :hex "#c8ae9d")
+   :duo-2    (chroma-hex :hex "#e06c75")
+   :duo-3    (chroma-hex :hex "#dd672c")
+   :bg       (chroma-hex :hex "#282c34")
+   :accent   (chroma-hex :hex "#56b6c2")
+   :added    (chroma-hex :hex "#43d08a")
+   :modified (chroma-hex :hex "#e0c285")
+   :removed  (chroma-hex :hex "#e05252")
+   :renamed  (chroma-hex :hex "#33a0ff"))
+  "Duotone palette two-watch dark."
+  :group 'duotone
+  :type 'duotone-palette)
 
 (defcustom duotone-palette-newspaper-light
   (make-instance
@@ -308,7 +347,9 @@ https://github.com/simurai/duotone-dark-sea-syntax."
     duotone-palette-newspaper-light
     duotone-palette-sea-dark
     duotone-palette-sea-light
-    duotone-palette-space-dark)
+    duotone-palette-space-dark
+    duotone-two-watch-dark
+    duotone-two-watch-light)
   "Duotone default palettes."
   :group 'duotone
   :type 'list)
