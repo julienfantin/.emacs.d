@@ -24,17 +24,15 @@
 
 ;;; Code:
 (require 'use-config)
-
-(use-package yaml-mode
-  :ensure t
-  :mode (("\\.yml?\\'"            . yaml-mode)
-         ("\\.yaml?\\'"           . yaml-mode)
-         ("ansible/group_vars/.*" . yaml-mode)
-         ("ansible/host_vars/.*"  . yaml-mode)))
+(require 'config-yaml)
 
 (use-package ansible
   :ensure t
   :defer t
+  :after yaml-mode
+  :mode
+  (("ansible/group_vars/.*" . yaml-mode)
+   ("ansible/host_vars/.*"  . yaml-mode))
   :init
   (after 'yaml-mode
     (add-hook 'yaml-mode-hook #'ansible))
