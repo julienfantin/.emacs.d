@@ -26,24 +26,7 @@
 (require 'use-config)
 
 
-;; * Customs
-
-(defvar config-ivy-fixed-height 12
-  "Prevent the mini-buffer from re-sizing.")
-
-(defvar config-ivy-flx-matching nil
-  "Enable flx matching.")
-
-
-;; * Flx
-
-(use-package flx
-  :if config-ivy-flx-matching
-  :ensure t
-  :config (add-to-list 'flx-word-separators ? ))
-
-
-;; * Swiper
+;; * Packages
 
 (use-package swiper :ensure t :defer t)
 
@@ -52,27 +35,12 @@
   :commands (ivy-set-actions)
   :config
   (progn
-    (when config-ivy-flx-matching
-      (setq ivy-re-builders-alist
-            '((ivy-switch-buffer . ivy--regex-plus)
-              (t . ivy--regex-fuzzy))))
-    (setq ivy-height 15
-          ivy-fixed-height-minibuffer t
-          ;; Like recentf when switching buffers
-          ivy-use-virtual-buffers t
-          ;; Allow matching at any point in the term
-          ivy-initial-inputs-alist nil)
-    (defun -ivy-switch-buffer ()
-      "Switch to another buffer, default to the previous one."
-      (interactive)
-      (let ((this-command 'ivy-switch-buffer))
-        (ivy-read "Switch to buffer: " 'internal-complete-buffer
-                  :matcher #'ivy--switch-buffer-matcher
-                  :preselect (buffer-name (other-buffer (current-buffer) t))
-                  :action #'ivy--switch-buffer-action
-                  :keymap ivy-switch-buffer-map
-                  :caller 'ivy-switch-buffer)))
-    (bind-key "C-x b" '-ivy-switch-buffer ivy-mode-map)))
+    (setq )
+    (setq
+     ;; Matching
+     ivy-re-builders-alist '((t . ivy--regex-ignore-order))
+     ;; Like recentf when switching buffers
+     ivy-use-virtual-buffers t)))
 
 (use-package counsel
   :ensure t
@@ -92,9 +60,10 @@
 (use-package smex
   :ensure t
   :defer t
-  :preface (defvar smex-history-length 100)
-  :init (after-init #'smex-initialize)
-  :config (setq smex-save-file (user-var-file "smex")))
+  :init
+  (progn
+    (defvar smex-history-length 100)
+    (defvar smex-save-file (user-var-file "smex"))))
 
 (provide 'config-ivy)
 ;;; config-ivy.el ends here
