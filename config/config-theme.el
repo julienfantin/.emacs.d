@@ -120,43 +120,5 @@ Get          _gj_ ^^ brightness      _gk_ ^^ saturation      _gl_ ^^ hue
 
 (use-package customize-theme :defer t)
 
-
-;; * Modeline
-
-(use-package spaceline :ensure t :defer t)
-
-(use-package spaceline-config
-  :demand t
-  :commands
-  (spaceline-emacs-theme
-   spaceline-toggle-minor-modes-off
-   spaceline-helm-mode)
-  :functions
-  (spaceline-toggle-minor-modes-off
-   spaceline-toggle-line-column-off
-   spaceline-toggle-line-off)
-  :init
-  (progn
-    (spaceline-emacs-theme)
-    ;; Noisy
-    (spaceline-toggle-minor-modes-off)
-    ;; Cause too many refreshes
-    (spaceline-toggle-line-column-off)
-    (spaceline-toggle-line-off)
-    (after 'anzu
-      (setq anzu-cons-mode-line-p nil))))
-
-(use-package powerline
-  :ensure t
-  :commands (powerline-reset)
-  :defer t
-  :config
-  (progn
-    (setq powerline-default-separator 'utf-8)
-    (advice-add
-     'load-theme :after
-     (lambda (_theme &optional _no-confirm _no-enable)
-       (powerline-reset)))))
-
 (provide 'config-theme)
 ;;; config-theme.el ends here

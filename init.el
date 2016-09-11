@@ -97,6 +97,7 @@
 (use-config config-ivy :if (equal 'ivy config-completion-system))
 (use-config config-layouts)
 (use-config config-marks)
+(use-config config-modeline)
 (use-config config-org)
 (use-config config-outlines)
 (use-config config-parsers)
