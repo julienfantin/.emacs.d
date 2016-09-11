@@ -58,6 +58,8 @@
           cider-prompt-save-file-on-load 'always-save
           cider-prompt-for-symbol nil
           cider-auto-jump-to-error nil)
+    (add-hook 'cider-mode-hook 'eldoc-mode)
+    (add-hook 'cider-repl-mode-hook 'eldoc-mode)
     (after (lispy-mnemonic cider-interaction)
       (defun config-clojure--set-lispy-pp-eval-function ()
         (setq-local lispy-pp-eval-sexp-function #'(lambda (&optional _) (cider-pprint-eval-last-sexp))))
