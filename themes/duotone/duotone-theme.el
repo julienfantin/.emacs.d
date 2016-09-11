@@ -40,21 +40,21 @@
 
 ;; * Commands
 
-(defun duotone--set-palette (palette &optional remap-p)
+(defun duotone--set-palette (palette)
+  "(Re)-enable duotone with `PALETTE'."
   (disable-theme 'duotone)
   (setq duotone-default-palette palette)
   (load-theme 'duotone t))
 
-(defun duotone-select-palette (&optional remap-p)
+(defun duotone-select-palette ()
   "Select a palette and (re)load the theme.
-
 Remap all faces when called with a prefix argument."
   (interactive "P")
   (ivy-read
    "Palette:" duotone-palette-default-palettes
    :action
    (lambda (selection)
-     (duotone--set-palette (symbol-value (intern selection )) remap-p))))
+     (duotone--set-palette (symbol-value (intern selection ))))))
 
 
 ;; * Hierarchical faces mapping
@@ -219,9 +219,13 @@ Remap all faces when called with a prefix argument."
        (,duotone-tags                    ((t (:f ,uno-1))))
        (,duotone-imports                 ((t (:f ,duo-2))))
        (,duotone-builtins                ((t (:f ,uno-2))))
-       (,duotone-comments                ((t (:f ,uno-2 :b ,(when duotone-background-comments (chroma-blend bg uno-2 sblend))))))
+       (,duotone-comments                ((t (:f ,uno-2 :b ,(if duotone-background-comments
+                                                                (chroma-blend bg uno-2 sblend)
+                                                              bg)))))
        (,duotone-strings                 ((t (:f ,duo-1))))
-       (,duotone-doc                     ((t (:f ,uno-2 :b ,(when duotone-background-doc      (chroma-blend bg uno-2 sblend))))))
+       (,duotone-doc                     ((t (:f ,uno-2 :b ,(if duotone-background-doc
+                                                                (chroma-blend bg uno-2 sblend)
+                                                              bg)))))
        (,duotone-tags                    ((t (:f ,uno-1))))
        (,duotone-current-line            ((t (:b ,(chroma-fade bg sfade)))))
        (,duotone-files                   ((t (:f ,uno-2))))
