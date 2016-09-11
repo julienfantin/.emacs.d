@@ -56,7 +56,9 @@
         ;; current symbol can always be highlighted with <SPC> s h
         ahs-idle-timer nil
         ahs-idle-interval nil
-        ahs-inhibit-face-list nil))
+        ahs-inhibit-face-list nil
+        ;; Fix -> symbols in clojure
+        ahs-include "^[0-9A-Za-z/_>.,:;*+=&%|$#@!^?-]+$"))
 
 (use-package undo-tree
   :ensure t
