@@ -38,6 +38,9 @@
   (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
   (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
 
+(after 'flycheck
+  (add-to-list 'flycheck-disabled-checkers 'emacs-lisp-checkdoc))
+
 
 ;; * Packages
 
