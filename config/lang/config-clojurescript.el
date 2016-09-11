@@ -26,7 +26,7 @@
 (require 'use-config)
 (require 'config-clojure)
 
-(after clojurescript-mode
+(after 'clojurescript-mode
   ;; Om indentation
   (define-clojure-indent
     (defui '(1 nil (1)))
