@@ -115,11 +115,17 @@
 
 (use-config config-cl)
 (use-config config-clojure)
+(use-config config-clojurescript)
 (use-config config-emacs-lisp)
 (use-config config-nix)
 (use-config config-ocaml)
 (use-config config-sql)
 (use-config config-web)
+(use-config config-yaml)
+
+;; ** Tools
+
+(use-config config-docker)
 
 ;; ** Keybindings
 
