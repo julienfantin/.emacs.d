@@ -16,10 +16,18 @@
   :group 'duotone
   :type 'float)
 
-(defcustom duotone-palette-sblend 0.01
+(defcustom duotone-palette-sblend 0.05
   "Default subtle blend value.
+
 Used in blending background of strings and docstrings when the
 duotone-background-* options are enabled."
+  :group 'duotone
+  :type 'float)
+
+(defcustom duotone-palette-mblend 0.7
+  "Default match blend value.
+
+Used in blending background of highlighted matches."
   :group 'duotone
   :type 'float)
 
@@ -56,6 +64,7 @@ duotone-background-* options are enabled."
    (removed  :reader removed  :initarg :removed  :type chroma)
    (blend    :reader blend    :initarg :blend    :type float)
    (sblend   :reader sblend   :initarg :sblend   :type float)
+   (mblend   :reader mblend   :initarg :mblend   :tyle float)
    (fade     :reader fade     :initarg :fade     :type float)
    (sfade    :reader sfade    :initarg :sfade    :type float))
   (:documentation "Duotone palette."))
@@ -92,7 +101,8 @@ If 'CHROMA-OR-LIST' is a 'chroma' return it."
         (fade     (plist-get args :fade))
         (sfade    (plist-get args :sfade))
         (blend    (plist-get args :blend))
-        (sblend   (plist-get args :sblend)))
+        (sblend   (plist-get args :sblend))
+        (mblend   (plist-get args :mblend)))
     (oset p :uno-1    (duotone-palette-make-chroma uno uno-1))
     (oset p :uno-2    (duotone-palette-make-chroma uno uno-2))
     (oset p :uno-3    (duotone-palette-make-chroma uno uno-3))
@@ -111,6 +121,7 @@ If 'CHROMA-OR-LIST' is a 'chroma' return it."
     (oset p :sfade    (or sfade duotone-palette-sfade))
     (oset p :blend    (or blend duotone-palette-blend))
     (oset p :sblend   (or sblend duotone-palette-sblend))
+    (oset p :mblend   (or mblend duotone-palette-mblend))
     (cl-call-next-method p nil)))
 
 ;; TODO clone is built into eieieo!

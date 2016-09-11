@@ -69,12 +69,12 @@
 (defvar theme-sync-on-enable t
   "Sync faces when the mode is enabled.")
 
-(defvar theme-sync-fallback-to-default-bg nil)
+(defvar theme-sync-fallback-to-default-bg t)
 
-(defvar theme-sync-color-visible-distance-min 10
+(defvar theme-sync-color-visible-distance-min 15
   "Like `shr-color-visible-distance-min' default was 5.")
 
-(defvar theme-sync-color-visible-luminance-min 50
+(defvar theme-sync-color-visible-luminance-min 60
   "Like `shr-color-visible-luminance-min' default was 40.")
 
 

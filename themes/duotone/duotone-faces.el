@@ -127,6 +127,13 @@
 
 ;; * Static higlighting
 
+(defvar duotone-separators
+  ;; (theme-faces-matching-regexps '("separat"))
+  '(speedbar-separator-face
+    eyebrowse-mode-line-separator
+    which-key-separator-face
+    lv-separator helm-separator))
+
 (defvar duotone-highlights
   ;; (theme-faces-matching-regexps '("highlight" "warning" "error" "mode-line" "lazy" "number"))
   '(flx-highlight-face
@@ -220,9 +227,9 @@
     cider-docview-table-border-face
     border
     vertical-border
-    flycheck-fringe-info
-    flycheck-fringe-warning
-    flycheck-fringe-error
+    ;; flycheck-fringe-info
+    ;; flycheck-fringe-warning
+    ;; flycheck-fringe-error
     bm-fringe-persistent-face
     bm-fringe-face
     fringe))
