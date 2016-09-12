@@ -57,7 +57,9 @@
     (setq cider-font-lock-dynamically '(macro core function deprecated var)
           cider-prompt-save-file-on-load 'always-save
           cider-prompt-for-symbol nil
-          cider-auto-jump-to-error nil)
+          cider-auto-jump-to-error nil
+          cider-prefer-local-resources t
+          cider-pprint-fn 'pprint)
     (add-hook 'cider-mode-hook 'eldoc-mode)
     (add-hook 'cider-repl-mode-hook 'eldoc-mode)
     (after (lispy-mnemonic cider-interaction)
