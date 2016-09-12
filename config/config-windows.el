@@ -80,6 +80,15 @@
 
 ;; * Purpose
 
+(use-package shackle
+  :ensure t
+  :defer t
+  :init (after-init #'shackle-mode)
+  :config
+  (setq shackle-rules
+        '(("*cider-test-report*" :same t :inhibit-window-quit t)
+          ("*cider-result*" :select t))))
+
 (use-package window-purpose
   :disabled t
   :ensure t
