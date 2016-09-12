@@ -32,8 +32,10 @@
   :defer t
   :config
   ;; Don't refresh remote files
-  (setq vc-ignore-dir-regexp
-        (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp)))
+  (setq vc-handled-backends '(Git)
+        vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+                                     vc-ignore-dir-regexp
+                                     tramp-file-name-regexp)))
 
 (use-package ediff
   :defer t
@@ -66,9 +68,7 @@
     (add-hook 'dired-mode-hook #'diff-hl-dired-mode))
   :config
   (progn
-    (setq diff-hl-draw-borders nil)
-    ;; Too slow :(
-    ;; (diff-hl-flydiff-mode 1)
+    (setq diff-hl-draw-borders t)
     (diff-hl-margin-mode 1)))
 
 (provide 'config-git)
