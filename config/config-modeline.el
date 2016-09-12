@@ -37,20 +37,22 @@
 (use-package spaceline
   :ensure t
   :demand t
-  :functions (config-modeline-install)
+  :functions (config-modeline-install spaceline-install)
   :init (after-init #'config-modeline-install)
   :config
   (progn
+    (setq spaceline-highlight-face-func #'spaceline-highlight-face-default)
+
     (after 'anzu
       (setq anzu-cons-mode-line-p nil))
 
     (spaceline-define-segment config-modeline-eyebrowse
       (when (bound-and-true-p eyebrowse-mode)
         (let* ((num (eyebrowse--get 'current-slot))
-               (num-str (spaceline--unicode-number (int-to-string num)))
+               (num-str (int-to-string num))
                (num-tag (when num (nth 2 (assoc num (eyebrowse--get 'window-configs))))))
           (if (and num-tag (< 0 (length num-tag)))
-              (format "%s %s" num-str num-tag)
+              (format "%s[%s]" num-str num-tag)
             num-str))))
 
     (spaceline-define-segment config-modeline-version-control
@@ -69,7 +71,7 @@
                        (`ignored " ")
                        (_ " Unk"))))
               (desc (s-replace "Git:" "" vc-mode)))
-          (powerline-raw (concat icon sym desc)))))
+          (powerline-raw (concat icon sym desc " ")))))
 
     (spaceline-define-segment config-modeline-buffer-icon
       ;; What's up with this function returning symbols when not found?
@@ -83,18 +85,22 @@
               (file-name-nondirectory (directory-file-name name))
             name))))
 
-    (spaceline-define-segment 'config-modeline-ace-window-number
-      (when (and (bound-and-true-p ace-window-mode)
+    (spaceline-define-segment config-modeline-ace-window-number
+      (when (and (featurep 'ace-window)
                  (> (length (aw-window-list)) 1))
         (when-let ((pos (cl-position (selected-window) (aw-window-list)))
-                   (key (nth pos aw-keys))
-                   (str (char-to-string key)))
-          (if spaceline-window-numbers-unicode (spaceline--unicode-number str) str))))
+                   (key (nth pos aw-keys)))
+          (char-to-string key))))
+
+    (spaceline-define-segment config-modeline-buffer-id
+      "Name of buffer."
+      (concat " " (s-trim (powerline-buffer-id 'mode-line-buffer-id)) " "))
 
     (defun config-modeline-install ()
       (spaceline-install
-       `((config-modeline-persp config-modeline-eyebrowse)
-         (buffer-id :face highlight)
+       `(config-modeline-ace-window-number
+         ((config-modeline-persp config-modeline-eyebrowse) :separator ":")
+         buffer-id
          config-modeline-buffer-icon
          (buffer-size  hud buffer-position)
          line-column
@@ -108,6 +114,7 @@
 (use-package powerline
   :ensure t
   :defer t
+  :functions (powerline-reset)
   :config
   (progn
     (setq powerline-default-separator nil)
