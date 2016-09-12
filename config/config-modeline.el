@@ -25,82 +25,95 @@
 ;;; Code:
 (require 'use-config)
 
-
-;; * Modeline
+;; * Packages
 
-(use-package all-the-icons :ensure t :defer t)
+(use-package all-the-icons
+  :ensure t
+  :defer t
+  :commands (all-the-icons-icon-for-buffer))
 
-(use-package spaceline :ensure t :demand t)
+(use-package spaceline-segments :demand t :after spaceline)
 
-(use-package spaceline-config
+(use-package spaceline
+  :ensure t
   :demand t
-  :init
+  :functions (config-modeline-install)
+  :init (after-init #'config-modeline-install)
+  :config
   (progn
-    ;; Theme definition
-    (spaceline-emacs-theme)
-
-    ;; Noisy
-    (spaceline-toggle-minor-modes-off)
-
-    ;; Cause too many refreshes
-    (spaceline-toggle-line-column-off)
-    (spaceline-toggle-line-off)
-
     (after 'anzu
       (setq anzu-cons-mode-line-p nil))
 
-    (after (spaceline spaceline-config spaceline-segments persp-mode eyebrowse)
-      (require 'ace-window nil t )
-      (setq spaceline-workspace-numbers-unicode t
-            spaceline-window-numbers-unicode t)
-
-      (defun config-layouts--current-layout-name ()
-        "Get name of the current perspective."
-        (safe-persp-name (get-frame-persp)))
-
-      (spaceline-define-segment ace-window-number
-        "The current window number. Requires `ace-window-mode' to be enabled."
-        (when-let ((pos (cl-position (selected-window) (aw-window-list)))
-                   (key (nth pos aw-keys))
-                   (str (char-to-string key)))
-          (if spaceline-window-numbers-unicode
-              (spaceline--unicode-number str)
-            str))
-        :when (and (boundp 'ace-window-mode)
-                   (> (length (aw-window-list)) 1)))
-
-      (spaceline-define-segment eyebrowse
+    (spaceline-define-segment config-modeline-eyebrowse
+      (when (bound-and-true-p eyebrowse-mode)
         (let* ((num (eyebrowse--get 'current-slot))
                (num-str (spaceline--unicode-number (int-to-string num)))
                (num-tag (when num (nth 2 (assoc num (eyebrowse--get 'window-configs))))))
           (if (and num-tag (< 0 (length num-tag)))
               (format "%s %s" num-str num-tag)
-            num-str))
-        :when (bound-and-true-p eyebrowse-mode))
+            num-str))))
 
-      (spaceline-define-segment persp
-        (let ((name (config-layouts--current-layout-name)))
+    (spaceline-define-segment config-modeline-version-control
+      "Version control information."
+      (when (bound-and-true-p vc-mode)
+        (let ((icon (all-the-icons-alltheicon "git"))
+              (sym (when (buffer-file-name)
+                     (pcase (vc-state (buffer-file-name))
+                       (`up-to-date " ")
+                       (`edited " *")
+                       (`added " +")
+                       (`unregistered " ??")
+                       (`removed " -")
+                       (`needs-merge " M")
+                       (`needs-update " X")
+                       (`ignored " ")
+                       (_ " Unk"))))
+              (desc (s-replace "Git:" "" vc-mode)))
+          (powerline-raw (concat icon sym desc)))))
+
+    (spaceline-define-segment config-modeline-buffer-icon
+      ;; What's up with this function returning symbols when not found?
+      (when (stringp (all-the-icons-icon-for-buffer))
+        (substring-no-properties (all-the-icons-icon-for-buffer))))
+
+    (spaceline-define-segment config-modeline-persp
+      (when (bound-and-true-p persp-mode)
+        (let ((name (safe-persp-name (get-frame-persp))))
           (if (file-directory-p name)
               (file-name-nondirectory (directory-file-name name))
-            name))
-        :when (bound-and-true-p persp-mode))
+            name))))
 
-      (apply
-       'spaceline--theme
-       '(persp eyebrowse)
-       '(((buffer-id remote-host ace-window-number) :face highlight-face))))))
+    (spaceline-define-segment 'config-modeline-ace-window-number
+      (when (and (bound-and-true-p ace-window-mode)
+                 (> (length (aw-window-list)) 1))
+        (when-let ((pos (cl-position (selected-window) (aw-window-list)))
+                   (key (nth pos aw-keys))
+                   (str (char-to-string key)))
+          (if spaceline-window-numbers-unicode (spaceline--unicode-number str) str))))
+
+    (defun config-modeline-install ()
+      (spaceline-install
+       `((config-modeline-persp config-modeline-eyebrowse)
+         (buffer-id :face highlight)
+         config-modeline-buffer-icon
+         (buffer-size  hud buffer-position)
+         line-column
+         (remote-host (global :when active)) selection-info)
+       `(((flycheck-error flycheck-warning flycheck-info) :when active)
+         (buffer-encoding-abbrev :when (not (eq buffer-file-coding-system 'utf-8-unix)))
+         (config-modeline-version-control :when active)))
+      (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
+      (force-mode-line-update))))
 
 (use-package powerline
   :ensure t
-  :commands (powerline-reset)
   :defer t
   :config
   (progn
-    (setq powerline-default-separator 'utf-8)
-    (advice-add
-     'load-theme :after
-     (lambda (_theme &optional _no-confirm _no-enable)
-       (powerline-reset)))))
+    (setq powerline-default-separator nil)
+    (advice-add 'load-theme :after
+                (lambda (_theme &optional _no-confirm _no-enable)
+                  (powerline-reset)))))
 
 (provide 'config-modeline)
 ;;; config-modeline.el ends here

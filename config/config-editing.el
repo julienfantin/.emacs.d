@@ -44,8 +44,8 @@
 (use-package multiple-cursors
   :ensure t
   :defer t
-  :config
-  (setq mc/list-file (user-var-file ".mc-lists.el")))
+  :init
+  (defvar mc/list-file (user-var-file ".mc-lists.el")))
 
 (use-package auto-highlight-symbol
   :ensure t
