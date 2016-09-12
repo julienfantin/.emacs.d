@@ -48,8 +48,6 @@
 (use-package cider
   :ensure t
   :defer t
-  :preface
-  (defvar cider-dynamic-indentation nil)
   :config
   (progn
     (bind-key "C-c C-t" 'cider-test-jump clojure-mode-map)
@@ -132,7 +130,7 @@
 
 ;; * semantic (used by lispy.el)
 
-(after (clojure semantic)
+(after (clojure-mode semantic lispy)
   (load-library "clojure"))
 
 (provide 'config-clojure)
