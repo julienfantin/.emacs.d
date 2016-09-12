@@ -63,6 +63,7 @@
   :init (after-init #'super-save-mode)
   :config
   (progn
+    (setq-default save-silently t)
     (add-to-list 'super-save-triggers "ace-window")
     (add-to-list 'super-save-triggers "eyebrowse-switch-to-window-config")
     (add-to-list 'super-save-triggers "persp-switch")
