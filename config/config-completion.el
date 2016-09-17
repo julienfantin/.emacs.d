@@ -94,7 +94,9 @@
        (lambda (mode)
          (and (boundp mode) (symbol-value mode)))
        minor-mode-list)
-      :initial-value '())))
+      :initial-value
+      (when config-completion-backends-enable-yasnippet
+        '(company-yasnippet)))))
 
   (defun config-completion-backend-with-yasnippet (backend)
     (if (or (not config-completion-backends-enable-yasnippet)
@@ -121,11 +123,10 @@
   :config
   (progn
     (bind-key "TAB" #'company-complete-common-or-cycle company-active-map)
-    (setq
-     company-idle-delay .2
-     company-minimum-prefix-length 2
-     company-tooltip-align-annotations t
-     company-require-match 'never)))
+    (setq company-idle-delay .2
+          company-minimum-prefix-length 2
+          company-tooltip-align-annotations t
+          company-require-match 'never)))
 
 (use-package company-elisp
   :defer t
@@ -160,10 +161,10 @@
     (unbind-key "TAB" yas-minor-mode-map)
     (unbind-key "C-c <tab>" yas-minor-mode-map)
     (unbind-key "C-c TAB" yas-minor-mode-map)
+    (add-to-list 'yas-snippet-dirs (expand-file-name "snippets/" user-emacs-directory))
     (setq yas-fallback-behavior 'return-nil
           yas-triggers-in-field t
-          yas-verbosity 0
-          yas-snippet-dirs (list (expand-file-name "snippets/" user-emacs-directory)))))
+          yas-verbosity 0)))
 
 (provide 'config-completion)
 ;;; config-completion.el ends here
