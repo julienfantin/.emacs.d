@@ -26,7 +26,6 @@
 (require 'use-config)
 (require 'config-path)
 
-
 ;; * Projectile
 
 (use-package projectile
@@ -46,6 +45,7 @@
           projectile-globally-ignored-directories
           (append projectile-globally-ignored-directories '("elpa")))
     (add-to-list 'projectile-globally-ignored-files ".DS_Store")
+    (add-hook 'projectile-idle-timer-hook #'projectile-invalidate-cache)
     (advice-add #'projectile-replace :before #'projectile-save-project-buffers)
     (projectile-load-known-projects)))
 
