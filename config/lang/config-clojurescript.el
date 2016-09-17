@@ -24,10 +24,8 @@
 
 ;;; Code:
 (require 'use-config)
-(require 'config-clojure)
 
-(after 'clojurescript-mode
-  ;; Om indentation
+(after 'clojure-mode
   (define-clojure-indent
     (defui '(1 nil (1)))
     (dom/a 1)

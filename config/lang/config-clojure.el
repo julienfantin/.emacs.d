@@ -24,7 +24,7 @@
 
 ;;; Code:
 (require 'use-config)
-
+(require 'config-clojurescript)
 
 ;; * clojure-mode
 
@@ -32,8 +32,11 @@
   :ensure t
   :defer t
   :config
-  (after 'config-completion
-    (config-completion-add-backends 'clojure-mode 'company-capf)))
+  (progn
+    (after 'config-completion
+      (config-completion-add-backends 'clojure-mode #'company-capf))
+    (define-key clojure-mode-map [remap forward-sexp] #'clojure-forward-logical-sexp)
+    (define-key clojure-mode-map [remap backward-sexp] #'clojure-backward-logical-sexp)))
 
 (use-package clojure-mode-extra-font-locking
   :ensure t
@@ -57,6 +60,7 @@
           cider-prompt-for-symbol nil
           cider-auto-jump-to-error nil
           cider-prefer-local-resources t
+          cider-dynamic-indentation nil
           cider-pprint-fn 'pprint)
     (add-hook 'cider-mode-hook 'eldoc-mode)
     (add-hook 'cider-repl-mode-hook 'eldoc-mode)
@@ -126,12 +130,6 @@
   (after (clojure-mode flycheck)
     (flycheck-clojure-setup)
     (add-hook 'clojure-mode-hook 'config-clojure-disable-checkers)))
-
-
-;; * semantic (used by lispy.el)
-
-(after (clojure-mode semantic lispy)
-  (load-library "clojure"))
 
 (provide 'config-clojure)
 ;;; config-clojure.el ends here
