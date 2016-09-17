@@ -102,5 +102,14 @@
   (setq dired-listing-switches "-alhv"
         dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
+
+;; * Commands
+
+(defun -find-file-as-sudo ()
+  "Find file with sudo.  Default to function `buffer-file-name'."
+  (interactive)
+  (let ((file-name (buffer-file-name)))
+    (find-alternate-file (concat "/sudo::" file-name))))
+
 (provide 'config-files)
 ;;; config-files.el ends here
