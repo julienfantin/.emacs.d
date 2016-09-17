@@ -5,14 +5,14 @@
 
 (defcustom customize-theme-alist '()
   "Alist of theme to custom faces"
-  :group theming
-  :type alist)
+  :group 'theming
+  :type 'alist)
 
 ;;;###autoload
 (defun customize-theme ()
   (dolist (theme custom-enabled-themes)
     (when-let (faces (alist-get theme customize-theme-alist))
-      (theme-custome-set-faces theme faces))))
+      (theme-custom-set-faces theme faces))))
 
 ;;;###autoload
 (advice-add #'load-theme :after #'customize-theme)

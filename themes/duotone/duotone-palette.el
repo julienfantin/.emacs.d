@@ -11,12 +11,19 @@
 
 ;; * Customs
 
-(defcustom duotone-palette-blend 0.96
+(defcustom duotone-palette-blend 0.9
   "Default blend value."
   :group 'duotone
   :type 'float)
 
-(defcustom duotone-palette-sblend 0.05
+(defcustom duotone-palette-mblend 0.6
+  "Default match blend value.
+
+Used in blending background of highlighted matches."
+  :group 'duotone
+  :type 'float)
+
+(defcustom duotone-palette-sblend 0.1
   "Default subtle blend value.
 
 Used in blending background of strings and docstrings when the
@@ -24,22 +31,28 @@ duotone-background-* options are enabled."
   :group 'duotone
   :type 'float)
 
-(defcustom duotone-palette-mblend 0.7
-  "Default match blend value.
-
-Used in blending background of highlighted matches."
-  :group 'duotone
-  :type 'float)
-
-(defcustom duotone-palette-fade 0.1
+(defcustom duotone-palette-fade 0.4
   "Default fade value."
   :group 'duotone
   :type 'float)
 
-(defcustom duotone-palette-sfade 0.03
+(defcustom duotone-palette-mfade 0.2
   "Default fade value."
   :group 'duotone
   :type 'float)
+
+(defcustom duotone-palette-sfade 0.05
+  "Default fade value."
+  :group 'duotone
+  :type 'float)
+
+
+;; * Defaults
+
+(defvar duotone-palette-default-chroma-added    (chroma-hex :hex "#2acb34"))
+(defvar duotone-palette-default-chroma-renamed  (chroma-hex :hex "#437fdc"))
+(defvar duotone-palette-default-chroma-removed  (chroma-hex :hex "#fb4847"))
+(defvar duotone-palette-default-chroma-modified (chroma-hex :hex "#fbb825"))
 
 
 ;; * Definition
@@ -63,9 +76,10 @@ Used in blending background of highlighted matches."
    (modified :reader modified :initarg :modified :type chroma)
    (removed  :reader removed  :initarg :removed  :type chroma)
    (blend    :reader blend    :initarg :blend    :type float)
-   (sblend   :reader sblend   :initarg :sblend   :type float)
    (mblend   :reader mblend   :initarg :mblend   :tyle float)
+   (sblend   :reader sblend   :initarg :sblend   :type float)
    (fade     :reader fade     :initarg :fade     :type float)
+   (mfade    :reader mfade    :initarg :mfade    :type float)
    (sfade    :reader sfade    :initarg :sfade    :type float))
   (:documentation "Duotone palette."))
 
@@ -75,6 +89,7 @@ Used in blending background of highlighted matches."
 If the list contains 3 elements the hue is ignored.
 If 'CHROMA-OR-LIST' is a 'chroma' return it."
   (cond
+   ((eq '() chroma-or-list) nil)
    ((cl-typep chroma-or-list 'chroma) (chroma-to-hsl chroma-or-list))
    (t (cl-case (length chroma-or-list)
         (2 (chroma-hsl (cons hue chroma-or-list)))
@@ -82,46 +97,52 @@ If 'CHROMA-OR-LIST' is a 'chroma' return it."
 
 (cl-defmethod initialize-instance :around
   ((p duotone-palette) &optional args)
-  (let ((uno      (plist-get args :uno))
-        (uno-1    (plist-get args :uno-1))
-        (uno-2    (plist-get args :uno-2))
-        (uno-3    (plist-get args :uno-3))
-        (uno-4    (plist-get args :uno-4))
-        (duo      (plist-get args :duo))
-        (duo-1    (plist-get args :duo-1))
-        (duo-2    (plist-get args :duo-2))
-        (duo-3    (plist-get args :duo-3))
-        (fg       (plist-get args :fg))
-        (bg       (plist-get args :bg))
-        (accent   (plist-get args :accent))
-        (renamed  (plist-get args :renamed))
-        (added    (plist-get args :added))
-        (modified (plist-get args :modified))
-        (removed  (plist-get args :removed))
-        (fade     (plist-get args :fade))
-        (sfade    (plist-get args :sfade))
-        (blend    (plist-get args :blend))
-        (sblend   (plist-get args :sblend))
-        (mblend   (plist-get args :mblend)))
-    (oset p :uno-1    (duotone-palette-make-chroma uno uno-1))
-    (oset p :uno-2    (duotone-palette-make-chroma uno uno-2))
-    (oset p :uno-3    (duotone-palette-make-chroma uno uno-3))
-    (oset p :uno-4    (duotone-palette-make-chroma uno uno-4))
-    (oset p :duo-1    (duotone-palette-make-chroma duo duo-1))
-    (oset p :duo-2    (duotone-palette-make-chroma duo duo-2))
-    (oset p :duo-3    (duotone-palette-make-chroma duo duo-3))
-    (oset p :fg       (duotone-palette-make-chroma uno (or fg uno-2)))
-    (oset p :bg       (duotone-palette-make-chroma uno bg))
-    (oset p :accent   (duotone-palette-make-chroma duo accent))
-    (oset p :renamed  (duotone-palette-make-chroma duo (or renamed duo-3)))
-    (oset p :modified (duotone-palette-make-chroma uno (or modified uno-3)))
-    (oset p :added    (duotone-palette-make-chroma duo (or added duo-1)))
-    (oset p :removed  (duotone-palette-make-chroma duo (or removed duo-3)))
-    (oset p :fade     (or fade duotone-palette-fade))
-    (oset p :sfade    (or sfade duotone-palette-sfade))
-    (oset p :blend    (or blend duotone-palette-blend))
-    (oset p :sblend   (or sblend duotone-palette-sblend))
-    (oset p :mblend   (or mblend duotone-palette-mblend))
+  (let* ((fade     (or (plist-get args :fade) duotone-palette-fade))
+         (mfade    (or (plist-get args :mfade) duotone-palette-mfade))
+         (sfade    (or (plist-get args :sfade) duotone-palette-sfade))
+         (blend    (or (plist-get args :blend) duotone-palette-blend))
+         (mblend   (or (plist-get args :mblend) duotone-palette-mblend))
+         (sblend   (or (plist-get args :sblend) duotone-palette-sblend))
+         ;; Uno
+         (uno      (plist-get args :uno))
+         (uno-1    (duotone-palette-make-chroma uno (plist-get args :uno-1)))
+         (uno-2    (duotone-palette-make-chroma uno (plist-get args :uno-2)))
+         (uno-3    (duotone-palette-make-chroma uno (plist-get args :uno-3)))
+         (uno-4    (duotone-palette-make-chroma uno (plist-get args :uno-4)))
+         ;; Duo
+         (duo      (plist-get args :duo))
+         (duo-1    (duotone-palette-make-chroma duo (plist-get args :duo-1)))
+         (duo-2    (duotone-palette-make-chroma duo (plist-get args :duo-2)))
+         (duo-3    (duotone-palette-make-chroma duo (plist-get args :duo-3)))
+         ;; fg/bg
+         (fg       (or (duotone-palette-make-chroma uno (plist-get args :fg)) uno-2))
+         (bg       (duotone-palette-make-chroma uno (plist-get args :bg)))
+         ;; accents
+         (accent   (or (duotone-palette-make-chroma duo (plist-get args :accent)) duo-2))
+         (renamed  (or (duotone-palette-make-chroma duo (plist-get args :renamed)) (chroma-blend fg duotone-palette-default-chroma-renamed blend)))
+         (added    (or (duotone-palette-make-chroma duo (plist-get args :added)) (chroma-blend fg duotone-palette-default-chroma-added blend)))
+         (modified (or (duotone-palette-make-chroma duo (plist-get args :modified)) (chroma-blend fg duotone-palette-default-chroma-modified blend)))
+         (removed  (or (duotone-palette-make-chroma duo (plist-get args :removed)) (chroma-blend fg duotone-palette-default-chroma-removed blend))))
+    (oset p :uno-1    uno-1)
+    (oset p :uno-2    uno-2)
+    (oset p :uno-3    uno-3)
+    (oset p :uno-4    uno-4)
+    (oset p :duo-1    duo-1)
+    (oset p :duo-2    duo-2)
+    (oset p :duo-3    duo-3)
+    (oset p :fg       fg)
+    (oset p :bg       bg)
+    (oset p :accent   accent)
+    (oset p :renamed  renamed)
+    (oset p :modified modified)
+    (oset p :added    added)
+    (oset p :removed  removed)
+    (oset p :fade     fade)
+    (oset p :mfade    mfade)
+    (oset p :sfade    sfade)
+    (oset p :blend    blend)
+    (oset p :sblend   sblend)
+    (oset p :mblend   mblend)
     (cl-call-next-method p nil)))
 
 ;; TODO clone is built into eieieo!
@@ -143,8 +164,10 @@ If 'CHROMA-OR-LIST' is a 'chroma' return it."
    :modified (chroma-clone (modified p))
    :removed  (chroma-clone (removed p))
    :fade     (fade p)
+   :mfade    (mfade p)
    :sfade    (sfade p)
    :blend    (blend p)
+   :mblend   (mblend p)
    :sblend   (sblend p)))
 
 

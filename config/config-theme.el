@@ -55,33 +55,23 @@
 
 ;; * Themes
 
-(use-package duotone-theme)
+(use-package theme-sync
+  :defer t
+  :commands theme-sync-mode
+  :init (after-init #'theme-sync-mode))
 
-(use-package plan9-theme           :ensure t :defer t)
-(use-package silkworm-theme        :ensure t :defer t)
+(use-package duotone-theme)
+(use-package duotone-reload)
+
+(use-package doom-themes           :ensure t :defer t)
 (use-package dracula-theme         :ensure t :defer t)
 (use-package darktooth-theme       :ensure t :defer t)
 (use-package zerodark-theme        :ensure t :defer t)
 (use-package gruvbox-theme         :ensure t :defer t)
 (use-package minimal-theme         :ensure t :defer t)
 (use-package majapahit-theme       :ensure t :defer t)
-(use-package material-theme        :ensure t :defer t)
 (use-package omtose-phellack-theme :ensure t :defer t)
 (use-package foggy-night-theme     :ensure t :defer t)
-(use-package spacemacs-theme
-  :ensure t
-  :defer t
-  :config
-  (use-package spacemacs-common
-    :config
-    (setq spacemacs-theme-org-highlight t
-          spacemacs-theme-org-height t)))
-
-(use-package theme-sync
-  :defer t
-  :commands theme-sync-mode
-  :init (after-init #'theme-sync-mode))
-
 
 
 ;; * Theme definition helpers
@@ -117,8 +107,6 @@ Get          _gj_ ^^ brightness      _gk_ ^^ saturation      _gl_ ^^ hue
     ("hr" kurecolor-hexcolor-at-point-or-region-to-css-rgb :color blue)
     ("hR" kurecolor-hexcolor-at-point-or-region-to-css-rgba :color blue)
     ("q"  nil "cancel" :color blue)))
-
-(use-package customize-theme :defer t)
 
 (provide 'config-theme)
 ;;; config-theme.el ends here

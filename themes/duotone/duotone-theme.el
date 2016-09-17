@@ -2,15 +2,12 @@
 
 ;;; Commentary:
 
-;; TODO Hook into 'after-load-functions' and remap faces as packages are loaded
-
 ;;; Code:
 
 (require 'cl-lib)
 (require 'chroma)
 (require 'theme-helpers)
 (require 'duotone-palette)
-(require 'duotone-faces)
 (require 'duotone-presets)
 
 
@@ -83,158 +80,270 @@ Remap all faces when called with a prefix argument."
 ;; ** Custom set faces
 
 (defun duotone-theme-apply ()
+  "Apply the current `duotone-default-palette'."
   (let ((palette duotone-default-palette))
     (with-slots (uno-1 uno-2 uno-3 uno-4
                        duo-1 duo-2 duo-3
                        fg bg accent
                        renamed added modified removed
-                       blend sblend mblend fade sfade) palette
-      (let ((mfade (* 3 fade)))
+                       blend mblend sblend
+                       fade mfade sfade) palette
+      (let* ((bg-fade  (chroma-fade bg fade))
+             (bg-mfade (chroma-fade bg mfade))
+             (bg-sfade (chroma-fade bg sfade))
+             (fg-fade  (chroma-fade fg fade))
+             (fg-mfade (chroma-fade fg mfade))
+             (fg-sfade (chroma-fade fg sfade)))
+        ;;
+        ;; Variables
+        ;;
         (custom-theme-set-variables
          'duotone
          `(beacon-color ,(chroma-to-string duo-2))
-         `(pos-tip-foreground-color ,(chroma-to-string (chroma-fade fg 3)))
-         `(pos-tip-background-color ,(chroma-to-string (chroma-fade bg 3)))
-         `(ansi-color-names-vector
-           ,(apply 'vector
-                   (mapcar #'chroma-to-string
-                           (list fg duo-2 uno-2 modified uno-1 duo-1 uno-3 bg)))))
-
+         `(pos-tip-foreground-color ,(chroma-to-string (chroma-fade fg sfade)))
+         `(pos-tip-background-color ,(chroma-to-string (chroma-fade bg sfade)))
+         `(ansi-color-names-vector ,(apply 'vector (mapcar #'chroma-to-string (list fg duo-2 uno-2 modified uno-1 duo-1 uno-3 bg)))))
+        ;;
+        ;; Faces
+        ;;
         (theme-custom-set-faces
          'duotone
-         `(
-           ;;
+         `( ;;
            ;; Hierarchies:
            ;;
            ,@(duotone-hierarchical-chroma-mapping
               palette
               #'(lambda (face chrom)
                   `(,face ((t (:fg ,chrom :bg nil)))))
-              duotone-hierarchies)
+              (theme-faces-match '("[0-9]" "powerline" "swiper" "match")))
 
-           ;; Subtle highlighting in mini-buffer
+           ;; Underline in mini-buffer
            ,@(duotone-hierarchical-chroma-mapping
               palette
               #'(lambda (face chrom)
                   `(,face ((t (:underline `(:style line :color ,chrom))))))
-              duotone-mini-buffer-match-hierarchies)
+              (theme-faces-match-all "ivy" "match" "[0-9]"))
 
-           ;; Stand-out when highlighting in buffer
+           ;; Stand-out highlighting in buffer
            ,@(duotone-hierarchical-chroma-mapping
               palette
               #'(lambda (face chrom)
                   `(,face ((t (:f ,chrom :b ,(chroma-blend chrom bg mblend))))))
-              duotone-in-buffer-match-hierarchies)
-
+              (append
+               (theme-faces-match-all '("match" "ivy") "[0-9]")
+               (theme-faces-match-all "mark" "[0-9]")
+               (theme-faces-match-all "lead")))
            ;;
-           ;; Faces
+           ;; Face groups
            ;;
-           (default                          ((t (:f ,uno-1 :b ,bg))))
-           (cursor                           ((t (:f ,accent :b ,uno-1))))
-           (region                           ((t (:b ,(chroma-blend uno-2 bg blend)))))
-           (highlight-numbers-number         ((t (:f ,duo-1))))
-           (org-document-title               ((t (:f ,duo-1))))
-           (org-document-info-keyword        ((t (:f ,duo-3))))
-           (org-code                         ((t (:f ,uno-2))))
-           (org-block-begin-line             ((t (:f ,uno-4))))
-           (org-block-end-line               ((t (:f ,uno-4))))
-           (pulse-eval-face                  ((t (:b ,(chroma-blend modified bg mblend)))))
-           (page-break-lines                 ((t (:f ,uno-4))))
-           (avy-background-face              ((t (:f ,(chroma-fade bg 30)))))
-           (avy-lead-face-0                  ((t (:f ,uno-2 :b ,bg))))
-           (avy-lead-face-1                  ((t (:f ,duo-2 :b ,bg))))
-           (avy-lead-face-2                  ((t (:f ,duo-1 :b ,bg))))
-           (avy-lead-face                    ((t (:f ,duo-2 :b ,bg))))
-           (ivy-match-required               ((t (:f ,duo-2))))
-           (ivy-confirm-face                 ((t (:f ,duo-1))))
-           (cider-stacktrace                 ((t (:b ,bg))))
-           (tooltip                          ((t (:f ,fg :b ,(chroma-fade bg 3)))))
-           (company-preview                  ((t (:f ,fg :b ,duo-3))))
-           (company-tooltip-search           ((t (:f ,bg :b ,duo-2))))
-           (company-preview-common           ((t (:f ,duo-3 :b ,bg))))
-           (company-preview                  ((t (:f ,duo-2 :b ,bg))))
-           (company-tooltip                  ((t (:f ,fg :b ,(chroma-fade bg 3)))))
-           (company-tooltip-common           ((t (:f ,uno-4 :b ,bg))))
-           (company-tooltip-common-selection ((t (:f ,uno-4 :b ,bg))))
-           (company-tooltip-selection        ((t (:f ,duo-1 :b ,(chroma-fade bg fade)))))
-           (company-scrollbar-fg             ((t (:b ,uno-4))))
-           (company-scrollbar-bg             ((t (:b ,(chroma-fade bg sfade)))))
-           (magit-section-face               ((t (:b ,(chroma-fade bg sfade)))))
-           (magit-section-highlight          ((t (:b ,(chroma-fade bg sfade)))))
-           (magit-diff-context-highlight     ((t (:b ,(chroma-fade bg sfade)))))
-           (whitespace-line                  ((t (:f nil :b ,(chroma-fade bg sblend)))))
-           (whitespace-space                 ((t (:f ,uno-4 :b ,bg))))
-           (whitespace-newline               ((t (:f ,uno-4 :b ,bg))))
-           (whitespace-tab                   ((t (:f ,uno-4 :b ,bg))))
-           (whitespace-trailing              ((t (:f ,bg :b ,(chroma-blend bg removed blend)))))
-           (whitespace-empty                 ((t (:f nil :b ,(chroma-blend bg modified blend)))))
-           (whitespace-space-after-tab       ((t (:f nil :b ,(chroma-blend bg modified blend)))))
-           (whitespace-space-before-tab      ((t (:f nil :b ,(chroma-blend bg renamed blend)))))
-           (anzu-mode-line                   ((t (:f ,bg))))
-           (mode-line-inactive               ((t (:f ,fg :b ,(chroma-blend bg uno-2 sblend)))))
-           (mode-line-buffer-id              ((t (:f nil :b nil :weight bold))))
-           (mode-line                        ((t (:f ,bg :b ,duo-2))))
-           (powerline-active1                ((t (:f ,bg :b ,duo-2))))
-           (powerline-active2                ((t (:f nil :b ,(chroma-fade bg fade)))))
-           (mode-line-inactive               ((t (:f ,fg :b ,(chroma-blend bg fg sblend)))))
-           (powerline-inactive1              ((t (:f ,fg :b ,(chroma-blend bg uno-1 sblend)))))
-           (powerline-inactive2              ((t (:f ,fg :b ,(chroma-fade bg fade)))))
-           (ahs-face                         ((t (:b ,(chroma-fade bg fade)))))
-           (ahs-plugin-defalt-face           ((t (:b ,(chroma-fade bg mfade)))))
+           ;; Links
+           (,(theme-faces-match '("link" "visited"))
+            ((t (:f ,duo-2 :box nil :underline t))))
+           (,(theme-faces-match-all "link" "visited")
+            ((t (:f ,duo-3 :box nil :underline t))))
            ;;
-           ;; Face groups (defined in duotone-faces.el)
+           ;; Gui
+           (,(theme-faces-match "button")
+            ((t (:f ,uno-3 :b ,bg :box nil :underline t))))
            ;;
-           (,duotone-button ((t (:f ,uno-3 :b ,bg :box nil :underline t))))
-           (,duotone-black                   ((t (:f ,fg))))
-           (,duotone-blue                    ((t (:f ,duo-2))))
-           (,duotone-cyan                    ((t (:f ,duo-3))))
-           (,duotone-green                   ((t (:f ,duo-1))))
-           (,duotone-magenta                 ((t (:f ,uno-3))))
-           (,duotone-red                     ((t (:f ,uno-1))))
-           (,duotone-white                   ((t (:f ,uno-4))))
-           (,duotone-yellow                  ((t (:f ,uno-2))))
-           (,duotone-headers                 ((t (:bg ,(chroma-fade bg fade)))))
-           (,duotone-punctuations            ((t (:f ,uno-4))))
-           (,duotone-errors                  ((t (:f ,removed :b ,(chroma-blend bg removed sblend)))))
-           (,duotone-warnings                ((t (:f ,renamed :b ,(chroma-blend bg renamed sblend)))))
-           (,duotone-infos                   ((t (:f ,added :b ,(chroma-blend bg added sblend)))))
-           (,duotone-marks                   ((t (:b ,uno-3))))
-           (,duotone-marked-marks            ((t (:b ,uno-4))))
-           (,duotone-matches-current         ((t (:f ,duo-1 :b ,(chroma-blend duo-1 bg mblend)))))
-           (,duotone-matches                 ((t (:f ,duo-2 :b ,(chroma-blend duo-2 bg mblend)))))
-           (,duotone-subtle-matches          ((t (:f nil :b ,(chroma-blend bg duo-2 sblend)))))
-           (,duotone-editing-occurrences     ((t (:f nil :b ,(chroma-blend duo-1 bg mblend)))))
-           (,duotone-occurrences-current     ((t (:b ,(chroma-fade bg mfade)))))
-           (,duotone-occurrences             ((t (:b ,(chroma-fade bg fade)))))
-           (,duotone-constants               ((t (:f ,duo-2))))
-           (,duotone-properties              ((t (:f ,uno-3))))
-           (,values                          ((t (:f ,duo-1))))
-           (,duotone-variables               ((t (:f ,duo-2))))
-           (,duotone-functions               ((t (:f ,uno-2))))
-           (,duotone-methods                 ((t (:f ,duo-1))))
-           (,duotone-types                   ((t (:f ,duo-1))))
-           (,duotone-keywords                ((t (:f ,duo-1))))
-           (,duotone-tags                    ((t (:f ,uno-1))))
-           (,duotone-imports                 ((t (:f ,duo-2))))
-           (,duotone-builtins                ((t (:f ,uno-2))))
-           (,duotone-comments                ((t (:f ,uno-2 :b ,(if duotone-background-comments (chroma-blend bg uno-2 sblend) bg)))))
-           (,duotone-strings                 ((t (:f ,duo-1))))
-           (,duotone-doc                     ((t (:f ,uno-2 :b ,(if duotone-background-doc (chroma-blend bg uno-2 sblend) bg)))))
-           (,duotone-tags                    ((t (:f ,uno-1))))
-           (,duotone-current-line            ((t (:b ,(chroma-fade bg sfade)))))
-           (,duotone-files                   ((t (:f ,uno-2))))
-           (,duotone-directories             ((t (:f ,duo-2))))
-           (,duotone-executables             ((t (:f ,uno-3))))
-           (,duotone-prompts                 ((t (:f ,duo-1))))
-           (,duotone-highlights              ((t (:b ,(chroma-blend uno-1 bg mblend)))))
-           (,duotone-gutters                 ((t (:f ,uno-4 :b ,bg))))
-           (,duotone-separators              ((t (:f ,duo-1 :b ,bg))))
-           (,duotone-deletions               ((t (:f ,removed))))
-           (,duotone-additions               ((t (:f ,added))))
-           (,duotone-changes                 ((t (:f ,modified))))
-           (,duotone-todos                   ((t (:f ,duo-1 :w bold))))
-           (,duotone-dones                   ((t (:b ,duo-3))))
-           (,duotone-verbatims               ((t (:f ,uno-3))))))))))
+           ;; Colors
+           (,(theme-faces-match "black")
+            ((t (:f ,fg))))
+           (,(theme-faces-match "blue")
+            ((t (:f ,duo-2))))
+           (,(theme-faces-match "cyan")
+            ((t (:f ,duo-3))))
+           (,(theme-faces-match "green")
+            ((t (:f ,duo-1))))
+           (,(theme-faces-match "magenta")
+            ((t (:f ,uno-3))))
+           (,(theme-faces-match "red")
+            ((t (:f ,uno-1))))
+           (,(theme-faces-match "white")
+            ((t (:f ,uno-4))))
+           (,(theme-faces-match "yellow")
+            ((t (:f ,uno-2))))
+           ;;
+           ;; Structure formatting
+           (,(theme-faces-match "-header$" "heading")
+            ((t (:bg ,bg-sfade))))
+           (,(theme-faces-match '("separat"))
+            ((t (:f ,duo-1 :b ,bg))))
+           (,(theme-faces-match '("delimiter" "rainbow") "break")
+            ((t (:f ,uno-4))))
+           (,(theme-faces-match "whitespace" "trailing")
+            ((t (:f ,removed :b ,(chroma-blend bg removed sblend)))))
+           ;;
+           ;; Errors etc
+           (,(theme-faces-match '("error" "info" "warning" "list") "\\(mis\\|un\\)match" "in\\(correct\\|valid\\)" "missing")
+            ((t (:f ,removed :b ,(chroma-blend bg removed sblend)))))
+           (,(theme-faces-match "warning")
+            ((t (:f ,renamed :b ,(chroma-blend bg renamed sblend)))))
+           (,(theme-faces-match '("info" "visited" "list" "[0-9]"))
+            ((t (:f ,added :b ,(chroma-blend bg added sblend)))))
+           ;; Marks
+           ;;
+           (,(theme-faces-match '("mark" "marked" "book" "bm" "markdown" "1" "2"))
+            ((t (:b ,uno-3))))
+           ;;
+           ;; Matches
+           (,(theme-faces-match-all "match" "current")
+            ((t (:f ,duo-1 :b ,(chroma-blend duo-1 bg sblend)))))
+           (,(concatenate
+              'list
+              (theme-faces-match '("match" "\\(mis\\|un\\)match"  "[0-9]"))
+              (theme-faces-match '("required" "common" "current")))
+            ((t (:f ,duo-2 :b ,(chroma-blend duo-2 bg sblend)))))
+           ((show-paren-match)
+            ((t (:f nil :b ,(chroma-blend bg duo-2 sblend)))))
+           ;;
+           ;; Occurrences
+           (,(theme-faces-match-all "occur")
+            ((t (:f nil :b ,(chroma-blend duo-1 bg mblend)))))
+           ((lazy-highlight secondary-selection)
+            ((t (:f nil :b ,(chroma-blend duo-1 bg mblend)))))
+           ((isearch)
+            ((t (:f nil :b ,(chroma-blend uno-2 bg mblend)))))
+           (,(theme-faces-match "occur")
+            ((t (:b ,bg-fade))))
+           ;;
+           ;; Selection
+           (,(concatenate
+              'list
+              '(hl-line helm-selection)
+              (theme-faces-match "selection" "selected"))
+            ((t (:b ,(chroma-blend bg uno-4 blend)))))
+           ;;
+           ;; Filesystem
+           (,(theme-faces-match '("tag" "file" "current"))
+            ((t (:f ,uno-1 :b ,(chroma-blend bg duo-3 sblend)))))
+           (,(theme-faces-match "directory" "subdir")
+            ((t (:f ,duo-2))))
+           (,(theme-faces-match "exec")
+            ((t (:f ,uno-3))))
+           ;;
+           ;; Interactive
+           (,(theme-faces-match "prompt" "required")
+            ((t (:f ,duo-1))))
+           ;;
+           ;; Highlights
+           (,(theme-faces-match '("highlight" "warning" "error" "mode-line" "lazy" "number"))
+            ((t (:b ,(chroma-blend bg uno-1 sblend)))))
+           ;;
+           ;; Fringes
+           (,(theme-faces-match "diff-hl" "git-gutter" "border" "fringe")
+            ((t (:f ,uno-4 :b ,bg))))
+           ;;
+           ;; Diff
+           (,(theme-faces-match '("removed" "indicator") "delete")
+            ((t (:f ,removed))))
+           (,(theme-faces-match '("added" "indicator") "copied" "insert" "inserted")
+            ((t (:f ,added))))
+           (,(theme-faces-match '("change" "change-log") '("modified" "unmodified" "added") "saved")
+            ((t (:f ,modified))))
+           ;;
+           ;; Todos
+           (,(theme-faces-match "todo")
+            ((t (:f ,duo-1 :w bold))))
+           (,(theme-faces-match "done")
+            ((t (:f ,bg :b ,duo-3))))
+           (,(theme-faces-match "quote" "verbatim")
+            ((t (:f ,uno-1))))
+           ;;
+           ;; Font lock
+           (,(theme-faces-match "preproc")
+            ((t (:f ,duo-3))))
+           (,(theme-faces-match "constant")
+            ((t (:f ,duo-2))))
+           (,(theme-faces-match "properties")
+            ((t (:f ,uno-3))))
+           (,(theme-faces-match '("variable" "value"))
+            ((t (:f ,duo-2))))
+           (,(theme-faces-match "value")
+            ((t (:f ,duo-1))))
+           (,(theme-faces-match "function")
+            ((t (:f ,duo-1))))
+           (,(theme-faces-match "method")
+            ((t (:f ,duo-1))))
+           (,(theme-faces-match "type")
+            ((t (:f ,duo-2))))
+           (,(theme-faces-match "keyword")
+            ((t (:f ,duo-2))))
+           (,(theme-faces-match "import")
+            ((t (:f ,duo-2))))
+           (,(theme-faces-match "builtin")
+            ((t (:f ,uno-2))))
+           (,(theme-faces-match '("comment" "git" "delimiter"))
+            ((t (:f ,uno-2 :b ,(when duotone-background-comments (chroma-blend bg uno-2 sblend))))))
+           (,(theme-faces-match '("string"))
+            ((t (:f ,uno-2))))
+           (,(theme-faces-match '("negat"))
+            ((t (:f ,duo-2))))
+           (,(theme-faces-match '("char" "avy" "negation"))
+            ((t (:f ,uno-1))))
+           (,(theme-faces-match '("doc" "docview"))
+            ((t (:f ,uno-2 :b ,(when duotone-background-doc (chroma-blend bg uno-2 sblend))))))
+           ;;
+           ;; Faces overrides
+           ;;
+           (default                                    ((t (:f ,uno-1 :b ,bg))))
+           (cursor                                     ((t (:f ,accent :b ,uno-1))))
+           (region                                     ((t (:b ,(chroma-blend uno-2 bg blend)))))
+           (match                                      ((t (:f ,bg :b ,accent))))
+           (highlight-numbers-number                   ((t (:f ,duo-1))))
+           (org-document-title                         ((t (:f ,duo-1))))
+           (org-document-info-keyword                  ((t (:f ,duo-3))))
+           (org-code                                   ((t (:f ,uno-2))))
+           (org-block-begin-line                       ((t (:f ,uno-4))))
+           (org-block-end-line                         ((t (:f ,uno-4))))
+           (pulse-eval-face                            ((t (:b ,(chroma-blend modified bg mblend)))))
+           (page-break-lines                           ((t (:f ,uno-4))))
+           (aw-leading-char-face                       ((t (:f ,uno-1 :bg ,(chroma-blend bg uno-1 sblend)))))
+           (avy-background-face                        ((t (:f ,(chroma-blend uno-4 bg sblend)))))
+           (avy-goto-char-timer-face                   ((t (:f nil :b ,(chroma-blend uno-2 bg mblend)))))
+           (avy-lead-face-0                            ((t (:f ,duo-1 :bg ,(chroma-blend bg duo-1 sblend)))))
+           (avy-lead-face                              ((t (:f ,uno-1 :bg ,(chroma-blend bg uno-1 sblend)))))
+           (avy-lead-face-1                            ((t (:f ,duo-2 :bg ,(chroma-blend bg duo-2 sblend)))))
+           (avy-lead-face-2                            ((t (:f ,duo-3 :bg ,(chroma-blend bg duo-3 sblend)))))
+           (ivy-match-required                         ((t (:f ,duo-2))))
+           (ivy-confirm-face                           ((t (:f ,duo-1))))
+           (ivy-current-match                          ((t (:f ,duo-1 :b ,(chroma-blend bg duo-1 sblend)))))
+           (cider-stacktrace                           ((t (:b ,bg))))
+           (tooltip                                    ((t (:f ,fg :b ,bg-sfade))))
+           (company-preview                            ((t (:f ,fg :b ,uno-3))))
+           (company-tooltip-search                     ((t (:f ,bg :b ,duo-2))))
+           (company-preview-common                     ((t (:f ,duo-2 :b ,bg))))
+           (company-preview                            ((t (:f ,duo-2 :b ,bg))))
+           (company-tooltip                            ((t (:f ,uno-3 :b ,bg-sfade))))
+           (company-tooltip-common                     ((t (:f ,(chroma-fade fg-sfade sfade) :b ,bg-sfade))))
+           (company-tooltip-common-selection           ((t (:f ,fg :b ,(chroma-fade bg-sfade sfade)))))
+           (company-tooltip-selection                  ((t (:f ,fg :b ,(chroma-fade bg-sfade sfade)))))
+           (company-scrollbar-fg                       ((t (:b ,uno-4))))
+           (company-scrollbar-bg                       ((t (:b ,bg-sfade))))
+           (whitespace-line                            ((t (:f nil :b ,bg-sfade))))
+           (whitespace-space                           ((t (:f ,uno-4 :b ,bg))))
+           (whitespace-newline                         ((t (:f ,uno-4 :b ,bg))))
+           (whitespace-tab                             ((t (:f ,uno-4 :b ,bg))))
+           (whitespace-trailing                        ((t (:f ,bg :b ,(chroma-blend bg removed sblend)))))
+           (whitespace-empty                           ((t (:f nil :b ,(chroma-blend bg modified sblend)))))
+           (whitespace-space-after-tab                 ((t (:f nil :b ,(chroma-blend bg modified sblend)))))
+           (whitespace-space-before-tab                ((t (:f nil :b ,(chroma-blend bg renamed sblend)))))
+           (lisp-extra-font-lock-backquote             ((t (:f ,accent))))
+           (lisp-extra-font-lock-quoted                ((t (:f ,duo-2))))
+           (lisp-extra-font-lock-quoted-function       ((t (:f ,duo-1))))
+           (lisp-extra-font-lock-special-variable-name ((t (:f ,duo-3))))
+           (lisp-extra-font-lock-backquote             ((t (:f ,accent))))
+           (anzu-mode-line                             ((t (:f ,bg))))
+           (mode-line-inactive                         ((t (:f ,fg :bg ,bg))))
+           (mode-line-buffer-id                        ((t (:f nil :b nil :weight bold))))
+           (mode-line                                  ((t (:f ,duo-1 :b ,bg))))
+           (powerline-active1                          ((t (:f ,duo-2 :b ,bg))))
+           (powerline-active2                          ((t (:f nil :b ,bg-sfade))))
+           (mode-line-inactive                         ((t (:f ,fg :b ,bg))))
+           (powerline-inactive1                        ((t (:f ,uno-4 :b ,bg))))
+           (powerline-inactive2                        ((t (:f ,uno-4 :b ,bg-sfade))))
+           (ahs-face                                   ((t (:b ,bg-fade))))
+           (ahs-plugin-defalt-face                     ((t (:b ,bg-mfade))))))))))
 
 ;;;###autoload
 (when load-file-name
@@ -243,18 +352,6 @@ Remap all faces when called with a prefix argument."
 
 ;;;###autoload
 (duotone-theme-apply)
-
-(defun duotone-theme-apply-if-enabled (&optional _)
-  "Apply the duotone theme if currently enabled."
-  (when (member 'duotone custom-enabled-themes)
-    (duotone-theme-apply)))
-
-
-(defun duotone-theme-install-reload-hook ()
-  "Install a hook to apply the theme when a file is loaded."
-  (add-hook 'after-load-functions #'duotone-theme-apply-if-enabled))
-
-(add-hook 'after-init-hook #'duotone-theme-install-reload-hook)
 
 (provide-theme 'duotone)
 ;;; duotone-theme.el ends here

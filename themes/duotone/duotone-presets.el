@@ -22,20 +22,16 @@
 (defcustom duotone-palette-candid-light
   (make-instance
    'duotone-palette
-   :uno      200
-   :duo      40
+   :uno      180
+   :duo      70
    :uno-1    '(.76 .10)
    :uno-2    '(.58 .34)
-   :uno-3    '(.34 .54)
+   :uno-3    '(.34 .50)
    :uno-4    '(.16 .66)
    :duo-1    '(.92 .28)
-   :duo-2    '(.46 .62)
+   :duo-2    '(.46 .32)
    :duo-3    '(.06 .70)
    :bg       '(.12 .92)
-   :renamed  '(208 1.00 .60)
-   :added    '(150  .60 .54)
-   :modified '(40   .60 .70)
-   :removed  '(0    .70 .60)
    :accent   '(.80 .60))
   "https://github.com/tsangkenneth/duotone-light-blue-syntax/blob/master/styles/colors.less"
   :group 'duotone
@@ -52,10 +48,6 @@
    :duo-1    (chroma-hex :hex "#437fdc")
    :duo-2    (chroma-hex :hex "#5a92e3")
    :duo-3    (chroma-hex :hex "#757c8e")
-   :added    (chroma-hex :hex "#2acb34")
-   :renamed  (chroma-hex :hex "#437fdc")
-   :removed  (chroma-hex :hex "#fb4847")
-   :modified (chroma-hex :hex "#fbb825")
    :accent   (chroma-hex :hex "#437fdc"))
   "Mono dark palette."
   :group 'duotone
@@ -72,10 +64,6 @@
    :duo-1    (chroma-hex :hex "#437fdc")
    :duo-2    (chroma-hex :hex "#5a92e3")
    :duo-3    (chroma-hex :hex "#343a46")
-   :added    (chroma-hex :hex "#2acb34")
-   :renamed  (chroma-hex :hex "#437fdc")
-   :removed  (chroma-hex :hex "#fb4847")
-   :modified (chroma-hex :hex "#fbb825")
    :accent   (chroma-hex :hex "#437fdc"))
   "Mono dark palette."
   :group 'duotone
@@ -92,10 +80,6 @@
    :duo-1    (chroma-hex :hex "#111")
    :duo-2    (chroma-hex :hex "#444")
    :duo-3    (chroma-hex :hex "#777")
-   :added    (chroma-hex :hex "#5F985F")
-   :renamed  (chroma-hex :hex "#678DCB")
-   :removed  (chroma-hex :hex "#98655F")
-   :modified (chroma-hex :hex "#CBBC6B")
    :accent   (chroma-hex :hex "#6A447E"))
   "Mono dark palette."
   :group 'duotone
@@ -112,10 +96,6 @@
    :duo-1    (chroma-hex :hex "#aaa")
    :duo-2    (chroma-hex :hex "#999")
    :duo-3    (chroma-hex :hex "#777")
-   :added    (chroma-hex :hex "#23CC1C")
-   :renamed  (chroma-hex :hex "#2377FF")
-   :removed  (chroma-hex :hex "#CC331C")
-   :modified (chroma-hex :hex "#FFDF03")
    :accent   (chroma-hex :hex "#fff"))
   "Mono light palette."
   :group 'duotone
@@ -152,11 +132,7 @@
    :duo-2    '(.72 .48)
    :duo-3    '(.12 .38)
    :bg       '(.24 .15)
-   :accent   '(1.00 .66)
-   :renamed  '(208 1.00 .60)
-   :added    '(150  .60 .54)
-   :modified '(40   .60 .70)
-   :removed  '(0    .70 .60))
+   :accent   '(1.00 .66))
   "Duotone light palette.
 https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
@@ -195,11 +171,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
    :duo-1    '(0.92 0.3)
    :duo-2    '(0.46 0.52)
    :duo-3    '(0.23 0.52)
-   :bg       '(.33 .97)
-   :accent   '(.80 .60)
-   :renamed  '(208 1.00 .60)
-   :modified '(40 .60 .70)
-   :removed  '(0 .70 .60))
+   :bg       '(.33 .97))
   "Duotone light palette."
   :group 'duotone
   :type 'duotone-palette)
@@ -232,37 +204,10 @@ https://github.com/simurai/duotone-dark-sea-syntax."
    :uno-4    '(.16 .66)
    :duo      310
    :duo-1    '(.92 .28)
-   :duo-2    '(.46 .62)
+   :duo-2    '(.46 .52)
    :duo-3    '(.6 .7)
    :bg       '(.33 .97)
-   :accent   '(.80 .60)
-   :renamed  '(208 1.00 .60)
-   :added    '(150 .60 .54)
-   :modified '(40 .60 .70)
-   :removed  '(0 .70 .60))
-  "Duotone palette blessed-light."
-  :group 'duotone
-  :type 'duotone-palette)
-
-(defcustom duotone-palette-blessed-dark
-  (make-instance
-   'duotone-palette
-   :uno      195
-   :uno-1    '(1.00 .96)
-   :uno-2    '( .98 .86)
-   :uno-3    '( .96 .78)
-   :uno-4    '( .12 .46)
-   :duo      310
-   :duo-1    '(1.00 .80)
-   :duo-2    '( .72 .62)
-   :duo-3    '( .06 .46)
-   :accent   '(1.00 .66)
-   :bg       '(195 .14 .18)
-   :accent   '(.80 .60)
-   :renamed  '(208 1.00 .60)
-   :added    '(150 .60 .54)
-   :modified '(40 .60 .70)
-   :removed  '(0 .70 .60))
+   :accent   '(.80 .60))
   "Duotone palette blessed-light."
   :group 'duotone
   :type 'duotone-palette)
@@ -277,10 +222,6 @@ https://github.com/simurai/duotone-dark-sea-syntax."
    :duo-1    (chroma-hex :hex "#065289")
    :duo-2    (chroma-hex :hex "#718ecd")
    :duo-3    (chroma-hex :hex "#aeb3b7")
-   :renamed  (chroma-hex :hex "#33a0ff")
-   :added    (chroma-hex :hex "#43d08a")
-   :modified (chroma-hex :hex "#e0c285")
-   :removed  (chroma-hex :hex "#e05252")
    :bg       (chroma-hex :hex "#FAF8F5")
    :accent   (chroma-hex :hex "#447EBB"))
   "Duotone palette two-watch dark."
@@ -298,11 +239,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
    :duo-2    (chroma-hex :hex "#e06c75")
    :duo-3    (chroma-hex :hex "#dd672c")
    :bg       (chroma-hex :hex "#282c34")
-   :accent   (chroma-hex :hex "#56b6c2")
-   :added    (chroma-hex :hex "#43d08a")
-   :modified (chroma-hex :hex "#e0c285")
-   :removed  (chroma-hex :hex "#e05252")
-   :renamed  (chroma-hex :hex "#33a0ff"))
+   :accent   (chroma-hex :hex "#56b6c2"))
   "Duotone palette two-watch dark."
   :group 'duotone
   :type 'duotone-palette)
@@ -335,17 +272,13 @@ https://github.com/simurai/duotone-dark-sea-syntax."
    :duo-1    (chroma-hex :hex "#4F2D83")
    :duo-2    (chroma-hex :hex "#6B42A7")
    :duo-3    (chroma-hex :hex "#4E1273")
-   :renamed  (chroma-hex :hex "#5A5AD1")
-   :removed  (chroma-hex :hex "#CA005A")
-   :modified (chroma-hex :hex "#F6CD04")
    :accent   (chroma-hex :hex "#E54F50"))
   "Duotone palette based on Nicolas Petton Emacs website."
   :group 'duotone
   :type 'duotone-palette)
 
 (defcustom duotone-palette-default-palettes
-  '(duotone-palette-blessed-dark
-    duotone-palette-arch-light
+  '(duotone-palette-arch-light
     duotone-palette-arch-dark
     duotone-palette-blessed-light
     duotone-palette-candid-light

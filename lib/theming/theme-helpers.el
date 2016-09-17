@@ -23,7 +23,7 @@
 
 ;; * Faces
 
-(defun theme-faces--matching-regexps (faces &rest regexps)
+(defun theme-faces--match (faces &rest regexps)
   "Return a list of faces symbol matching any one of 'REGEXPS'.
 Elements of REGEXPS can also be a list of '(\"match-pattern\"
 \"exclude-pattern1\" \"exclude-pattern2)."
@@ -34,7 +34,7 @@ Elements of REGEXPS can also be a list of '(\"match-pattern\"
       (string
        (append
         (seq-filter (lambda (face) (string-match-p regexp (symbol-name face))) faces)
-        (cl-mapcan (apply-partially #'theme-faces--matching-regexps faces) more)))
+        (cl-mapcan (apply-partially #'theme-faces--match faces) more)))
       ;; Assume first string in list is match pattern and the rest of the list
       ;; are exclude patterns
       (list
@@ -46,24 +46,24 @@ Elements of REGEXPS can also be a list of '(\"match-pattern\"
               (lambda (exclude-pattern)
                 (string-match-p exclude-pattern (symbol-name face)))
               exclude-patterns))
-           (theme-faces--matching-regexps faces regexp))
-          (cl-mapcan (apply-partially #'theme-faces--matching-regexps faces) more)))))))
+           (theme-faces--match faces regexp))
+          (cl-mapcan (apply-partially #'theme-faces--match faces) more)))))))
 
-(defun theme-faces-matching-regexps (&rest regexps)
-  (apply 'theme-faces--matching-regexps (face-list) regexps))
+(defun theme-faces-match (&rest regexps)
+  (apply 'theme-faces--match (face-list) regexps))
 
-(defun theme-faces--matching-all-regexps (faces &rest regexps)
+(defun theme-faces--match-all (faces &rest regexps)
   "Return a list of faces matching all 'REGEXPS'.
-'REGEXPS' can be composed of lists, similar to 'theme-faces-matching-regexps'."
+'REGEXPS' can be composed of lists, similar to 'theme-faces-match'."
   (let ((acc '()))
     (dolist (regexp regexps acc)
-      (let ((found (theme-faces--matching-regexps faces regexp)))
+      (let ((found (theme-faces--match faces regexp)))
         (if (seq-empty-p acc)
             (setq acc found)
           (sort (setq acc (seq-intersection acc found)) #'string-lessp))))))
 
-(defun theme-faces-matching-all-regexps (&rest regexps)
-  (apply 'theme-faces--matching-all-regexps (face-list) regexps))
+(defun theme-faces-match-all (&rest regexps)
+  (apply 'theme-faces--match-all (face-list) regexps))
 
 
 ;; * Theme definition shorthands

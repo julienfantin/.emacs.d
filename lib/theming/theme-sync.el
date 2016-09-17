@@ -71,10 +71,10 @@
 
 (defvar theme-sync-fallback-to-default-bg t)
 
-(defvar theme-sync-color-visible-distance-min 15
+(defvar theme-sync-color-visible-distance-min 5
   "Like `shr-color-visible-distance-min' default was 5.")
 
-(defvar theme-sync-color-visible-luminance-min 60
+(defvar theme-sync-color-visible-luminance-min 40
   "Like `shr-color-visible-luminance-min' default was 40.")
 
 
