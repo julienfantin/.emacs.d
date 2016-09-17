@@ -31,7 +31,7 @@
 ;; * Customs
 
 (defcustom config-layouts-restore-on-init nil
-  "Restore the last perspectives when emacs initializes."
+  "Restore the last perspectives when Emacs initializes."
   :group 'config-layouts
   :type 'boolean)
 
@@ -46,7 +46,9 @@
 (use-package eyebrowse
   :ensure t
   :defer t
-  :init (after-init #'eyebrowse-mode))
+  :init (after-init #'eyebrowse-mode)
+  :config
+  (setq eyebrowse-switch-back-and-forth t))
 
 
 ;; * persp-mode
@@ -55,28 +57,30 @@
   :ensure t
   :defer t
   :init (after-init #'persp-mode)
-  :preface
   ;; Clashes with projectile
-  (defvar persp-keymap-prefix)
-  :functions
-  (config-layouts--autosave config-layouts--sync-last-layout)
+  :preface (defvar persp-keymap-prefix)
+  :functions (config-layouts--autosave config-layouts--sync-last-layout)
   :config
   (progn
-    (setq
-     persp-auto-resume-time (if config-layouts-restore-on-init 0.01 0)
-     persp-nil-name "emacs"
-     persp-reset-windows-on-nil-window-conf nil
-     persp-set-last-persp-for-new-frames nil)
+    (setq persp-nil-name "default"
+          persp-auto-resume-time (if config-layouts-restore-on-init 0.01 0)
+          persp-reset-windows-on-nil-window-conf nil
+          persp-set-last-persp-for-new-frames nil)
     ;; Ensures the auto-save file is created or persp-mode will error
     (when config-layouts-restore-on-init
       (let ((file (expand-file-name persp-auto-save-fname persp-save-dir)))
         (unless (file-exists-p file)
           (user-var-file file)
           (persp-save-state-to-file))))
+
+    (defun config-layouts--current-layout-name ()
+      (safe-persp-name (get-frame-persp)))
+
     ;; Track the last persp so we can toggle back and forth
-    (defun config-layouts--sync-last-layout (persp &optional _frame-or-window _new-frame)
+    (defun config-layouts--sync-last-layout (_persp &optional _frame-or-window _new-frame)
       (setq config-layouts--last-selected-layout persp-last-persp-name))
     (advice-add #'persp-activate :before #'config-layouts--sync-last-layout)
+
     ;; Generate commands to switch by position
     (defun config-layouts--switch-by-pos (pos)
       "Switch to perspective of position POS."
@@ -97,7 +101,7 @@
 
 
 ;; * Integration
-;; ** Eyebrowse
+;; ** Eyebrowse x persp-mode
 
 ;; NOTE: copied from the spacemacs layouts layer
 
@@ -106,12 +110,9 @@
     "Save FRAME's eyebrowse workspace to FRAME's perspective.
 FRAME defaults to the current frame."
     (let ((persp (get-frame-persp frame)))
-      (set-persp-parameter
-       'eyebrowse-window-configs (eyebrowse--get 'window-configs frame) persp)
-      (set-persp-parameter
-       'eyebrowse-current-slot (eyebrowse--get 'current-slot frame) persp)
-      (set-persp-parameter
-       'eyebrowse-last-slot (eyebrowse--get 'last-slot frame) persp)))
+      (set-persp-parameter 'eyebrowse-window-configs (eyebrowse--get 'window-configs frame) persp)
+      (set-persp-parameter 'eyebrowse-current-slot (eyebrowse--get 'current-slot frame) persp)
+      (set-persp-parameter 'eyebrowse-last-slot (eyebrowse--get 'last-slot frame) persp)))
 
   (defun config-layouts--eyebrowse-load-for-perspective (&optional _)
     "Load an eyebrowse workspace according to a perspective's parameters.
@@ -140,55 +141,37 @@ If the perspective doesn't have a workspace, create one."
       (eyebrowse--get 'current-tag)))
     (config-layouts--eyebrowse-save-for-perspective))
 
-  (add-hook 'persp-before-switch-functions #'config-layouts--eyebrowse-udpate-for-perspective)
+  (add-hook 'persp-before-switch-functions     #'config-layouts--eyebrowse-udpate-for-perspective)
   (add-hook 'eyebrowse-post-window-switch-hook #'config-layouts--eyebrowse-save-for-perspective)
   (add-hook 'persp-activated-functions         #'config-layouts--eyebrowse-load-for-perspective))
 
-;; ** Projectile
+;; ** Projectile x persp-mode
 
-;; NOTE: adapted from persp-projectile (perspective.el integration)
+(defvar config-layouts-after-find-file-hook nil)
 
-(after (projectile persp-mode)
-  (defun -layouts-projectile-switch (project-dir)
-    "Switch to a project or perspective we have visited before.
-If the perspective of corresponding project does not exist, this
-function will call `persp-switch' to create one and switch to
-that before `projectile-switch-project' invokes
-`projectile-switch-project-action'.
-Otherwise, this function calls `persp-switch' to switch to an
-existing perspective of the project unless we're already in that
-perspective."
-    (interactive (list (projectile-completing-read
-                        "Switch to project: "
-                        (projectile-relevant-known-projects))))
-    (let* ((project-name (file-name-nondirectory (directory-file-name project-dir)))
-           (persp (gethash project-name *persp-hash*)))
-      (cond
-       ((not (equal persp (config-layouts--current-layout-name)))
-        (persp-switch project-name))
-       ((not persp)
-        (let ((frame (selected-frame)))
-          (persp-switch project-name)
-          (projectile-switch-project-by-name project-dir)
-          (when (not (equal frame (selected-frame)))
-            (with-selected-frame frame
-              (persp-kill project-name))))))))
-  (define-key projectile-mode-map [remap projectile-switch-project] '-layouts-projectile-switch)
-  (defun config-layouts--projectile-persp-bridge (&optional _)
-    "Load a persp for the current project and switch to it."
-    (when-let ((project-name (projectile-project-name)))
-      (persp-load-from-file-by-names project-name nil (list project-name))
-      (persp-switch project-name)))
-  ;; This will break if 'projectile-switch-project-action' is customized to
-  ;; something else...
-  (advice-add #'projectile-dired :before #'config-layouts--projectile-persp-bridge)
-  (advice-add #'projectile-find-file :before  #'config-layouts--projectile-persp-bridge)
-  (defun config-layouts--projectile-rename-frame (frame &optional _new-frame)
-    "Rename initial perspective to `projectile-project-name'."
-    (with-selected-frame frame
-      (when (projectile-project-p)
-        (persp-rename (projectile-project-name)))))
-  (advice-add #'persp-init-frame :after #'config-layouts--projectile-rename-frame))
+(defun config-layouts-after-find-file-advice (&rest _args)
+  "Run `config-layouts-after-find-file-hook'."
+  (run-hooks 'config-layouts-after-find-file-hook))
+
+(advice-add 'find-file :after 'config-layouts-after-find-file-advice)
+
+(after 'projectile
+  (def-auto-persp "projectile"
+    :parameters '((dont-save-to-file . t))
+    :hooks '(config-layouts-after-find-file-hook)
+    :switch 'frame
+    :predicate
+    #'(lambda (buffer)
+        (and (buffer-file-name buffer) (projectile-project-p)))
+    :get-name-expr
+    #'(lambda ()
+        (abbreviate-file-name (projectile-project-root))))
+
+  (setq persp-add-buffer-on-find-file 'if-not-autopersp)
+
+  (add-hook 'persp-after-load-state-functions
+            #'(lambda (&rest _args)
+                (persp-auto-persps-pickup-buffers)) t))
 
 
 ;; * Commands
@@ -197,45 +180,9 @@ perspective."
   (defun -layouts-jump-to-last-layout ()
     "Switch to the previous layout, if it exists."
     (interactive)
-    (unless (eq 'non-existent
-                (gethash config-layouts--last-selected-layout
-                         *persp-hash* 'non-existent))
-      (persp-switch config-layouts--last-selected-layout))))
-
-(after (persp-mode ivy)
-  (defun -layouts-current-layout-buffers ()
-    "Ivy completion for current persp buffers."
-    (interactive)
-    (with-persp-buffer-list
-     ()
-     (let ((ivy-use-virtual-buffers))
-       (ivy-switch-buffer))))
-  (defun -layouts ()
-    "Ivy persp switch or create."
-    (interactive)
-    (ivy-read
-     "Persp:" (persp-names)
-     :action #'persp-switch))
-  (ivy-set-actions
-   'ivy-persp
-   '(("k" persp-kill-without-buffers "Kill persp")
-     ("K" persp-kill "Kill with buffers"))))
-
-(after (persp-mode projectile ivy)
-  (defun -layout-switch-project (arg)
-    (interactive "P")
-    (ivy-read
-     "Switch to Project Layout: "
-     (if (projectile-project-p)
-         (cons (abbreviate-file-name (projectile-project-root))
-               (projectile-relevant-known-projects))
-       projectile-known-projects)
-     :action
-     (lambda (project)
-       (let ((persp-reset-windows-on-nil-window-conf t))
-         (persp-switch project)
-         (let ((projectile-completion-system 'ivy))
-           (projectile-switch-project-by-name project)))))))
+    (let ((last-layout (gethash config-layouts--last-selected-layout *persp-hash* 'none)))
+      (unless (eq 'none last-layout)
+        (persp-switch config-layouts--last-selected-layout)))))
 
 (provide 'config-layouts)
 ;;; config-layouts.el ends here
