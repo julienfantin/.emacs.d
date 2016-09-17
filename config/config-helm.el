@@ -111,28 +111,10 @@
 
 
 ;; * Packages
-;; ** Flx
 
-(use-package helm-flx
-  :disabled t
-  :ensure t
-  :init (helm-flx-mode 1))
+(use-package helm-aws :ensure t :defer t)
+(use-package helm-org-rifle :ensure t :defer t)
 
-(use-package helm-fuzzier
-  :disabled t
-  :ensure t
-  :init (helm-fuzzier-mode 1))
-
-;; ** Convenience
-
-(use-package helm-unicode :ensure t :defer t)
-
-(use-package helm-describe-modes :ensure t :defer t)
-
-(use-package helm-descbinds
-  :ensure t
-  :defer t
-  :config (setq helm-descbinds-window-style 'split-window))
 
 (provide 'config-helm)
 ;;; config-helm.el ends here

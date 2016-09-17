@@ -35,11 +35,9 @@
   :commands (ivy-set-actions)
   :config
   (progn
-    (setq )
     (setq
-     ;; Matching
+     ivy-initial-inputs-alist nil
      ivy-re-builders-alist '((t . ivy--regex-ignore-order))
-     ;; Like recentf when switching buffers
      ivy-use-virtual-buffers t)))
 
 (use-package counsel
@@ -64,6 +62,13 @@
   (progn
     (defvar smex-history-length 100)
     (defvar smex-save-file (user-var-file "smex"))))
+
+(use-package counsel-projectile
+  :ensure t
+  :defer t
+  :init
+  (after 'projectile
+    (counsel-projectile-on)))
 
 (provide 'config-ivy)
 ;;; config-ivy.el ends here
