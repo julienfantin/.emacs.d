@@ -44,6 +44,12 @@
 
 ;; * Packages
 
+(use-package lisp-extra-font-lock
+  :ensure t
+  :defer t
+  :after lisp
+  :config (lisp-extra-font-lock-global-mode 1))
+
 (use-package elisp-slime-nav
   :ensure t
   :defer t
