@@ -147,28 +147,25 @@ If the perspective doesn't have a workspace, create one."
 
 ;; ** Projectile x persp-mode
 
-(defvar config-layouts-after-find-file-hook nil)
-
-(defun config-layouts-after-find-file-advice (&rest _args)
-  "Run `config-layouts-after-find-file-hook'."
-  (run-hooks 'config-layouts-after-find-file-hook))
-
-(advice-add 'find-file :after 'config-layouts-after-find-file-advice)
-
-(after 'projectile
-  (def-auto-persp "projectile"
-    :parameters '((dont-save-to-file . t))
-    :hooks '(config-layouts-after-find-file-hook)
-    :switch 'frame
-    :predicate
-    #'(lambda (buffer)
-        (and (buffer-file-name buffer) (projectile-project-p)))
-    :get-name-expr
-    #'(lambda ()
-        (abbreviate-file-name (projectile-project-root))))
-
+(after (projectile persp-mode)
+  (defvar config-layouts-after-find-file-hook nil)
+  (defun config-layouts-after-find-file-advice (&rest _args)
+    "Run `config-layouts-after-find-file-hook'."
+    (run-hooks 'config-layouts-after-find-file-hook))
+  (advice-add 'find-file :after 'config-layouts-after-find-file-advice)
+  (with-temp-buffer
+    (eval
+     '(def-auto-persp "projectile"
+        :parameters '((dont-save-to-file . t))
+        :hooks '(config-layouts-after-find-file-hook)
+        :switch 'frame
+        :predicate
+        #'(lambda (buffer)
+            (and (buffer-file-name buffer) (projectile-project-p)))
+        :get-name-expr
+        #'(lambda ()
+            (abbreviate-file-name (projectile-project-root))))))
   (setq persp-add-buffer-on-find-file 'if-not-autopersp)
-
   (add-hook 'persp-after-load-state-functions
             #'(lambda (&rest _args)
                 (persp-auto-persps-pickup-buffers)) t))
