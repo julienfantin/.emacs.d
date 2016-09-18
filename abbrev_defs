@@ -818,7 +818,6 @@
     ("perscriptions" "prescriptions" nil 0)
     ("personalyl" "personally" nil 0)
     ("pleasent" "pleasant" nil 0)
-    ("plugin" "plug-in" nil 0)
     ("poeple" "people" nil 0)
     ("porblem" "problem" nil 0)
     ("porblems" "problems" nil 0)
@@ -1264,7 +1263,9 @@
 
 (define-abbrev-table 'org-mode-abbrev-table
   '(
+    ("metadata" "meta-data" nil 0)
     ("tradeoffs" "trade-offs" nil 0)
+    ("utlimately" "ultimately" nil 0)
     ("visualisations" "visualizations" nil 0)
    ))
 

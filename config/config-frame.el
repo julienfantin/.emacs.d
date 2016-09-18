@@ -32,7 +32,7 @@
 (defvar config-frame-width-pct 80)
 (defvar config-frame-height-pct 80)
 (defvar config-frame-text-scale-step 10)
-(defvar config-frame-line-spacing-ratio .38) ; (round (/ (* height config-frame-line-spacing-ratio) 10))
+(defvar config-frame-line-spacing-ratio .1618) ; (round (/ (* height config-frame-line-spacing-ratio) 10))
 
 (defvar config-frame-mono-fonts
   '("-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
@@ -57,7 +57,7 @@
   "Set `line-spacing' relative to the default font size."
   (let* ((height (face-attribute 'default :height))
          (value  (/ (* height config-frame-line-spacing-ratio) 10)))
-    (setq line-spacing (round value))))
+    (setq-default line-spacing (round value))))
 
 
 ;; * Frame

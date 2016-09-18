@@ -67,7 +67,10 @@
 (use-package centered-window-mode
   :ensure t
   :defer t
-  :init (after-init #'centered-window-mode)
+  :init (after-init
+         (lambda ()
+           (centered-window-mode 1)
+           (cwm/center)))
   :config
   (progn
     (defun config-windows-cwm-set-width (&optional win)

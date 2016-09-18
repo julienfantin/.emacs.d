@@ -286,7 +286,7 @@ Remap all faces when called with a prefix argument."
            ;;
            ;; Faces overrides
            ;;
-           (default                                    ((t (:f ,uno-1 :b ,bg))))
+           (default                                    ((t (:f ,fg :b ,bg))))
            (cursor                                     ((t (:f ,accent :b ,uno-1))))
            (region                                     ((t (:b ,(chroma-blend uno-2 bg blend)))))
            (match                                      ((t (:f ,bg :b ,accent))))

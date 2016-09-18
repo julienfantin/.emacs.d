@@ -67,6 +67,7 @@
   :functions (config-doc-set-docsets)
   :config
   (progn
+    (setq helm-dash-docsets-path (expand-file-name ".docsets" "~/"))
     (defun config-doc--docset-install-name (docset)
       (if (listp docset) (car docset) docset))
     (defun config-doc--docset-enable-name (docset)
@@ -88,6 +89,8 @@
      (lambda (cell)
        (config-doc-set-docsets (car cell) (cdr cell)))
      config-doc-default-docsets)))
+
+(use-package google-this :ensure t)
 
 (provide 'config-doc)
 ;;; config-doc.el ends here

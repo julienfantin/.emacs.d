@@ -95,16 +95,14 @@
          (and (boundp mode) (symbol-value mode)))
        minor-mode-list)
       :initial-value
-      (when config-completion-backends-enable-yasnippet
-        '(company-yasnippet)))))
+      (when config-completion-backends-enable-yasnippet '(company-yasnippet)))))
 
   (defun config-completion-backend-with-yasnippet (backend)
-    (if (or (not config-completion-backends-enable-yasnippet)
-            (and (listp backend) (member 'company-yasnippet backend)))
+    ;; Avoid double-wrapping
+    (if (and (listp backend) (member 'company-yasnippet backend))
         backend
-      (append
-       (if (consp backend) backend (list backend))
-       '(:with company-yasnippet))))
+      (append (if (consp backend) backend (list backend))
+              '(:with company-yasnippet))))
 
   (defun config-completion-company-turn-on ()
     (let ((backends (or (config-completion--company-backends) config-completion--default-backends)))

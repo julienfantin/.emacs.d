@@ -426,52 +426,35 @@ hyper when it's used as a modifier."
   ("<" ahs-back-to-start "back")
   ("e" ahs-edit-mode "edit" :exit t))
 
+;; ** (d)ocumentation
+
+(general-define-key
+ :prefix "C-c"
+ :infix "d"
+ "SPC" 'counsel-dash)
+
 ;; ** (o)utlines
 
 (defhydra hydra-outline
-  (:body-pre
-   (outline-minor-mode 1)
-   :color pink
-   :hint nil)
-  "
-^Hide^                ^Show^           ^Move
-^^^^^^------------------------------------------------------
-_q_: sublevels        _a_: all         _u_: up
-_t_: body             _e_: entry       _n_: next visible
-_o_: other            _i_: children    _p_: previous visible
-_c_: entry            _k_: branches    _f_: forward same level
-_l_: leaves           _s_: subtree     _b_: backward same level
-_d_: subtree
-
-"
+  (:body-pre (outline-minor-mode 1) :color pink)
+  "Outline"
   ;; Outshine
-  ("TAB" outline-cycle)
+  ("C-c o" -swiper-outlines "swiper")
   ("o" -swiper-outlines "swiper")
+  ("TAB" outline-cycle)
+
   ("^" outshine-sort-entries "sort entries")
-  ("M-RET" outshine-insert-heading "insert")
-  ("C-M-RET" -insert-sub-heading "insert>")
+  ("C-j" outshine-insert-heading "insert" :exit t)
+  ("C-M-j" -insert-sub-heading "insert>" :exit t)
   ("i" outshine-imenu "imenu")
   (":" outshine-set-tags-command "tags")
   ("t" outshine-todo "todo")
-  ;; Hide
-  ("q" hide-sublevels)        ; Hide everything but the top-level headings
-  ("t" hide-body)             ; Hide everything but headings (all body lines)
-  ("o" hide-other)            ; Hide other branches
-  ("c" hide-entry)            ; Hide this entry's body
-  ("l" hide-leaves)           ; Hide body lines in this entry and sub-entries
-  ("d" hide-subtree)          ; Hide everything in this entry and sub-entries
-  ;; Show
-  ("a" show-all)              ; Show (expand) everything
-  ("e" show-entry)            ; Show this heading's body
-  ("i" show-children)         ; Show this heading's immediate child sub-headings
-  ("k" show-branches)         ; Show all sub-headings under this heading
-  ("s" show-subtree)          ; Show (expand) everything in this heading & below
   ;; Move
-  ("u" outline-up-heading)               ; Up
-  ("n" outline-next-visible-heading)     ; Next
-  ("p" outline-previous-visible-heading) ; Previous
-  ("f" outline-forward-same-level)       ; Forward - same level
-  ("b" outline-backward-same-level)      ; Backward - same level
+  ("u" outline-up-heading "up")
+  ("n" outline-next-visible-heading "next")
+  ("p" outline-previous-visible-heading "prev")
+  ("f" outline-forward-same-level "forward-same")
+  ("b" outline-backward-same-level "backward-same")
   ("q" nil))
 
 
