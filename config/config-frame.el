@@ -29,12 +29,10 @@
 ;; * Customs
 
 (defvar config-frame-center t)
-
 (defvar config-frame-width-pct 80)
-
 (defvar config-frame-height-pct 80)
-
 (defvar config-frame-text-scale-step 10)
+(defvar config-frame-line-spacing-ratio .38) ; (round (/ (* height config-frame-line-spacing-ratio) 10))
 
 (defvar config-frame-mono-fonts
   '("-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
@@ -54,6 +52,12 @@
 (defun font-exists-p (font)
   "Existing 'FONT' predicate."
   (if (null (x-list-fonts font)) nil t))
+
+(defun config-frame-set-line-spacing ()
+  "Set `line-spacing' relative to the default font size."
+  (let* ((height (face-attribute 'default :height))
+         (value  (/ (* height config-frame-line-spacing-ratio) 10)))
+    (setq line-spacing (round value))))
 
 
 ;; * Frame
@@ -101,7 +105,8 @@
     (menu-bar-mode -1)
     (scroll-bar-mode -1)
     (tool-bar-mode -1)
-    (blink-cursor-mode 1)))
+    (blink-cursor-mode 1)
+    (config-frame-set-line-spacing)))
 
 (use-package mwheel
   :defer t
@@ -118,14 +123,16 @@
   "Increase height of default face by 'CONFIG-FRAME-TEXT-SCALE-STEP'."
   (interactive)
   (let ((old-face-attribute (face-attribute 'default :height)))
-    (set-face-attribute 'default nil :height (+ old-face-attribute 10))))
+    (set-face-attribute 'default nil :height (+ old-face-attribute 10))
+    (config-frame-set-line-spacing)))
 
 ;;;###autoload
 (defun -text-scale-decrease ()
   "Decrease height of default face by 'CONFIG-FRAME-TEXT-SCALE-STEP'."
   (interactive)
   (let ((old-face-attribute (face-attribute 'default :height)))
-    (set-face-attribute 'default nil :height (- old-face-attribute 10))))
+    (set-face-attribute 'default nil :height (- old-face-attribute 10))
+    (config-frame-set-line-spacing)))
 
 ;;;###autoload
 (defun -transparency-increase ()
