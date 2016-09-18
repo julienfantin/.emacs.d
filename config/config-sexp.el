@@ -140,8 +140,10 @@
                          lispy-mnemonic-mode-map-special))
         (bind-keys
          :map map
+         ;; Delete trailing parens
+         ("C-<backspace>"                   . backward-delete-char)
          ;; Prefer our global binding for AHS
-         ("M-i" . nil)
+         ("M-i"                             . nil)
          ;; lispy's sometimes don't work when inside a sexp
          ([remap lispy-forward-slurp-sexp]  . paredit-forward-slurp-sexp)
          ([remap lispy-forward-barf-sexp]   . paredit-forward-barf-sexp)

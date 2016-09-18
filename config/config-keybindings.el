@@ -87,12 +87,18 @@ hyper when it's used as a modifier."
 
 ;; * Packages
 
+(use-package general :ensure t)
+
 (use-package free-keys :ensure t :defer t)
+
 (use-package which-key
   :ensure t
   :defer t
   :init (after-init #'which-key-mode)
-  :config (setq which-key-popup-type 'minibuffer))
+  :config
+  (setq which-key-sort-order 'which-key-key-order-alpha
+        which-key-side-window-max-width 0.4
+        which-key-idle-delay 0.4))
 
 (use-package keyfreq
   :ensure t
@@ -103,93 +109,65 @@ hyper when it's used as a modifier."
   :init
   (progn
     (after-init #'keyfreq-mode)
-    (after-init #'keyfreq-autosave-mode)))
+    (after-init #'keyfreq-autosave-mode))
+  :config
+  (setq keyfreq-excluded-commands
+        '(self-insert-command
+          outshine-self-insert-command
+          org-self-insert-command
+          abort-recursive-edit
+          forward-char
+          backward-char
+          previous-line
+          next-line)))
 
 (use-package hydra
   :ensure t
   :defer t
-  :config (setq hydra-lv nil))
+  :config
+  (use-package lv
+    :config
+    (setq lv-use-separator t)))
 
 (use-package interaction-log :ensure t :defer t :commands interaction-log-mode)
 
 
 ;; * Hydras
-;; ** Bookmarks
+;; ** (b)uffers
 
-(defhydra hydra-bm
-    (:color red :hint nil
-     :body-pre
-     (progn
-       (require 'bm)
-       (when (not (use-region-p))
-         (push-mark))))
-  "
-Bookmarks
+(defhydra hydra-buffers (:color red)
+  "Buffers"
+  ("C-c b" -switch-to-last-buffer "last")
+  ("TAB"   -switch-to-last-buffer "last")
+  ("`"     -switch-to-last-buffer "last")
+  ("h"     bury-buffer "hide")
+  ("k"     kill-this-buffer "kill")
+  ("K"     kill-buffer-and-window "kill (window)")
+  ("n"     next-buffer "next")
+  ("p"     previous-buffer "prev")
+  ("r"     revert-buffer "revert"))
 
-_s_: ?s? persistence
+(hydra-set-property 'hydra-buffers :verbosity 1)
 
-    ^Mark^                            ^Navigation^
-^^^^------------------------------------------------
-_C-c m_: toggle                       _n_: next
-    _a_: annotate                     _N_: next (lifo)
-    _d_: delete all (current buffer)  _p_: prev
-    _D_: delete ALL                   _P_: prev (lifo)"
-  ("C-c m" bm-toggle)
-  ("a"   bm-bookmark-annotate :color blue)
-  ("n"   bm-common-next)
-  ("N"   bm-lifo-next)
-  ("p"   bm-common-previous)
-  ("P"   bm-lifo-previous)
-  ("s"   bm-toggle-buffer-persistence (if bm-buffer-persistence "[x]" "[ ]"))
-  ("d"   bm-remove-all-current-buffer :color blue)
-  ("D"   bm-remove-all-all-buffers :color blue)
-  ("SPC" pop-to-mark-command)
-  ("q"   :color blue))
+(general-define-key
+ :prefix "C-c"
+ :infix "b"
+ "C-c b" '(-switch-to-last-buffer :which-key "last")
+ "TAB"   '(-switch-to-last-buffer :which-key "last")
+ "K"     '(hydra-buffers/kill-buffer-and-window :which-key "kill (window)")
+ "b"     '(ivy-switch-buffer :which-key "buffers")
+ "h"     '(hydra-buffers/bury-buffer :which-key "bury")
+ "k"     '(hydra-buffers/kill-this-buffer :which-key "kill")
+ "n"     '(hydra-buffers/next-buffer :which-key "next")
+ "p"     '(hydra-buffers/previous-buffer :which-key "prev")
+ "r"     '(revert-buffer :which-key "revert")
+ "t"     '(-temp-buffer :which-key "temp"))
 
-;; ** Buffers
-
-(defhydra hydra-buffers (:color blue :hint nil)
-  "
-Buffers
-
-^Switch^             ^Kill
-^^^---------------------------------------
-_TAB_: last buffer   _k_: kill this buffer
-  _o_: last window   _K_: kill window too
-  _b_: switch
-  _n_: next
-  _p_: prev
-  _h_: bury
-  _t_: temp buffer
-"
-  ("C-c b" -switch-to-last-buffer)
-  ("TAB" -switch-to-last-buffer)
-  ("w" hydra-windows/body :exit t)
-  ("b" ivy-switch-buffer)
-  ("k" kill-this-buffer :color red)
-  ("K" kill-buffer-and-window :color red)
-  ("t" -temp-buffer)
-  ("o" -switch-to-last-window)
-  ("n" next-buffer :color red)
-  ("p" previous-buffer :color red)
-  ("h" bury-buffer :color red)
-  ("u" revert-buffer "revert"))
-
-;; ** Editing
+;; ** (e)diting
 
 (defvar hydra-multiple-cursors-lispy-p nil)
 
 (defhydra hydra-multiple-cursors (:color red :hint nil)
-  "
-Multiple Cursors
-
-Mark^       ^Unmark^           ^Insert
-^^^^^---------------------------------------
-_n_: next   _N_: next           _i_: numbers
-_p_: prev   _P_: prev
-_m_: all    _h_: hide unmarked
-_s_: skip
-_x_: more"
   ("m"   mc/mark-all-like-this-dwim :exit t)
   ("i"   mc/insert-numbers)
   ("n"   mc/mark-next-like-this "next")
@@ -201,354 +179,221 @@ _x_: more"
   ("h"   mc-hide-unmatched-lines-mode "hide")
   ("C-g" mc/keyboard-quit "quit" :exit t))
 
-(defhydra hydra-undo (:color red)
-  "Undo"
-  ("p" undo-tree-undo "undo")
-  ("u" undo-tree-undo "undo")
-  ("n" undo-tree-redo "redo")
-  ("r" undo-tree-redo "redo")
-  ("SPC" undo-tree-visualize "tree" :exit t))
+(general-define-key
+ :prefix "C-c"
+ :infix "e"
+ "C-c e" '(hydra-multiple-cursors/body :which-key "mc")
+ "s" '(sort-lines :which-key "sort")
+ "m" '(hydra-multiple-cursors/body :which-key "mc")
+ "a" '(align-current :which-key "align")
+ "c" '(-cleanup :which-key "cleanup")
+ "o" '(outorg-edit-as-org :which-key "outorg"))
 
-(defhydra hydra-edit (:color blue)
-  "Edit"
-  ("C-c e" hydra-multiple-cursors/body "MC")
-  ("s" sort-lines "sort lines")
-  ("m" hydra-multiple-cursors/body "MC")
-  ("a" align-current "align")
-  ("c" -cleanup "cleanup")
-  ("o" outorg-edit-as-org "as org"))
+;;  ** (f)ind
 
-;; ** Find
+(general-define-key
+ :prefix "C-c"
+ :infix "f"
+ "C-c f" '(counsel-find-file :which-key "find-file")
+ "a"     '(counsel-ag :which-key "ag")
+ "f"     '(counsel-find-file :which-key "find-file")
+ "g"     '(counsel-git-grep :which-key "git-grep")
+ "p"     '(projectile-find-file :which-key "(projectile) find-file")
+ "s"     '(-find-file-as-sudo :which-key "sudo"))
 
-(defhydra hydra-find (:color blue :hint nil)
-  "
-Find
+;; ** (v)ersion control
 
-^Find files^      ^Project^
-^^^^----------------------------
-_f_: find file    _p_: find-file
-_d_: dired        _a_: ag
-^^                _g_: git grep"
-  ("C-c f" counsel-find-file)
-  ("f"     counsel-find-file)
-  ("p"     projectile-find-file)
-  ("g"     counsel-git-grep)
-  ("a"     counsel-ag)
-  ("d"     dired-jump))
+(general-define-key
+ :prefix "C-c"
+ :infix "v"
+ "C-c v" '(magit-status :which-key "magit")
+ "B"     '(magit-branch-popup :which-key ">branch")
+ "d"     '(magit-ediff-dwim :which-key "diff dwim")
+ "D"     '(magit-diff-popup :which-key ">diff")
+ "f"     '(magit-pull :which-key "pull")
+ "C-c f" '(magit-pull-popup :which-key ">pull")
+ "g"     '(magit-status :which-key "magit")
+ "l"     '(magit-log-all :which-key "log")
+ "C-c l" '(magit-log-popup :which-key ">log")
+ "p"     '(magit-push :which-key "push")
+ "C-c p" '(magit-push-popup :which-key ">push")
+ "s"     '(magit-stage-file :which-key "stage")
+ "t"     '(git-timemachine :which-key "timemachine"))
 
-;; ** Project
+;; ** (t)oggle modes
 
-(defhydra hydra-projectile-other-window (:color teal)
-  "projectile-other-window"
-  ("f"  projectile-find-file-other-window        "file")
-  ("g"  projectile-find-file-dwim-other-window   "file dwim")
-  ("d"  projectile-find-dir-other-window         "dir")
-  ("b"  projectile-switch-to-buffer-other-window "buffer")
-  ("q"  nil                                      "cancel" :color blue))
+(general-define-key
+ :prefix "C-c"
+ :infix "m"
+ "a" 'auto-fill-mode
+ "d" 'toggle-debug-on-error
+ "s" 'flyspell-mode
+ "f" 'focus-mode
+ "l" 'hl-line-mode
+ "n" 'linum-mode
+ "p" 'flyspell-prog-mode
+ "r" 'read-only-mode
+ "t" 'toggle-truncate-lines
+ "v" 'visual-line-mode)
 
-(defhydra hydra-project (:color blue :hint nil)
-  "
-Project: %(projectile-project-root)
+;; ** (n)otes
 
-    _p_: switch project
-_C-c p_: switch project
-_<tab>_: <other window>
-
-
-     ^^Find File          ^^Search/Tags         ^^Buffers              ^^Cache
------------------------------------------------------------------------------------------
-_C-c f_: file            _a_: ag               _i_: Ibuffer           _c_: cache clear
-   _ff_: file dwim       _o_: multi-occur      _b_: switch to buffer  _x_: remove known project
-   _fd_: file curr dir   ^^                _C-c k_: Kill all buffers  _X_: cleanup non-existing
-    _r_: recent file                                              ^^^^_z_: cache current
-    _d_: dir
-"
-  ("SPC" projectile-command-map)
-  ("C-c p" -layouts-projectile-switch)
-  ("C-c f" projectile-find-file)
-  ("C-c k" projectile-kill-buffers)
-  ("a" projectile-ag)
-  ("b" projectile-switch-to-buffer)
-  ("c" projectile-invalidate-cache)
-  ("d" projectile-find-dir)
-  ("ff"  projectile-find-file-dwim)
-  ("fd"  projectile-find-file-in-directory)
-  ("i"   projectile-ibuffer)
-  ("m"   projectile-multi-occur)
-  ("o"   projectile-multi-occur)
-  ("p"   projectile-switch-project)
-  ("s"   projectile-switch-project)
-  ("r"   projectile-recentf)
-  ("x"   projectile-remove-known-project)
-  ("X"   projectile-cleanup-known-projects)
-  ("z"   projectile-cache-current-file)
-  ("<tab>" hydra-projectile-other-window/body :color blue)
-  ("q"   nil "cancel" :color blue))
-
-;; ** VC
-
-(defhydra hydra-vc (:color blue :hint nil)
-  "
-Version control
-
-   ^^Actions          ^^Popups
-------------------------------
-_f_: pull          _F_: pull
-_p_: push          _P_: push
-_l_: log           _L_: log
-_d_: diff          _D_: diff
-_s_: stage         _B_: branch
-_t_: timemachine
-_g_: status"
-  ("C-c v" magit-status)
-  ("f" magit-pull :color red)
-  ("F" magit-pull-popup)
-  ("p" magit-push :color red)
-  ("P" magit-push-popup)
-  ("l" magit-log-all)
-  ("L" magit-log-popup)
-  ("d" magit-ediff-dwim)
-  ("D" magit-diff-popup)
-  ("s" magit-stage-file :color red)
-  ("B" magit-branch-popup)
-  ("g" magit-status)
-  ("t" git-timemachine))
-
-;; ** Modes
-
-(defun toggle-doc (mode)
-  "Return the hydra toggle docstring for mode"
-  (if (and (boundp mode) (symbol-value mode)) "[x]" "[ ]"))
-
-(defhydra hydra-toggle (:color red :hint nil)
-  "
-Minor modes
-
-_a_: ?a? auto-fill-mode
-_d_: ?d? debug-on-error
-_s_: ?s? flyspell
-_f_: ?f? focus
-_l_: ?l? hl-line
-_n_: ?n? linum
-_p_: ?p? flyspell-prog
-_r_: ?r? read-only
-_v_: ?v? visual-line"
-  ("a" auto-fill-mode (toggle-doc 'auto-fill-mode))
-  ("d" toggle-debug-on-error (toggle-doc 'toggle-debug-on-error))
-  ("s" flyspell-mode (toggle-doc 'flyspell-mode))
-  ("f" focus-mode (toggle-doc 'focus-mode))
-  ("l" hl-line-mode (toggle-doc 'hl-line-mode))
-  ("n" linum-mode (toggle-doc 'linum-mode))
-  ("p" flyspell-prog-mode (toggle-doc 'flyspell-prog-mode))
-  ("r" read-only-mode (toggle-doc 'read-only-mode))
-  ("t" toggle-truncate-lines (toggle-doc 'toggle-truncate-lines))
-  ("v" visual-line-mode (toggle-doc 'visual-line-mode))
-  ("q" :exit t))
-
-;; ** Notes
-
-(defhydra hydra-notes (:color blue)
-  "Notes"
-  ("c" org-capture "capture")
-  ("d" deft "deft"))
-
-;; ** Org
-
-(after 'org
-  (bind-keys
-   :map org-mode-map
-   ("C-M-g"          . worf-goto)
-   ("C-M-<return>"   . org-insert-subheading)
-   ("C-M-S-<return>" . org-insert-todo-subheading)
-   ("C-M-u"          . org-up-heading-safe)))
+(general-define-key
+ :prefix "C-c"
+ :infix "n"
+ "c" '(org-capture :which-key "capture")
+ "d" '(deft :which-key "deft"))
 
 ;; ** Term
 
-(defhydra hydra-shell (:color blue)
-  ("C-c t" eshell "eshell")
-  ("e"     eshell "eshell")
-  ("s"     shell "shell")
-  ("t"     term "term")
-  ("a"     ansi-term "ansi-term"))
+(general-define-key
+ :prefix "C-c"
+ :infix "&"
+ "C-c &" 'eshell
+ "e" 'eshell
+ "s" 'shell
+ "t" 'term
+ "a" 'ansi-term)
 
-;; ** Movement
+;; ** (w)indows
 
-(defhydra hydra-move (:color red)
-  ("n" next-line)
-  ("p" previous-line)
-  ("f" forward-char)
-  ("b" backward-char)
-  ("a" beginning-of-line)
-  ("e" move-end-of-line)
-  ("v" scroll-up-command)
-  ("s" swiper "swiper")
-  ("j" avy-goto-char-timer "avy char")
-  ;; Converting M-v to V here by analogy.
-  ("M-v" scroll-down-command)
-  ("l" recenter-top-bottom))
+(defun config-keybindings-ace-switch ()
+  "Switch the current window with ace window and restart the hydra."
+  (interactive)
+  (ace-window 4)
+  (add-hook 'ace-window-end-once-hook 'hydra-windows/body))
 
-;; ** Misc
+(defun config-keybindings-ace-delete ()
+  "Delete a window with ace window and restart the hydra."
+  (interactive)
+  (ace-window 4)
+  (add-hook 'ace-window-end-once-hook 'hydra-windows/body))
 
-(defhydra hydra-text (:color red)
-  ("+" -text-scale-increase)
-  ("-" -text-scale-decrease))
+(defun config-keybindings-init-windresize ()
+  (when (not (featurep 'windresize))
+    (windresize)
+    (windresize-cancel-and-quit)))
 
-;; ** Windows map
-
-(defun aw-switch-window (n)
-  "Switch to window at index 'N'."
-  (when-let (window (nth n (aw-window-list)))
-    (aw-switch-to-window window)))
-
-(defhydra hydra-windows (:color red :hint nil)
-  "
-Windows
-_TAB_: ⥃
-  _/_:  ↺
-
-^Switch^    ^Move^       ^Resize^     ^Move buffer^   ^Ace^                  ^Undo
------------------------------------------------------------------------------------
-_1_: 1      _p_: up      _P_: up      _M-p_: up       _o_: switch          _u_: undo
-_2_: 2      _n_: down    _N_: down    _M-n_: down     _s_: swap            _r_: redo
-_3_: 3      _b_: left    _B_: left    _M-b_: left     _d_: delete
-_4_: 4      _f_: right   _F_: right   _M-f_: right
-...9"
-  ("C-c w" -switch-to-last-window)
-  ("1" (aw-switch-window 0) :exit t)
-  ("C-c 1" (aw-switch-window 0) :exit t)
-  ("2" (aw-switch-window 1) :exit t)
-  ("C-c 2" (aw-switch-window 1) :exit t)
-  ("3" (aw-switch-window 2) :exit t)
-  ("C-c 3" (aw-switch-window 2) :exit t)
-  ("4" (aw-switch-window 3) :exit t)
-  ("C-c 4" (aw-switch-window 3) :exit t)
-  ("5" (aw-switch-window 4) :exit t)
-  ("C-c 5" (aw-switch-window 4) :exit t)
-  ("6" (aw-switch-window 5) :exit t)
-  ("C-c 6" (aw-switch-window 5) :exit t)
-  ("7" (aw-switch-window 6) :exit t)
-  ("C-c 7" (aw-switch-window 6) :exit t)
-  ("8" (aw-switch-window 7) :exit t)
-  ("C-c 8" (aw-switch-window 7) :exit t)
-  ("9" (aw-switch-window 8) :exit t)
-  ("C-c 9" (aw-switch-window 8) :exit t)
-  ("p" windmove-up)
-  ("n" windmove-down)
-  ("f" windmove-right)
-  ("b" windmove-left)
-  ("P" windresize-up)
-  ("N" windresize-down)
-  ("F" windresize-right)
-  ("B" windresize-left)
+(defhydra hydra-windows
+  (:color pink :hint nil :pre (config-keybindings-init-windresize))
+  ("`" -switch-to-last-window "prev" :exit t)
+  ("p"   windmove-up)
+  ("n"   windmove-down)
+  ("f"   windmove-right)
+  ("b"   windmove-left)
+  ("P"   windresize-up)
+  ("N"   windresize-down)
+  ("F"   windresize-right)
+  ("B"   windresize-left)
   ("M-p" buf-move-up)
   ("M-n" buf-move-down)
   ("M-f" buf-move-right)
-  ("M-b" buf-move-left )
-  ("/" -window-split-toggle)
-  ("TAB" -switch-to-last-window )
-  ("o" ace-window)
-  ("d" (lambda ()
-         (interactive)
-         (ace-window 16)
-         (add-hook 'ace-window-end-once-hook 'windows-hydra/body)))
-  ("s" (lambda ()
-         (interactive)
-         (ace-window 4)
-         (add-hook 'ace-window-end-once-hook 'windows-hydra/body)))
-  ("u" winner-undo)
-  ("r" winner-redo)
-  ("<left>" winner-undo)
-  ("<right>" winner-redo))
+  ("M-b" buf-move-left)
+  ("/"   -window-split-toggle "split")
+  ("o"   ace-window "ace")
+  ("k"   config-keybindings-ace-delete "ace delete")
+  ("s"   config-keybindings-ace-switch "ace switch")
+  ("C-_" winner-undo "undo")
+  ("M-_" winner-redo "redo")
+  ("q"   ignore :exit t))
 
-;; ** Layouts
+(dolist (n (number-sequence 1 10))
+  (eval
+   `(defun ,(intern (format "aw-switch-to-window-%s" n)) ()
+      (interactive)
+      ,(format "Switch to window at index %s" n)
+      (when-let (window (nth (- ,n 1) (aw-window-list)))
+        (aw-switch-to-window window)))))
 
-(defhydra hydra-layouts (:color red :hint nil :body-pre (require 'config-layouts))
-  "
-Layouts %(config-layouts--current-layout-name)
+(general-define-key
+ :prefix "C-c"
+ "`" '(-switch-to-last-window :which-key "window-last")
+ "1" '(aw-switch-to-window-1 :which-key "window-1")
+ "2" '(aw-switch-to-window-2 :which-key "window-2")
+ "3" '(aw-switch-to-window-3 :which-key "window-3")
+ "4" '(aw-switch-to-window-4 :which-key "window-4")
+ "5" '(aw-switch-to-window-5 :which-key "window-5")
+ "6" '(aw-switch-to-window-6 :which-key "window-6")
+ "7" '(aw-switch-to-window-7 :which-key "window-7")
+ "8" '(aw-switch-to-window-8 :which-key "window-8")
+ "9" '(aw-switch-to-window-9 :which-key "window-9"))
 
-_C-c l_: switch persp _b_: switch buffer
+;; ** (l)ayouts
 
-    ^Persp^              ^Layouts^
-^^^^--------------------------------
-_C-c <tab>_: last    _<tab>_: last
-    _C-c n_: next        _n_: next
-    _C-c p_: prev        _p_: prev
-    _C-c r_: rename      _r_: rename
-    _C-c k_: kill        _k_: kill
-    _C-c 1_: 1           _1_: 1
-    _C-c 2_: 2           _2_: 2
-    _C-c 3_: 3           _3_: 3
-        ^^...9           ^^...9"
-  ("C-c l" -layouts :exit t)
-  ("b" -layouts-current-layout-buffers)
-  ("1" eyebrowse-switch-to-window-config-1)
-  ("2" eyebrowse-switch-to-window-config-2)
-  ("3" eyebrowse-switch-to-window-config-3)
-  ("4" eyebrowse-switch-to-window-config-4)
-  ("5" eyebrowse-switch-to-window-config-5)
-  ("C-c 1" -layouts-switch-to-1)
-  ("C-c 2" -layouts-switch-to-2)
-  ("C-c 3" -layouts-switch-to-3)
-  ("C-c 4" -layouts-switch-to-4)
-  ("C-c 5" -layouts-switch-to-5)
-  ("<tab>" eyebrowse-last-window-config)
-  ("C-c <tab>" -layouts-jump-to-last-layout)
-  ("n" eyebrowse-next-window-config)
-  ("C-c n" persp-next)
-  ("p" eyebrowse-prev-window-config)
-  ("C-c p" persp-prev)
-  ("r" eyebrowse-rename-window-config)
-  ("C-c r" persp-rename)
-  ("k" eyebrowse-close-window-config)
-  ("C-c k" (persp-kill (config-layouts--current-layout-name))))
+(defhydra hydra-layouts (:color red :body-pre (require 'config-layouts))
+  "Layouts"
+  ("C-c l" persp-switch :exit t)
+  ("l" eyebrowse-switch-to-window-config :exit t)
+  ("c" eyebrowse-create-window-config "eye-new")
+  ("C-c c" persp-copy "persp-copy")
+  ("n" eyebrowse-next-window-config "eye-next")
+  ("C-c n" persp-next "persp-next")
+  ("p" eyebrowse-prev-window-config "eye-prev")
+  ("C-c p" persp-prev "persp-prev")
+  ("r" eyebrowse-rename-window-config "eye-rename")
+  ("C-c r" persp-rename "persp-rename")
+  ("k" eyebrowse-close-window-config "eye-kill")
+  ("C-c k" (persp-kill (config-layouts--current-layout-name)) "pesp-kill"))
 
-;; ** Go to
+(general-define-key
+ ;; Eyeberowse: Space+Ctrl+NumRow
+ ;;
+ "C-H-`"    '(eyebrowse-last-window-config :which-key "eye-last")
+ "C-H-1"    '(eyebrowse-switch-to-window-config-1 :which-key "eye-1")
+ "C-H-2"    '(eyebrowse-switch-to-window-config-2 :which-key "eye-2")
+ "C-H-3"    '(eyebrowse-switch-to-window-config-3 :which-key "eye-3")
+ "C-H-4"    '(eyebrowse-switch-to-window-config-4 :which-key "eye-4")
+ "C-H-5"    '(eyebrowse-switch-to-window-config-5 :which-key "eye-5")
+ "C-H-6"    '(eyebrowse-switch-to-window-config-6 :which-key "eye-6")
+ "C-H-7"    '(eyebrowse-switch-to-window-config-7 :which-key "eye-7")
+ "C-H-8"    '(eyebrowse-switch-to-window-config-8 :which-key "eye-8")
+ "C-H-9"    '(eyebrowse-switch-to-window-config-9 :which-key "eye-9")
+ "C-H-n"    '(eyebrowse-next-window-config :which-key "eye-next")
+ "C-H-p"    '(eyebrowse-prev-window-config :which-key "eye-prev")
 
-(defhydra hydra-goto (:color red :hint nil)
-  "
-Goto
+ ;; Persp: Space+Ctrl+Meta+NumRow
+ ;;
+ "C-H-M-n"  '(persp-next :which-key "persp-next")
+ "C-H-M-p"  '(persp-prev :which-key "persp-prev")
+ "C-H-M-`"  '(-layouts-jump-to-last-layout :wich-key "persp-last")
+ "C-H-M-1"  '(-layouts-switch-to-1 :which-key "persp-1")
+ "C-H-M-2 " '(-layouts-switch-to-2 :which-key "persp-2")
+ "C-H-M-3"  '(-layouts-switch-to-3 :which-key "persp-3")
+ "C-H-M-4"  '(-layouts-switch-to-4 :which-key "persp-4")
+ "C-H-M-5"  '(-layouts-switch-to-5 :which-key "persp-5")
+ "C-H-M-6"  '(-layouts-switch-to-6 :which-key "persp-6")
+ "C-H-M-7"  '(-layouts-switch-to-7 :which-key "persp-7")
+ "C-H-M-8"  '(-layouts-switch-to-8 :which-key "persp-8")
+ "C-H-M-9"  '(-layouts-switch-to-9 :which-key "persp-9"))
 
-^Positions^    ^Edit^             ^Errors
--------------------------------------------------
-_g_: line      _l_: last-change   _n_: next-error
-_i_: imenu     _[_: prev-hunk     _p_: prev-error
-_/_: link      _]_: next-hunk     _e_: errors"
+;; ** (g)oto
+
+(defvar hydra-goto-pre-pos nil)
+
+(defun hydra-goto-init ()
+  (setq hydra-goto-pre-pos (point)))
+
+(defun hydra-goto-reset ()
+  (interactive)
+  (goto-char hydra-goto-pre-pos))
+
+(defhydra hydra-goto
+  (:color red :body-pre (hydra-goto-init))
   ;; Positions
+  ("C-g" hydra-goto-reset :exit t)
   ("M-g" goto-line)
   ("g" avy-goto-line)
   ("/" link-hint-open-link)
   ("i" counsel-imenu)
+  ("e" counsel-flycheck)
+  ;; Pages
+  ("p" ivy-pages)
+  ("[" backward-page)
+  ("]" forward-page)
   ;; Edits
   ("l" goto-last-change)
-  ("[" diff-hl-previous-hunk :color blue)
-  ("]" diff-hl-next-hunk :color blue)
-  ;; Errors
-  ("p" hydra-flycheck/flycheck-previous-error :color blue)
-  ("n" hydra-flycheck/flycheck-next-error :color blue)
-  ("e" flycheck-list-errors))
-
-;; ** Flycheck
-
-(defhydra hydra-flycheck
-  (:pre
-   (progn
-     (setq hydra-lv t)
-     (flycheck-list-errors))
-   :post
-   (progn
-     (setq hydra-lv nil)
-     (quit-windows-on "*Flycheck errors*")))
-  "Errors
-
-_a_: first _f_: filter
-_n_: next  _l_: list
-_p_: prev
-"
-  ("f" flycheck-error-list-set-filter)
-  ("l" flycheck-list-errros :exit t)
-  ("n" flycheck-next-error)
-  ("p" flycheck-previous-error)
-  ("a" flycheck-first-error))
+  ("<" diff-hl-previous-hunk)
+  (">" diff-hl-next-hunk))
 
 ;; ** Symbols
 
@@ -581,7 +426,7 @@ _p_: prev
   ("<" ahs-back-to-start "back")
   ("e" ahs-edit-mode "edit" :exit t))
 
-;; ** Outlines
+;; ** (o)utlines
 
 (defhydra hydra-outline
   (:body-pre
@@ -645,10 +490,8 @@ _d_: subtree
 (after 'persp-mode (config-keybindings-unbind-keymap persp-key-map))
 
 (bind-keys
- ;; Minimizing emacs? What nonsense!
  ("C-z"                           . nil)
  ("C-x C-z"                       . nil)
- ;; Mark
  ([remap exchange-point-and-mark] . -exchange-point-and-mark-no-activate)
  ([remap just-one-space]          . cycle-spacing))
 
@@ -663,72 +506,60 @@ _d_: subtree
 
 ;; * Global map
 
-(bind-keys
- ("M-Q" . -unfill-paragraph))
+(general-define-key
+ :keymaps 'global
+ "M-Q" '-unfill-paragraph)
 
 
 ;; * Local maps
 
-(bind-keys
- :map     help-map
+(general-define-key
+ :keymaps 'help-map
  ;; Add useful builtins
- ("A"   . info-apropos)
+ "A"   'info-apropos
  ;; Help search
- ("b"   . counsel-descbinds)
- ("e"   . counsel-el)
- ;; Bind find variants on
- ("C-f" . find-function)
- ("C-k" . find-function-on-key)
- ("C-v" . find-variable)
- ("C-l" . find-library))
+ "b"   'counsel-descbinds
+ "e"   'counsel-el
+ ;; Find variants
+ "C-f" 'find-function
+ "C-k" 'find-function-on-key
+ "C-v" 'find-variable
+ "C-l" 'find-library)
 
-(bind-keys
- :map prog-mode-map
- ("M-n" . hydra-ahs/ahs-forward)
- ("M-p" . hydra-ahs/ahs-backward)
- ("M-i" . ahs-edit-mode))
+(general-define-key
+ :keymaps 'prog-mode-map
+ "M-n" '(hydra-ahs/ahs-forward :which-key "ahs-forward")
+ "M-p" '(hydra-ahs/ahs-backward :which-key "ahs-backward")
+ "M-i" '(ahs-edit-mode :which-key "ahs-edit-mode"))
+
+(after 'org
+  (bind-keys
+   :map org-mode-map
+   ("C-M-g"          . worf-goto)
+   ("C-M-<return>"   . org-insert-subheading)
+   ("C-M-S-<return>" . org-insert-todo-subheading)
+   ("C-M-u"          . org-up-heading-safe)))
 
 
 ;; * User bindings
 
-(defvar config-map (make-sparse-keymap))
-(define-prefix-command 'config-map)
+(defhydra hydra-text (:color red)
+  ("+" -text-scale-increase)
+  ("-" -text-scale-decrease));; Mark
 
-(bind-keys*
- :prefix-map config-map
+(general-define-key
  :prefix "C-c"
- ("C-r" . ivy-resume)
- ;; Quick window switching
- ("1" . hydra-windows/lambda-1-and-exit)
- ("2" . hydra-windows/lambda-2-and-exit)
- ("3" . hydra-windows/lambda-3-and-exit)
- ("4" . hydra-windows/lambda-4-and-exit)
- ("5" . hydra-windows/lambda-5-and-exit)
- ("6" . hydra-windows/lambda-6-and-exit)
- ("7" . hydra-windows/lambda-7-and-exit)
- ("8" . hydra-windows/lambda-8-and-exit)
- ("9" . hydra-windows/lambda-9-and-exit)
- ;; User maps
- ("&" . hydra-shell/body)
- ("_" . hydra-undo/undo-tree-undo)
- ("+" . hydra-text/-text-scale-increase)
- ("-" . hydra-text/-text-scale-decrease)
- ("b" . hydra-buffers/body)
- ("e" . hydra-edit/body)
- ("f" . hydra-find/body)
- ("h" . hydra-move/body)
- ("j" . avy-goto-char-timer)
- ("k" . kill-this-buffer)
- ("l" . hydra-layouts/body)
- ("m" . hydra-bm/body)
- ("n" . hydra-notes/body)
- ("o" . hydra-outline/body)
- ("s" . swiper)
- ("S" . -swiper-at-point)
- ("t" . hydra-toggle/body)
- ("u" . hydra-undo/undo-tree-undo)
- ("v" . hydra-vc/body)
- ("w" . hydra-windows/body))
+ "C-r" 'ivy-resume
+ "+"   '(hydra-text/-text-scale-increase :which-key "text-+")
+ "-"   '(hydra-text/-text-scale-decrease :which-key "text--")
+ "g"   '(hydra-goto/body :which-key "goto")
+ "j"   '(avy-goto-char-timer :which-key "avy-char")
+ "k"   '(kill-this-buffer :which-key "kill-this-buffer")
+ "l"   '(hydra-layouts/body :which-key "hydra-layouts")
+ "o"   '(hydra-outline/body :which-key "hydra-outline")
+ "s"   '(swiper-all :which-key "swiper-all")
+ "S"   '(-swiper-at-point :which-key "-swiper-at-point")
+ "w"   '(hydra-windows/body :which-key "hydra-windows"))
 
 (provide 'config-keybindings)
 ;;; config-keybindings.el ends here
