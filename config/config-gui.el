@@ -28,7 +28,11 @@
 
 ;; * Built-ins
 
-(setq window-resize-pixelwise t)
+(validate-setq window-resize-pixelwise t)
+
+(use-package simple
+  :config
+  (line-number-mode -1))
 
 (use-package fringe
   :init (fringe-mode 4)

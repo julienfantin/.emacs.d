@@ -56,10 +56,10 @@
 (defun config-keybindings-macbook ()
   (interactive)
   (cl-case system-type
-    ('darwin (setq mac-command-modifier 'control
-                   mac-control-modifier 'meta
-                   mac-option-modifier 'super
-                   mac-function-modifier 'hyper))))
+    ('darwin (validate-setq mac-command-modifier 'control
+                            mac-control-modifier 'meta
+                            mac-option-modifier 'super
+                            mac-function-modifier 'hyper))))
 
 (when config-keybdings-default-setup
   (funcall config-keybdings-default-setup))
@@ -96,9 +96,10 @@ hyper when it's used as a modifier."
   :defer t
   :init (after-init #'which-key-mode)
   :config
-  (setq which-key-sort-order 'which-key-key-order-alpha
-        which-key-side-window-max-width 0.4
-        which-key-idle-delay 0.4))
+  (validate-setq
+   which-key-sort-order 'which-key-key-order-alpha
+   which-key-side-window-max-width 0.4
+   which-key-idle-delay 0.4))
 
 (use-package keyfreq
   :ensure t
@@ -111,15 +112,16 @@ hyper when it's used as a modifier."
     (after-init #'keyfreq-mode)
     (after-init #'keyfreq-autosave-mode))
   :config
-  (setq keyfreq-excluded-commands
-        '(self-insert-command
-          outshine-self-insert-command
-          org-self-insert-command
-          abort-recursive-edit
-          forward-char
-          backward-char
-          previous-line
-          next-line)))
+  (validate-setq
+   keyfreq-excluded-commands
+   '(self-insert-command
+     outshine-self-insert-command
+     org-self-insert-command
+     abort-recursive-edit
+     forward-char
+     backward-char
+     previous-line
+     next-line)))
 
 (use-package hydra
   :ensure t
@@ -127,7 +129,7 @@ hyper when it's used as a modifier."
   :config
   (use-package lv
     :config
-    (setq lv-use-separator t)))
+    (validate-setq lv-use-separator t)))
 
 (use-package interaction-log :ensure t :defer t :commands interaction-log-mode)
 
@@ -187,7 +189,8 @@ hyper when it's used as a modifier."
  "m" '(hydra-multiple-cursors/body :which-key "mc")
  "a" '(align-current :which-key "align")
  "c" '(-cleanup :which-key "cleanup")
- "o" '(outorg-edit-as-org :which-key "outorg"))
+ "o" '(outorg-edit-as-org :which-key "outorg")
+ "r" '(align-regexp))
 
 ;;  ** (f)ind
 
@@ -226,10 +229,12 @@ hyper when it's used as a modifier."
  :prefix "C-c"
  :infix "m"
  "a" 'auto-fill-mode
+ "c" 'centered-window-mode
  "d" 'toggle-debug-on-error
  "s" 'flyspell-mode
  "f" 'focus-mode
- "l" 'hl-line-mode
+ "h" 'hl-line-mode
+ "l" 'linum-mode
  "n" 'linum-mode
  "p" 'flyspell-prog-mode
  "r" 'read-only-mode
@@ -269,13 +274,14 @@ hyper when it's used as a modifier."
   (ace-window 4)
   (add-hook 'ace-window-end-once-hook 'hydra-windows/body))
 
-(defun config-keybindings-init-windresize ()
+(defun config-keybindings-init-window-modes ()
+  (require 'ace-window nil t)
   (when (not (featurep 'windresize))
     (windresize)
     (windresize-cancel-and-quit)))
 
 (defhydra hydra-windows
-  (:color pink :hint nil :pre (config-keybindings-init-windresize))
+  (:color pink :hint nil :pre (config-keybindings-init-window-modes))
   ("`" -switch-to-last-window "prev" :exit t)
   ("p"   windmove-up)
   ("n"   windmove-down)
@@ -378,7 +384,7 @@ hyper when it's used as a modifier."
   (goto-char hydra-goto-pre-pos))
 
 (defhydra hydra-goto
-  (:color red :body-pre (hydra-goto-init))
+  (:color blue :body-pre (hydra-goto-init))
   ;; Positions
   ("C-g" hydra-goto-reset :exit t)
   ("M-g" goto-line)
@@ -395,6 +401,10 @@ hyper when it's used as a modifier."
   ("<" diff-hl-previous-hunk)
   (">" diff-hl-next-hunk))
 
+(general-define-key
+ :keymaps '(help-mode-map)
+ "/" 'link-hint-open-link)
+
 ;; ** Symbols
 
 (advice-add
@@ -408,13 +418,19 @@ hyper when it's used as a modifier."
  (lambda (nomsg interactive)
    (auto-highlight-symbol-mode -1)))
 
-(defun config-ahs-pre ()
+(defun config-keybindings-ahs-pre ()
   "Start `auto-highlight-symbol-mode` and highlight."
   (unless (bound-and-true-p auto-highlight-symbol-mode)
     (auto-highlight-symbol-mode 1))
   (ahs-highlight-now))
 
-(defhydra hydra-ahs (:color red :pre (config-ahs-pre))
+(defun config-keybindings-ahs-post ()
+  "Start `auto-highlight-symbol-mode` and highlight."
+  (when (bound-and-true-p auto-highlight-symbol-mode)
+    (auto-highlight-symbol-mode -1)))
+
+(defhydra hydra-ahs
+  (:color red :pre (config-keybindings-ahs-pre) :post (config-keybindings-ahs-post))
   "Symbol"
   ("M-n" ahs-forward "next")
   ("n" ahs-forward "next")
@@ -425,6 +441,23 @@ hyper when it's used as a modifier."
   ("r" ahs-change-range "range")
   ("<" ahs-back-to-start "back")
   ("e" ahs-edit-mode "edit" :exit t))
+
+(comment
+ (defhydra hydra-iedit (:color red)
+   "Symbol"
+   ("M-n" iedit-next-occurrence "next")
+   ("n" iedit-next-occurrence "next")
+   ("M-p" iedit-prev-occurrence "prev")
+   ("p" iedit-prev-occurrence "prev")
+   ("f" iedit-restrict-function "function")
+   ("r" iedit-restrict-region "region")
+   ("e" ahs-edit-mode "edit" :exit t)))
+
+;; ** (tab)navigation
+
+;; (defhydra hydra-pop (:color blue)
+;;   ("n" pop-mark)
+;;   ("C-c" pop-global-mark))
 
 ;; ** (d)ocumentation
 
@@ -515,6 +548,20 @@ hyper when it's used as a modifier."
  "M-p" '(hydra-ahs/ahs-backward :which-key "ahs-backward")
  "M-i" '(ahs-edit-mode :which-key "ahs-edit-mode"))
 
+(comment
+ (defun config-keybindings-iedit (&optional arg)
+   (interactive)
+   (if (or (bound-and-true-p lispy-mode)
+           (bound-and-true-p lispy-mnemonic-mode))
+       (funcall-interactively 'lispy-iedit arg)
+     (funcall-interactively 'iedit arg)))
+
+ (general-define-key
+  :keymaps 'prog-mode-map
+  "M-n" '(hydra-iedit/iedit-next-occurrence :which-key "iedit-next")
+  "M-p" '(hydra-ahs/ahs-backward :which-key "iedit-prev")
+  "M-i" '(config-keybindings-iedit :which-key "iedit")))
+
 (after 'org
   (bind-keys
    :map org-mode-map
@@ -532,7 +579,8 @@ hyper when it's used as a modifier."
 
 (general-define-key
  :prefix "C-c"
- "C-r" 'ivy-resume
+ :keymaps 'global
+ "r" 'ivy-resume
  "+"   '(hydra-text/-text-scale-increase :which-key "text-+")
  "-"   '(hydra-text/-text-scale-decrease :which-key "text--")
  "g"   '(hydra-goto/body :which-key "goto")
