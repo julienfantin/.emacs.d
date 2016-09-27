@@ -63,7 +63,7 @@
   :config
   (progn
     (setq-default abbrev-mode t)
-    (setq save-abbrevs 'silently)
+    (validate-setq save-abbrevs 'silently)
     (quietly-read-abbrev-file)))
 
 
@@ -117,18 +117,20 @@
       ;; Smart-tab is our completion entry point
       (smart-tab-mode 1)
       (company-mode 1)))
-  :init (add-hook 'prog-mode-hook 'config-completion-company-turn-on)
+  :init (add-hook 'prog-mode-hook 'config-completion-company-turn-on t)
   :config
   (progn
     (bind-key "TAB" #'company-complete-common-or-cycle company-active-map)
-    (setq company-idle-delay .2
-          company-minimum-prefix-length 2
-          company-tooltip-align-annotations t
-          company-require-match 'never)))
+    (validate-setq
+     company-idle-delay .2
+     company-minimum-prefix-length 2
+     company-tooltip-align-annotations t
+     company-require-match nil)))
 
 (use-package company-elisp
   :defer t
-  :config (setq company-elisp-detect-function-context nil))
+  :config
+  (validate-setq company-elisp-detect-function-context nil))
 
 (use-package company-quickhelp
   :ensure t
@@ -144,9 +146,10 @@
   (after 'company
     (add-hook 'company-mode-hook #'company-statistics-mode))
   :config
-  (setq company-statistics-file
-        (expand-file-name "company-statistics.el" user-var-directory)
-        company-statistics-size 200))
+  (validate-setq
+   company-statistics-file
+   (expand-file-name "company-statistics.el" user-var-directory)
+   company-statistics-size 200))
 
 (use-package yasnippet
   :if config-completion-backends-enable-yasnippet
@@ -160,9 +163,10 @@
     (unbind-key "C-c <tab>" yas-minor-mode-map)
     (unbind-key "C-c TAB" yas-minor-mode-map)
     (add-to-list 'yas-snippet-dirs (expand-file-name "snippets/" user-emacs-directory))
-    (setq yas-fallback-behavior 'return-nil
-          yas-triggers-in-field t
-          yas-verbosity 0)))
+    (validate-setq
+     yas-fallback-behavior 'return-nil
+     yas-triggers-in-field t
+     yas-verbosity 0)))
 
 (provide 'config-completion)
 ;;; config-completion.el ends here

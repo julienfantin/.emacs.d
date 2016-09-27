@@ -47,7 +47,7 @@
   :init (add-hook 'prog-mode-hook #'eldoc-mode)
   :config
   (progn
-    (setq eldoc-idle-delay 0.25)
+    (validate-setq eldoc-idle-delay .5)
     (after 'paredit
       (eldoc-add-command
        'paredit-backward
@@ -67,7 +67,7 @@
   :functions (config-doc-set-docsets)
   :config
   (progn
-    (setq helm-dash-docsets-path (expand-file-name ".docsets" "~/"))
+    (validate-setq helm-dash-docsets-path (expand-file-name ".docsets" "~/"))
     (defun config-doc--docset-install-name (docset)
       (if (listp docset) (car docset) docset))
     (defun config-doc--docset-enable-name (docset)
@@ -80,8 +80,8 @@
       (unless (config-docs--docset-installed-p docset)
 	(counsel-dash-install-docset (config-doc--docset-install-name docset))))
     (defun config-doc--enable-docsets (docsets)
-      (setq counsel-dash-docsets 
-	    (mapcar #'config-doc--docset-enable-name docsets)))
+      (validate-setq counsel-dash-docsets
+                     (mapcar #'config-doc--docset-enable-name docsets)))
     (defun config-doc-set-docsets (mode-hook docsets)
       (mapc 'config-doc--ensure-installed docsets)
       (add-hook mode-hook #'(lambda () (config-doc--enable-docsets docsets))))

@@ -32,15 +32,16 @@
   :defer t
   :config
   ;; Don't refresh remote files
-  (setq vc-handled-backends '(Git)
-        vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
-                                     vc-ignore-dir-regexp
-                                     tramp-file-name-regexp)))
+  (validate-setq
+   vc-handled-backends '(Git)
+   vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+                                vc-ignore-dir-regexp
+                                tramp-file-name-regexp)))
 
 (use-package ediff
   :defer t
   :config
-  (setq
+  (validate-setq
    ;; Avoid the crazy multi-frames setup
    ediff-window-setup-function 'ediff-setup-windows-plain
    ;; Ignore whitespace
@@ -56,7 +57,12 @@
 (use-package magit
   :ensure t
   :defer t
-  :config (setq magit-save-repository-buffers 'dontask))
+  :config
+  (validate-setq magit-save-repository-buffers 'dontask))
+
+(use-package magithub
+  :ensure t
+  :defer t)
 
 (use-package diff-hl
   :ensure t
@@ -68,7 +74,7 @@
     (add-hook 'dired-mode-hook #'diff-hl-dired-mode))
   :config
   (progn
-    (setq diff-hl-draw-borders t)
+    (validate-setq diff-hl-draw-borders t)
     (diff-hl-margin-mode 1)))
 
 (provide 'config-git)

@@ -76,33 +76,35 @@
          :kill-buffer t))))
   :config
   (progn
-    (setq org-log-done t
-          org-src-window-setup 'current-window
-          org-src-fontify-natively t
-          org-startup-indented t
-          org-startup-folded nil
-          org-hide-leading-stars t
-          org-fontify-whole-heading-line t
-          org-fontify-quote-and-verse-blocks t
-          org-use-fast-tag-selection t
-          org-use-speed-commands t
-          org-speed-commands-user
-          '(("N" . org-shiftmetadown)
-            ("P" . org-shiftmetaup)
-            ("F" . org-shiftmetaright)
-            ("B" . org-shiftmetaleft)))
+    (validate-setq
+     org-log-done t
+     org-src-window-setup 'current-window
+     org-src-fontify-natively t
+     org-startup-indented t
+     org-startup-folded nil
+     org-hide-leading-stars t
+     org-fontify-whole-heading-line t
+     org-fontify-quote-and-verse-blocks t
+     org-use-fast-tag-selection t
+     org-use-speed-commands t
+     org-speed-commands-user
+     '(("N" . org-shiftmetadown)
+       ("P" . org-shiftmetaup)
+       ("F" . org-shiftmetaright)
+       ("B" . org-shiftmetaleft)))
     (config-org-add-structure-templates)
     (config-org-load-languages)))
 
 (use-package ob-core
   :defer t
-  :config (setq org-confirm-babel-evaluate nil))
+  :config (validate-setq org-confirm-babel-evaluate nil))
 
 (use-package org-capture
   :defer t
   :config
-  (setq org-reverse-note-order t
-        org-capture-templates (config-org-capture-templates)))
+  (validate-setq
+   org-reverse-note-order t
+   org-capture-templates (config-org-capture-templates)))
 
 
 ;; * Packages
@@ -116,9 +118,10 @@
   :ensure t
   :defer t
   :config
-  (setq deft-recursive t
-        deft-use-filename-as-title t
-        deft-default-extension "org"))
+  (validate-setq
+   deft-recursive t
+   deft-use-filename-as-title t
+   deft-default-extension "org"))
 
 (provide 'config-org)
 ;;; config-org.el ends here

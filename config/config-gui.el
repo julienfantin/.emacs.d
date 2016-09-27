@@ -34,9 +34,10 @@
   :init (fringe-mode 4)
   :config
   (progn
-    (setq indicate-empty-lines t
-          indicate-buffer-boundaries t
-          indicate-unused-lines t)
+    (validate-setq
+     indicate-empty-lines t
+     indicate-buffer-boundaries t
+     indicate-unused-lines t)
     (setf (cdr (assq 'continuation fringe-indicator-alist))
           '(nil right-curly-arrow))))
 
@@ -47,8 +48,9 @@
     (add-hook 'dired-mode-hook #'hl-line-mode)
     (after 'magit (add-hook 'magit-mode-hook #'hl-line-mode)))
   :config
-  (setq global-hl-line-sticky-flag nil
-        hl-line-sticky-flag nil))
+  (validate-setq
+   global-hl-line-sticky-flag nil
+   hl-line-sticky-flag nil))
 
 (use-package linum
   :disabled t
@@ -59,15 +61,16 @@
   :preface (defvar-local config-frame-linum-timer nil)
   :config
   (progn
-    (setq linum-delay t)
-    (setq linum-format " %4d ")
+    (validate-setq
+     linum-delay t
+     linum-format " %4d ")
     ;; Redefine linum-schedule for slower updates, fixes laggy scrolling
     ;; behavior
     (defun linum-schedule ()
       (when (timerp config-frame-linum-timer)
         (cancel-timer config-frame-linum-timer))
-      (setq config-frame-linum-timer
-            (run-with-idle-timer 1 nil #'linum-update-current)))))
+      (validate-setq
+       config-frame-linum-timer (run-with-idle-timer 1 nil #'linum-update-current)))))
 
 
 ;; * Packages
@@ -75,7 +78,7 @@
 (use-package rich-minority
   :ensure t
   :init (rich-minority-mode 1)
-  :config (setq rm-whitelist '(" λ")))
+  :config (validate-setq rm-whitelist '(" λ")))
 
 (use-package focus :ensure t :defer t)
 

@@ -51,7 +51,7 @@
   :config
   (progn
     ;; Custom
-    (setq flycheck-emacs-lisp-load-path 'inherit)
+    (validate-setq flycheck-emacs-lisp-load-path 'inherit)
     ;; Advices
     (defun config-parsers-flycheck-select-window ()
       (select-window (get-buffer-window flycheck-error-list-buffer)))
@@ -61,8 +61,8 @@
     (defun config-parsers-flycheck-turn-messages-off (&optional _)
       (setq flycheck-display-errors-function nil))
     (defun config-parsers-flycheck-turn-messages-on (&optional _)
-      (setq flycheck-display-errors-function
-            config-parsers-flycheck-display-errors-function)
+      (setq
+       flycheck-display-errors-function config-parsers-flycheck-display-errors-function)
       (flycheck-buffer))
     (defun config-parsers-flycheck-edebug-toggle ()
       (if (bound-and-true-p edebug-mode)
@@ -149,7 +149,8 @@ Exit the save between databases if there is user input."
 (use-package semantic/db-file
   :defer t
   :config
-  (setq semanticdb-default-save-directory (user-var-directory "semantic-db/")))
+  (validate-setq
+   semanticdb-default-save-directory (user-var-directory "semantic-db/")))
 
 (provide 'config-parsers)
 ;;; config-parsers.el ends here

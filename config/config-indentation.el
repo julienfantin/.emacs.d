@@ -71,7 +71,8 @@
   :defer t
   :after cc-mode
   :init (add-hook 'cc-mode-hook #'dtrt-indent-mode)
-  :config (setq dtrt-indent-verbosity 0))
+  :config
+  (validate-setq dtrt-indent-verbosity 0))
 
 (use-package aggressive-indent
   :ensure t
@@ -89,7 +90,7 @@
   :init (after-init 'global-aggressive-indent-mode)
   :config
   (progn
-    (setq aggressive-indent-comments-too t)
+    (validate-setq aggressive-indent-comments-too t)
     ;; Skip large forms
     (add-to-list 'aggressive-indent-dont-indent-if '(config-indentation-aggressive-indent-skip-p))
     ;; Disabled commands

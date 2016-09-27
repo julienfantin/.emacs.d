@@ -19,38 +19,40 @@
   :defer t
   :init (after-init #'recentf-mode)
   :config
-  (setq recentf-max-saved-items 1000
-        recentf-max-menu-items 200))
+  (validate-setq
+   recentf-max-saved-items 1000
+   recentf-max-menu-items 200))
 
 (use-package tramp-cache
   :defer t
   :config
-  (setq tramp-persistency-file-name (user-var-file "tramp")))
+  (validate-setq tramp-persistency-file-name (user-var-file "tramp")))
 
 (use-package autorevert
   :defer t
   :init (after-init #'global-auto-revert-mode)
-  :config (setq auto-revert-check-vc-info nil))
+  :config (validate-setq auto-revert-check-vc-info nil))
 
 (use-package simple
   :defer t
   :config
   (progn
-    (setq save-interprogram-paste-before-kill t
-          create-lockfiles nil
-          make-backup-files nil)))
+    (validate-setq
+     save-interprogram-paste-before-kill t
+     create-lockfiles nil
+     make-backup-files nil)))
 
 (use-package dired
   :defer t
   :config
   (progn
-    (setq dired-auto-revert-buffer t)
+    (validate-setq dired-auto-revert-buffer t)
     (add-hook 'dired-mode-hook 'dired-hide-details-mode)))
 
 (use-package ls-lisp
   :after dired
   :config
-  (setq ls-lisp-use-insert-directory-program t))
+  (validate-setq ls-lisp-use-insert-directory-program t))
 
 
 ;; * Packages
@@ -99,8 +101,8 @@
   :after dired
   :config
   (setq-default dired-omit-files-p t)
-  (setq dired-listing-switches "-alhv"
-        dired-omit-files "^\\.\\|^#.#$\\|.~$"))
+  (validate-setq dired-listing-switches "-alhv"
+                 dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
 
 ;; * Commands

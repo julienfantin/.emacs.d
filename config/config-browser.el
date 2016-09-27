@@ -31,11 +31,11 @@
 
 (use-package url
   :defer t
-  :config (setq url-configuration-directory (user-var-directory "url/")))
+  :config (validate-setq url-configuration-directory (user-var-directory "url/")))
 
 (use-package browse-url
   :defer t
-  :config (setq browse-url-browser-function 'eww-browse-url))
+  :config (validate-setq browse-url-browser-function 'eww-browse-url))
 
 (provide 'config-browser)
 ;;; config-browser.el ends here

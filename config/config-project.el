@@ -36,14 +36,16 @@
   :functions (projectile-load-known-projects)
   :config
   (progn
-    (setq projectile-enable-caching t
-          projectile-cache-file (user-var-file "projectile.cache")
-          projectile-known-projects-file (user-var-file "projectile-bookmarks.el")
-          projectile-completion-system 'ivy
-          projectile-use-git-grep t
-          projectile-create-missing-test-files t
-          projectile-globally-ignored-directories
-          (append projectile-globally-ignored-directories '("elpa")))
+    (validate-setq
+     projectile-mode-line nil
+     projectile-enable-caching nil
+     projectile-cache-file (user-var-file "projectile.cache")
+     projectile-known-projects-file (user-var-file "projectile-bookmarks.el")
+     projectile-completion-system 'ivy
+     projectile-use-git-grep t
+     projectile-create-missing-test-files t
+     projectile-globally-ignored-directories
+     (append projectile-globally-ignored-directories '("elpa")))
     (add-to-list 'projectile-globally-ignored-files ".DS_Store")
     (add-hook 'projectile-idle-timer-hook #'projectile-invalidate-cache)
     (advice-add #'projectile-replace :before #'projectile-save-project-buffers)

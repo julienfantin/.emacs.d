@@ -55,13 +55,14 @@
   (progn
     (bind-key "C-c C-t" 'cider-test-jump clojure-mode-map)
     (bind-key "C-c C-z" 'cider-switch-to-repl-buffer clojure-mode-map)
-    (setq cider-font-lock-dynamically '(macro core function deprecated var)
-          cider-prompt-save-file-on-load 'always-save
-          cider-prompt-for-symbol nil
-          cider-auto-jump-to-error nil
-          cider-prefer-local-resources t
-          cider-dynamic-indentation nil
-          cider-pprint-fn 'pprint)
+    (validate-setq
+     cider-font-lock-dynamically '(macro core function deprecated var)
+     cider-prompt-save-file-on-load 'always-save
+     cider-prompt-for-symbol nil
+     cider-auto-jump-to-error nil
+     cider-prefer-local-resources t
+     cider-dynamic-indentation nil
+     cider-pprint-fn 'pprint)
     (add-hook 'cider-mode-hook 'eldoc-mode)
     (add-hook 'cider-repl-mode-hook 'eldoc-mode)
     (after (lispy-mnemonic cider-interaction)
@@ -84,6 +85,12 @@
     (after 'config-completion
       (config-completion-add-backends 'cider-repl-mode 'company-capf))))
 
+(use-package cider-debug
+  :defer t
+  :config
+  (validate-setq
+   cider-debug-display-locals t))
+
 
 ;; * clj-refactor
 
@@ -99,7 +106,8 @@
   (after 'clojure-mode
     (add-hook 'clojure-mode-hook 'config-clojure-cljr-enable))
   :config
-  (setq
+  (validate-setq
+   cljr-magic-requires nil
    cljr-warn-on-eval nil
    cljr-magic-require-namespaces
    (append cljr-magic-require-namespaces
@@ -130,6 +138,8 @@
   (after (clojure-mode flycheck)
     (flycheck-clojure-setup)
     (add-hook 'clojure-mode-hook 'config-clojure-disable-checkers)))
+
+(use-package helm-cider :ensure t :init (after 'cider-mode (add-hook 'cider-mode-hook 'helm-cider-mode)))
 
 (provide 'config-clojure)
 ;;; config-clojure.el ends here

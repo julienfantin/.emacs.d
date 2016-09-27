@@ -115,13 +115,14 @@
   :config
   (after 'tuareg
     (use-package merlin-company :defer t)
-    (setq merlin-completion-types nil
-          merlin-completion-arg-type nil
-          merlin-completion-with-doc t
-          merlin-completion-dwim nil
-          merlin-error-after-save nil
-          merlin-command 'opam
-          merlin-default-flags '("-principal"))
+    (validate-setq
+     merlin-completion-types nil
+     merlin-completion-arg-type nil
+     merlin-completion-with-doc t
+     merlin-completion-dwim nil
+     merlin-error-after-save nil
+     merlin-command 'opam
+     merlin-default-flags '("-principal"))
     (define-key merlin-mode-map (kbd "C-c <up>") 'merlin-type-enclosing-go-up)
     (define-key merlin-mode-map (kbd "C-c <down>") 'merlin-type-enclosing-go-down)))
 
@@ -133,7 +134,7 @@
     (flycheck-ocaml-setup))
   :config
   (after 'merlin
-    (setq merlin-error-after-save nil)))
+    (validate-setq merlin-error-after-save nil)))
 
 (provide 'config-ocaml)
 ;;; config-ocaml.el ends here

@@ -31,7 +31,7 @@
 (use-package comint
   :defer t
   :config
-  (setq comint-prompt-read-only t))
+  (validate-setq comint-prompt-read-only t))
 
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
@@ -42,7 +42,7 @@
   :defer t
   :config
   (progn
-    (setq
+    (validate-setq
      eshell-scroll-to-bottom-on-output t
      eshell-scroll-show-maximum-output t)
     (add-hook 'eshell-mode-hook #'paredit-mode)))
@@ -70,26 +70,28 @@
 (use-package em-unix
   :defer t
   :config
-  (setq eshell-cp-interactive-query t
-        eshell-ln-interactive-query t
-        eshell-mv-interactive-query t
-        eshell-rm-interactive-query t
-        eshell-mv-overwrite-files nil))
+  (validate-setq
+   eshell-cp-interactive-query t
+   eshell-ln-interactive-query t
+   eshell-mv-interactive-query t
+   eshell-rm-interactive-query t
+   eshell-mv-overwrite-files nil))
 
 (use-package em-cmpl
   :defer t
-  :config (setq eshell-cmpl-ignore-case t))
+  :config (validate-setq eshell-cmpl-ignore-case t))
 
 (use-package em-term
   :defer t
   :config
-  (setq eshell-destroy-buffer-when-process-dies t
-        eshell-visual-commands
-        (append '("tmux" "screen" "ssh" "htop" "git log") eshell-visual-commands)))
+  (validate-setq
+   eshell-destroy-buffer-when-process-dies t
+   eshell-visual-commands
+   (append '("tmux" "screen" "ssh" "htop" "git log") eshell-visual-commands)))
 
 (use-package em-hist
   :defer t
-  :config (setq eshell-hist-ignoredups t))
+  :config (validate-setq eshell-hist-ignoredups t))
 
 
 ;; * Packages
@@ -108,8 +110,8 @@
   :commands epe-theme-lambda
   :init
   (after 'em-prompt
-    (setq eshell-highlight-prompt t
-          eshell-prompt-function #'epe-theme-lambda)))
+    (validate-setq eshell-highlight-prompt t
+                   eshell-prompt-function #'epe-theme-lambda)))
 
 (provide 'config-shell)
 ;;; config-shell.el ends here

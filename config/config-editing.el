@@ -50,15 +50,17 @@
 (use-package auto-highlight-symbol
   :ensure t
   :config
-  (setq ahs-case-fold-search nil
-        ahs-default-range 'ahs-range-whole-buffer
-        ;; by default disable auto-highlight of symbol
-        ;; current symbol can always be highlighted with <SPC> s h
-        ahs-idle-timer nil
-        ahs-idle-interval nil
-        ahs-inhibit-face-list nil
-        ;; Fix -> symbols in clojure
-        ahs-include "^[0-9A-Za-z/_>.,:;*+=&%|$#@!^?-]+$"))
+  (validate-setq ahs-case-fold-search nil)
+  ;; Fix -> symbols in clojure
+  (setq ahs-include "^[0-9A-Za-z/_>.,:;*+=&%|$#@!^?-]+$")
+  (validate-setq ahs-default-range 'ahs-range-whole-buffer)
+  (validate-setq ahs-idle-interval -1.0)
+  (validate-setq ahs-inhibit-face-list '())
+  (add-to-list 'ahs-plugin-bod-modes 'clojure-mode)
+  (add-to-list 'ahs-plugin-bod-modes 'clojurescript-mode)
+  (add-to-list 'ahs-plugin-bod-modes 'clojurec-mode))
+
+(use-package iedit :ensure t :defer t)
 
 (use-package undo-tree
   :ensure t

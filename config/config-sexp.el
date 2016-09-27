@@ -44,9 +44,10 @@
         (show-paren-mode 1))))
   :config
   (progn
-    (setq show-paren-style 'expression
-          show-paren-priority 1000
-          show-paren-delay 0)
+    (validate-setq
+     show-paren-style 'expression
+     show-paren-priority 1000
+     show-paren-delay 0.1)
     (add-hook 'activate-mark-hook #'(lambda () (show-paren-mode -1)))
     (add-hook 'deactivate-mark-hook #'(lambda () (show-paren-mode 1)))
     (after 'pulse-eval
@@ -169,13 +170,15 @@
       (add-to-list
        'pulse-eval-advices-alist
        (cons 'lispy-mode '((lispy-eval . pulse-eval-highlight-forward-sexp-advice)))))
-    (setq lispy-no-permanent-semantic t
-          lispy-completion-method 'ivy
-          lispy-visit-method 'projectile
-          lispy-compat '(edebug cider)
-          lispy-avy-style-char 'at-full
-          lispy-avy-style-paren 'at-full
-          lispy-avy-style-symbol 'at-full)))
+    (validate-setq lispy-no-space t)
+    (validate-setq
+     lispy-no-permanent-semantic t
+     lispy-completion-method 'ivy
+     lispy-visit-method 'projectile
+     lispy-compat '(edebug cider)
+     lispy-avy-style-char 'at-full
+     lispy-avy-style-paren 'at-full
+     lispy-avy-style-symbol 'at-full)))
 
 (use-package lispy-mnemonic
   :after lispy
