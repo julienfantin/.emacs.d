@@ -37,14 +37,15 @@
 (use-package spaceline
   :ensure t
   :demand t
-  :functions (config-modeline-install spaceline-install)
+  :commands (config-modeline-install)
+  :functions (spaceline-install)
   :init (after-init #'config-modeline-install)
   :config
   (progn
-    (setq spaceline-highlight-face-func #'spaceline-highlight-face-default)
+    (validate-setq spaceline-highlight-face-func #'spaceline-highlight-face-default)
 
     (after 'anzu
-      (setq anzu-cons-mode-line-p nil))
+      (validate-setq anzu-cons-mode-line-p nil))
 
     (spaceline-define-segment config-modeline-eyebrowse
       (when (bound-and-true-p eyebrowse-mode)
@@ -74,7 +75,6 @@
           (powerline-raw (concat icon sym desc " ")))))
 
     (spaceline-define-segment config-modeline-buffer-icon
-      ;; What's up with this function returning symbols when not found?
       (when (stringp (all-the-icons-icon-for-buffer))
         (substring-no-properties (all-the-icons-icon-for-buffer))))
 
@@ -102,14 +102,15 @@
          ((config-modeline-persp config-modeline-eyebrowse) :separator ":")
          buffer-id
          config-modeline-buffer-icon
-         (buffer-size  hud buffer-position)
-         line-column
+         ;; (buffer-size  hud buffer-position)
+         ;; line-column
          (remote-host (global :when active)) selection-info)
        `(((flycheck-error flycheck-warning flycheck-info) :when active)
          (buffer-encoding-abbrev :when (not (eq buffer-file-coding-system 'utf-8-unix)))
          (config-modeline-version-control :when active)))
       (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
-      (force-mode-line-update))))
+      (force-mode-line-update))
+    (config-modeline-install)))
 
 (use-package powerline
   :ensure t
@@ -117,7 +118,7 @@
   :functions (powerline-reset)
   :config
   (progn
-    (setq powerline-default-separator nil)
+    (validate-setq powerline-default-separator nil)
     (advice-add 'load-theme :after
                 (lambda (_theme &optional _no-confirm _no-enable)
                   (powerline-reset)))))
