@@ -19,6 +19,25 @@
   :group 'duotone
   :type 'duotone-palette)
 
+(defcustom duotone-palette-stark-sea
+  (make-instance
+   'duotone-palette
+   :uno    212
+   :duo    160
+   :fg  '(.88 .89)
+   :uno-1  '(.99 .92)
+   :uno-2  '(.88 .77)
+   :uno-3  '(.24 .54)
+   :uno-4  '(.12 .38)
+   :duo-1  '(.79 .70)
+   :duo-2  '(.52 .48)
+   :duo-3  '(.06 .32)
+   :bg     '(212 0 .15)
+   :accent '(160 .95 .66))
+  "https://github.com/5310/duotone-bright-sea-syntax/blob/master/styles/colors.less"
+  :group 'duotone
+  :type 'duotone-palette)
+
 (defcustom duotone-palette-candid-light
   (make-instance
    'duotone-palette
@@ -128,21 +147,60 @@
    'duotone-palette
    :uno      212
    :duo      160
-   :fg       '(.88 .92)
+   :fg       '(.88 .88)
    :uno-1    '(.99 .92)
    :uno-2    '(.88 .77)
    :uno-3    '(.24 .54)
    :uno-4    '(.12 .38)
    :duo-1    '(.99 .70)
    :duo-2    '(.72 .48)
-   :duo-3    '(.12 .38)
-   :bg       '(.24 .15)
-   :accent   '(1.00 .66))
+   :duo-3    '(.12 .32)
+   :bg       '(212 .24 .15)
+   :accent   '(160 1.00 .66))
   "Duotone light palette.
 https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
+(defcustom duotone-palette-amethyst-dark
+  (make-instance
+   'duotone-palette
+   :uno      252
+   :duo      270
+   :fg      '(.98 .96)
+   :uno-1    '(1.0 .96)
+   :uno-2    '(.98 .86)
+   :uno-3    '(.96 .78)
+   :uno-4    '(.12 .46)
+   :duo-1    '(1.0 .80)
+   :duo-2    '(.72 .62)
+   :duo-3    '(.06 .46)
+   :bg       '(270 .14 .18)
+   :accent   '(270 1.0 .66))
+  "Duotone amethyst dark.
+https://github.com/bynines/duotone-dark-amethyst-syntax"
+  :group 'duotone
+  :type 'duotone-palette)
+
+(defcustom duotone-palette-blue-dark
+  (make-instance
+   'duotone-palette
+   :uno    205
+   :duo    40
+   :fg     '(.98 1.0)
+   :uno-1  '(.95 .92)
+   :uno-2  '(.95 .86)
+   :uno-3  '(.75 .75)
+   :uno-4  '(.20 .50)
+   :duo-1  '(.70 .75)
+   :duo-2  '(.72 .62)
+   :duo-3  '(.15 .55)
+   :bg     '(205 .12 .18)
+   :accent '(40 1.00 .66))
+  "Duotone blue dark palette.
+https://github.com/smlombardi/duotone-blue-dark"
+  :group 'duotone
+  :type 'duotone-palette)
 
 (defcustom duotone-palette-space-dark
   (make-instance
@@ -178,7 +236,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
    :duo-1    '(0.92 0.3)
    :duo-2    '(0.46 0.52)
    :duo-3    '(0.23 0.52)
-   :bg       '(.33 .97))
+   :bg       (chroma-hex :hex "#faf8f3"))
   "Duotone light palette."
   :group 'duotone
   :type 'duotone-palette)
@@ -286,11 +344,32 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
+(defcustom duotone-palette-light-rose
+  (make-instance
+   'duotone-palette
+   :bg       (chroma-hex :hex "#E8E1DD")
+   :fg       (chroma-hex :hex "#2F0028")
+   :uno-1    (chroma-hex :hex "#07004F")
+   :uno-2    (chroma-hex :hex "#190038")
+   :uno-3    (chroma-hex :hex "#25003A")
+   :uno-4    (chroma-hex :hex "#2F0028")
+   :duo-1    (chroma-hex :hex "#7A004A")
+   :duo-2    (chroma-hex :hex "#610044")
+   :duo-3    (chroma-hex :hex "#470038")
+   :accent   (chroma-hex :hex "#981C1C"))
+  "Duotone palette based on Nicolas Petton Emacs website."
+  :group 'duotone
+  :type 'duotone-palette)
+
+
 (defcustom duotone-palette-default-palettes
   '(duotone-palette-arch-dark
     duotone-palette-arch-light
+    duotone-palette-amethyst-dark
     duotone-palette-blessed-light
+    duotone-palette-blue-dark
     duotone-palette-candid-light
+    duotone-palette-light-rose
     duotone-palette-duotone-dark
     duotone-palette-duotone-light
     duotone-palette-earth-dark
@@ -301,6 +380,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
     duotone-palette-sea-dark
     duotone-palette-sea-light
     duotone-palette-space-dark
+    duotone-palette-stark-sea
     duotone-palette-two-watch-dark
     duotone-palette-watch-light)
   "Duotone default palettes."

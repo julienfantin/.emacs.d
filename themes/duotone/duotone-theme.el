@@ -122,13 +122,13 @@ Remap all faces when called with a prefix argument."
               palette
               #'(lambda (face chrom)
                   `(,face ((t (:underline `(:style line :color ,chrom))))))
-              (theme-faces-match-all "ivy" "match" "[0-9]"))
+              (theme-faces-match-all "match" "[0-9]"))
 
            ;; Stand-out highlighting in buffer
            ,@(duotone-hierarchical-chroma-mapping
               palette
               #'(lambda (face chrom)
-                  `(,face ((t (:f ,chrom :b ,(chroma-blend chrom bg mblend))))))
+                  `(,face ((t (:f ,(chroma-blend chrom fg mblend) :b ,(chroma-blend chrom bg mblend))))))
               (append
                (theme-faces-match-all '("match" "ivy") "[0-9]")
                (theme-faces-match-all "mark" "[0-9]")
@@ -155,13 +155,13 @@ Remap all faces when called with a prefix argument."
             ((t (:f ,duo-3))))
            (,(theme-faces-match "green")
             ((t (:f ,duo-1))))
-           (,(theme-faces-match "magenta")
+           (,(theme-faces-match "magenta" "pink" "purple")
             ((t (:f ,uno-3))))
-           (,(theme-faces-match "red")
+           (,(theme-faces-match "red" "maroon")
             ((t (:f ,uno-1))))
-           (,(theme-faces-match "white")
+           (,(theme-faces-match "white" "silver")
             ((t (:f ,uno-4))))
-           (,(theme-faces-match "yellow")
+           (,(theme-faces-match "yellow" "orange")
             ((t (:f ,uno-2))))
            ;;
            ;; Structure formatting
@@ -176,11 +176,12 @@ Remap all faces when called with a prefix argument."
            ;;
            ;; Errors etc
            (,(theme-faces-match '("error" "info" "warning" "list") "\\(mis\\|un\\)match" "in\\(correct\\|valid\\)" "missing")
-            ((t (:f ,removed :b ,(chroma-blend bg removed sblend)))))
+            ((t (:f ,removed :underline `(:style line :color ,(chroma-blend bg removed sblend))))))
            (,(theme-faces-match "warning")
-            ((t (:f ,renamed :b ,(chroma-blend bg renamed sblend)))))
+            ((t (:f ,renamed :underline `(:style line :color ,(chroma-blend bg renamed sblend))))))
            (,(theme-faces-match '("info" "visited" "list" "[0-9]"))
-            ((t (:f ,added :b ,(chroma-blend bg added sblend)))))
+            ((t (:f ,added :underline `(:style line :color ,(chroma-blend bg added sblend))))))
+           (,(theme-faces-match-all "flycheck"))
            ;; Marks
            ;;
            (,(theme-faces-match '("mark" "marked" "book" "bm" "markdown" "1" "2"))
@@ -188,12 +189,12 @@ Remap all faces when called with a prefix argument."
            ;;
            ;; Matches
            (,(theme-faces-match-all "match" "current")
-            ((t (:f ,duo-1 :b ,(chroma-blend duo-1 bg sblend)))))
+            ((t (:f ,duo-1 :b ,(chroma-blend bg duo-1 sblend)))))
            (,(concatenate
               'list
               (theme-faces-match '("match" "\\(mis\\|un\\)match"  "[0-9]"))
               (theme-faces-match '("required" "common" "current")))
-            ((t (:f ,duo-2 :b ,(chroma-blend duo-2 bg sblend)))))
+            ((t (:f ,duo-1 :b ,(chroma-blend bg duo-2 mblend)))))
            ((show-paren-match)
             ((t (:f nil :b ,(chroma-blend bg duo-2 sblend)))))
            ;;
@@ -201,9 +202,9 @@ Remap all faces when called with a prefix argument."
            (,(theme-faces-match-all "occur")
             ((t (:f nil :b ,(chroma-blend duo-1 bg mblend)))))
            ((lazy-highlight secondary-selection)
-            ((t (:f nil :b ,(chroma-blend duo-1 bg mblend)))))
+            ((t (:f ,(chroma-blend duo-1 fg mblend) :b ,(chroma-blend duo-1 bg mblend)))))
            ((isearch)
-            ((t (:f nil :b ,(chroma-blend uno-2 bg mblend)))))
+            ((t (:f ,(chroma-blend uno-2 fg mblend) :b ,(chroma-blend uno-2 bg mblend)))))
            (,(theme-faces-match "occur")
             ((t (:b ,bg-fade))))
            ;;
@@ -212,7 +213,7 @@ Remap all faces when called with a prefix argument."
               'list
               '(hl-line helm-selection)
               (theme-faces-match "selection" "selected"))
-            ((t (:b ,(chroma-blend bg uno-4 blend)))))
+            ((t (:b ,(chroma-blend bg uno-4 sblend)))))
            ;;
            ;; Filesystem
            (,(theme-faces-match '("tag" "file" "current"))
@@ -268,7 +269,7 @@ Remap all faces when called with a prefix argument."
            (,(theme-faces-match "type")
             ((t (:f ,duo-2))))
            (,(theme-faces-match "keyword")
-            ((t (:f ,duo-2))))
+            ((t (:f ,duo-1))))
            (,(theme-faces-match "import")
             ((t (:f ,duo-2))))
            (,(theme-faces-match "builtin")
@@ -287,6 +288,7 @@ Remap all faces when called with a prefix argument."
            ;; Faces overrides
            ;;
            (default                                    ((t (:f ,fg :b ,bg))))
+           (fringe  ((t (:f ,fg-sfade :b ,bg-sfade))))
            (cursor                                     ((t (:f ,accent :b ,uno-1))))
            (region                                     ((t (:b ,(chroma-blend uno-2 bg blend)))))
            (match                                      ((t (:f ,bg :b ,accent))))
@@ -296,7 +298,7 @@ Remap all faces when called with a prefix argument."
            (org-code                                   ((t (:f ,uno-2))))
            (org-block-begin-line                       ((t (:f ,uno-4))))
            (org-block-end-line                         ((t (:f ,uno-4))))
-           (pulse-eval-face                            ((t (:b ,(chroma-blend modified bg mblend)))))
+           (pulse-eval-face                            ((t (:b ,(chroma-blend bg accent sblend)))))
            (page-break-lines                           ((t (:f ,uno-4))))
            (aw-leading-char-face                       ((t (:f ,uno-1 :bg ,(chroma-blend bg uno-1 sblend)))))
            (avy-background-face                        ((t (:f ,(chroma-blend uno-4 bg sblend)))))
@@ -335,6 +337,7 @@ Remap all faces when called with a prefix argument."
            (lisp-extra-font-lock-backquote             ((t (:f ,accent))))
            (anzu-mode-line                             ((t (:f ,bg))))
            (mode-line-inactive                         ((t (:f ,fg :bg ,bg))))
+           (linum                                      ((t (:b ,bg :f ,bg-mfade))))
            (mode-line-buffer-id                        ((t (:f nil :b nil :weight bold))))
            (mode-line                                  ((t (:f ,duo-1 :b ,bg))))
            (powerline-active1                          ((t (:f ,duo-2 :b ,bg))))
@@ -343,7 +346,11 @@ Remap all faces when called with a prefix argument."
            (powerline-inactive1                        ((t (:f ,uno-4 :b ,bg))))
            (powerline-inactive2                        ((t (:f ,uno-4 :b ,bg-sfade))))
            (ahs-face                                   ((t (:b ,bg-fade))))
-           (ahs-plugin-defalt-face                     ((t (:b ,bg-mfade))))))))))
+
+           (ahs-definition-face ((t (:fg ,bg :bg ,uno-2))))
+           (ahs-plugin-bod-face ((t (:fg ,bg :bg ,uno-3))))
+           (ahs-edit-mode-face ((t (:fg ,bg :bg ,accent))))
+           (ahs-plugin-default-face                     ((t (:b ,bg-mfade))))))))))
 
 ;;;###autoload
 (when load-file-name
