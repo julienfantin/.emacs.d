@@ -35,8 +35,9 @@
   (progn
     ;; Reveal content of subtrees during isearch, alse see reveal-mode
     (setq-default isearch-invisible 'open)
-    (setq isearch-allow-scroll t
-          lazy-highlight-initial-delay 0))
+    (validate-setq isearch-allow-scroll t
+                   lazy-highlight-initial-delay 0))
+
   :config
   (bind-keys
    :map isearch-mode-map
@@ -60,10 +61,11 @@
   :ensure t
   :config
   (progn
-    (setq avy-style 'at-full
-          avy-background t
-          avy-all-windows t
-          avy-timeout-seconds 0.35)
+    (validate-setq
+     avy-style 'at-full
+     avy-background t
+     avy-all-windows t
+     avy-timeout-seconds 0.35)
     ;; Use C-' in isearch to bring up avy
     (avy-setup-default)))
 
