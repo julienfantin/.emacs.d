@@ -3,8 +3,9 @@
 # key: defui
 # binding: direct-keybinding
 # --
-(defui $1
-  static om/IQueryParams
-  (params [this] {})
+(ui
+  static om/Ident
+  (ident [_ {:keys [${1::db/id}]}] [:db/id id])
   static om/IQuery
-  (query [this] []))
+  (query [this] [$1]))
+$0

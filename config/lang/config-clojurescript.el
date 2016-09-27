@@ -28,6 +28,7 @@
 (after 'clojure-mode
   (define-clojure-indent
     (defui '(1 nil (1)))
+    (ui '(0 nil (1)))
     (dom/a 1)
     (dom/abbr 1)
     (dom/address 1)

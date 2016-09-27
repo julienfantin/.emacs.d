@@ -7,4 +7,8 @@
   static om/IQueryParams
   (params [this] {})
   static om/IQuery
-  (query [this] []))
+  (query [this] [])
+  Object
+  (render [this]
+    (html
+      [:pre "%1:" (om/props this)])))
