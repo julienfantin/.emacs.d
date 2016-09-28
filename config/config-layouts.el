@@ -48,7 +48,7 @@
   :defer t
   :init (after-init #'eyebrowse-mode)
   :config
-  (setq eyebrowse-switch-back-and-forth t))
+  (validate-setq eyebrowse-switch-back-and-forth t))
 
 
 ;; * persp-mode
@@ -62,10 +62,12 @@
   :functions (config-layouts--autosave config-layouts--sync-last-layout)
   :config
   (progn
-    (setq persp-nil-name "default"
-          persp-auto-resume-time (if config-layouts-restore-on-init 0.01 0)
-          persp-reset-windows-on-nil-window-conf nil
-          persp-set-last-persp-for-new-frames nil)
+    (validate-setq
+     persp-lighter nil
+     persp-nil-name ".emacs.d"
+     persp-auto-resume-time (if config-layouts-restore-on-init .01 .0)
+     persp-reset-windows-on-nil-window-conf nil
+     persp-set-last-persp-for-new-frames nil)
     ;; Ensures the auto-save file is created or persp-mode will error
     (when config-layouts-restore-on-init
       (let ((file (expand-file-name persp-auto-save-fname persp-save-dir)))
@@ -153,22 +155,43 @@ If the perspective doesn't have a workspace, create one."
     "Run `config-layouts-after-find-file-hook'."
     (run-hooks 'config-layouts-after-find-file-hook))
   (advice-add 'find-file :after 'config-layouts-after-find-file-advice)
-  (with-temp-buffer
-    (eval
-     '(def-auto-persp "projectile"
-        :parameters '((dont-save-to-file . t))
-        :hooks '(config-layouts-after-find-file-hook)
-        :switch 'frame
-        :predicate
-        #'(lambda (buffer)
-            (and (buffer-file-name buffer) (projectile-project-p)))
-        :get-name-expr
-        #'(lambda ()
-            (abbreviate-file-name (projectile-project-root))))))
+  (def-auto-persp "projectile"
+    :parameters '((dont-save-to-file . t))
+    :hooks '(config-layouts-after-find-file-hook)
+    :switch 'frame
+    :predicate
+    #'(lambda (buffer)
+        (and (buffer-file-name buffer) (projectile-project-p)))
+    :get-name-expr
+    #'(lambda ()
+        (abbreviate-file-name (projectile-project-root))))
+
   (setq persp-add-buffer-on-find-file 'if-not-autopersp)
+
   (add-hook 'persp-after-load-state-functions
             #'(lambda (&rest _args)
                 (persp-auto-persps-pickup-buffers)) t))
+
+(defvar after-find-file-hook nil)
+(advice-add 'find-file :after (lambda (&rest args) (run-hooks 'after-find-file-hook)))
+
+;; https://github.com/Bad-ptr/persp-mode.el/issues/40
+
+;; (after (projectile persp-mode)
+;;   (defvar config-layouts-after-find-file-hook nil)
+;;   (def-auto-persp "projectile"
+;;     :parameters '((dont-save-to-file . t))
+;;     :hooks '(config-layouts-after-find-file-hook)
+;;     :switch 'frame
+;;     :predicate
+;;     (lambda (_buffer)
+;;       (when (and (buffer-file-name) (projectile-project-p))
+;;         (switch-to-buffer (other-buffer))
+;;         t))
+;;     :get-name-expr
+;;     (lambda ()
+;;       (abbreviate-file-name (projectile-project-root)))))
+
 
 
 ;; * Commands

@@ -47,7 +47,7 @@
     (validate-setq
      show-paren-style 'expression
      show-paren-priority 1000
-     show-paren-delay 0.1)
+     show-paren-delay 0.05)
     (add-hook 'activate-mark-hook #'(lambda () (show-paren-mode -1)))
     (add-hook 'deactivate-mark-hook #'(lambda () (show-paren-mode 1)))
     (after 'pulse-eval
