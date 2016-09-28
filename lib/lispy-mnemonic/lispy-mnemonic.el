@@ -366,9 +366,6 @@ This command preserves the point position."
     (define-key map (kbd "M-q") #'lispy-fill) ; fill-paragraph
     (define-key map (kbd "C-j") #'lispy-newline-and-indent)
     (define-key map (kbd "RET") #'lispy-alt-line)
-    ;; tags
-    (define-key map (kbd "M-.") #'lispy-goto-symbol) ; xref-find
-    (define-key map (kbd "M-,") #'pop-tag-mark)      ; xref-pop
     ;; pairs
     (define-key map (kbd "(") #'lispy-parens)
     (define-key map (kbd ")") #'lispy-right-nostring)
@@ -411,6 +408,8 @@ This command preserves the point position."
     (define-key map (kbd "C-M-c") #'lispy-convolute)
 
     (define-key map (kbd "C-x C-o") #'lispy-delete-blank-lines)
+    ;; (define-key map (kbd "<tab>") #'lispy-indent-adjust-parens)
+    ;; (define-key map (kbd "S-<tab>") #'lispy-dedent-adjust-parens)
 
     ;; (define-key map (kbd "C-.")    'lispy-kill-at-point)
     ;; (define-key map (kbd "C-1")    'lispy-string-oneline)
