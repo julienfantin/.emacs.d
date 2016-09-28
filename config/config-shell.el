@@ -41,11 +41,7 @@
 (use-package eshell
   :defer t
   :config
-  (progn
-    (validate-setq
-     eshell-scroll-to-bottom-on-output t
-     eshell-scroll-show-maximum-output t)
-    (add-hook 'eshell-mode-hook #'paredit-mode)))
+  (add-hook 'eshell-mode-hook #'paredit-mode))
 
 (use-package esh-mode
   :defer t
@@ -65,7 +61,11 @@
       (eshell/clear t)
       (eshell-send-input)))
   :config
-  (add-hook 'eshell-mode-hook (lambda () (bind-key "C-l" #'eshell/clear! eshell-mode-map))))
+  (progn
+    (validate-setq
+     eshell-scroll-to-bottom-on-output 'this
+     eshell-scroll-show-maximum-output t)
+    (add-hook 'eshell-mode-hook (lambda () (bind-key "C-l" #'eshell/clear! eshell-mode-map)))))
 
 (use-package em-unix
   :defer t

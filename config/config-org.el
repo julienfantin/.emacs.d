@@ -77,7 +77,7 @@
   :config
   (progn
     (validate-setq
-     org-log-done t
+     org-log-done 'time
      org-src-window-setup 'current-window
      org-src-fontify-natively t
      org-startup-indented t
@@ -87,11 +87,12 @@
      org-fontify-quote-and-verse-blocks t
      org-use-fast-tag-selection t
      org-use-speed-commands t
-     org-speed-commands-user
-     '(("N" . org-shiftmetadown)
-       ("P" . org-shiftmetaup)
-       ("F" . org-shiftmetaright)
-       ("B" . org-shiftmetaleft)))
+     ;; org-speed-commands-user
+     ;; '(("N" . org-shiftmetadown)
+     ;;   ("P" . org-shiftmetaup)
+     ;;   ("F" . org-shiftmetaright)
+     ;;   ("B" . org-shiftmetaleft))
+     )
     (config-org-add-structure-templates)
     (config-org-load-languages)))
 
