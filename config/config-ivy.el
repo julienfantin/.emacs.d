@@ -35,9 +35,9 @@
   :commands (ivy-set-actions)
   :config
   (progn
-    (setq
+    (validate-setq
      ivy-initial-inputs-alist nil
-     ivy-re-builders-alist '((t . ivy--regex-ignore-order))
+     ivy-re-builders-alist '((t . ivy--regex-plus))
      ivy-use-virtual-buffers t)))
 
 (use-package counsel
