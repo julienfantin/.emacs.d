@@ -57,40 +57,6 @@
   :group 'duotone
   :type 'duotone-palette)
 
-(defcustom duotone-palette-arch-light
-  (make-instance
-   'duotone-palette
-   :fg       (chroma-hex :hex "#272a34")
-   :bg       (chroma-hex :hex "#f4f5f6")
-   :uno-1    (chroma-hex :hex "#14151a")
-   :uno-2    (chroma-hex :hex "#272a34")
-   :uno-3    (chroma-hex :hex "#343a46")
-   :uno-4    (chroma-hex :hex "#828996")
-   :duo-1    (chroma-hex :hex "#437fdc")
-   :duo-2    (chroma-hex :hex "#5a92e3")
-   :duo-3    (chroma-hex :hex "#757c8e")
-   :accent   (chroma-hex :hex "#437fdc"))
-  "Mono dark palette."
-  :group 'duotone
-  :type 'duotone-palette)
-
-(defcustom duotone-palette-arch-dark
-  (make-instance
-   'duotone-palette
-   :fg       (chroma-hex :hex "#ffffff")
-   :bg       (chroma-hex :hex "#13141A")
-   :uno-1    (chroma-hex :hex "#ffffff")
-   :uno-2    (chroma-hex :hex "#C0C1C2")
-   :uno-3    (chroma-hex :hex "#AAABAC")
-   :uno-4    (chroma-hex :hex "#848381")
-   :duo-1    (chroma-hex :hex "#6297FF")
-   :duo-2    (chroma-hex :hex "#6496E5")
-   :duo-3    (chroma-hex :hex "#4D71B1")
-   :accent   (chroma-hex :hex "#FFDC00"))
-  "Mono dark palette."
-  :group 'duotone
-  :type 'duotone-palette)
-
 (defcustom duotone-palette-mono-light
   (make-instance
    'duotone-palette
@@ -118,6 +84,56 @@
    :duo-1    (chroma-hex :hex "#aaa")
    :duo-2    (chroma-hex :hex "#999")
    :duo-3    (chroma-hex :hex "#777")
+   :accent   (chroma-hex :hex "#DEDA5C"))
+  "Mono light palette."
+  :group 'duotone
+  :type 'duotone-palette)
+
+;; (defcustom duotone-palette-mono-dark
+;;   (make-instance
+;;    'duotone-palette
+;;    :bg       (chroma-hex :hex "#0F0F0F")
+;;    :uno-1    (chroma-hex :hex "#FFFFFF")
+;;    :uno-2    (chroma-hex :hex "#D7DCDE")
+;;    :uno-3    (chroma-hex :hex "#DEE0E0")
+;;    :uno-4    (chroma-hex :hex "#D9D9D9")
+;;    :duo-1    (chroma-hex :hex "#D7DCDE")
+;;    :duo-2    (chroma-hex :hex "#DEE0E0")
+;;    :duo-3    (chroma-hex :hex "#D9D9D9")
+;;    :accent   (chroma-hex :hex "#DEDA5C"))
+;;   "Mono light palette."
+;;   :group 'duotone
+;;   :type 'duotone-palette)
+
+(defcustom duotone-palette-fiat-light
+  (make-instance
+   'duotone-palette
+   :fg       (chroma-hex :hex "#2c3e50")
+   :bg       (chroma-hex :hex "#F6fdfd")
+   :uno-1    (chroma-hex :hex "#d12089")
+   :uno-2    (chroma-hex :hex "#2980b9")
+   :uno-3    (chroma-hex :hex "#1F6491")
+   :uno-4    (chroma-hex :hex "#bdc3c7")
+   :duo-1    (chroma-hex :hex "#6e5494")
+   :duo-2    (chroma-hex :hex "#1C587F")
+   :duo-3    (chroma-hex :hex "#34495e")
+   :accent   (chroma-hex :hex "#DEDA5C"))
+  "Mono light palette."
+  :group 'duotone
+  :type 'duotone-palette)
+
+(defcustom duotone-palette-fiat-dark
+  (make-instance
+   'duotone-palette
+   :fg       (chroma-hex :hex "#F6fdfd")
+   :bg       (chroma-hex :hex "#2c3e50")
+   :uno-1    (chroma-hex :hex "#E92299")
+   :uno-2    (chroma-hex :hex "#32A5F2")
+   :uno-3    (chroma-hex :hex "#217EBE")
+   :uno-4    (chroma-hex :hex "#bdc3c7")
+   :duo-1    (chroma-hex :hex "#1F8BD3")
+   :duo-2    (chroma-hex :hex "#9270C4")
+   :duo-3    (chroma-hex :hex "#57769A")
    :accent   (chroma-hex :hex "#DEDA5C"))
   "Mono light palette."
   :group 'duotone
@@ -260,25 +276,6 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
-(defcustom duotone-palette-blessed-light
-  (make-instance
-   'duotone-palette
-   :uno      195
-   :fg       '(.58 .1)
-   :uno-1    '(.76 .1)
-   :uno-2    '(.58 .24)
-   :uno-3    '(.34 .54)
-   :uno-4    '(.16 .66)
-   :duo      310
-   :duo-1    '(.92 .28)
-   :duo-2    '(.46 .52)
-   :duo-3    '(.6 .7)
-   :bg       '(.33 .97)
-   :accent   '(.80 .60))
-  "Duotone palette blessed-light."
-  :group 'duotone
-  :type 'duotone-palette)
-
 (defcustom duotone-palette-watch-light
   (make-instance
    'duotone-palette
@@ -344,36 +341,34 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
-(defcustom duotone-palette-light-rose
+(defcustom duotone-palette-vimsical-light
   (make-instance
    'duotone-palette
-   :bg       (chroma-hex :hex "#E8E1DD")
-   :fg       (chroma-hex :hex "#2F0028")
-   :uno-1    (chroma-hex :hex "#07004F")
-   :uno-2    (chroma-hex :hex "#190038")
-   :uno-3    (chroma-hex :hex "#25003A")
-   :uno-4    (chroma-hex :hex "#2F0028")
-   :duo-1    (chroma-hex :hex "#7A004A")
-   :duo-2    (chroma-hex :hex "#610044")
-   :duo-3    (chroma-hex :hex "#470038")
-   :accent   (chroma-hex :hex "#981C1C"))
+   :bg       (chroma-hex :hex "#FFFFFF")
+   :fg       (chroma-hex :hex "#3b3b47")
+   :uno-1    (chroma-hex :hex "#3b3b47")
+   :uno-2    (chroma-hex :hex "#24a1e6")
+   :uno-3    (chroma-hex :hex "#7c7f8c")
+   :uno-4    (chroma-hex :hex "#7c7f8c")
+   :duo-1    (chroma-hex :hex "#ec6d49")
+   :duo-2    (chroma-hex :hex "#efb434")
+   :duo-3    (chroma-hex :hex "#7c7f8c")
+   :accent   (chroma-hex :hex "#E54F50"))
   "Duotone palette based on Nicolas Petton Emacs website."
   :group 'duotone
   :type 'duotone-palette)
 
-
 (defcustom duotone-palette-default-palettes
-  '(duotone-palette-arch-dark
-    duotone-palette-arch-light
+  '(
     duotone-palette-amethyst-dark
-    duotone-palette-blessed-light
     duotone-palette-blue-dark
     duotone-palette-candid-light
-    duotone-palette-light-rose
     duotone-palette-duotone-dark
     duotone-palette-duotone-light
     duotone-palette-earth-dark
     duotone-palette-emacs-light
+    duotone-palette-fiat-dark
+    duotone-palette-fiat-light
     duotone-palette-mono-dark
     duotone-palette-mono-light
     duotone-palette-newspaper-light
@@ -382,7 +377,9 @@ https://github.com/simurai/duotone-dark-sea-syntax."
     duotone-palette-space-dark
     duotone-palette-stark-sea
     duotone-palette-two-watch-dark
-    duotone-palette-watch-light)
+    duotone-palette-vimsical-light
+    duotone-palette-watch-light
+    )
   "Duotone default palettes."
   :group 'duotone
   :type 'list)
