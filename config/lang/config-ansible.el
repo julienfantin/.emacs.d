@@ -26,18 +26,32 @@
 (require 'use-config)
 (require 'config-yaml)
 
+
 (use-package ansible
   :ensure t
   :defer t
   :after yaml-mode
   :mode
-  (("ansible/group_vars/.*" . yaml-mode)
-   ("ansible/host_vars/.*"  . yaml-mode))
-  :init
-  (after 'yaml-mode
-    (add-hook 'yaml-mode-hook #'ansible))
-  (after (yaml-mode yasnippet)
-    (ansible::snippets-initialize)))
+  (("group_vars/.*" . yaml-mode)
+   ("host_vars/.*"  . yaml-mode))
+  :init (add-hook 'yaml-mode-hook #'ansible)
+  :config
+  (progn
+    (defun config-devops-ansible-prog ()
+      (run-hooks 'prog-mode-hook))
+    (add-hook 'ansible-hook 'config-devops-ansible-prog)
+    (after yasnippet
+      (ansible::snippets-initialize))
+    ;; Ansible vault
+    (defvar config-devops-vault-pass-filename ".vault_pass")
+    (defun config-devops-locate-vault-pass-file ()
+      "Locate `config-devops-vault-pass-filename` from the current directory."
+      (when-let ((dir (locate-dominating-file "." config-devops-vault-pass-filename)))
+        (expand-file-name config-devops-vault-pass-filename dir)))
+    (defun config-devops-set-ansible-vault-pass ()
+      (validate-setq ansible::vault-password-file (config-devops-locate-vault-pass-file)))
+    (add-hook 'ansible-hook 'config-devops-set-ansible-vault-pass)
+    (add-hook 'ansible-hook 'ansible::auto-decrypt-encrypt)))
 
 (use-package jinja2-mode
   :ensure t
@@ -45,11 +59,16 @@
 
 (use-package ansible-doc
   :ensure t
+  :defer t
   :after ansible
-  :init (add-hook 'ansible::hook #'ansible-doc-mode))
+  :init (add-hook 'ansible::hook #'ansible-doc-mode)
+  :config
+  (progn
+    (bind-key "C-c C-d d" 'ansible-doc ansible-doc-mode-map)))
 
 (use-package company-ansible
   :ensure t
+  :defer t
   :after ansible
   :init
   (after config-completion
