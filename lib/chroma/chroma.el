@@ -95,6 +95,10 @@
   (with-slots (h s l) c
     (make-instance 'chroma-hsl :h h :s s :l l)))
 
+(cl-defmethod chroma-clone ((c chroma-rgb))
+  (with-slots (r g b) c
+    (make-instance 'chroma-rgb :r r :g g :b b)))
+
 ;; *** Cielab
 
 (defclass chroma-cielab (chroma)

@@ -21,7 +21,7 @@
     (clojure-mode      . clojurescript-mode)
     (lfe-mode          . lfe-mode)
     (inferior-lfe-mode . inferior-lfe))
-  "Alist of file to mode symbol.")
+  "Alist mapping the name of an elisp file  file to mode symbol.")
 
 (defcustom lisp-minor-mode-prettify-symbols-alist
   '((t

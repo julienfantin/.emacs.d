@@ -26,7 +26,6 @@
 (require 'use-config)
 (require 'config-path)
 
-
 ;; * Defaults
 
 (setq-default fill-column 80)

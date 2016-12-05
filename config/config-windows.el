@@ -30,6 +30,7 @@
 
 (use-package ace-window
   :ensure t
+  :commands (aw-window-list)
   :defer t
   :config
   (setq aw-keys '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0)

@@ -36,7 +36,7 @@
 (use-package js
   :defer t
   :config
-  (setq js-indent-level config-web-default-indent))
+  (validate-setq js-indent-level config-web-default-indent))
 
 
 ;; * Packages
@@ -55,13 +55,14 @@
       (add-hook 'web-mode-hook #'aggressive-indent-mode))
     (after 'paredit
       (add-hook 'web-mode-hook #'paredit-mode))
-    (setq web-mode-markup-indent-offset config-web-default-indent
-          web-mode-css-indent-offset config-web-default-indent
-          web-mode-code-indent-offset config-web-default-indent
-          web-mode-enable-auto-pairing t
-          web-mode-enable-css-colorization t
-          web-mode-enable-current-element-highlight t
-          web-mode-enable-current-column-highlight t)))
+    (validate-setq
+     web-mode-markup-indent-offset config-web-default-indent
+     web-mode-css-indent-offset config-web-default-indent
+     web-mode-code-indent-offset config-web-default-indent
+     web-mode-enable-auto-pairing t
+     web-mode-enable-css-colorization t
+     web-mode-enable-current-element-highlight t
+     web-mode-enable-current-column-highlight t)))
 
 (use-package company-web
   :ensure t

@@ -28,16 +28,6 @@
   (require 'cl-lib))
 
 
-;; * Builtins
-
-(use-package uniquify
-  :init
-  (validate-setq
-   uniquify-buffer-name-style 'reverse
-   uniquify-separator " • "
-   uniquify-after-kill-buffer-p t
-   uniquify-ignore-buffers-re "^\\*"))
-
 
 ;; * Commands
 

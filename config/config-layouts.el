@@ -63,7 +63,6 @@
   :config
   (progn
     (validate-setq
-     persp-lighter nil
      persp-nil-name ".emacs.d"
      persp-auto-resume-time (if config-layouts-restore-on-init .01 .0)
      persp-reset-windows-on-nil-window-conf nil
