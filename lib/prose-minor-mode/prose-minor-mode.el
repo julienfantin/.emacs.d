@@ -24,7 +24,7 @@
 
 (defvar prose-minor-mode-line-spacing-default line-spacing)
 
-(defcustom prose-minor-mode-variable-pitch t
+(defcustom prose-minor-mode-variable-pitch nil
   "Variable pitch flag."
   :type 'boolean
   :group 'prose)
