@@ -68,8 +68,8 @@
 (use-package use-config :demand t)
 (use-package private :demand t)
 
+(use-config config-theme)
 (use-config config-path :demand t)
-
 (use-config config-browser)
 (use-config config-buffers)
 (use-config config-completion)
@@ -90,7 +90,7 @@
 (use-config config-ivy :if (equal 'ivy config-completion-system))
 (use-config config-layouts)
 (use-config config-marks)
-(use-config config-modeline)
+;; (use-config config-modeline)
 (use-config config-org)
 (use-config config-outlines)
 (use-config config-parsers)
@@ -102,11 +102,11 @@
 (use-config config-search)
 (use-config config-sexp)
 (use-config config-shell)
-(use-config config-theme)
 (use-config config-windows)
 
 ;; ** Langs
 
+(use-config config-ansible)
 (use-config config-cl)
 (use-config config-clojure)
 (use-config config-clojurescript)
