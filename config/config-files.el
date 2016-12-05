@@ -65,12 +65,19 @@
   :init (after-init #'super-save-mode)
   :config
   (progn
+    (defun config-files--create-buffer-file-parent-directories ()
+      (when buffer-file-name
+        (let ((dir (file-name-directory buffer-file-name)))
+          (when (and (not (file-exists-p dir))
+                     (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
+            (make-directory dir t)))))
     (setq-default save-silently t)
     (add-to-list 'super-save-triggers "ace-window")
     (add-to-list 'super-save-triggers "eyebrowse-switch-to-window-config")
     (add-to-list 'super-save-triggers "persp-switch")
     (add-to-list 'super-save-triggers "completing-read")
-    (add-to-list 'super-save-triggers "ivy--read")))
+    (add-to-list 'super-save-triggers "ivy--read")
+    (add-hook 'before-save-hook 'config-files--create-buffer-file-parent-directories)))
 
 (use-package dired-hacks-utils
   :ensure t
