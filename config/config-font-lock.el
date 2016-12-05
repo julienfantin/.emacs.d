@@ -36,6 +36,10 @@
   (defun config-font-lock-set-page-break-line-height ()
     "Fix interaction with company overlay.
   https://github.com/purcell/page-break-lines/issues/3"
+    (set-fontset-font
+     "fontset-default"
+     (cons page-break-lines-char page-break-lines-char)
+     (face-attribute 'default :family))
     (set-face-attribute
      'page-break-lines nil
      :height (face-attribute 'default :height nil 'default)))
@@ -48,12 +52,12 @@
     (when (and (bound-and-true-p page-break-lines-mode)
                (config-font-lock-page-break-over-tooltip-p))
       (put 'page-break-lines-mode :config-toggle t)
-      (turn-off-page-break-lines-mode)))
+      (page-break-lines-mode -1)))
   (defun config-font-lock-maybe-turn-on-page-breaks (&optional _)
     (unless (or (bound-and-true-p page-break-lines-mode)
                 (null (get 'page-break-lines-mode :config-toggle)))
       (put 'page-break-lines-mode :config-toggle nil)
-      (turn-on-page-break-lines-mode)))
+      (page-break-lines-mode 1)))
   :config
   (progn
     (add-hook 'page-break-lines-mode-hook #'config-font-lock-set-page-break-line-height)
