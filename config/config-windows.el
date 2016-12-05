@@ -113,7 +113,9 @@
    shackle-default-size 0.38
    shackle-rules
    '(("*Help*" :select t :popup t :align t)
+     ("*Pp Eval Output*" :select t :popup t :align t)
      ("*cider-test-report*" :select t :popup t :align t)
+     ("*cider-result*" :select t)
      ("*cider-result*" :select t))))
 
 
