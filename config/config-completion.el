@@ -29,23 +29,21 @@
 
 ;; * Customs
 
-(defvar config-completion-backends-enable-yasnippet t
+(defvar config-completion-enable-yasnippet t
   "Enable yasnippet for all backends.")
 
 (defvar config-completion-backends-alist
   '((emacs-lisp-mode
      . (company-elisp
         company-files
-        company-dabbrev-code company-keywords))
-    (eshell-mode
-     . (company-files))
-    (cider-mode
-     . (company-capf
-        company-files
-        company-dabbrev-code))))
+        company-dabbrev-code
+        company-keywords
+        company-dabbrev))))
 
 (defvar config-completion--default-backends
-  '(company-files (company-dabbrev-code company-keywords)))
+  '(company-capf
+    company-files
+    (company-dabbrev-code company-keywords)))
 
 
 ;; * Defaults
@@ -76,26 +74,37 @@
   (let* ((existing (map-elt config-completion-backends-alist mode)))
     (map-put config-completion-backends-alist mode (append existing backends))))
 
+(defun config-completion--company-backends ()
+  (cl-reduce
+   (lambda (acc mode)
+     (if-let ((backend (alist-get mode config-completion-backends-alist)))
+         (cons backend acc)
+       acc))
+   (config-completion--enabled-modes)
+   :initial-value (if config-completion-enable-yasnippet '(company-yasnippet) '())))
+
 (use-package company
   :ensure t
   :defer t
-  :commands
-  (company-mode company-complete-common-or-cycle)
+  :commands (company-mode company-complete-common-or-cycle)
   :preface
+  (defun config-completion--enabled-minor-modes ()
+    (cl-remove-if-not
+     (lambda (mode)
+       (and (boundp mode) (symbol-value mode)))
+     minor-mode-list))
+
+  (defun config-completion--enabled-modes ()
+    (cons major-mode (config-completion--enabled-minor-modes)))
+
   (defun config-completion--company-backends ()
-    (append
-     (alist-get major-mode config-completion-backends-alist)
-     (cl-reduce
-      (lambda (acc mode)
-        (if-let ((backend (alist-get mode config-completion-backends-alist)))
-            (cons backend acc)
-          acc))
-      (cl-remove-if-not
-       (lambda (mode)
-         (and (boundp mode) (symbol-value mode)))
-       minor-mode-list)
-      :initial-value
-      (when config-completion-backends-enable-yasnippet '(company-yasnippet)))))
+    (cl-reduce
+     (lambda (acc mode)
+       (if-let ((backend (alist-get mode config-completion-backends-alist)))
+           (cons backend acc)
+         acc))
+     (config-completion--enabled-modes)
+     :initial-value '()))
 
   (defun config-completion-backend-with-yasnippet (backend)
     ;; Avoid double-wrapping
@@ -105,19 +114,19 @@
               '(:with company-yasnippet))))
 
   (defun config-completion-company-turn-on ()
-    (let ((backends (or (config-completion--company-backends) config-completion--default-backends)))
+    (let ((backends (append (config-completion--company-backends) config-completion--default-backends)))
       ;; Set company backends, conditionally enabling yasnippet
-      (setq-local company-backends
-                  (if config-completion-backends-enable-yasnippet
-                      (mapcar #'config-completion-backend-with-yasnippet backends)
-                    backends))
+      (setq company-backends
+            (if config-completion-enable-yasnippet
+                (mapcar #'config-completion-backend-with-yasnippet backends)
+              backends))
       ;; Make smart-tab use company-mode
       (setq-local smart-tab-completion-functions-alist
                   `((,major-mode . company-complete-common)))
       ;; Smart-tab is our completion entry point
       (smart-tab-mode 1)
       (company-mode 1)))
-  :init (add-hook 'prog-mode-hook 'config-completion-company-turn-on t)
+  :init (add-hook 'prog-mode-hook 'config-completion-company-turn-on)
   :config
   (progn
     (bind-key "TAB" #'company-complete-common-or-cycle company-active-map)
@@ -152,7 +161,7 @@
    company-statistics-size 200))
 
 (use-package yasnippet
-  :if config-completion-backends-enable-yasnippet
+  :if config-completion-enable-yasnippet
   :ensure t
   :defer t
   :init (after-init #'yas-global-mode)
