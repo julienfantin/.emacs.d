@@ -198,8 +198,8 @@ hyper when it's used as a modifier."
  :prefix "C-c"
  :infix "f"
  "C-c f" '(counsel-find-file :which-key "find-file")
- "a"     '(counsel-ag :which-key "ag")
  "f"     '(counsel-find-file :which-key "find-file")
+ "r"     '(counsel-rg :which-key "ripgrep")
  "g"     '(counsel-git-grep :which-key "git-grep")
  "p"     '(projectile-find-file :which-key "(projectile) find-file")
  "s"     '(-find-file-as-sudo :which-key "sudo"))
@@ -247,7 +247,8 @@ hyper when it's used as a modifier."
  :prefix "C-c"
  :infix "n"
  "c" '(org-capture :which-key "capture")
- "d" '(deft :which-key "deft"))
+ "d" '(deft :which-key "deft")
+ "p" '(org-projectile:project-todo-completing-read :which-key "project todo"))
 
 ;; ** Term
 
@@ -281,7 +282,7 @@ hyper when it's used as a modifier."
     (windresize-cancel-and-quit)))
 
 (defhydra hydra-windows
-  (:color pink :hint nil :pre (config-keybindings-init-window-modes))
+  (:color blue :hint nil :pre (config-keybindings-init-window-modes))
   ("`" -switch-to-last-window "prev" :exit t)
   ("p"   windmove-up)
   ("n"   windmove-down)

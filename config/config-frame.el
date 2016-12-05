@@ -32,14 +32,13 @@
 (defvar config-frame-width-pct 80)
 (defvar config-frame-height-pct 80)
 (defvar config-frame-text-scale-step 10)
-(defvar config-frame-line-spacing-ratio .1618) ; (round (/ (* height config-frame-line-spacing-ratio) 10))
 
 (defvar config-frame-mono-fonts
-  '("-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+  '("-*-PragmataPro-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1"
+    "-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-Source Code Pro-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-Fira Code-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-Ubuntu Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"))
+    "-*-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"))
 
 
 ;; * Fonts
@@ -52,12 +51,6 @@
 (defun font-exists-p (font)
   "Existing 'FONT' predicate."
   (if (null (x-list-fonts font)) nil t))
-
-(defun config-frame-set-line-spacing ()
-  "Set `line-spacing' relative to the default font size."
-  (let* ((height (face-attribute 'default :height))
-         (value  (/ (* height config-frame-line-spacing-ratio) 10)))
-    (setq-default line-spacing (round value))))
 
 
 ;; * Frame
@@ -102,11 +95,9 @@
   :config
   (progn
     (setq frame-resize-pixelwise t)
-    (menu-bar-mode -1)
     (scroll-bar-mode -1)
     (tool-bar-mode -1)
-    (blink-cursor-mode 1)
-    (config-frame-set-line-spacing)))
+    (blink-cursor-mode -1)))
 
 (use-package mwheel
   :defer t
@@ -123,16 +114,14 @@
   "Increase height of default face by 'CONFIG-FRAME-TEXT-SCALE-STEP'."
   (interactive)
   (let ((old-face-attribute (face-attribute 'default :height)))
-    (set-face-attribute 'default nil :height (+ old-face-attribute 10))
-    (config-frame-set-line-spacing)))
+    (set-face-attribute 'default nil :height (+ old-face-attribute 10))))
 
 ;;;###autoload
 (defun -text-scale-decrease ()
   "Decrease height of default face by 'CONFIG-FRAME-TEXT-SCALE-STEP'."
   (interactive)
   (let ((old-face-attribute (face-attribute 'default :height)))
-    (set-face-attribute 'default nil :height (- old-face-attribute 10))
-    (config-frame-set-line-spacing)))
+    (set-face-attribute 'default nil :height (- old-face-attribute 10))))
 
 ;;;###autoload
 (defun -transparency-increase ()
