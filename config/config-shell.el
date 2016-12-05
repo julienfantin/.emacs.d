@@ -41,7 +41,10 @@
 (use-package eshell
   :defer t
   :config
-  (add-hook 'eshell-mode-hook #'paredit-mode))
+  (after 'counsel
+    (add-hook 'eshell-mode-hook
+              (lambda ()
+                (define-key eshell-mode-map (kbd "M-r") 'counsel-esh-history)))))
 
 (use-package esh-mode
   :defer t

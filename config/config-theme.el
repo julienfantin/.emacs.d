@@ -56,6 +56,7 @@
 ;; * Themes
 
 (use-package theme-sync
+  :disabled t
   :defer t
   :commands theme-sync-mode
   :init (after-init #'theme-sync-mode))
@@ -72,6 +73,21 @@
 (use-package majapahit-theme       :ensure t :defer t)
 (use-package omtose-phellack-theme :ensure t :defer t)
 (use-package foggy-night-theme     :ensure t :defer t)
+
+(use-package customize-theme
+  :load-path "./lib"
+  :config
+  (setq
+   customize-theme-alist
+   `((doom-one
+      . ((show-paren-match
+          . ((t (:foreground nil :inverse-video nil
+                             :background
+                             ,(chroma-to-string
+                               (chroma-blend
+                                (chroma-hex :hex "#51afef")
+                                (chroma-hex :hex "#282c34")
+                                0.8)))))))))))
 
 
 ;; * Theme definition helpers

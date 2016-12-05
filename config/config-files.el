@@ -49,6 +49,14 @@
     (validate-setq dired-auto-revert-buffer t)
     (add-hook 'dired-mode-hook 'dired-hide-details-mode)))
 
+(use-package dired-k
+  :ensure t
+  :defer t
+  :config
+  (progn
+    (add-hook 'dired-initial-position-hook 'dired-k)
+    (add-hook 'dired-after-readin-hook #'dired-k-no-revert)))
+
 (use-package ls-lisp
   :after dired
   :config

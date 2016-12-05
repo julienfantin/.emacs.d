@@ -32,7 +32,8 @@
 (use-package elisp-mode
   :defer t
   :config
-  (bind-key "C-c C-k" #'-eval-buffer emacs-lisp-mode-map))
+  (bind-key "C-c C-k" #'-eval-buffer emacs-lisp-mode-map)
+  (bind-key "C-c C-p" #'pp-eval-last-sexp emacs-lisp-mode-map))
 
 (after (simple paredit)
   (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
@@ -63,10 +64,11 @@
   :commands (nameless-insert-name)
   :config
   (bind-key "C-c C--" #'nameless-insert-name emacs-lisp-mode-map)
-  (setq nameless-affect-indentation-and-filling nil
-        ;; the : prefix makes it hard to distinguish between function calls and
-        ;; plists
-        nameless-prefix "/"))
+  (validate-setq
+   nameless-affect-indentation-and-filling nil
+   ;; the : prefix makes it hard to distinguish between function calls and
+   ;; plists
+   nameless-prefix "/"))
 
 (use-package sotlisp
   :ensure t

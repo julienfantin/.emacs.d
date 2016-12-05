@@ -28,7 +28,7 @@
 ;; * Customs
 
 (defvar config-prose-enable-prose-spell-checking t)
-(defvar config-prose-enable-code-spell-checking nil)
+(defvar config-prose-enable-code-spell-checking t)
 
 
 ;; * Spell-checking
@@ -75,7 +75,7 @@
         (flyspell-prog-mode))
        ((and config-prose-enable-prose-spell-checking (bound-and-true-p prose-minor-mode))
         (flyspell-mode))))
-    (setq
+    (validate-setq
      ;; Save corrections
      flyspell-abbrev-p t
      flyspell-issue-welcome-flag nil
@@ -87,6 +87,15 @@
 (use-package flyspell-lazy
   :ensure t
   :init (after 'flyspell (flyspell-lazy-mode 1)))
+
+(use-package flyspell-correct
+  :ensure t
+  :config
+  (use-package flyspell-correct-ivy
+    :ensure t
+    :config
+    (define-key flyspell-mode-map
+      (kbd "C-c $") 'flyspell-correct-previous-word-generic)))
 
 
 ;; * Prose minor mode
@@ -115,6 +124,13 @@
   :init
   (after 'prose-minor-mode
     (add-hook 'prose-minor-mode-hook #'writegood-mode)))
+
+(use-package artbollocks-mode
+  :ensure t
+  :defer t
+  :init
+  (after 'prose-minor-mode
+    (add-hook 'prose-minor-mode-hook #'artbollocks-mode)))
 
 
 ;; * Major modes
