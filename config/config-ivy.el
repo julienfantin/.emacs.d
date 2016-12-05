@@ -83,9 +83,8 @@ This uses `counsel-ag' with `counsel-rg-base-command' replacing
 (use-package counsel-projectile
   :ensure t
   :defer t
-  :init
-  (after 'projectile
-    (counsel-projectile-on)))
+  :after projectile
+  :init (counsel-projectile-on))
 
 (provide 'config-ivy)
 ;;; config-ivy.el ends here

@@ -41,7 +41,6 @@
      projectile-enable-caching nil
      projectile-cache-file (user-var-file "projectile.cache")
      projectile-known-projects-file (user-var-file "projectile-bookmarks.el")
-     projectile-completion-system 'ivy
      projectile-use-git-grep t
      projectile-create-missing-test-files t
      projectile-globally-ignored-directories
