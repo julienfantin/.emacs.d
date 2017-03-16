@@ -110,13 +110,15 @@
   :init (after-init #'shackle-mode)
   :config
   (validate-setq
-   shackle-default-size 0.38
+   shackle-default-size 0.3
    shackle-rules
    '(("*Help*" :select t :popup t :align t)
      ("*Pp Eval Output*" :select t :popup t :align t)
      ("*cider-test-report*" :select t :popup t :align t)
      ("*cider-result*" :select t)
-     ("*cider-result*" :select t))))
+     ("*cider-result*" :select t)
+     ("*cider-repl*" :select t)
+     ("\*cider-repl.+" :select t :regexp t :align 'bottom))))
 
 
 ;; * Commands
