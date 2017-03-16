@@ -33,6 +33,15 @@
 
 ;; * Spell-checking
 
+(use-package guess-language
+  :disabled t
+  :ensure t
+  :defer t
+  :after prose-mode
+  :config
+  (after 'prose-minor-mode
+    (add-hook 'prose-minor-mode-hook 'guess-language-mode)))
+
 (use-package ispell
   :defer t
   :config
