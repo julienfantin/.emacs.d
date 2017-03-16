@@ -61,19 +61,7 @@
       "Load languages from 'conf-org-babel-languages'."
       (thread-last conf-org-babel-languages
         (cl-mapcar (lambda (mode) `(,mode . t)))
-        (org-babel-do-load-languages 'org-babel-load-languages)))
-    (defun config-org-capture-templates ()
-      "Capture templates according to 'config-org-user-directory'."
-      `(("d" "Dev dump"
-         entry
-         (file ,(expand-file-name "dev.org" config-org-user-directory))
-         "* %?\n  %i\n %a"
-         :kill-buffer  t)
-        ("n" "Journal"
-         entry
-         (file ,(expand-file-name "journal.org" config-org-user-directory))
-         "* %U\n %?i\n %a"
-         :kill-buffer t))))
+        (org-babel-do-load-languages 'org-babel-load-languages))))
   :config
   (progn
     (validate-setq
@@ -103,9 +91,7 @@
 (use-package org-capture
   :defer t
   :config
-  (validate-setq
-   org-reverse-note-order t
-   org-capture-templates (config-org-capture-templates)))
+  (validate-setq org-reverse-note-order t))
 
 
 ;; * Packages
