@@ -64,6 +64,10 @@
     (validate-setq save-abbrevs 'silently)
     (quietly-read-abbrev-file)))
 
+;; ** Mini-buffer
+
+(setq history-length most-positive-fixnum)
+
 
 ;; * Company
 

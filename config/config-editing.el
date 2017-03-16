@@ -68,6 +68,13 @@
   :init (after-init #'global-undo-tree-mode))
 
 
+;; * Builtins
+
+(use-package simple
+  :config
+  (setq kill-ring-max most-positive-fixnum))
+
+
 ;; * Commands
 
 ;;;###autoload
