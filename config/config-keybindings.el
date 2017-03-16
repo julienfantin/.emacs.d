@@ -67,7 +67,11 @@
 ;; ** Hyper remapping
 
 (defvar config-keybindings-keys
-  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-=[]{};'\\:\"|,./<>?`~+")
+  (cl-list*
+   "<tab>"
+   "RET"
+   (string-to-list
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-=[]{};'\\:\"|,./<>?`~+")))
 
 (defun config-keybindings-remap-hyper-to-C-c ()
   "Remap Hyper single-key bindings to C-c.
@@ -75,8 +79,8 @@
 This allows quicker access to user-defined mappings, and enables
 different hardware remapping tricks like treating the spacebar as
 hyper when it's used as a modifier."
-  (dolist (char (string-to-list config-keybindings-keys))
-    (let ((s (char-to-string char)))
+  (dolist (key config-keybindings-keys)
+    (let ((s (if (integerp key) (char-to-string key) key)))
       (define-key input-decode-map
         (kbd (format "H-%s" s))
         (kbd (format "C-c %s" s))))))
@@ -283,7 +287,8 @@ hyper when it's used as a modifier."
 
 (defhydra hydra-windows
   (:color blue :hint nil :pre (config-keybindings-init-window-modes))
-  ("`" -switch-to-last-window "prev" :exit t)
+  ("<tab>" -switch-to-last-window "last" :exit t)
+  ("C-c w" -switch-to-last-window "last" :exit t)
   ("p"   windmove-up)
   ("n"   windmove-down)
   ("f"   windmove-right)
@@ -314,7 +319,7 @@ hyper when it's used as a modifier."
 
 (general-define-key
  :prefix "C-c"
- "`" '(-switch-to-last-window :which-key "window-last")
+ "TAB" '(-switch-to-last-window :which-key "window-last")
  "1" '(aw-switch-to-window-1 :which-key "window-1")
  "2" '(aw-switch-to-window-2 :which-key "window-2")
  "3" '(aw-switch-to-window-3 :which-key "window-3")
