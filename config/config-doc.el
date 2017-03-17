@@ -60,6 +60,7 @@
 (defvar config-completion-system)       ; silence warning
 
 (use-package counsel-dash
+  :disabled t
   :if (eq config-completion-system 'ivy)
   :ensure t
   :defer t

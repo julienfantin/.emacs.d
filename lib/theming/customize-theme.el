@@ -7,7 +7,7 @@
 
 (defcustom customize-theme-alist '()
   "Alist of theme to custom faces."
-  :group 'theming
+  :group 'customize-themes
   :type 'alist)
 
 ;;;###autoload

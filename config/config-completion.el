@@ -129,7 +129,7 @@
                   `((,major-mode . company-complete-common)))
       ;; Smart-tab is our completion entry point
       (smart-tab-mode 1)
-      (company-mode 1)))
+      (company-mode -1)))
   :init (add-hook 'prog-mode-hook 'config-completion-company-turn-on)
   :config
   (progn

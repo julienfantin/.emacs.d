@@ -61,8 +61,9 @@
   (validate-setq magit-save-repository-buffers 'dontask))
 
 (use-package magithub
+  :disabled t
   :ensure t
-  :defer t)
+  :after magit)
 
 (use-package diff-hl
   :ensure t

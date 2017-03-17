@@ -75,9 +75,10 @@
 (use-package foggy-night-theme     :ensure t :defer t)
 
 (use-package customize-theme
+  :disabled t
   :load-path "./lib"
   :config
-  (setq
+  (validate-setq
    customize-theme-alist
    `((doom-one
       . ((show-paren-match
