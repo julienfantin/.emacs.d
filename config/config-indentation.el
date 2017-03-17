@@ -79,7 +79,7 @@
   :defer t
   :preface
   (defun config-indentation-aggressive-indent-skip-p ()
-    "Return false if the current defun is longer than
+    "Return true if the current defun is longer than
 'config-indentation-aggressive-indent-max-lines'."
     (save-excursion
       (ignore-errors
