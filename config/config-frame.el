@@ -34,9 +34,7 @@
 (defvar config-frame-text-scale-step 10)
 
 (defvar config-frame-mono-fonts
-  '("-*-PragmataPro-normal-normal-normal-*-12-*-*-*-m-0-iso10646-1"
-    "-*-Consolas-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-Source Code Pro-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+  '("-*-Source Code Pro-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-Fira Code-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"))
 
