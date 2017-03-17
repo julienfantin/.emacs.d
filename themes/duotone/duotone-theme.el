@@ -231,9 +231,9 @@ Remap all faces when called with a prefix argument."
            (,(theme-faces-match '("highlight" "warning" "error" "mode-line" "lazy" "number"))
             ((t (:b ,(chroma-blend bg uno-1 sblend)))))
            ;;
-           ;; Fringes
-           (,(theme-faces-match "diff-hl" "git-gutter" "border" "fringe")
-            ((t (:f ,uno-4 :b ,bg))))
+           ;; Fringe elements
+           (,(theme-faces-match "diff-hl" "git-gutter" "border")
+            ((t (:f ,uno-3 :b ,bg))))
            ;;
            ;; Diff
            (,(theme-faces-match '("removed" "indicator") "delete")
@@ -289,14 +289,16 @@ Remap all faces when called with a prefix argument."
            ;;
            (default                                    ((t (:f ,fg :b ,bg))))
            (fixed-pitch                                ((t (:font-family nil))))
-           (fringe  ((t (:f ,fg-sfade :b ,bg-sfade))))
+           (fringe                                     ((t (:f ,fg-sfade :b ,bg-fade))))
            (cursor                                     ((t (:f ,accent :b ,uno-1))))
            (region                                     ((t (:b ,(chroma-blend uno-2 bg blend)))))
            (match                                      ((t (:f ,bg :b ,accent))))
            (ansible::task-label-face                   ((t (:f ,duo-2))))
+           (hl-sexp-face                               ((t (:b ,bg-sfade))))
            (highlight-numbers-number                   ((t (:f ,duo-1))))
            (org-table                                  ((t (:f ,uno-3 :b ,(chroma-blend bg uno-3 0.03)))))
-           (org-level-1 ((t (:weight bold))))
+           (org-level-1                                ((t (:weight semibold))))
+           (outshine-level-1                           ((t (:weight semibold))))
            (org-document-title                         ((t (:f ,duo-1))))
            (org-document-info-keyword                  ((t (:f ,duo-3))))
            (org-code                                   ((t (:f ,uno-2))))
@@ -345,17 +347,19 @@ Remap all faces when called with a prefix argument."
            (lisp-extra-font-lock-backquote             ((t (:f ,accent))))
            (clojure-keyword-face                       ((t (:f ,duo-2 :weight normal))))
            (anzu-mode-line                             ((t (:f ,bg))))
-           (mode-line-inactive                         ((t (:f ,fg :bg ,bg))))
            (linum                                      ((t (:b ,bg :f ,bg-mfade))))
            (mode-line-buffer-id                        ((t (:f nil :b nil :weight bold))))
            (mode-line                                  ((t (:f ,bg :b ,duo-2 :weight normal))))
-           (mode-line-inactive                         ((t (:f ,duo-2 :b ,bg))))
+           (mode-line-inactive                         ((t (:f ,duo-2 :b ,bg-sfade))))
+           (eyebrowse-mode-line-active                 ((t (:f nil, :b ,uno-1))))
+           (eyebrowse-mode-line-inactive               ((t (:f ,bg, :b nil))))
+           (eyebrowse-mode-line-delimiters             ((t (:f nil, :b nil))))
+           (eyebrowse-mode-line-separator              ((t (:f nil, :b nil))))
            (ahs-face                                   ((t (:b ,bg-fade))))
-
-           (ahs-definition-face ((t (:fg ,bg :bg ,uno-2))))
-           (ahs-plugin-bod-face ((t (:fg ,bg :bg ,uno-3))))
-           (ahs-edit-mode-face ((t (:fg ,bg :bg ,accent))))
-           (ahs-plugin-default-face                     ((t (:b ,bg-mfade))))))))))
+           (ahs-definition-face                        ((t (:fg ,bg :bg ,uno-2))))
+           (ahs-plugin-bod-face                        ((t (:fg ,bg :bg ,uno-3))))
+           (ahs-edit-mode-face                         ((t (:fg ,bg :bg ,accent))))
+           (ahs-plugin-default-face                    ((t (:b ,bg-mfade))))))))))
 
 ;;;###autoload
 (when load-file-name

@@ -76,7 +76,7 @@
 (defcustom duotone-palette-mono-dark
   (make-instance
    'duotone-palette
-   :bg       (chroma-hex :hex "#292A2A")
+   :bg       (chroma-hex :hex "#303030")
    :uno-1    (chroma-hex :hex "#eee")
    :uno-2    (chroma-hex :hex "#ccc")
    :uno-3    (chroma-hex :hex "#999")
