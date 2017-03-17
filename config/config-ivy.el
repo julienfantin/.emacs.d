@@ -30,6 +30,10 @@
 
 (use-package swiper :ensure t :defer t)
 
+(use-package uniquify
+  :config
+  (setq-default uniquify-buffer-name-style 'forward))
+
 (use-package ivy
   :init (after-init #'ivy-mode)
   :commands (ivy-set-actions)
@@ -37,7 +41,7 @@
   (progn
     (validate-setq
      ivy-initial-inputs-alist nil
-     ivy-re-builders-alist '((t . ivy--regex-plus))
+     ivy-re-builders-alist '((t . ivy--regex-ignore-order))
      ivy-use-virtual-buffers t)))
 
 (use-package counsel
