@@ -97,7 +97,7 @@
     (dolist (command '(next-line previous-line))
       (add-to-list 'aggressive-indent-protected-commands command))
     ;; Disabled modes
-    (dolist (mode '(makefile-mode tuareg-mode))
+    (dolist (mode '(makefile-mode tuareg-mode cider-repl-mode))
       (add-to-list 'aggressive-indent-excluded-modes mode))))
 
 (provide 'config-indentation)
