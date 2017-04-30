@@ -129,13 +129,13 @@
                   `((,major-mode . company-complete-common)))
       ;; Smart-tab is our completion entry point
       (smart-tab-mode 1)
-      (company-mode -1)))
+      (company-mode 1)))
   :init (add-hook 'prog-mode-hook 'config-completion-company-turn-on)
   :config
   (progn
     (bind-key "TAB" #'company-complete-common-or-cycle company-active-map)
     (validate-setq
-     company-idle-delay .2
+     company-idle-delay nil
      company-minimum-prefix-length 2
      company-tooltip-align-annotations t
      company-require-match nil)))
