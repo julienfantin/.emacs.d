@@ -137,5 +137,26 @@
              ("log"       . "taoensso.timbre")))))
 
 
+
+;; * Sayid
+
+(use-package sayid :ensure t :defer t :init (after clojure-mode (sayid-setup-package)))
+
+(use-package flycheck-joker :ensure t :defer t :after clojure-mode)
+
+(use-package flycheck-clojure
+  :ensure t
+  :defer t
+  :functions (config-clojure-disable-checkers)
+  :preface
+  (defun config-clojure-disable-checkers ()
+    (flycheck-disable-checker 'clojure-cider-typed))
+  :init
+  ;; This doesn't even seem to work...
+  (after (clojure-mode flycheck)
+    (flycheck-clojure-setup)
+    (add-hook 'clojure-mode-hook 'config-clojure-disable-checkers)))
+
+
 (provide 'config-clojure)
 ;;; config-clojure.el ends here
