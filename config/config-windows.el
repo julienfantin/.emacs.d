@@ -63,45 +63,6 @@
   :config (validate-setq windresize-default-increment 5))
 
 
-;; * Content centering
-
-(defvar config-windows-centered-window-min-width 80)
-(defvar config-windows-centered-window-max-width 240)
-(defvar config-windows-centered-window-padding 5)
-(defvar config-windows-centered-window-max-buffer-size 1e5)
-
-(use-package centered-window-mode
-  :ensure t
-  :defer t
-  :init
-  (after-init
-   #'(lambda ()
-       (centered-window-mode 1)
-       (config-windows-cwm-set-width)
-       (cwm/center)))
-  :config
-  (progn
-    (defun config-windows-longest-line-length (buffer)
-      (when (< 0
-               (buffer-size buffer)
-               config-windows-centered-window-max-buffer-size)
-        (with-current-buffer buffer
-          (thread-last (split-string (buffer-string) "\n" t)
-            (mapcar #'length)
-            (apply #'max)))))
-    (defun config-windows-cwm-set-width (&optional win)
-      (when-let ((buffer (window-buffer win))
-                 (len (config-windows-longest-line-length buffer)))
-        (setq
-         cwm-centered-window-width
-         (thread-last len
-           (+ config-windows-centered-window-padding)
-           (max config-windows-centered-window-min-width)
-           (min config-windows-centered-window-max-width)))))
-    (after cider
-      (add-hook 'cider-popup-buffer-mode-hook #'cwm/center))))
-
-
 ;; * Buffer display rules
 
 (use-package shackle
