@@ -77,7 +77,7 @@
 (use-package cider-stacktrace
   :defer t
   :config
-  (setq cider-stacktrace-default-filters '(tooling dup clj java repl)))
+  (setq cider-stacktrace-default-filters '(tooling dup java repl)))
 
 (use-package cider-debug
   :defer t
