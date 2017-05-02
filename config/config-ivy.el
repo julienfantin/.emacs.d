@@ -74,12 +74,6 @@
   :after projectile
   :init (counsel-projectile-on))
 
-(use-package ivy-rich
-  :ensure t
-  :after ivy
-  :config
-  (ivy-set-display-transformer 'ivy-switch-buffer 'ivy-rich-switch-buffer-transformer))
-
 (use-package ivy-historian
   :ensure t
   :after ivy
