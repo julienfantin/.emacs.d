@@ -163,7 +163,7 @@ hyper when it's used as a modifier."
  "K"     '(hydra-buffers/kill-buffer-and-window :which-key "kill (window)")
  "b"     '(ivy-switch-buffer :which-key "buffers")
  "h"     '(hydra-buffers/bury-buffer :which-key "bury")
- "k"     '(hydra-buffers/kill-this-buffer :which-key "kill")
+ "k"     '(hydra-buffers/kill-buffer :which-key "kill")
  "n"     '(hydra-buffers/next-buffer :which-key "next")
  "p"     '(hydra-buffers/previous-buffer :which-key "prev")
  "r"     '(revert-buffer :which-key "revert")
@@ -239,6 +239,7 @@ hyper when it's used as a modifier."
  "f" 'focus-mode
  "h" 'hl-line-mode
  "l" 'linum-mode
+ "m" 'counsel-mark-ring
  "n" 'linum-mode
  "p" 'flyspell-prog-mode
  "r" 'read-only-mode
@@ -305,8 +306,8 @@ hyper when it's used as a modifier."
   ("o"   ace-window "ace")
   ("k"   config-keybindings-ace-delete "ace delete")
   ("s"   config-keybindings-ace-switch "ace switch")
-  ("C-_" winner-undo "undo")
-  ("M-_" winner-redo "redo")
+  ("<left>" winner-undo "undo" :exit nil)
+  ("<right>" winner-redo "redo" :exit nil)
   ("q"   ignore :exit t))
 
 (dolist (n (number-sequence 1 10))
@@ -566,6 +567,7 @@ hyper when it's used as a modifier."
  "+"   '(hydra-text/-text-scale-increase :which-key "text-+")
  "-"   '(hydra-text/-text-scale-decrease :which-key "text--")
  "g"   '(hydra-goto/body :which-key "goto")
+ "i"   '(counsel-imenu :which-key "imenu")
  "j"   '(avy-goto-char-timer :which-key "avy-char")
  "k"   '(kill-this-buffer :which-key "kill-this-buffer")
  "o"   '(hydra-outline/body :which-key "hydra-outline")
