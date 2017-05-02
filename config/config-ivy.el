@@ -52,28 +52,12 @@
     (delete-file (expand-file-name x ivy--directory)))
   :config
   (progn
-    (defcustom counsel-rg-base-command "rg --vimgrep --no-heading %s"
-      "Format string to use in `counsel-ag-function' to construct the
-command. The %s will be replaced by optional extra ag arguments followed by the
-regex string. The default is \"ag --nocolor --nogroup %s\"."
-      :type 'string
-      :group 'ivy)
-
-    (defun counsel-rg (&optional initial-input)
-      "Grep for a string in the current directory using ripgrep.
-This uses `counsel-ag' with `counsel-rg-base-command' replacing
-`counsel-ag-base-command'."
-      (interactive)
-      (let ((counsel-ag-base-command counsel-rg-base-command)
-            (proj (or (projectile-project-p)
-                      (locate-dominating-file default-directory ".git"))))
-        (counsel-ag initial-input proj)))
-
     (ivy-set-actions
      'counsel-find-file
      `(("x" #'config-counsel-delete-file ,(propertize "delete" 'face 'font-lock-warning-face))))
-    (validate-setq counsel-find-file-at-point t
-                   ivy-extra-directories nil)))
+    (validate-setq
+     counsel-find-file-at-point t
+     ivy-extra-directories nil)))
 
 ;; Counsel makes use of smex
 (use-package smex
