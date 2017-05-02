@@ -65,7 +65,12 @@
   :ensure t
   :defer t
   :commands (undo-tree)
-  :init (after-init #'global-undo-tree-mode))
+  :init (after-init #'global-undo-tree-mode)
+  :config
+  (validate-setq
+   undo-tree-auto-save-history t
+   undo-tree-history-directory-alist
+   `(("" . ,(user-var-directory ".undo-tree/")))))
 
 
 ;; * Builtins
