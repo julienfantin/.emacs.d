@@ -1,3 +1,0 @@
-[submodule "lib/clojure-semantic"]
-	path = lib/clojure-semantic
-	url = https://github.com/kototama/clojure-semantic.git
