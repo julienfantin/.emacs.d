@@ -252,8 +252,7 @@ hyper when it's used as a modifier."
  :prefix "C-c"
  :infix "n"
  "c" '(org-capture :which-key "capture")
- "d" '(deft :which-key "deft")
- "p" '(org-projectile:project-todo-completing-read :which-key "project todo"))
+ "d" '(deft :which-key "deft"))
 
 ;; ** Term
 

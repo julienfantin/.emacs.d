@@ -50,15 +50,5 @@
     (advice-add #'projectile-replace :before #'projectile-save-project-buffers)
     (projectile-load-known-projects)))
 
-(use-package org-projectile
-  :ensure t
-  :defer t
-  :config
-  (progn
-    (org-projectile:per-repo)
-    (setq org-projectile:per-repo-filename "TODOs.org")
-    (after 'org
-      (setq org-agenda-files (append org-agenda-files (org-projectile:todo-files))))))
-
 (provide 'config-project)
 ;;; config-project.el ends here
