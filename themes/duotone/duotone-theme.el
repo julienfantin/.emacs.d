@@ -181,7 +181,6 @@ Remap all faces when called with a prefix argument."
             ((t (:f ,renamed :underline `(:style line :color ,(chroma-blend bg renamed sblend))))))
            (,(theme-faces-match '("info" "visited" "list" "[0-9]"))
             ((t (:f ,added :underline `(:style line :color ,(chroma-blend bg added sblend))))))
-           (,(theme-faces-match-all "flycheck"))
            ;; Marks
            ;;
            (,(theme-faces-match '("mark" "marked" "book" "bm" "markdown" "1" "2"))
@@ -289,7 +288,7 @@ Remap all faces when called with a prefix argument."
            ;;
            (default                                    ((t (:f ,fg :b ,bg))))
            (fixed-pitch                                ((t (:font-family nil))))
-           (fringe                                     ((t (:f ,fg-sfade :b ,bg-fade))))
+           (fringe                                     ((t (:f ,fg-sfade :b ,(chroma-blend bg uno-3 0.03)))))
            (cursor                                     ((t (:f ,accent :b ,uno-1))))
            (region                                     ((t (:b ,(chroma-blend uno-2 bg blend)))))
            (match                                      ((t (:f ,bg :b ,accent))))
@@ -351,10 +350,10 @@ Remap all faces when called with a prefix argument."
            (mode-line-buffer-id                        ((t (:f nil :b nil :weight bold))))
            (mode-line                                  ((t (:f ,bg :b ,duo-2 :weight normal))))
            (mode-line-inactive                         ((t (:f ,duo-2 :b ,bg-sfade))))
-           (eyebrowse-mode-line-active                 ((t (:f nil, :b ,uno-1))))
-           (eyebrowse-mode-line-inactive               ((t (:f ,bg, :b nil))))
-           (eyebrowse-mode-line-delimiters             ((t (:f nil, :b nil))))
-           (eyebrowse-mode-line-separator              ((t (:f nil, :b nil))))
+           (eyebrowse-mode-line-active                 ((t (:f ,duo-1 :b ,bg))))
+           (eyebrowse-mode-line-inactive               ((t (:f ,uno-2 :b ,bg-sfade))))
+           (eyebrowse-mode-line-delimiters             ((t (:f ,bg :b ,bg-sfade))))
+           (eyebrowse-mode-line-separator              ((t (:f ,bg :b ,bg-sfade))))
            (ahs-face                                   ((t (:b ,bg-fade))))
            (ahs-definition-face                        ((t (:fg ,bg :bg ,uno-2))))
            (ahs-plugin-bod-face                        ((t (:fg ,bg :bg ,uno-3))))

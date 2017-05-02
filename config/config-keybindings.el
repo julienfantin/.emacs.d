@@ -330,27 +330,20 @@ hyper when it's used as a modifier."
  "8" '(aw-switch-to-window-8 :which-key "window-8")
  "9" '(aw-switch-to-window-9 :which-key "window-9"))
 
-;; ** (l)ayouts
-
-(defhydra hydra-layouts (:color red :body-pre (require 'config-layouts))
-  "Layouts"
-  ("C-c l" persp-switch :exit t)
-  ("l" eyebrowse-switch-to-window-config :exit t)
-  ("c" eyebrowse-create-window-config "eye-new")
-  ("C-c c" persp-copy "persp-copy")
-  ("n" eyebrowse-next-window-config "eye-next")
-  ("C-c n" persp-next "persp-next")
-  ("p" eyebrowse-prev-window-config "eye-prev")
-  ("C-c p" persp-prev "persp-prev")
-  ("r" eyebrowse-rename-window-config "eye-rename")
-  ("C-c r" persp-rename "persp-rename")
-  ("k" eyebrowse-close-window-config "eye-kill")
-  ("C-c k" (persp-kill (config-layouts--current-layout-name)) "pesp-kill"))
+(defhydra hydra-eyebrowse (:color red)
+  "Eyebrowse"
+  ("<tab>" eyebrowse-last-window-config "last")
+  ("w" eyebrowse-switch-to-window-config "switch")
+  ("r" eyebrowse-rename-window-config "rename")
+  ("c" eyebrowse-new-workspace "new")
+  ("n" eyebrowse-next-window-config "next")
+  ("p" eyebrowse-prev-window-config "prev")
+  ("k" eyebrowse-close-window-config "kill"))
 
 (general-define-key
  ;; Eyeberowse: Space+Ctrl+NumRow
  ;;
- "C-H-`"    '(eyebrowse-last-window-config :which-key "eye-last")
+ "C-c l"    '(hydra-eyebrowse/body :which-key "eye")
  "C-H-1"    '(eyebrowse-switch-to-window-config-1 :which-key "eye-1")
  "C-H-2"    '(eyebrowse-switch-to-window-config-2 :which-key "eye-2")
  "C-H-3"    '(eyebrowse-switch-to-window-config-3 :which-key "eye-3")
@@ -359,24 +352,7 @@ hyper when it's used as a modifier."
  "C-H-6"    '(eyebrowse-switch-to-window-config-6 :which-key "eye-6")
  "C-H-7"    '(eyebrowse-switch-to-window-config-7 :which-key "eye-7")
  "C-H-8"    '(eyebrowse-switch-to-window-config-8 :which-key "eye-8")
- "C-H-9"    '(eyebrowse-switch-to-window-config-9 :which-key "eye-9")
- "C-H-n"    '(eyebrowse-next-window-config :which-key "eye-next")
- "C-H-p"    '(eyebrowse-prev-window-config :which-key "eye-prev")
-
- ;; Persp: Space+Ctrl+Meta+NumRow
- ;;
- "C-H-M-n"  '(persp-next :which-key "persp-next")
- "C-H-M-p"  '(persp-prev :which-key "persp-prev")
- "C-H-M-`"  '(-layouts-jump-to-last-layout :wich-key "persp-last")
- "C-H-M-1"  '(-layouts-switch-to-1 :which-key "persp-1")
- "C-H-M-2 " '(-layouts-switch-to-2 :which-key "persp-2")
- "C-H-M-3"  '(-layouts-switch-to-3 :which-key "persp-3")
- "C-H-M-4"  '(-layouts-switch-to-4 :which-key "persp-4")
- "C-H-M-5"  '(-layouts-switch-to-5 :which-key "persp-5")
- "C-H-M-6"  '(-layouts-switch-to-6 :which-key "persp-6")
- "C-H-M-7"  '(-layouts-switch-to-7 :which-key "persp-7")
- "C-H-M-8"  '(-layouts-switch-to-8 :which-key "persp-8")
- "C-H-M-9"  '(-layouts-switch-to-9 :which-key "persp-9"))
+ "C-H-9"    '(eyebrowse-switch-to-window-config-9 :which-key "eye-9"))
 
 ;; ** (g)oto
 
@@ -592,7 +568,6 @@ hyper when it's used as a modifier."
  "g"   '(hydra-goto/body :which-key "goto")
  "j"   '(avy-goto-char-timer :which-key "avy-char")
  "k"   '(kill-this-buffer :which-key "kill-this-buffer")
- "l"   '(hydra-layouts/body :which-key "hydra-layouts")
  "o"   '(hydra-outline/body :which-key "hydra-outline")
  "s"   '(swiper-all :which-key "swiper-all")
  "S"   '(-swiper-at-point :which-key "-swiper-at-point")
