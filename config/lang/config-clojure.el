@@ -33,6 +33,10 @@
   :defer t
   :config
   (progn
+    (define-clojure-indent
+      (gen/let nil))
+
+    (add-to-list 'clojure-align-binding-forms "gen/let")
     (after 'config-completion
       (config-completion-add-backends 'clojure-mode #'company-capf))
     (define-key clojure-mode-map [remap forward-sexp] #'clojure-forward-logical-sexp)
