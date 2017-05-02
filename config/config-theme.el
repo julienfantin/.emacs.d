@@ -69,10 +69,8 @@
 (use-package darktooth-theme       :ensure t :defer t)
 (use-package zerodark-theme        :ensure t :defer t)
 (use-package gruvbox-theme         :ensure t :defer t)
-(use-package minimal-theme         :ensure t :defer t)
-(use-package majapahit-theme       :ensure t :defer t)
 (use-package omtose-phellack-theme :ensure t :defer t)
-(use-package foggy-night-theme     :ensure t :defer t)
+(use-package challenger-deep-theme :ensure t :defer t)
 
 (use-package customize-theme
   :disabled t
