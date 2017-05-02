@@ -75,6 +75,8 @@
 
 (define-abbrev-table 'cider-inspector-mode-abbrev-table '())
 
+(define-abbrev-table 'cider-repl-history-mode-abbrev-table '())
+
 (define-abbrev-table 'cider-repl-mode-abbrev-table '())
 
 (define-abbrev-table 'cider-stacktrace-mode-abbrev-table '())
@@ -720,7 +722,6 @@
     ("loev" "love" nil 0)
     ("lonly" "lonely" nil 0)
     ("lookign" "looking" nil 0)
-    ("lookup" "look up" nil 1)
     ("maintenence" "maintenance" nil 0)
     ("makeing" "making" nil 0)
     ("managment" "management" nil 0)
@@ -1263,6 +1264,7 @@
 
 (define-abbrev-table 'org-mode-abbrev-table
   '(
+    ("homomorphisms" "" nil 0)
     ("metadata" "meta-data" nil 0)
     ("tradeoffs" "trade-offs" nil 0)
     ("utlimately" "ultimately" nil 0)
@@ -1298,6 +1300,12 @@
 (define-abbrev-table 'reb-lisp-mode-abbrev-table '())
 
 (define-abbrev-table 'reb-mode-abbrev-table '())
+
+(define-abbrev-table 'sayid-mode-abbrev-table '())
+
+(define-abbrev-table 'sayid-pprint-mode-abbrev-table '())
+
+(define-abbrev-table 'sayid-traced-mode-abbrev-table '())
 
 (define-abbrev-table 'select-tags-table-mode-abbrev-table '())
 
@@ -1379,7 +1387,6 @@
     ("conspicu" "conspire" nil 0)
     ("i" "I" nil 8)
     ("kno" "know" nil 0)
-    ("lookup" "look up" nil 0)
     ("online" "on-line" nil 1)
     ("ttest" "test" nil 0)
    ))
