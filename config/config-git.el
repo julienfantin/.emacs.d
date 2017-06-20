@@ -42,6 +42,8 @@
   :defer t
   :config
   (validate-setq
+   ;; Remove noisy highlights
+   ediff-highlight-all-diffs nil
    ;; Avoid the crazy multi-frames setup
    ediff-window-setup-function 'ediff-setup-windows-plain
    ;; Ignore whitespace
@@ -63,7 +65,12 @@
 (use-package magithub
   :disabled t
   :ensure t
-  :after magit)
+  :after magit
+  :config (magithub-feature-autoinject t))
+
+(use-package gited
+  :ensure t
+  :defer t)
 
 (use-package diff-hl
   :ensure t
@@ -77,6 +84,11 @@
   (progn
     (validate-setq diff-hl-draw-borders t)
     (diff-hl-margin-mode 1)))
+
+(use-package helm-hunks
+  :ensure t
+  :defer t
+  :config (setq helm-hunks-preview-diffs t))
 
 (provide 'config-git)
 ;;; config-git.el ends here
