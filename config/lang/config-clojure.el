@@ -60,7 +60,8 @@
     (validate-setq
      cider-font-lock-dynamically '(macro core function deprecated var) ;; Too slow
      cider-font-lock-dynamically nil
-     cider-prompt-save-file-on-load 'always-save
+     cider-save-file-on-load t
+     cider-save-files-on-cider-refresh t
      cider-prompt-for-symbol nil
      cider-auto-jump-to-error nil
      cider-prefer-local-resources t
@@ -122,16 +123,17 @@
     (add-hook 'clojure-mode-hook 'config-clojure-cljr-enable))
   :config
   (validate-setq
-   cljr-magic-requires nil
    cljr-favor-prefix-notation nil
    cljr-warn-on-eval nil
+   cljr-ignore-analyzer-errors t
+   cljr-magic-requires t
    cljr-magic-require-namespaces
    (append cljr-magic-require-namespaces
            '(("edn"       . "clojure.edn")
              ("a"         . "clojure.core.async")
-             ("async"     . "clojure.core.async")
-             ("component" . "com.stuartsierra.component")
-             ("s"         . "schema.core")
+             ("cp"        . "com.stuartsierra.component")
+             ("s"         . "clojure.spec")
+             ("st"        . "clojure.spec.test")
              ("fs"        . "me.raynes.fs")
              ("json"      . "cheshire.core")
              ("log"       . "taoensso.timbre")))))
@@ -145,6 +147,7 @@
 (use-package flycheck-joker :ensure t :defer t :after clojure-mode)
 
 (use-package flycheck-clojure
+  :disabled t
   :ensure t
   :defer t
   :functions (config-clojure-disable-checkers)

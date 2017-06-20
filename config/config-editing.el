@@ -62,6 +62,7 @@
 (use-package iedit :ensure t :defer t)
 
 (use-package undo-tree
+  :disabled t                           ; undo-tree considered harmful
   :ensure t
   :defer t
   :commands (undo-tree)
