@@ -74,12 +74,28 @@
   :ensure t
   :defer t
   :commands sotlisp-turn-on-everywhere
-  :init   (sotlisp-turn-on-everywhere)
+  :init (sotlisp-turn-on-everywhere)
   :config
   (progn
     (add-hook 'emacs-lisp-mode-hook #'speed-of-thought-mode)
     (unbind-key "C-c f" sotlisp-mode-map)
     (unbind-key "C-c v" sotlisp-mode-map)))
+
+(use-package auto-compile
+  :ensure t
+  :commands auto-compile-on-save-mode
+  :init (add-hook 'emacs-lisp-mode-hook #'auto-compile-on-save-mode)
+  :config
+  (setq auto-compile-display-buffer nil
+        auto-compile-use-mode-line nil)
+  (defun -auto-compile-load-after-compile (success)
+    "Reload the current emacs-lisp file after it's recompiled, if
+an older version is loaded."
+    (when (eq success t)
+      (let ((buffer-path (file-truename buffer-file-name)))
+        (when (assoc buffer-path load-history)
+          (load-file buffer-path)))))
+  (advice-add #'auto-compile-byte-compile :filter-return #'-auto-compile-load-after-compile))
 
 
 ;; * Commands
