@@ -60,12 +60,12 @@
                        "https://self-signed.badssl.com/")
                   if (condition-case _e
                          (url-retrieve
-                          bad (lambda (retrieved) t))
+                          bad (lambda (_retrieved) t))
                        (error nil))
                   collect bad)))
     (if bad-hosts
         (error (format "tls misconfigured; retrieved %s ok" bad-hosts)) ;
-      (url-retrieve "https://badssl.com" (lambda (retrieved) t)))))
+      (url-retrieve "https://badssl.com" (lambda (_retrieved) t)))))
 
 ;; ** ELPA init
 
