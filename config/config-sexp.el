@@ -193,26 +193,5 @@
     (define-key lispy-mnemonic-mode-map [remap lispy-outline-left] 'outline-promote)
     (define-key lispy-mnemonic-mode-map [remap lispy-outline-right] 'outline-demote)))
 
-
-(defun config-sexp--closest (regex)
-  "Return point for the closest instance of 'REGEX'."
-  (let ((f (save-excursion (re-search-forward regex) (point)))
-        (b (save-excursion (re-search-backward regex) (point))))
-    (cond
-     ((and (null f) (null b)) (error "Not found"))
-     ((null f) b)
-     ((null b) f)
-     ((< (abs (- (point) f)) (abs (- (point) b))) f)
-     (t b))))
-
-
-;; * Commands
-
-;;;###autoload
-(defun -goto-closest-left-paren ()
-  "Move point to the closest opening paren."
-  (interactive)
-  (goto-char (- (config-sexp--closest "\(") 1)))
-
 (provide 'config-sexp)
 ;;; config-sexp.el ends here
