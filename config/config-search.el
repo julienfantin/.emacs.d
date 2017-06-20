@@ -65,7 +65,7 @@
      avy-style 'at-full
      avy-background t
      avy-all-windows t
-     avy-timeout-seconds 0.35)
+     avy-timeout-seconds 0.28)
     ;; Use C-' in isearch to bring up avy
     (avy-setup-default)))
 
