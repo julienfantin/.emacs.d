@@ -42,19 +42,24 @@
     (validate-setq
      ivy-initial-inputs-alist nil
      ivy-re-builders-alist '((t . ivy--regex-ignore-order))
-     ivy-use-virtual-buffers t)))
+     ivy-use-virtual-buffers t
+     ivy-virtual-abbreviate 'full)))
 
 (use-package counsel
   :ensure t
   :init (after-init #'counsel-mode)
   :preface
-  (defun config-counsel-delete-file (x)
-    (delete-file (expand-file-name x ivy--directory)))
+  (progn
+    (defun config-counsel-delete-file (x)
+      (delete-file (expand-file-name x ivy--directory)))
+    (defun config-counsel-find-file-other-window (x)
+      (find-file-other-window (expand-file-name x ivy--directory))))
   :config
   (progn
     (ivy-set-actions
      'counsel-find-file
-     `(("x" #'config-counsel-delete-file ,(propertize "delete" 'face 'font-lock-warning-face))))
+     `(("x" config-counsel-delete-file ,(propertize "delete" 'face 'font-lock-warning-face))
+       ("4" config-counsel-find-file-other-window "other-window")))
     (validate-setq
      counsel-find-file-at-point t
      ivy-extra-directories nil)))
@@ -78,6 +83,17 @@
   :ensure t
   :after ivy
   :config (ivy-historian-mode 1))
+
+;; * Commands
+
+(after 'counsel
+  (defvar counsel-git-grep-todos-cmd
+    "git --no-pager grep --full-name -n --no-color -e TODO -e FIXME -e HACK -e XXX -e XXXX -e ??? -e FAIL")
+
+  (defun -counsel-git-grep-project-todos ()
+    (interactive)
+    (let ((default-directory (projectile-project-root)))
+      (counsel-git-grep counsel-git-grep-todos-cmd))))
 
 (provide 'config-ivy)
 ;;; config-ivy.el ends here
