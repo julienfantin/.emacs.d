@@ -65,6 +65,15 @@
 
 ;; * Packages
 
+(use-package no-littering
+  :ensure t
+  :config
+  (setq auto-save-file-name-transforms
+        `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+
+(after (recentf no-littering)
+  (add-to-list 'recentf-exclude no-littering-var-directory))
+
 (use-package vlf-setup :ensure vlf)
 
 (use-package super-save
@@ -116,8 +125,9 @@
   :after dired
   :config
   (setq-default dired-omit-files-p t)
-  (validate-setq dired-listing-switches "-alhv"
-                 dired-omit-files "^\\.\\|^#.#$\\|.~$"))
+  (validate-setq
+   dired-listing-switches "-alhv"
+   dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
 
 ;; * Commands
