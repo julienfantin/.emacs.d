@@ -23,7 +23,7 @@ Used in blending background of highlighted matches."
   :group 'duotone
   :type 'float)
 
-(defcustom duotone-palette-sblend 0.1
+(defcustom duotone-palette-sblend 0.05
   "Default subtle blend value.
 
 Used in blending background of strings and docstrings when the

@@ -108,7 +108,7 @@ Remap all faces when called with a prefix argument."
         ;;
         (theme-custom-set-faces
          'duotone
-         `( ;;
+         `(;;
            ;; Hierarchies:
            ;;
            ,@(duotone-hierarchical-chroma-mapping
@@ -313,6 +313,7 @@ Remap all faces when called with a prefix argument."
            (avy-lead-face                              ((t (:f ,uno-1 :bg ,(chroma-blend bg uno-1 sblend)))))
            (avy-lead-face-1                            ((t (:f ,duo-2 :bg ,(chroma-blend bg duo-2 sblend)))))
            (avy-lead-face-2                            ((t (:f ,duo-3 :bg ,(chroma-blend bg duo-3 sblend)))))
+           (ivy-modified-buffer                        ((t (:f ,uno-2))))
            (ivy-match-required                         ((t (:f ,uno-1))))
            (ivy-confirm-face                           ((t (:f ,duo-3))))
            (ivy-current-match                          ((t (:f ,duo-1 :b ,(chroma-blend bg duo-1 sblend)))))
@@ -322,8 +323,10 @@ Remap all faces when called with a prefix argument."
            (cider-enlightened-local-face               ((t (:f ,duo-3 :b ,bg-mfade))))
            (tooltip                                    ((t (:f ,fg :b ,bg-sfade))))
            (company-preview                            ((t (:f ,fg :b ,uno-3))))
-           (company-tooltip-search                     ((t (:f ,bg :b ,duo-2))))
+           (company-tooltip-search                     ((t (:f ,bg :b ,uno-3))))
+           (company-tooltip-search-selection           ((t (:f ,(chroma-fade bg-sfade sfade) :b ,duo-2 ))))
            (company-preview-common                     ((t (:f ,duo-2 :b ,bg))))
+           (company-preview-search                     ((t (:f ,bg :b ,uno-2))))
            (company-preview                            ((t (:f ,duo-2 :b ,bg))))
            (company-tooltip                            ((t (:f ,uno-3 :b ,bg-sfade))))
            (company-tooltip-common                     ((t (:f ,(chroma-fade fg-sfade sfade) :b ,bg-sfade))))
@@ -350,8 +353,8 @@ Remap all faces when called with a prefix argument."
            (mode-line-buffer-id                        ((t (:f nil :b nil :weight bold))))
            (mode-line                                  ((t (:f ,bg :b ,duo-2 :weight normal))))
            (mode-line-inactive                         ((t (:f ,duo-2 :b ,bg-sfade))))
-           (eyebrowse-mode-line-active                 ((t (:f ,duo-1 :b ,bg))))
-           (eyebrowse-mode-line-inactive               ((t (:f ,uno-2 :b ,bg-sfade))))
+           (eyebrowse-mode-line-active                 ((t (:f ,duo-2 :b ,bg))))
+           (eyebrowse-mode-line-inactive               ((t (:f ,uno-4 :b ,bg-sfade))))
            (eyebrowse-mode-line-delimiters             ((t (:f ,bg :b ,bg-sfade))))
            (eyebrowse-mode-line-separator              ((t (:f ,bg :b ,bg-sfade))))
            (ahs-face                                   ((t (:b ,bg-fade))))
