@@ -203,10 +203,12 @@ hyper when it's used as a modifier."
  :infix "f"
  "C-c f" '(counsel-find-file :which-key "find-file")
  "f"     '(counsel-find-file :which-key "find-file")
+ "h"     '(helm-hunks :which-key "hunks")
  "r"     '(counsel-rg :which-key "ripgrep")
  "g"     '(counsel-git-grep :which-key "git-grep")
  "p"     '(projectile-find-file :which-key "(projectile) find-file")
- "s"     '(-find-file-as-sudo :which-key "sudo"))
+ "s"     '(-find-file-as-sudo :which-key "sudo")
+ "t"     '(-counsel-git-grep-project-todos :which-key "todos"))
 
 ;; ** (v)ersion control
 
@@ -343,16 +345,16 @@ hyper when it's used as a modifier."
 (general-define-key
  ;; Eyeberowse: Space+Ctrl+NumRow
  ;;
- "C-c l"    '(hydra-eyebrowse/body :which-key "eye")
- "C-H-1"    '(eyebrowse-switch-to-window-config-1 :which-key "eye-1")
- "C-H-2"    '(eyebrowse-switch-to-window-config-2 :which-key "eye-2")
- "C-H-3"    '(eyebrowse-switch-to-window-config-3 :which-key "eye-3")
- "C-H-4"    '(eyebrowse-switch-to-window-config-4 :which-key "eye-4")
- "C-H-5"    '(eyebrowse-switch-to-window-config-5 :which-key "eye-5")
- "C-H-6"    '(eyebrowse-switch-to-window-config-6 :which-key "eye-6")
- "C-H-7"    '(eyebrowse-switch-to-window-config-7 :which-key "eye-7")
- "C-H-8"    '(eyebrowse-switch-to-window-config-8 :which-key "eye-8")
- "C-H-9"    '(eyebrowse-switch-to-window-config-9 :which-key "eye-9"))
+ "C-c l"     '(hydra-eyebrowse/body :which-key "eye")
+ "C-c C-1"    '(eyebrowse-switch-to-window-config-1 :which-key "eye-1")
+ "C-c C-2"    '(eyebrowse-switch-to-window-config-2 :which-key "eye-2")
+ "C-c C-3"    '(eyebrowse-switch-to-window-config-3 :which-key "eye-3")
+ "C-c C-4"    '(eyebrowse-switch-to-window-config-4 :which-key "eye-4")
+ "C-c C-5"    '(eyebrowse-switch-to-window-config-5 :which-key "eye-5")
+ "C-c C-6"    '(eyebrowse-switch-to-window-config-6 :which-key "eye-6")
+ "C-c C-7"    '(eyebrowse-switch-to-window-config-7 :which-key "eye-7")
+ "C-c C-8"    '(eyebrowse-switch-to-window-config-8 :which-key "eye-8")
+ "C-c C-9"    '(eyebrowse-switch-to-window-config-9 :which-key "eye-9"))
 
 ;; ** (g)oto
 
@@ -373,6 +375,7 @@ hyper when it's used as a modifier."
   ("g" avy-goto-line)
   ("/" link-hint-open-link)
   ("i" counsel-imenu)
+  ("I" ivy-imenu-anywhere)
   ("e" counsel-flycheck)
   ;; Pages
   ("p" ivy-pages)
@@ -506,7 +509,8 @@ hyper when it's used as a modifier."
 
 (general-define-key
  :keymaps 'global
- "M-Q" '-unfill-paragraph)
+ "M-Q" '-unfill-paragraph
+ "C-x C-r" 'ivy-recentf)
 
 
 ;; * Local maps
@@ -515,6 +519,7 @@ hyper when it's used as a modifier."
  :keymaps 'help-map
  ;; Add useful builtins
  "A"   'info-apropos
+ "a"   'counsel-apropos
  ;; Help search
  "b"   'counsel-descbinds
  "e"   'counsel-el
@@ -567,6 +572,7 @@ hyper when it's used as a modifier."
  "-"   '(hydra-text/-text-scale-decrease :which-key "text--")
  "g"   '(hydra-goto/body :which-key "goto")
  "i"   '(counsel-imenu :which-key "imenu")
+ "I"   '(ivy-imenu-anywhere :which-key "imenu anywher")
  "j"   '(avy-goto-char-timer :which-key "avy-char")
  "k"   '(kill-this-buffer :which-key "kill-this-buffer")
  "o"   '(hydra-outline/body :which-key "hydra-outline")
