@@ -46,6 +46,8 @@
   :init
   (defvar mc/list-file (user-var-file ".mc-lists.el")))
 
+(use-package beginend :ensure t :init (beginend-global-mode 1))
+
 (use-package auto-highlight-symbol
   :ensure t
   :config

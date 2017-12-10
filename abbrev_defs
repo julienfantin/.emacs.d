@@ -92,7 +92,10 @@
 
 (define-abbrev-table 'clojurec-mode-abbrev-table '())
 
-(define-abbrev-table 'clojurescript-mode-abbrev-table '())
+(define-abbrev-table 'clojurescript-mode-abbrev-table
+  '(
+    ("utils" "URLs" nil 0)
+   ))
 
 (define-abbrev-table 'clojurex-mode-abbrev-table '())
 
@@ -128,6 +131,8 @@
 
 (define-abbrev-table 'dig-mode-abbrev-table '())
 
+(define-abbrev-table 'dockerfile-mode-abbrev-table '())
+
 (define-abbrev-table 'doctex-mode-abbrev-table '())
 
 (define-abbrev-table 'edbi:dbview-query-result-quicklook-mode-abbrev-table '())
@@ -137,6 +142,8 @@
 (define-abbrev-table 'edit-abbrevs-mode-abbrev-table '())
 
 (define-abbrev-table 'elisp-byte-code-mode-abbrev-table '())
+
+(define-abbrev-table 'elisp-refs-mode-abbrev-table '())
 
 (define-abbrev-table 'emacs-lisp-byte-code-mode-abbrev-table '())
 
@@ -189,6 +196,10 @@
 (define-abbrev-table 'gdb-script-mode-abbrev-table '())
 
 (define-abbrev-table 'gfm-mode-abbrev-table '())
+
+(define-abbrev-table 'git-rebase-mode-abbrev-table '())
+
+(define-abbrev-table 'gited-mode-abbrev-table '())
 
 (define-abbrev-table 'global-abbrev-table
   '(
@@ -1224,6 +1235,8 @@
 
 (define-abbrev-table 'magit-status-mode-abbrev-table '())
 
+(define-abbrev-table 'magithub-issue-post-mode-abbrev-table '())
+
 (define-abbrev-table 'makefile-automake-mode-abbrev-table '())
 
 (define-abbrev-table 'makefile-bsdmake-mode-abbrev-table '())
@@ -1241,6 +1254,10 @@
 (define-abbrev-table 'message-mode-abbrev-table '())
 
 (define-abbrev-table 'messages-buffer-mode-abbrev-table '())
+
+(define-abbrev-table 'navi-edit-mode-abbrev-table '())
+
+(define-abbrev-table 'navi-mode-abbrev-table '())
 
 (define-abbrev-table 'net-utils-mode-abbrev-table '())
 
@@ -1359,7 +1376,11 @@
 
 (define-abbrev-table 'speedbar-mode-abbrev-table '())
 
-(define-abbrev-table 'sql-mode-abbrev-table '())
+(define-abbrev-table 'sql-mode-abbrev-table
+  '(
+   ))
+
+(define-abbrev-table 'tablist-mode-abbrev-table '())
 
 (define-abbrev-table 'tabulated-list-mode-abbrev-table '())
 

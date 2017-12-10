@@ -34,7 +34,9 @@
 (defvar config-frame-text-scale-step 10)
 
 (defvar config-frame-mono-fonts
-  '("-*-Source Code Pro-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+  '("-*-SF Mono-light-normal-ultracondensed-*-*-*-*-*-m-0-iso10646-1"
+    "-*-Iosevka-light-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+    "-*-Source Code Pro-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-Fira Code-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"))
 
@@ -87,7 +89,8 @@
                  `((menu-bar-lines       . nil)
                    (tool-bar-lines       . nil)
                    (vertical-scroll-bars . nil)
-                   (font                 . ,(config-frame-mono-font))))))
+                   (font                 . ,(config-frame-mono-font))
+                   (line-spacing         . 3)))))
     (setq default-frame-alist config
           initial-frame-alist config))
   :config
@@ -95,7 +98,8 @@
     (setq frame-resize-pixelwise t)
     (scroll-bar-mode -1)
     (tool-bar-mode -1)
-    (blink-cursor-mode -1)))
+    (blink-cursor-mode -1)
+    (pixel-scroll-mode 1)))
 
 (use-package mwheel
   :defer t

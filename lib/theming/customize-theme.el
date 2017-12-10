@@ -5,7 +5,7 @@
 (require 'custom)
 (require 'theme-helpers)
 
-(defcustom customize-theme-alist '()
+(defcustom customize-theme-alist nil
   "Alist of theme to custom faces."
   :group 'customize-themes
   :type 'alist)

@@ -23,9 +23,22 @@
 ;;
 
 ;;; Code:
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+;(package-initialize)
+
 (require 'cl-lib)
 (require 'cl-macs)
 (require 'package)
+
+(set-default 'truncate-lines t)
+(setq use-package-verbose t)
+(setq gc-cons-threshold 64000000)
+(add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
+
 
 
 ;; * Config options
@@ -65,11 +78,11 @@
 ;; - Demand use-config and config-path
 ;; - Load keybindings last
 
-(use-package use-config :demand t)
-(use-package private :demand t)
+(use-package use-config)
+(use-package private)
 
 (use-config config-theme)
-(use-config config-path :demand t)
+(use-config config-path)
 (use-config config-browser)
 (use-config config-buffers)
 (use-config config-completion)
@@ -124,6 +137,10 @@
 ;; ** Keybindings
 
 (use-config config-keybindings)
+
+;; ** WIP
+
+(use-config config-wip)
 
 (provide 'init)
 ;;; init.el ends here

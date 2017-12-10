@@ -62,11 +62,19 @@
   :config
   (validate-setq magit-save-repository-buffers 'dontask))
 
+(use-package magit-imerge :ensure t :defer t)
+
 (use-package magithub
-  :disabled t
+  ;; :disabled t
   :ensure t
+  :defer t
   :after magit
   :config (magithub-feature-autoinject t))
+
+(use-package git-commit
+  :defer t
+  :config
+  (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
 (use-package gited
   :ensure t
@@ -78,7 +86,7 @@
   :commands diff-hl-mode
   :init
   (progn
-    (add-hook 'prog-mode-hook #'diff-hl-mode)
+    (global-diff-hl-amend-mode 1)
     (add-hook 'dired-mode-hook #'diff-hl-dired-mode))
   :config
   (progn

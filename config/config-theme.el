@@ -71,22 +71,15 @@
 (use-package gruvbox-theme         :ensure t :defer t)
 (use-package challenger-deep-theme :ensure t :defer t)
 (use-package rebecca-theme         :ensure t :defer t)
+(use-package nord-theme            :ensure t :defer t)
 
 (use-package customize-theme
   :disabled t
   :load-path "./lib"
   :config
-  (validate-setq
+  (setq
    customize-theme-alist
-   `((doom-one
-      . ((show-paren-match
-          . ((t (:foreground nil :inverse-video nil
-                             :background
-                             ,(chroma-to-string
-                               (chroma-blend
-                                (chroma-hex :hex "#51afef")
-                                (chroma-hex :hex "#282c34")
-                                0.8)))))))))))
+   nil   ))
 
 
 ;; * Theme definition helpers

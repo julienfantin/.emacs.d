@@ -72,14 +72,28 @@
   :config
   (validate-setq
    shackle-default-size 0.3
+   shackle-inhibit-window-quit-on-same-windows t
+   shackle-default-alignment 'right
+   shackle-default-rule '(:select t)
    shackle-rules
-   '(("*Help*" :select t :popup t :align t)
-     ("*Pp Eval Output*" :select t :popup t :align t)
-     ("*cider-test-report*" :select t :popup t :align t)
-     ("*cider-result*" :select t)
-     ("*cider-result*" :select t)
-     ("*cider-repl*" :select t)
-     ("\*cider-repl.+" :select t :regexp t :align 'bottom))))
+   '(("*Pp Eval Output*"  t)
+     ("*cider-error*")
+     ("*cider-result*")
+     ("*helm*")
+     (".+popup.+"  :regexp t :align below)
+     ("\*magit-diff.+" :regexp t :select nil :align right)
+     (apropos-mode)
+     (cider-test-report-mode)
+     (cider-stacktrace-mode)
+     (cider-repl-mode)
+     ("\*cider-repl.+" :regexp t)
+     (flycheck-error-list-mode)
+     (magit-status-mode)
+     (magit-commit)
+     (compilation-mode)
+     (help-mode)
+     (ivy-occur-mode)
+     (ivy-occur-grep-mode))))
 
 
 ;; * Commands

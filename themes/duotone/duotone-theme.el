@@ -58,17 +58,17 @@ Remap all faces when called with a prefix argument."
 
 (defun duotone-hierarchical-face-index (face)
   "Return a zero-based index for the first digit found in 'FACE''s name."
-  (when-let ((s (symbol-name face))
-             (index (string-match "\\([0-9]\\)" s)))
+  (when-let* ((s (symbol-name face))
+              (index (string-match "\\([0-9]\\)" s)))
     (max 0 (- (string-to-number (match-string 0 s)) 1))    ))
 
 (defun duotone-hierarchical-chroma-mapping (palette function faces &optional colors-list)
   (let ((colors-list (or colors-list duotone-hierarchical-chroma-mapping)))
     (cl-mapcar
      (lambda (face)
-       (when-let ((index (duotone-hierarchical-face-index face))
-                  (slot (or (nth index colors-list) (car (last colors-list))))
-                  (chrom (funcall slot palette)))
+       (when-let* ((index (duotone-hierarchical-face-index face))
+                   (slot (or (nth index colors-list) (car (last colors-list))))
+                   (chrom (funcall slot palette)))
          (funcall function face chrom)))
      faces)))
 
@@ -181,6 +181,8 @@ Remap all faces when called with a prefix argument."
             ((t (:f ,renamed :underline `(:style line :color ,(chroma-blend bg renamed sblend))))))
            (,(theme-faces-match '("info" "visited" "list" "[0-9]"))
             ((t (:f ,added :underline `(:style line :color ,(chroma-blend bg added sblend))))))
+           (,(theme-faces-match '("stacktrace"))
+            ((t (:f ,added :underline nil))))
            ;; Marks
            ;;
            (,(theme-faces-match '("mark" "marked" "book" "bm" "markdown" "1" "2"))
@@ -194,8 +196,8 @@ Remap all faces when called with a prefix argument."
               (theme-faces-match '("match" "\\(mis\\|un\\)match"  "[0-9]"))
               (theme-faces-match '("required" "common" "current")))
             ((t (:f ,duo-1 :b ,(chroma-blend bg duo-2 mblend)))))
-           ((show-paren-match)
-            ((t (:f nil :b ,(chroma-blend bg duo-2 sblend)))))
+           ((show-paren-match show-paren-match-expression)
+            ((t (:f nil :b ,(chroma-blend bg duo-3 sblend)))))
            ;;
            ;; Occurrences
            (,(theme-faces-match-all "occur")
@@ -210,7 +212,7 @@ Remap all faces when called with a prefix argument."
            ;; Selection
            (,(concatenate
               'list
-              '(hl-line helm-selection)
+              '(hl-line helm-selection line-number-current-line)
               (theme-faces-match "selection" "selected"))
             ((t (:b ,(chroma-blend bg uno-4 sblend)))))
            ;;
@@ -353,6 +355,8 @@ Remap all faces when called with a prefix argument."
            (mode-line-buffer-id                        ((t (:f nil :b nil :weight bold))))
            (mode-line                                  ((t (:f ,bg :b ,duo-2 :weight normal))))
            (mode-line-inactive                         ((t (:f ,duo-2 :b ,bg-sfade))))
+           (line-number                                ((t (:f ,uno-4 :b nil))))
+           (line-number-current-line                   ((t (:f ,bg :b ,uno-4))))
            (eyebrowse-mode-line-active                 ((t (:f ,duo-2 :b ,bg))))
            (eyebrowse-mode-line-inactive               ((t (:f ,uno-4 :b ,bg-sfade))))
            (eyebrowse-mode-line-delimiters             ((t (:f ,bg :b ,bg-sfade))))
@@ -361,7 +365,8 @@ Remap all faces when called with a prefix argument."
            (ahs-definition-face                        ((t (:fg ,bg :bg ,uno-2))))
            (ahs-plugin-bod-face                        ((t (:fg ,bg :bg ,uno-3))))
            (ahs-edit-mode-face                         ((t (:fg ,bg :bg ,accent))))
-           (ahs-plugin-default-face                    ((t (:b ,bg-mfade))))))))))
+           (ahs-plugin-default-face                    ((t (:b ,bg-mfade))))
+           (compilation-info                           ((t (:f ,duo-3))))))))))
 
 ;;;###autoload
 (when load-file-name

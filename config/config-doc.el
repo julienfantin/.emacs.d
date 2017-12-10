@@ -60,7 +60,6 @@
 (defvar config-completion-system)       ; silence warning
 
 (use-package counsel-dash
-  :disabled t
   :if (eq config-completion-system 'ivy)
   :ensure t
   :defer t
@@ -91,7 +90,7 @@
        (config-doc-set-docsets (car cell) (cdr cell)))
      config-doc-default-docsets)))
 
-(use-package google-this :ensure t)
+(use-package google-this :ensure t :defer t)
 
 (provide 'config-doc)
 ;;; config-doc.el ends here

@@ -31,12 +31,15 @@
 (use-package clojure-mode
   :ensure t
   :defer t
+  :mode "\\.repl\\'"
   :config
   (progn
     (define-clojure-indent
       (gen/let nil))
-
+    ;; test.check
     (add-to-list 'clojure-align-binding-forms "gen/let")
+    ;; reagent
+    (add-to-list 'clojure-align-binding-forms "with-let")
     (after 'config-completion
       (config-completion-add-backends 'clojure-mode #'company-capf))
     (define-key clojure-mode-map [remap forward-sexp] #'clojure-forward-logical-sexp)
@@ -142,7 +145,7 @@
 
 ;; * Sayid
 
-(use-package sayid :ensure t :defer t :init (after clojure-mode (sayid-setup-package)))
+(use-package sayid :ensure t :defer t :after cider :init (sayid-setup-package))
 
 (use-package flycheck-joker :ensure t :defer t :after clojure-mode)
 
@@ -160,6 +163,22 @@
     (flycheck-clojure-setup)
     (add-hook 'clojure-mode-hook 'config-clojure-disable-checkers)))
 
+
+
+;; * Smart Jump
+
+(use-package smart-jump
+  :ensure t
+  :after cider
+  :config
+  (smart-jump-register
+   :modes '(clojure-mode cider-mode cider-repl-mode)
+   :jump-fn 'cider-find-var
+   :pop-fn 'cider-pop-back
+   :refs-fn 'cljr-find-usages
+   :should-jump 'cider-connected-p
+   :heuristic 'point
+   :async 500))
 
 (provide 'config-clojure)
 ;;; config-clojure.el ends here

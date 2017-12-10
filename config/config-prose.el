@@ -76,6 +76,7 @@
 (use-package flyspell
   :defer t
   :functions (config-prose-enable-spell-checking)
+  :commands (git-commit-turn-on-flyspell)
   :config
   (progn
     (defun config-prose-enable-spell-checking ()
@@ -133,13 +134,6 @@
   :init
   (after 'prose-minor-mode
     (add-hook 'prose-minor-mode-hook #'writegood-mode)))
-
-(use-package artbollocks-mode
-  :ensure t
-  :defer t
-  :init
-  (after 'prose-minor-mode
-    (add-hook 'prose-minor-mode-hook #'artbollocks-mode)))
 
 
 ;; * Major modes

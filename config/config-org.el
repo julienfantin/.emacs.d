@@ -38,7 +38,7 @@
     ("sql" "#+begin_src sql\n  ?\n#+end_src" "<src lang=\"sql\">\n?\n</src>")))
 
 (defvar conf-org-babel-languages
-  '(emacs-lisp sql ocaml clojure sh))
+  '(emacs-lisp sql ocaml clojure))
 
 
 ;; * Core
@@ -73,7 +73,7 @@
      org-hide-leading-stars t
      org-fontify-whole-heading-line t
      org-fontify-quote-and-verse-blocks t
-     org-use-fast-tag-selection t
+     org-use-fast-tag-selection nil
      org-use-speed-commands t
      ;; org-speed-commands-user
      ;; '(("N" . org-shiftmetadown)
@@ -109,6 +109,15 @@
    deft-recursive t
    deft-use-filename-as-title t
    deft-default-extension "org"))
+
+(use-package org-projectile
+  :ensure t
+  :config
+  (progn
+    (setq org-projectile-projects-file (expand-file-name "projects.org" org-directory))
+    (setq org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
+    (push (org-projectile-project-todo-entry) org-capture-templates)))
+
 
 (provide 'config-org)
 ;;; config-org.el ends here

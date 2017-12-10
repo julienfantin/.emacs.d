@@ -35,15 +35,14 @@
 (defvar config-completion-backends-alist
   '((emacs-lisp-mode
      . (company-elisp
-        company-files
         company-dabbrev-code
-        company-keywords
-        company-dabbrev))))
+        company-dabbrev
+        company-files
+        company-keywords))))
 
 (defvar config-completion--default-backends
-  '(company-capf
-    company-files
-    (company-dabbrev-code company-keywords)))
+  '((company-dabbrev-code company-keywords company-capf)
+    company-files))
 
 
 ;; * Defaults
@@ -78,15 +77,6 @@
   (let* ((existing (map-elt config-completion-backends-alist mode)))
     (map-put config-completion-backends-alist mode (append existing backends))))
 
-(defun config-completion--company-backends ()
-  (cl-reduce
-   (lambda (acc mode)
-     (if-let ((backend (alist-get mode config-completion-backends-alist)))
-         (cons backend acc)
-       acc))
-   (config-completion--enabled-modes)
-   :initial-value (if config-completion-enable-yasnippet '(company-yasnippet) '())))
-
 (use-package company
   :ensure t
   :defer t
@@ -108,7 +98,7 @@
            (cons backend acc)
          acc))
      (config-completion--enabled-modes)
-     :initial-value '()))
+     :initial-value (if config-completion-enable-yasnippet '(company-yasnippet) '())))
 
   (defun config-completion-backend-with-yasnippet (backend)
     ;; Avoid double-wrapping
@@ -116,7 +106,16 @@
         backend
       (append (if (consp backend) backend (list backend))
               '(:with company-yasnippet))))
+  (defun -tab ()
+    (interactive)
+    (cond
+     ((yas-active-snippets)
+      (yas-next-field-or-maybe-expand))
 
+     ((ignore-errors
+        (yas-expand)))
+
+     (t (company-complete-common))))
   (defun config-completion-company-turn-on ()
     (let ((backends (append (config-completion--company-backends) config-completion--default-backends)))
       ;; Set company backends, conditionally enabling yasnippet
@@ -124,6 +123,7 @@
             (if config-completion-enable-yasnippet
                 (mapcar #'config-completion-backend-with-yasnippet backends)
               backends))
+
       ;; Make smart-tab use company-mode
       (setq-local smart-tab-completion-functions-alist
                   `((,major-mode . company-complete-common)))
@@ -135,7 +135,8 @@
   (progn
     (bind-key "TAB" #'company-complete-common-or-cycle company-active-map)
     (validate-setq
-     company-idle-delay nil
+     company-search-regexp-function 'company-search-words-regexp
+     company-idle-delay 0.2
      company-minimum-prefix-length 2
      company-tooltip-align-annotations t
      company-require-match nil)))
@@ -153,6 +154,7 @@
     (bind-key "C-h" 'company-quickhelp-mode company-active-map)))
 
 (use-package company-statistics
+  :disabled t
   :ensure t
   :defer t
   :init
@@ -162,7 +164,7 @@
   (validate-setq
    company-statistics-file
    (expand-file-name "company-statistics.el" user-var-directory)
-   company-statistics-size 200))
+   company-statistics-size 2000))
 
 (use-package yasnippet
   :if config-completion-enable-yasnippet

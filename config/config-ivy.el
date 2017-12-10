@@ -61,6 +61,8 @@
      `(("x" config-counsel-delete-file ,(propertize "delete" 'face 'font-lock-warning-face))
        ("4" config-counsel-find-file-other-window "other-window")))
     (validate-setq
+     counsel-rg-base-command "rg -i -M 120 --no-heading --line-number --color never '%s'"
+     counsel-grep-base-command "rg -i -M 120 --no-heading --line-number --color never '%s' %s"
      counsel-find-file-at-point t
      ivy-extra-directories nil)))
 
@@ -85,6 +87,13 @@
   :config (ivy-historian-mode 1))
 
 ;; * Commands
+
+
+;; NOTE use .dir-locals.el to ignore folders:
+;;
+;; (counsel-git-grep-todos-cmd
+;;  . "git --no-pager grep --full-name -n --no-color -i -e TODO -e FIXME -e HACK
+;; -e XXX -- './*' ':!resources/public/js/**' ':!resources/public/vs/**'")
 
 (after 'counsel
   (defvar counsel-git-grep-todos-cmd

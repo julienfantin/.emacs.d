@@ -28,7 +28,10 @@
 
 (use-package prog-mode
   :defer t
-  :config (add-hook 'prog-mode-hook #'auto-fill-mode))
+  :config
+  (progn
+    (add-hook 'prog-mode-hook #'auto-fill-mode)
+    (add-hook 'prog-mode-hook #'display-line-numbers-mode)))
 
 ;; Spell checking code comments
 (use-package flyspell

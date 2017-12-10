@@ -413,6 +413,8 @@ This command preserves the point position."
 
     ;; (define-key map (kbd "C-.")    'lispy-kill-at-point)
     ;; (define-key map (kbd "C-1")    'lispy-string-oneline)
+
+    (define-key map (kbd "C-M-(") #'lispy-arglist-inline)
     map))
 
 (defvar lispy-mnemonic-mode-map-special
