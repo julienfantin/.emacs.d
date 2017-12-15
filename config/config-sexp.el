@@ -182,8 +182,6 @@
      lispy-avy-style-symbol 'at-full)))
 
 (use-package lispy-mnemonic
-  :after lispy
-  ;; The autoload in the file doesn't work?
   :commands lispy-mnemonic-mode
   :init
   (after 'lisp-minor-mode

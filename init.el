@@ -28,7 +28,8 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-;(package-initialize)
+
+(setq gc-cons-threshold most-positive-fixnum)
 
 (require 'cl-lib)
 (require 'cl-macs)
@@ -36,7 +37,7 @@
 
 (set-default 'truncate-lines t)
 (setq use-package-verbose t)
-(setq gc-cons-threshold 64000000)
+
 (add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
 
 
