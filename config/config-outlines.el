@@ -36,6 +36,7 @@
 ;; * Packages
 
 (use-package outshine
+  :disabled t
   :ensure t
   :defer t
   :commands
@@ -59,8 +60,8 @@
   (after 'lispy
     (add-hook 'lispy-mode-hook 'config-outline-lispy-compat)))
 
-(use-package outorg :ensure t :defer t)
-(use-package navi-mode :ensure t :defer t)
+(use-package outorg :disabled t :ensure t :defer t)
+(use-package navi-mode :disabled t :ensure t :defer t)
 (use-package outline-magic :disabled t :ensure t :defer t)
 
 

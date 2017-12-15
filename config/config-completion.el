@@ -55,6 +55,7 @@
 ;; ** Abbrev
 
 (use-package abbrev
+  :disabled t
   :defer t
   :if (file-exists-p abbrev-file-name)
   :config
@@ -167,6 +168,7 @@
    company-statistics-size 2000))
 
 (use-package yasnippet
+  :disabled t
   :if config-completion-enable-yasnippet
   :ensure t
   :defer t

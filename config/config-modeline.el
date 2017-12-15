@@ -28,6 +28,7 @@
 ;; * Packages
 
 (use-package all-the-icons
+  :disabled t
   :ensure t
   :defer t
   :commands (all-the-icons-icon-for-buffer))
@@ -35,6 +36,7 @@
 (use-package spaceline-segments :demand t :after spaceline)
 
 (use-package spaceline
+  :disabled t
   :ensure t
   :demand t
   :commands (config-modeline-install)
@@ -98,21 +100,22 @@
 
     (defun config-modeline-install ()
       (spaceline-install
-       `(config-modeline-ace-window-number
-         ((config-modeline-persp config-modeline-eyebrowse) :separator ":")
-         buffer-id
-         config-modeline-buffer-icon
-         ;; (buffer-size  hud buffer-position)
-         ;; line-column
-         (remote-host (global :when active)) selection-info)
-       `(((flycheck-error flycheck-warning flycheck-info) :when active)
-         (buffer-encoding-abbrev :when (not (eq buffer-file-coding-system 'utf-8-unix)))
-         (config-modeline-version-control :when active)))
+        `(config-modeline-ace-window-number
+          ((config-modeline-persp config-modeline-eyebrowse) :separator ":")
+          buffer-id
+          config-modeline-buffer-icon
+          ;; (buffer-size  hud buffer-position)
+          ;; line-column
+          (remote-host (global :when active)) selection-info)
+        `(((flycheck-error flycheck-warning flycheck-info) :when active)
+          (buffer-encoding-abbrev :when (not (eq buffer-file-coding-system 'utf-8-unix)))
+          (config-modeline-version-control :when active)))
       (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
       (force-mode-line-update))
     (config-modeline-install)))
 
 (use-package powerline
+  :disabled t
   :ensure t
   :defer t
   :functions (powerline-reset)

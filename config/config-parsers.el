@@ -106,6 +106,7 @@
 ;; * Semantic
 
 (use-package semantic
+  :disabled t
   :defer t
   :init (after-init #'semantic-mode)
   :functions
@@ -129,6 +130,7 @@
       (semanticdb-save-all-db))))
 
 (use-package semantic/db
+  :disabled t
   :defer t
   :defines
   (semanticdb-database-list
@@ -147,6 +149,7 @@ Exit the save between databases if there is user input."
               semanticdb-database-list)))))
 
 (use-package semantic/db-file
+  :disabled t
   :defer t
   :config
   (validate-setq

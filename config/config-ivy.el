@@ -82,6 +82,7 @@
   :init (counsel-projectile-on))
 
 (use-package ivy-historian
+  :disabled t
   :ensure t
   :after ivy
   :config (ivy-historian-mode 1))

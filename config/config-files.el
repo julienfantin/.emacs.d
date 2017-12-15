@@ -50,6 +50,7 @@
     (add-hook 'dired-mode-hook 'dired-hide-details-mode)))
 
 (use-package dired-k
+  :disabled t
   :ensure t
   :defer t
   :config
@@ -58,6 +59,7 @@
     (add-hook 'dired-after-readin-hook #'dired-k-no-revert)))
 
 (use-package ls-lisp
+  :disabled t
   :after dired
   :config
   (validate-setq ls-lisp-use-insert-directory-program t))
@@ -105,12 +107,11 @@
 
 (use-package dired-subtree
   :ensure t
-  :defer t
-  :init
-  (after 'dired
-    (bind-keys
-     :map dired-mode-map
-     ("i" . dired-subtree-toggle))))
+  :after dired
+  :config
+  (bind-keys
+   :map dired-mode-map
+   ("i" . dired-subtree-toggle)))
 
 (use-package dired-narrow
   :ensure t
@@ -122,6 +123,7 @@
      ("/" . dired-narrow-fuzzy))))
 
 (use-package dired-x
+  :disabled t
   :after dired
   :config
   (setq-default dired-omit-files-p t)

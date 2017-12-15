@@ -59,6 +59,7 @@ the point doesn't move before calling 'POP-TO-MARK-COMMAND' with 'ARGS'."
 ;; * Packages
 
 (use-package bm
+  :disabled t
   :ensure t
   :defer t
   :defines (bm-buffer-persistence))

@@ -53,6 +53,7 @@
 (add-hook 'prog-mode-hook #'config-whitespace-show-trailing-whitespace)
 
 (use-package clean-aindent-mode
+  :disabled t
   :ensure t
   :defer t
   :init (add-hook 'prog-mode-hook #'clean-aindent-mode))
@@ -67,6 +68,7 @@
 ;; * Indentation
 
 (use-package dtrt-indent
+  :disabled t
   :ensure t
   :defer t
   :after cc-mode

@@ -128,14 +128,14 @@ hyper when it's used as a modifier."
      next-line)))
 
 (use-package hydra
-  :ensure t
+  :ensure  t
   :defer t
   :config
   (use-package lv
     :config
     (validate-setq lv-use-separator t)))
 
-(use-package interaction-log :ensure t :defer t :commands interaction-log-mode)
+(use-package interaction-log :disabled t :ensure t :defer t :commands interaction-log-mode)
 
 
 ;; * Hydras

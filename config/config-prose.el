@@ -43,6 +43,7 @@
     (add-hook 'prose-minor-mode-hook 'guess-language-mode)))
 
 (use-package ispell
+  :disabled t
   :defer t
   :config
   (progn
@@ -74,6 +75,7 @@
       (add-to-list 'prose-minor-mode-hook 'config-prose-completion-turn-on))))
 
 (use-package flyspell
+  :disabled t
   :defer t
   :functions (config-prose-enable-spell-checking)
   :commands (git-commit-turn-on-flyspell)
@@ -95,10 +97,12 @@
       (add-hook 'prose-mode-hook #'config-prose-enable-spell-checking))))
 
 (use-package flyspell-lazy
+  :disabled t
   :ensure t
   :init (after 'flyspell (flyspell-lazy-mode 1)))
 
 (use-package flyspell-correct
+  :disabled t
   :ensure t
   :config
   (use-package flyspell-correct-ivy

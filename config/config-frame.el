@@ -102,6 +102,7 @@
     (pixel-scroll-mode 1)))
 
 (use-package mwheel
+  :disabled t
   :defer t
   :config
   ;; Smooth-ish mouse scrolling

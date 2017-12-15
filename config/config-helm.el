@@ -64,9 +64,10 @@
     (defvar helm-mode-fuzzy-match t)
     (defvar helm-recentf-fuzzy-match t)))
 
-(use-package helm-config :demand t)
+(use-package helm-config :disabled t :demand t)
 
 (use-package helm-adaptive
+  :disabled t
   :defer t
   :after helm
   :init (helm-adaptive-mode 1)
@@ -80,6 +81,7 @@
   :config (setq helm-M-x-always-save-history t))
 
 (use-package helm-mode
+  :disabled t
   :demand t
   :init (after-init #'helm-mode)
   :config
@@ -92,6 +94,7 @@
     (add-to-list 'helm-boring-file-regexp-list "\\.git$")))
 
 (use-package helm-org
+  :disabled t
   :defer t
   :config
   (progn
@@ -112,8 +115,8 @@
 
 ;; * Packages
 
-(use-package helm-aws :ensure t :defer t)
-(use-package helm-org-rifle :ensure t :defer t)
+(use-package helm-aws :disabled t :ensure t :defer t)
+(use-package helm-org-rifle :disabled t :ensure t :defer t)
 
 
 (provide 'config-helm)

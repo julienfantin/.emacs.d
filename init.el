@@ -104,7 +104,7 @@
 (use-config config-ivy :if (equal 'ivy config-completion-system))
 (use-config config-layouts)
 (use-config config-marks)
-;; (use-config config-modeline)
+(use-config config-modeline :disabled t)
 (use-config config-org)
 (use-config config-outlines)
 (use-config config-parsers)
@@ -120,14 +120,14 @@
 
 ;; ** Langs
 
-(use-config config-ansible)
-(use-config config-cl)
+(use-config config-ansible :disabled t)
+(use-config config-cl :disabled t)
 (use-config config-clojure)
 (use-config config-clojurescript)
 (use-config config-emacs-lisp)
-(use-config config-nix)
+(use-config config-nix :disabled t)
 (use-config config-ocaml)
-(use-config config-sql)
+(use-config config-sql :disabled t)
 (use-config config-web)
 (use-config config-yaml)
 

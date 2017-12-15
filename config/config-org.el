@@ -97,11 +97,13 @@
 ;; * Packages
 
 (use-package worf
+  :disabled t
   :ensure t
   :defer t
   :commands worf-goto)
 
 (use-package deft
+  :disabled t
   :ensure t
   :defer t
   :config
@@ -111,6 +113,7 @@
    deft-default-extension "org"))
 
 (use-package org-projectile
+  :disabled t
   :ensure t
   :config
   (progn

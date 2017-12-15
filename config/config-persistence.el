@@ -27,6 +27,7 @@
 (require 'config-path)
 
 (use-package savehist
+  :disabled t
   :defer t
   :init (after-init #'savehist-mode)
   :config

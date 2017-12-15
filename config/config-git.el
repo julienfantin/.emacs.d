@@ -62,7 +62,7 @@
   :config
   (validate-setq magit-save-repository-buffers 'dontask))
 
-(use-package magit-imerge :ensure t :defer t)
+(use-package magit-imerge :disabled t :ensure t :defer t)
 
 (use-package magithub
   ;; :disabled t
@@ -77,10 +77,12 @@
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
 (use-package gited
+  :disabled t
   :ensure t
   :defer t)
 
 (use-package diff-hl
+  :disabled t
   :ensure t
   :defer t
   :commands diff-hl-mode
@@ -91,9 +93,10 @@
   :config
   (progn
     (validate-setq diff-hl-draw-borders t)
-    (diff-hl-margin-mode 1)))
+    (diff-hl-margin-mod e 1)))
 
 (use-package helm-hunks
+  :disabled t
   :ensure t
   :defer t
   :config (setq helm-hunks-preview-diffs t))

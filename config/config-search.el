@@ -50,7 +50,7 @@
 (use-package anzu :ensure t :init (global-anzu-mode))
 (use-package imenu-anywhere :ensure t :defer t)
 (use-package link-hint :ensure t :defer t)
-(use-package goto-last-change :ensure t :commands goto-last-change :defer t)
+(use-package goto-last-change :disabled t :ensure t :commands goto-last-change :defer t)
 (use-package swiper
   :ensure t
   :defer t

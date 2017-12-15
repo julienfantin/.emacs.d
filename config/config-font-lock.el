@@ -27,6 +27,7 @@
   :init (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 (use-package page-break-lines
+  :disabled t
   :ensure t
   :defer t
   :commands (page-break-lines-mode)

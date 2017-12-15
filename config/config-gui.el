@@ -35,6 +35,7 @@
   (line-number-mode -1))
 
 (use-package fringe
+  :disabled t
   :init (fringe-mode 4)
   :config
   (progn
@@ -47,10 +48,7 @@
 
 (use-package hl-line
   :defer t
-  :init
-  (progn
-    (add-hook 'dired-mode-hook #'hl-line-mode)
-    (after 'magit (add-hook 'magit-mode-hook #'hl-line-mode)))
+  :hook  ((magit-mode dired-mode) . hl-line-mode)
   :config
   (validate-setq
    global-hl-line-sticky-flag nil
@@ -80,11 +78,12 @@
 ;; * Packages
 
 (use-package rich-minority
+  :disabled t
   :ensure t
   :init (rich-minority-mode 1)
   :config (validate-setq rm-whitelist '(" λ")))
 
-(use-package focus :ensure t :defer t)
+(use-package focus :disabled t:ensure t :defer t)
 
 (provide 'config-gui)
 ;;; config-gui.el ends here
