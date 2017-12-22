@@ -33,7 +33,6 @@
 (use-package delsel :init (delete-selection-mode 1))
 
 (use-package newcomment
-  :disabled t
   :defer t
   :config
   (setq-default comment-auto-fill-only-comments t))

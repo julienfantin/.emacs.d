@@ -97,7 +97,7 @@
 (use-config config-frame :if window-system)
 (use-config config-git)
 (use-config config-gui)
-(use-config config-helm :if (equal 'helm config-completion-system))
+(use-config config-helm :disabled t)
 (use-config config-help)
 (use-config config-indentation)
 (use-config config-irc)

@@ -78,8 +78,8 @@
 (use-package counsel-projectile
   :ensure t
   :defer t
-  :after projectile
-  :init (counsel-projectile-on))
+  :after (counsel projectile)
+  :init (counsel-projectile-mode))
 
 (use-package ivy-historian
   :disabled t

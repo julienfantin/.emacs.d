@@ -34,11 +34,11 @@
 (defvar config-frame-text-scale-step 10)
 
 (defvar config-frame-mono-fonts
-  '("-*-SF Mono-light-normal-ultracondensed-*-*-*-*-*-m-0-iso10646-1"
-    "-*-Iosevka-light-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+  '("-*-IBM Plex Mono-light-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+    "-*-SF Mono-light-normal-ultracondensed-*-*-*-*-*-m-0-iso10646-1"
     "-*-Source Code Pro-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-Fira Code-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"))
+    "-*-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+    "-*-Fira Code-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"))
 
 
 ;; * Fonts
