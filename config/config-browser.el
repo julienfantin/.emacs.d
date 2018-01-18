@@ -29,9 +29,6 @@
 
 ;; * URL handling
 
-(use-package url
-  :defer t
-  :config (validate-setq url-configuration-directory (user-var-directory "url/")))
 
 (use-package browse-url
   :defer t

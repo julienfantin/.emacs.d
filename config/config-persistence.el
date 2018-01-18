@@ -29,16 +29,15 @@
 (use-package savehist
   :disabled t
   :defer t
+  :after no-littering
   :init (after-init #'savehist-mode)
   :config
-  (setq savehist-additional-variables '(search-ring regexp-search-ring)
-        savehist-autosave-interval 60
-        savehist-file (user-var-file "savehist")))
+  (validate-setq savehist-additional-variables '(search-ring regexp-search-ring)
+                 savehist-autosave-interval 60))
 
 (use-package saveplace
   :defer t
-  :init (setq-default save-place t)
-  :config (setq save-place-file (user-var-file "places")))
+  :init (setq-default save-place t))
 
 (provide 'config-persistence)
 ;;; config-persistence.el ends here

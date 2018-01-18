@@ -48,14 +48,6 @@ the point doesn't move before calling 'POP-TO-MARK-COMMAND' with 'ARGS'."
     (advice-add #'pop-to-mark-command :around #'config-marks-pop-duplicate-marks-advice)))
 
 
-;; * Bookmarks
-
-(use-package bookmark
-  :defer t
-  :config
-  (setq bookmark-default-file (user-var-file "bookmarks")))
-
-
 ;; * Packages
 
 (use-package bm

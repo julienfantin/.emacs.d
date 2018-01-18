@@ -23,11 +23,6 @@
    recentf-max-saved-items 1000
    recentf-max-menu-items 200))
 
-(use-package tramp-cache
-  :defer t
-  :config
-  (validate-setq tramp-persistency-file-name (user-var-file "tramp")))
-
 (use-package autorevert
   :defer t
   :init (after-init #'global-auto-revert-mode)

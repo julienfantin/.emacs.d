@@ -108,9 +108,7 @@ hyper when it's used as a modifier."
 (use-package keyfreq
   :ensure t
   :defer t
-  :init
-  :preface
-  (defvar keyfreq-file (user-var-file "keyfreq"))
+  :after no-littering
   :init
   (progn
     (after-init #'keyfreq-mode)

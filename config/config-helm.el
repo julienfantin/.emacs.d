@@ -69,10 +69,8 @@
 (use-package helm-adaptive
   :disabled t
   :defer t
-  :after helm
-  :init (helm-adaptive-mode 1)
-  :config
-  (setq helm-adaptive-history-file (user-var-file "helm-adaptive-history")))
+  :after (helm no-littering)
+  :init (helm-adaptive-mode 1))
 
 (use-package helm-command
   :defer t

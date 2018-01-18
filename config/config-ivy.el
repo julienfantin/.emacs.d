@@ -35,18 +35,20 @@
   (setq-default uniquify-buffer-name-style 'forward))
 
 (use-package ivy
+  :defer t
   :init (after-init #'ivy-mode)
   :commands (ivy-set-actions)
   :config
   (progn
     (validate-setq
      ivy-initial-inputs-alist nil
-     ivy-re-builders-alist '((t . ivy--regex-ignore-order))
+     ivy-re-builders-alist '((t . ivy--regex-plus))
      ivy-use-virtual-buffers t
      ivy-virtual-abbreviate 'full)))
 
 (use-package counsel
   :ensure t
+  :defer t
   :init (after-init #'counsel-mode)
   :preface
   (progn
@@ -70,10 +72,9 @@
 (use-package smex
   :ensure t
   :defer t
-  :init
-  (progn
-    (defvar smex-history-length 100)
-    (defvar smex-save-file (user-var-file "smex"))))
+  :after (ivy no-littering)
+  :config
+  (validate-setq smex-history-length 1000))
 
 (use-package counsel-projectile
   :ensure t
@@ -83,11 +84,10 @@
 
 (use-package ivy-historian
   :ensure t
-  :after ivy
+  :after (ivy no-littering)
+  :hook (ivy-mode . ivy-historian-mode)
   :config
-  (progn
-    (validate-setq historian-history-length 1000)
-    (ivy-historian-mode 1)))
+  (validate-setq historian-history-length 1000))
 
 ;; * Commands
 
@@ -100,7 +100,7 @@
 
 (after 'counsel
   (defvar counsel-git-grep-todos-cmd
-    "git --no-pager grep --full-name -n --no-color -e TODO -e FIXME -e HACK -e XXX -e XXXX -e ??? -e FAIL")
+    "git --no-pager grep --full-name -n --no-color -e TODO -e FIXME -e HACK -e XXX")
 
   (defun -counsel-git-grep-project-todos ()
     (interactive)

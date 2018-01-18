@@ -42,9 +42,8 @@
 
 (use-package multiple-cursors
   :ensure t
-  :defer t
-  :init
-  (defvar mc/list-file (user-var-file ".mc-lists.el")))
+  :after no-littering
+  :defer t)
 
 (use-package beginend :disabled t :ensure t :init (beginend-global-mode 1))
 
@@ -67,13 +66,11 @@
   :disabled t                           ; undo-tree considered harmful
   :ensure t
   :defer t
+  :after no-littering
   :commands (undo-tree)
   :init (after-init #'global-undo-tree-mode)
   :config
-  (validate-setq
-   undo-tree-auto-save-history t
-   undo-tree-history-directory-alist
-   `(("" . ,(user-var-directory ".undo-tree/")))))
+  (validate-setq undo-tree-auto-save-history t))
 
 
 ;; * Builtins

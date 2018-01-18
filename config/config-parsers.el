@@ -148,12 +148,5 @@ Exit the save between databases if there is user input."
                 (semanticdb-save-db db t))
               semanticdb-database-list)))))
 
-(use-package semantic/db-file
-  :disabled t
-  :defer t
-  :config
-  (validate-setq
-   semanticdb-default-save-directory (user-var-directory "semantic-db/")))
-
 (provide 'config-parsers)
 ;;; config-parsers.el ends here

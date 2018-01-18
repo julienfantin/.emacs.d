@@ -31,7 +31,8 @@
 (use-package projectile
   :ensure t
   :defer t
-  :init (after-init #'projectile-global-mode)
+  :after no-littering
+  :init (after-init 'projectile-global-mode)
   :commands projectile-golbal-mode
   :functions (projectile-load-known-projects)
   :config
@@ -39,8 +40,6 @@
     (validate-setq
      projectile-mode-line nil
      projectile-enable-caching nil
-     projectile-cache-file (user-var-file "projectile.cache")
-     projectile-known-projects-file (user-var-file "projectile-bookmarks.el")
      projectile-use-git-grep t
      projectile-create-missing-test-files t
      projectile-globally-ignored-directories
