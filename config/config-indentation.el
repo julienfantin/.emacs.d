@@ -36,12 +36,11 @@
 (setq-default indent-tabs-mode nil)
 
 (use-package makefile
-  :defer t
   :preface
   (defun config-indentation-makefile ()
     (set (make-local-variable 'indent-tabs-mode) t)
     (set (make-local-variable 'tab-width) 4))
-  :config (add-hook 'makefile-mode-hook 'config-indentation-makefile))
+  :hook (makefile-mode . config-indentation-makefile))
 
 
 ;; * Whitespace cleanup
@@ -56,13 +55,12 @@
   :disabled t
   :ensure t
   :defer t
-  :init (add-hook 'prog-mode-hook #'clean-aindent-mode))
+  :hook prog-mode)
 
 (use-package ws-butler
   :ensure t
   :defer t
-  :commands ws-butler-mode
-  :init (add-hook 'prog-mode-hook #'ws-butler-mode))
+  :hook (prog-mode . ws-butler-mode))
 
 
 ;; * Indentation
@@ -70,9 +68,8 @@
 (use-package dtrt-indent
   :disabled t
   :ensure t
-  :defer t
   :after cc-mode
-  :init (add-hook 'cc-mode-hook #'dtrt-indent-mode)
+  :hook (cc-mode . dtrt-indent-mode)
   :config
   (validate-setq dtrt-indent-verbosity 0))
 

@@ -44,7 +44,7 @@
 (use-package eldoc
   :ensure t
   :defer t
-  :init (add-hook 'prog-mode-hook #'eldoc-mode)
+  :hook (prog-mode . eldoc-mode)
   :config
   (progn
     (validate-setq eldoc-idle-delay .5)

@@ -48,7 +48,7 @@
 
 (use-package hl-line
   :defer t
-  :hook  ((magit-mode dired-mode) . hl-line-mode)
+  :hook ((magit-mode dired-mode) . hl-line-mode)
   :config
   (validate-setq
    global-hl-line-sticky-flag nil

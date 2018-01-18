@@ -82,10 +82,12 @@
   :init (counsel-projectile-mode))
 
 (use-package ivy-historian
-  :disabled t
   :ensure t
   :after ivy
-  :config (ivy-historian-mode 1))
+  :config
+  (progn
+    (validate-setq historian-history-length 1000)
+    (ivy-historian-mode 1)))
 
 ;; * Commands
 
