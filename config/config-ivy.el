@@ -63,16 +63,14 @@
      `(("x" config-counsel-delete-file ,(propertize "delete" 'face 'font-lock-warning-face))
        ("4" config-counsel-find-file-other-window "other-window")))
     (validate-setq
-     counsel-rg-base-command "rg -i -M 120 --no-heading --line-number --color never '%s'"
-     counsel-grep-base-command "rg -i -M 120 --no-heading --line-number --color never '%s' %s"
-     counsel-find-file-at-point t
+     counsel-rg-base-command "rg -S -M 200 --no-heading --line-number --color never %s ."
      ivy-extra-directories nil)))
 
 ;; Counsel makes use of smex
 (use-package smex
   :ensure t
   :defer t
-  :after (ivy no-littering)
+  :after (no-littering)
   :config
   (validate-setq smex-history-length 1000))
 
@@ -94,18 +92,19 @@
 
 ;; NOTE use .dir-locals.el to ignore folders:
 ;;
-;; (counsel-git-grep-todos-cmd
+;; (counsel-todos-cmd
 ;;  . "git --no-pager grep --full-name -n --no-color -i -e TODO -e FIXME -e HACK
 ;; -e XXX -- './*' ':!resources/public/js/**' ':!resources/public/vs/**'")
 
 (after 'counsel
-  (defvar counsel-git-grep-todos-cmd
-    "git --no-pager grep --full-name -n --no-color -e TODO -e FIXME -e HACK -e XXX")
+  (defun -counsel-todos  ()
+    (interactive)
+    (counsel-rg "TODO|FIXME|HACK|XXX" (projectile-project-root) nil "TODOs:"))
 
-  (defun -counsel-git-grep-project-todos ()
+  (defun -counsel-git-grep-project-history ()
     (interactive)
     (let ((default-directory (projectile-project-root)))
-      (counsel-git-grep counsel-git-grep-todos-cmd))))
+      (counsel-git-grep (concat "git log -p -S%s --no-pager --no-color -- " default-directory)))))
 
 (provide 'config-ivy)
 ;;; config-ivy.el ends here

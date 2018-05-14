@@ -34,7 +34,6 @@
 ;; * Spell-checking
 
 (use-package guess-language
-  :disabled t
   :ensure t
   :defer t
   :after prose-mode
@@ -43,7 +42,6 @@
     (add-hook 'prose-minor-mode-hook 'guess-language-mode)))
 
 (use-package ispell
-  :disabled t
   :defer t
   :config
   (progn
@@ -59,23 +57,7 @@
       (setq ispell-program-name "hunspell")
       (setq ispell-extra-args '("-d en_US"))))))
 
-(use-package company
-  :ensure t
-  :defer t
-  :preface
-  (defun config-prose-completion-turn-on ()
-    (setq-local company-tooltip-limit 3)
-    (setq-local company-frontends '(company-preview-frontend))
-    (company-mode 1))
-  :init
-  (progn
-    (after 'config-completion
-      (config-completion-add-backends 'prose-minor-mode 'company-ispell))
-    (after 'prose-minor-mode
-      (add-to-list 'prose-minor-mode-hook 'config-prose-completion-turn-on))))
-
 (use-package flyspell
-  :disabled t
   :defer t
   :functions (config-prose-enable-spell-checking)
   :commands (git-commit-turn-on-flyspell)
@@ -97,26 +79,23 @@
       (add-hook 'prose-mode-hook #'config-prose-enable-spell-checking))))
 
 (use-package flyspell-lazy
-  :disabled t
   :ensure t
   :init (after 'flyspell (flyspell-lazy-mode 1)))
 
-(use-package flyspell-correct
-  :disabled t
+(use-package flyspell-correct-ivy
   :ensure t
+  :after flyspell
   :config
-  (use-package flyspell-correct-ivy
-    :ensure t
-    :config
-    (define-key flyspell-mode-map
-      (kbd "C-c $") 'flyspell-correct-previous-word-generic)))
+  (define-key flyspell-mode-map
+    (kbd "C-c $") 'flyspell-correct-previous-word-generic))
 
 
 ;; * Prose minor mode
 
 (use-package prose-minor-mode
-  :config
-  (add-hook 'prose-minor-mode-hook 'visual-line-mode))
+  :hook ((org-mode . prose-minor-mode)
+         (markdown-mode . prose-minor-mode)
+         (prose-minor-mode . visual-fill-column-mode)))
 
 
 ;; * Wrapping
@@ -125,9 +104,8 @@
   :ensure t
   :defer t
   :commands adaptive-wrap-prefix-mode
-  :init
-  (after 'prose-minor-mode
-    (add-hook 'prose-minor-mode-hook 'adaptive-wrap-prefix-mode)))
+  :after prose-minor-mode
+  :hook (prose-minor-mode . adaptive-wrap-prefix-mode))
 
 
 ;; * Linters
@@ -135,25 +113,17 @@
 (use-package writegood-mode
   :ensure t
   :defer t
-  :init
-  (after 'prose-minor-mode
-    (add-hook 'prose-minor-mode-hook #'writegood-mode)))
+  :after prose-minor-mode
+  :hook (prose-minor-mode . writegood-mode))
 
 
 ;; * Major modes
 
 (use-package markdown-mode
   :ensure t
-  :mode "\\.md\\'"
-  :config
-  (after 'prose-minor-mode
-    (add-hook 'markdown-mode-hook 'prose-minor-mode)))
+  :mode "\\.md\\'")
 
-(use-package org
-  :defer t
-  :config
-  (after 'prose-minor-mode
-    (add-hook 'org-mode-hook 'prose-minor-mode)))
+(use-package org :defer t)
 
 (provide 'config-prose)
 ;;; config-prose.el ends here

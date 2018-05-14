@@ -26,6 +26,13 @@
 (require 'use-config)
 (require 'config-path)
 
+;; * Direnv
+
+(use-package direnv
+  :ensure t
+  :defer t
+  :init (after-init #'direnv-mode))
+
 ;; * Projectile
 
 (use-package projectile

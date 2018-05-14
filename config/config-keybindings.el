@@ -145,7 +145,7 @@ hyper when it's used as a modifier."
   ("TAB"   -switch-to-last-buffer "last")
   ("`"     -switch-to-last-buffer "last")
   ("h"     bury-buffer "hide")
-  ("k"     kill-this-buffer "kill")
+  ("k"     kill-current-buffer "kill")
   ("K"     kill-buffer-and-window "kill (window)")
   ("n"     next-buffer "next")
   ("p"     previous-buffer "prev")
@@ -161,7 +161,7 @@ hyper when it's used as a modifier."
  "K"     '(hydra-buffers/kill-buffer-and-window :which-key "kill (window)")
  "b"     '(ivy-switch-buffer :which-key "buffers")
  "h"     '(hydra-buffers/bury-buffer :which-key "bury")
- "k"     '(hydra-buffers/kill-buffer :which-key "kill")
+ "k"     '(hydra-buffers/kill-current-buffer :which-key "kill")
  "n"     '(hydra-buffers/next-buffer :which-key "next")
  "p"     '(hydra-buffers/previous-buffer :which-key "prev")
  "r"     '(revert-buffer :which-key "revert")
@@ -206,7 +206,7 @@ hyper when it's used as a modifier."
  "g"     '(counsel-git-grep :which-key "git-grep")
  "p"     '(projectile-find-file :which-key "(projectile) find-file")
  "s"     '(-find-file-as-sudo :which-key "sudo")
- "t"     '(-counsel-git-grep-project-todos :which-key "todos"))
+ "t"     '(-counsel-todos :which-key "todos"))
 
 ;; ** (v)ersion control
 

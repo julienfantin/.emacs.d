@@ -34,11 +34,15 @@
 (defvar config-frame-text-scale-step 10)
 
 (defvar config-frame-mono-fonts
-  '("-*-IBM Plex Mono-light-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-SF Mono-light-normal-ultracondensed-*-*-*-*-*-m-0-iso10646-1"
+  '("-*-SF Mono-light-normal-ultracondensed-*-*-*-*-*-m-0-iso10646-1"
+    "-*-Iosevka-light-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+    "-*-IBM Plex Mono-light-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-Source Code Pro-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-Fira Code-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"))
+
+(defvar config-frame-fonts
+  '("-*-SF UI Text-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1"))
 
 
 ;; * Fonts
@@ -51,6 +55,12 @@
 (defun font-exists-p (font)
   "Existing 'FONT' predicate."
   (if (null (x-list-fonts font)) nil t))
+
+(defun config-frame-font (fonts-list)
+  (cl-find-if #'font-exists-p fonts-list))
+
+(set-face-attribute 'default nil :font (config-frame-font config-frame-mono-fonts))
+(set-face-attribute 'variable-pitch nil :font (config-frame-font config-frame-fonts))
 
 
 ;; * Frame
@@ -88,11 +98,11 @@
                  (config-frame-config)
                  `((menu-bar-lines       . nil)
                    (tool-bar-lines       . nil)
-                   (vertical-scroll-bars . nil)
-                   (font                 . ,(config-frame-mono-font))
-                   (line-spacing         . 3)))))
-    (setq default-frame-alist config
-          initial-frame-alist config))
+                   (vertical-scroll-bars . nil)))))
+    (setq
+     default-frame-alist config
+     initial-frame-alist
+     config))
   :config
   (progn
     (setq frame-resize-pixelwise t)

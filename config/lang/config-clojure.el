@@ -55,6 +55,7 @@
 
 (use-package cider
   :ensure t
+  ;; :pin melpa-stable
   :defer t
   :config
   (progn
@@ -115,15 +116,14 @@
 
 (use-package clj-refactor
   :ensure t
-  :defer t
+  ;; :pin melpa-stable
+  :after clojure-mode
+  :hook (clojure-mode . config-clojure-cljr-enable)
   :preface
   (defun config-clojure-cljr-enable ()
     (clj-refactor-mode 1)
     (yas-minor-mode 1)
     (cljr-add-keybindings-with-prefix "C-c ."))
-  :init
-  (after 'clojure-mode
-    (add-hook 'clojure-mode-hook 'config-clojure-cljr-enable))
   :config
   (validate-setq
    cljr-favor-prefix-notation nil
@@ -135,19 +135,25 @@
            '(("edn"       . "clojure.edn")
              ("a"         . "clojure.core.async")
              ("cp"        . "com.stuartsierra.component")
-             ("s"         . "clojure.spec")
-             ("st"        . "clojure.spec.test")
-             ("fs"        . "me.raynes.fs")
+             ("s"         . "clojure.spec.alpah")
+             ("st"        . "clojure.spec.alpha.test")
              ("json"      . "cheshire.core")
-             ("log"       . "taoensso.timbre")))))
+             ("log"       . "clojure.tools.logging")))))
 
 
 
 ;; * Sayid
 
-(use-package sayid :ensure t :defer t :after cider :init (sayid-setup-package))
+(use-package sayid
+  :ensure t
+  ;; :pin melpa-stable
+  :defer t
+  :after cider
+  :init (sayid-setup-package))
 
-(use-package flycheck-joker :ensure t :defer t :after clojure-mode)
+(use-package flycheck-joker
+  :ensure t
+  :after (clojure-mode flycheck))
 
 (use-package flycheck-clojure
   :disabled t

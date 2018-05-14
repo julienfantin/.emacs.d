@@ -246,9 +246,9 @@ Remap all faces when called with a prefix argument."
            ;;
            ;; Todos
            (,(theme-faces-match "todo")
-            ((t (:f ,duo-1 :w bold))))
+            ((t (:f ,duo-1 :b nil :w bold))))
            (,(theme-faces-match "done")
-            ((t (:f ,bg :b ,duo-3))))
+            ((t (:f ,uno-4 :w bold))))
            (,(theme-faces-match "quote" "verbatim")
             ((t (:f ,uno-1))))
            ;;
@@ -366,7 +366,8 @@ Remap all faces when called with a prefix argument."
            (ahs-plugin-bod-face                        ((t (:fg ,bg :bg ,uno-3))))
            (ahs-edit-mode-face                         ((t (:fg ,bg :bg ,accent))))
            (ahs-plugin-default-face                    ((t (:b ,bg-mfade))))
-           (compilation-info                           ((t (:f ,duo-3))))))))))
+           (compilation-info                           ((t (:f ,duo-3))))
+           (posframe-face                              ((t (:b ,bg-mfade))))))))))
 
 ;;;###autoload
 (when load-file-name

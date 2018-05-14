@@ -39,6 +39,7 @@
   (when config-theme-default
     (load-theme config-theme-default t)))
 
+
 
 ;; * Built-inss
 
@@ -72,6 +73,8 @@
 (use-package challenger-deep-theme :ensure t :defer t)
 (use-package rebecca-theme         :ensure t :defer t)
 (use-package nord-theme            :ensure t :defer t)
+(use-package kaolin-themes         :ensure t :defer t)
+(use-package exotica-theme         :ensure t :defer t)
 
 (use-package customize-theme
   :disabled t
@@ -88,6 +91,7 @@
 ;; https://github.com/kaushalmodi/.emacs.d/blob/master/setup-files/setup-kurecolor.el
 
 (use-package kurecolor
+  :disabled t
   :ensure t
   :defer t
   :commands (hydra-kurecolor/body)

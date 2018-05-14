@@ -29,17 +29,26 @@
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 
-(setq gc-cons-threshold most-positive-fixnum)
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.6)
 
 (require 'cl-lib)
+
 (require 'cl-macs)
 (require 'package)
-
 (set-default 'truncate-lines t)
+
 (setq use-package-verbose t)
+(defvar init--file-name-handler-alist file-name-handler-alist)
 
-(add-hook 'after-init-hook #'(lambda () (setq gc-cons-threshold 800000)))
 
+(setq file-name-handler-alist nil)
 
 
 ;; * Config options
@@ -66,6 +75,7 @@
   (load-file (expand-file-name "lib/use-config/use-config.el" user-emacs-directory)))
 
 (require 'use-package)
+(require 'no-littering nil t)
 
 ;; Setup our env path here, some configs might need this to be set
 (use-package exec-path-from-shell
@@ -142,6 +152,15 @@
 ;; ** WIP
 
 (use-config config-wip)
+
+(add-hook 'after-init-hook
+          #'(lambda ()
+              (setq gc-cons-threshold 16777216
+                    gc-cons-percentage 0.1)))
+
+(add-hook 'after-init-hook
+          #'(lambda ()
+              (setq file-name-handler-alist init--file-name-handler-alist)))
 
 (provide 'init)
 ;;; init.el ends here

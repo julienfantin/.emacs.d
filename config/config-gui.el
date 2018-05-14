@@ -78,7 +78,6 @@
 ;; * Packages
 
 (use-package rich-minority
-  :disabled t
   :ensure t
   :init (rich-minority-mode 1)
   :config (validate-setq rm-whitelist '(" λ")))

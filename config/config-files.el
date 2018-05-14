@@ -18,6 +18,7 @@
 (use-package recentf
   :defer t
   :init (after-init #'recentf-mode)
+  :after no-littering
   :config
   (validate-setq
    recentf-max-saved-items 1000
@@ -64,12 +65,13 @@
 
 (use-package no-littering
   :ensure t
+  :demand t
   :config
-  (setq auto-save-file-name-transforms
-        `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
-
-(after (recentf no-littering)
-  (add-to-list 'recentf-exclude no-littering-var-directory))
+  (progn
+    (setq auto-save-file-name-transforms
+          `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+    (after 'recentf
+      (add-to-list 'recentf-exclude no-littering-var-directory))))
 
 (use-package vlf-setup :ensure vlf)
 
@@ -123,7 +125,7 @@
   :config
   (setq-default dired-omit-files-p t)
   (validate-setq
-   dired-listing-switches "-alhv"
+   dired-listing-switches "-alh"
    dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
 

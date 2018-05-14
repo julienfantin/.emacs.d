@@ -60,15 +60,18 @@
   :ensure t
   :defer t
   :config
-  (validate-setq magit-save-repository-buffers 'dontask))
+  (validate-setq
+   magit-save-repository-buffers 'dontask
+   magit-display-buffer-function
+   (lambda (buffer)
+     (display-buffer-same-window buffer nil))))
 
 (use-package magit-imerge :disabled t :ensure t :defer t)
 
 (use-package magithub
-  ;; :disabled t
   :ensure t
   :defer t
-  :after magit
+  :after (magit no-littering)
   :config (magithub-feature-autoinject t))
 
 (use-package git-commit
@@ -77,7 +80,6 @@
   (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
 
 (use-package gited
-  :disabled t
   :ensure t
   :defer t)
 

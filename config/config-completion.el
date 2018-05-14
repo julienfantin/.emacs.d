@@ -80,8 +80,8 @@
 
 (use-package company
   :ensure t
-  :defer t
-  :commands (company-mode company-complete-common-or-cycle)
+  :demand t
+  :commands (company-mode company-turn-on company-complete-common company-complete-common-or-cycle company-idle-begin)
   :preface
   (defun config-completion--enabled-minor-modes ()
     (cl-remove-if-not

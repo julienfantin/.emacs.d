@@ -65,6 +65,7 @@
   :config
   (progn
     (validate-setq
+     org-agenda-files (list config-org-user-directory)
      org-log-done 'time
      org-src-window-setup 'current-window
      org-src-fontify-natively t
@@ -95,6 +96,20 @@
 
 
 ;; * Packages
+
+(use-package org-journal
+  :ensure t
+  :config
+  (validate-setq org-journal-dir (expand-file-name "journal" config-org-user-directory)))
+
+(use-package org-variable-pitch
+  :ensure t
+  :hook (org-mode . org-variable-pitch-minor-mode)
+  :config
+  (after (config-frame org-variable-pitch)
+    (setq org-variable-pitch-fixed-font (config-frame-font config-frame-mono-fonts))
+    (when window-system
+      (set-face-attribute 'org-variable-pitch-face nil :font (config-frame-font config-frame-fonts)))))
 
 (use-package worf
   :disabled t
