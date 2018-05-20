@@ -92,9 +92,12 @@
 
 ;; * Prose minor mode
 
+(use-package visual-fill-column :ensure t)
+
 (use-package prose-minor-mode
   :hook ((org-mode . prose-minor-mode)
          (markdown-mode . prose-minor-mode)
+         (prose-minor-mode . visual-line-mode)
          (prose-minor-mode . visual-fill-column-mode)))
 
 
