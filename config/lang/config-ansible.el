@@ -40,8 +40,6 @@
     (defun config-devops-ansible-prog ()
       (run-hooks 'prog-mode-hook))
     (add-hook 'ansible-hook 'config-devops-ansible-prog)
-    (after yasnippet
-      (ansible::snippets-initialize))
     ;; Ansible vault
     (defvar config-devops-vault-pass-filename ".vault_pass")
     (defun config-devops-locate-vault-pass-file ()
