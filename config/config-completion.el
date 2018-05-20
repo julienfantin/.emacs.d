@@ -27,20 +27,6 @@
 (require 'map)
 
 
-;; * Customs
-
-(defvar config-completion-backends-alist
-  '((emacs-lisp-mode
-     . (company-elisp
-        company-dabbrev-code
-        company-dabbrev
-        company-files
-        company-keywords))))
-
-(defvar config-completion--default-backends
-  '((company-dabbrev-code company-keywords company-capf)
-    company-files))
-
 
 ;; * Defaults
 
@@ -52,7 +38,6 @@
 ;; ** Abbrev
 
 (use-package abbrev
-  :disabled t
   :defer t
   :if (file-exists-p abbrev-file-name)
   :config
@@ -68,39 +53,27 @@
 
 ;; * Company
 
-(use-package smart-tab :ensure t :defer t)
-
-(defun config-completion-add-backends (mode &rest backends)
-  "Add 'MODE' specific 'BACKENDS' to 'config-completion-backends-alist'."
-  (let* ((existing (map-elt config-completion-backends-alist mode)))
-    (map-put config-completion-backends-alist mode (append existing backends))))
-
 (use-package company
   :ensure t
-  :demand t
-  :preface
-  (defun config-completion-company-config ()
-    (let ((backends (append (config-completion--company-backends) config-completion--default-backends)))
-      (setq company-backends backends)
-      (setq-local smart-tab-completion-functions-alist
-                  `((,major-mode . company-complete-common)))
-      (smart-tab-mode 1)
-      (company-mode 1)))
-  :init (add-hook 'prog-mode-hook 'config-completion-company-config)
+  :init (after-init #'global-company-mode)
   :config
   (progn
     (bind-key "TAB" #'company-complete-common-or-cycle company-active-map)
     (validate-setq
-     company-search-regexp-function 'company-search-words-regexp
+     company-backends '((company-elisp) (company-capf company-dabbrev company-files) (company-dabbrev-code company-keywords))
+     company-dabbrev-downcase nil
+     company-dabbrev-ignore-case nil
+     company-dabbrev-minimum-length 2
+     company-echo-delay 0
+     company-frontends '(company-pseudo-tooltip-frontend company-echo-metadata-frontend)
      company-idle-delay 0.2
      company-minimum-prefix-length 2
+     company-require-match nil
+     company-search-regexp-function 'company-search-words-regexp
      company-tooltip-align-annotations t
-     company-require-match nil)))
-
-(use-package company-elisp
-  :defer t
-  :config
-  (validate-setq company-elisp-detect-function-context nil))
+     company-tooltip-limit 10
+     company-transformers '(company-sort-by-occurrence))
+    (setq company-global-modes '(not text-mode message-mode git-commit-mode org-mode))))
 
 (use-package company-quickhelp
   :ensure t
@@ -108,14 +81,6 @@
   :after company
   :init (bind-key "C-h" 'company-quickhelp-mode company-active-map)
   :config (validate-setq company-quickhelp-delay 0.2))
-
-(use-package company-statistics
-  :ensure t
-  :after (no-littering company)
-  :hook (company-mode . company-statistics-mode)
-  :defer t
-  :config
-  (validate-setq company-statistics-size 2000))
 
 (provide 'config-completion)
 ;;; config-completion.el ends here
