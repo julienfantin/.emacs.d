@@ -27,7 +27,6 @@
 
 
 (use-package prog-mode
-  :defer t
   :config
   (progn
     (add-hook 'prog-mode-hook #'auto-fill-mode)
@@ -36,7 +35,6 @@
 ;; Spell checking code comments
 (use-package flyspell
   :disabled t
-  :defer t
   :init (add-hook 'prog-mode-hook #'flyspell-prog-mode))
 
 ;; Automatic file headers

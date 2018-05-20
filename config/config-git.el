@@ -29,7 +29,6 @@
 ;; * Built-ins
 
 (use-package vc
-  :defer t
   :config
   ;; Don't refresh remote files
   (validate-setq
@@ -39,7 +38,6 @@
                                 tramp-file-name-regexp)))
 
 (use-package ediff
-  :defer t
   :config
   (validate-setq
    ;; Remove noisy highlights
@@ -54,11 +52,10 @@
 
 ;; * Packages
 
-(use-package git-timemachine :ensure t :defer t)
+(use-package git-timemachine :ensure t)
 
 (use-package magit
   :ensure t
-  :defer t
   :config
   (validate-setq
    magit-save-repository-buffers 'dontask
@@ -66,27 +63,18 @@
    (lambda (buffer)
      (display-buffer-same-window buffer nil))))
 
-(use-package magit-imerge :disabled t :ensure t :defer t)
+(use-package magit-imerge :disabled t :ensure t)
 
 (use-package magithub
   :ensure t
-  :defer t
   :after (magit no-littering)
   :config (magithub-feature-autoinject t))
 
-(use-package git-commit
-  :defer t
-  :config
-  (add-hook 'git-commit-setup-hook #'git-commit-turn-on-flyspell))
-
-(use-package gited
-  :ensure t
-  :defer t)
+(use-package gited :ensure t)
 
 (use-package diff-hl
   :disabled t
   :ensure t
-  :defer t
   :commands diff-hl-mode
   :init
   (progn
@@ -95,12 +83,11 @@
   :config
   (progn
     (validate-setq diff-hl-draw-borders t)
-    (diff-hl-margin-mod e 1)))
+    (diff-hl-margin-mode 1)))
 
 (use-package helm-hunks
   :disabled t
   :ensure t
-  :defer t
   :config (setq helm-hunks-preview-diffs t))
 
 (provide 'config-git)

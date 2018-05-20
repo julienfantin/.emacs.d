@@ -31,7 +31,6 @@
 
 (use-package flycheck
   :ensure t
-  :defer t
   :init (after-init #'global-flycheck-mode)
   :commands (flycheck-mode flycheck-list-errors)
   :defines
@@ -107,7 +106,6 @@
 
 (use-package semantic
   :disabled t
-  :defer t
   :init (after-init #'semantic-mode)
   :functions
   (semanticdb-file-table-object
@@ -131,7 +129,6 @@
 
 (use-package semantic/db
   :disabled t
-  :defer t
   :defines
   (semanticdb-database-list
    semanticdb-file-table-object)
@@ -143,10 +140,10 @@
 Exit the save between databases if there is user input."
     (save-excursion
       (semantic-exit-on-input 'semanticdb-idle-save
-        (mapc (lambda (db)
-                (semantic-throw-on-input 'semanticdb-idle-save)
-                (semanticdb-save-db db t))
-              semanticdb-database-list)))))
+                              (mapc (lambda (db)
+                                      (semantic-throw-on-input 'semanticdb-idle-save)
+                                      (semanticdb-save-db db t))
+                                    semanticdb-database-list)))))
 
 (provide 'config-parsers)
 ;;; config-parsers.el ends here

@@ -41,7 +41,6 @@ the point doesn't move before calling 'POP-TO-MARK-COMMAND' with 'ARGS'."
         (apply pop-to-mark-command args)))))
 
 (use-package simple
-  :defer t
   :config
   (progn
     (setq mark-ring-max 128 global-mark-ring-max 128)
@@ -53,7 +52,6 @@ the point doesn't move before calling 'POP-TO-MARK-COMMAND' with 'ARGS'."
 (use-package bm
   :disabled t
   :ensure t
-  :defer t
   :defines (bm-buffer-persistence))
 
 

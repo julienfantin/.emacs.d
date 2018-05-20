@@ -26,13 +26,8 @@
 (require 'use-config)
 (require 'config-yaml)                  ; for docker-compose
 
-(use-package dockerfile-mode
-  :ensure t
-  :defer t)
-
-(use-package docker
-  :ensure t
-  :defer t)
+(use-package dockerfile-mode :ensure t)
+(use-package docker :ensure t )
 
 (provide 'config-docker)
 ;;; config-docker.el ends here

@@ -28,14 +28,13 @@
 
 ;; * Packages
 
-(use-package swiper :ensure t :defer t)
+(use-package swiper :ensure t)
 
 (use-package uniquify
   :config
   (setq-default uniquify-buffer-name-style 'forward))
 
 (use-package ivy
-  :defer t
   :init (after-init #'ivy-mode)
   :commands (ivy-set-actions)
   :config
@@ -48,7 +47,6 @@
 
 (use-package counsel
   :ensure t
-  :defer t
   :init (after-init #'counsel-mode)
   :preface
   (progn
@@ -69,14 +67,12 @@
 ;; Counsel makes use of smex
 (use-package smex
   :ensure t
-  :defer t
   :after (no-littering)
   :config
   (validate-setq smex-history-length 1000))
 
 (use-package counsel-projectile
   :ensure t
-  :defer t
   :after (counsel projectile)
   :init (counsel-projectile-mode))
 

@@ -30,7 +30,6 @@
 (use-package all-the-icons
   :disabled t
   :ensure t
-  :defer t
   :commands (all-the-icons-icon-for-buffer))
 
 (use-package spaceline-segments :demand t :after spaceline)
@@ -117,7 +116,6 @@
 (use-package powerline
   :disabled t
   :ensure t
-  :defer t
   :functions (powerline-reset)
   :config
   (progn

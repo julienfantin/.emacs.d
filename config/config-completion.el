@@ -38,7 +38,6 @@
 ;; ** Abbrev
 
 (use-package abbrev
-  :defer t
   :if (file-exists-p abbrev-file-name)
   :config
   (progn
@@ -61,9 +60,6 @@
     (bind-key "TAB" #'company-complete-common-or-cycle company-active-map)
     (validate-setq
      company-backends '((company-elisp) (company-capf company-dabbrev company-files) (company-dabbrev-code company-keywords))
-     company-dabbrev-downcase nil
-     company-dabbrev-ignore-case nil
-     company-dabbrev-minimum-length 2
      company-echo-delay 0
      company-frontends '(company-pseudo-tooltip-frontend company-echo-metadata-frontend)
      company-idle-delay 0.2
@@ -75,9 +71,15 @@
      company-transformers '(company-sort-by-occurrence))
     (setq company-global-modes '(not text-mode message-mode git-commit-mode org-mode))))
 
+(use-package company-dabbrev
+  :config
+  (validate-setq
+   company-dabbrev-downcase nil
+   company-dabbrev-ignore-case nil
+   company-dabbrev-minimum-length 2))
+
 (use-package company-quickhelp
   :ensure t
-  :defer t
   :after company
   :init (bind-key "C-h" 'company-quickhelp-mode company-active-map)
   :config (validate-setq company-quickhelp-delay 0.2))

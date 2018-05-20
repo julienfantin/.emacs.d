@@ -29,7 +29,6 @@
 ;; * Builtins
 
 (use-package isearch
-  :defer t
   :commands (isearch-forward-symbol-at-point isearch-forward)
   :init
   (progn
@@ -48,12 +47,11 @@
 ;; * Packages
 
 (use-package anzu :ensure t :init (global-anzu-mode))
-(use-package imenu-anywhere :ensure t :defer t)
-(use-package link-hint :ensure t :defer t)
-(use-package goto-last-change :disabled t :ensure t :commands goto-last-change :defer t)
+(use-package imenu-anywhere :ensure t)
+(use-package link-hint :ensure t)
+(use-package goto-last-change :disabled t :ensure t :commands goto-last-change)
 (use-package swiper
   :ensure t
-  :defer t
   :config
   (advice-add 'swiper :after #'recenter-top-bottom))
 

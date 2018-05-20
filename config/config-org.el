@@ -49,8 +49,6 @@
   (insert "- [ ] "))
 
 (use-package org
-  :ensure org-plus-contrib
-  :defer t
   :preface
   (progn
     (defun config-org-add-structure-templates ()
@@ -86,11 +84,9 @@
     (config-org-load-languages)))
 
 (use-package ob-core
-  :defer t
   :config (validate-setq org-confirm-babel-evaluate nil))
 
 (use-package org-capture
-  :defer t
   :config
   (validate-setq org-reverse-note-order t))
 
@@ -103,6 +99,7 @@
   (validate-setq org-journal-dir (expand-file-name "journal" config-org-user-directory)))
 
 (use-package org-variable-pitch
+  :disabled t
   :ensure t
   :hook (org-mode . org-variable-pitch-minor-mode)
   :config
@@ -114,13 +111,11 @@
 (use-package worf
   :disabled t
   :ensure t
-  :defer t
   :commands worf-goto)
 
 (use-package deft
   :disabled t
   :ensure t
-  :defer t
   :config
   (validate-setq
    deft-recursive t

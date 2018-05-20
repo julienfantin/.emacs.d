@@ -38,7 +38,6 @@
 
 (use-package persistent-scratch
   :ensure t
-  :defer t
   :init
   (progn
     (after-init #'persistent-scratch-setup-default)
@@ -46,7 +45,6 @@
 
 (use-package unkillable-scratch
   :ensure t
-  :defer t
   :init (after-init #'unkillable-scratch))
 
 (provide 'config-scratch)

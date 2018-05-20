@@ -29,7 +29,6 @@
 (use-package private :demand t)
 
 (use-package erc
-  :defer t
   :commands erc
   :config
   (progn
@@ -43,7 +42,6 @@
 
 (use-package erc-hl-nicks
   :ensure t
-  :defer t
   :init
   (after 'erc
     (add-hook 'erc-mode-hook 'erc-hl-nicks-mode)))

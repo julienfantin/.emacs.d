@@ -47,32 +47,12 @@
           '(nil right-curly-arrow))))
 
 (use-package hl-line
-  :defer t
   :hook ((magit-mode dired-mode) . hl-line-mode)
   :config
   (validate-setq
    global-hl-line-sticky-flag nil
    hl-line-sticky-flag nil))
 
-(use-package linum
-  :disabled t
-  :defer t
-  :init (add-hook 'prog-mode-hook #'linum-mode)
-  :defines (config-frame-linum-timer)
-  :functions (linum-update-current)
-  :preface (defvar-local config-frame-linum-timer nil)
-  :config
-  (progn
-    (validate-setq
-     linum-delay t
-     linum-format " %4d ")
-    ;; Redefine linum-schedule for slower updates, fixes laggy scrolling
-    ;; behavior
-    (defun linum-schedule ()
-      (when (timerp config-frame-linum-timer)
-        (cancel-timer config-frame-linum-timer))
-      (validate-setq
-       config-frame-linum-timer (run-with-idle-timer 1 nil #'linum-update-current)))))
 
 
 ;; * Packages
@@ -82,7 +62,7 @@
   :init (rich-minority-mode 1)
   :config (validate-setq rm-whitelist '(" λ")))
 
-(use-package focus :disabled t:ensure t :defer t)
+(use-package focus :disabled t :ensure t)
 
 (provide 'config-gui)
 ;;; config-gui.el ends here

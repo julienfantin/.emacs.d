@@ -29,7 +29,6 @@
 ;; * Built-ins
 
 (use-package paren
-  :defer t
   :init (add-hook 'prog-mode-hook #'show-paren-mode)
   :preface
   (progn
@@ -73,7 +72,6 @@
 
 (use-package paredit
   :ensure t
-  :defer t
   :commands paredit-mode
   :functions
   (paredit-wrap-round paredit-wrap-square paredit-wrap-curly)
@@ -158,7 +156,6 @@
 
 (use-package lispy
   :ensure t
-  :defer t
   :config
   (progn
     (after 'outline-magic

@@ -68,12 +68,10 @@
 
 (use-package helm-adaptive
   :disabled t
-  :defer t
   :after (helm no-littering)
   :init (helm-adaptive-mode 1))
 
 (use-package helm-command
-  :defer t
   :after helm
   :commands (helm-M-x)
   :config (setq helm-M-x-always-save-history t))
@@ -93,7 +91,6 @@
 
 (use-package helm-org
   :disabled t
-  :defer t
   :config
   (progn
     (defun helm-org-in-buffer-headings-preselection ()
@@ -113,8 +110,8 @@
 
 ;; * Packages
 
-(use-package helm-aws :disabled t :ensure t :defer t)
-(use-package helm-org-rifle :disabled t :ensure t :defer t)
+(use-package helm-aws :disabled t :ensure t)
+(use-package helm-org-rifle :disabled t :ensure t)
 
 
 (provide 'config-helm)

@@ -54,12 +54,10 @@
 (use-package clean-aindent-mode
   :disabled t
   :ensure t
-  :defer t
   :hook prog-mode)
 
 (use-package ws-butler
   :ensure t
-  :defer t
   :hook (prog-mode . ws-butler-mode))
 
 
@@ -75,7 +73,6 @@
 
 (use-package aggressive-indent
   :ensure t
-  :defer t
   :preface
   (defun config-indentation-aggressive-indent-skip-p ()
     "Return true if the current defun is longer than

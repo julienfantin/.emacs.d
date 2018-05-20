@@ -33,17 +33,13 @@
 (use-package delsel :init (delete-selection-mode 1))
 
 (use-package newcomment
-  :defer t
   :config
   (setq-default comment-auto-fill-only-comments t))
 
 
 ;; * Packages
 
-(use-package multiple-cursors
-  :ensure t
-  :after no-littering
-  :defer t)
+(use-package multiple-cursors :ensure t :after no-littering)
 
 (use-package beginend :disabled t :ensure t :init (beginend-global-mode 1))
 
@@ -60,12 +56,11 @@
   (add-to-list 'ahs-plugin-bod-modes 'clojurescript-mode)
   (add-to-list 'ahs-plugin-bod-modes 'clojurec-mode))
 
-(use-package iedit :ensure t :defer t)
+(use-package iedit :ensure t)
 
 (use-package undo-tree
   :disabled t                           ; undo-tree considered harmful
   :ensure t
-  :defer t
   :after no-littering
   :commands (undo-tree)
   :init (after-init #'global-undo-tree-mode)

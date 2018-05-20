@@ -30,7 +30,6 @@
 
 (use-package clojure-mode
   :ensure t
-  :defer t
   :mode "\\.repl\\'"
   :config
   (progn
@@ -47,7 +46,6 @@
 
 (use-package clojure-mode-extra-font-locking
   :ensure t
-  :defer t
   :after clojure-mode)
 
 
@@ -56,7 +54,6 @@
 (use-package cider
   :ensure t
   ;; :pin melpa-stable
-  :defer t
   :config
   (progn
     (bind-key "C-c C-t" 'cider-test-jump clojure-mode-map)
@@ -80,12 +77,10 @@
       (add-hook 'cider-repl-mode-hook #'config-clojure--set-lispy-pp-eval-function))))
 
 (use-package cider-stacktrace
-  :defer t
   :config
   (setq cider-stacktrace-default-filters '(tooling dup java repl)))
 
 (use-package cider-debug
-  :defer t
   :config
   (progn
     (defun cider-debug-toggle-eldoc ()
@@ -96,7 +91,6 @@
     (add-hook 'cider--debug-mode-hook 'cider-debug-toggle-eldoc)))
 
 (use-package cider-repl
-  :defer t
   :config
   (progn
     (bind-key "C-c C-o" 'cider-repl-clear-buffer cider-repl-mode-map)
@@ -107,7 +101,6 @@
           cider-repl-display-help-banner nil)))
 
 (use-package cider-debug
-  :defer t
   :config
   (validate-setq cider-debug-display-locals nil))
 
@@ -147,7 +140,6 @@
 (use-package sayid
   :ensure t
   ;; :pin melpa-stable
-  :defer t
   :after cider
   :init (sayid-setup-package))
 
@@ -158,7 +150,6 @@
 (use-package flycheck-clojure
   :disabled t
   :ensure t
-  :defer t
   :functions (config-clojure-disable-checkers)
   :preface
   (defun config-clojure-disable-checkers ()

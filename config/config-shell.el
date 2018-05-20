@@ -29,7 +29,6 @@
 ;; * Comint
 
 (use-package comint
-  :defer t
   :config
   (validate-setq comint-prompt-read-only t))
 
@@ -39,7 +38,6 @@
 ;; * Eshell
 
 (use-package eshell
-  :defer t
   :config
   (after 'counsel
     (add-hook 'eshell-mode-hook
@@ -47,7 +45,6 @@
                 (define-key eshell-mode-map (kbd "M-r") 'counsel-esh-history)))))
 
 (use-package esh-mode
-  :defer t
   :functions (eshell/clear eshell/x eshell/clear!)
   :commands (eshell-send-input)
   :preface
@@ -71,7 +68,6 @@
     (add-hook 'eshell-mode-hook (lambda () (bind-key "C-l" #'eshell/clear! eshell-mode-map)))))
 
 (use-package em-unix
-  :defer t
   :config
   (validate-setq
    eshell-cp-interactive-query t
@@ -81,11 +77,9 @@
    eshell-mv-overwrite-files nil))
 
 (use-package em-cmpl
-  :defer t
   :config (validate-setq eshell-cmpl-ignore-case t))
 
 (use-package em-term
-  :defer t
   :config
   (validate-setq
    eshell-destroy-buffer-when-process-dies t
@@ -93,7 +87,6 @@
    (append '("tmux" "screen" "ssh" "htop" "git log") eshell-visual-commands)))
 
 (use-package em-hist
-  :defer t
   :config (validate-setq eshell-hist-ignoredups t))
 
 
@@ -101,14 +94,12 @@
 
 (use-package eshell-z
   :ensure t
-  :defer t
   :init
   (after 'eshell
     (require 'eshell-z nil t)))
 
 (use-package eshell-prompt-extras
   :ensure t
-  :defer t
   :after em-prompt
   :commands epe-theme-lambda
   :init

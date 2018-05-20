@@ -30,7 +30,6 @@
 ;; * Builtins
 
 (use-package elisp-mode
-  :defer t
   :config
   (bind-key "C-c C-k" #'-eval-buffer emacs-lisp-mode-map)
   (bind-key "C-c C-p" #'pp-eval-last-sexp emacs-lisp-mode-map))
@@ -47,19 +46,16 @@
 
 (use-package lisp-extra-font-lock
   :ensure t
-  :defer t
   :after lisp
   :config (lisp-extra-font-lock-global-mode 1))
 
 (use-package elisp-slime-nav
   :ensure t
-  :defer t
   :commands (turn-on-elisp-slime-nav-mode)
   :init (add-hook 'emacs-lisp-mode-hook #'turn-on-elisp-slime-nav-mode))
 
 (use-package nameless
   :ensure t
-  :defer t
   :init (add-hook 'emacs-lisp-mode-hook #'nameless-mode)
   :commands (nameless-insert-name)
   :config
@@ -72,7 +68,6 @@
 
 (use-package sotlisp
   :ensure t
-  :defer t
   :commands sotlisp-turn-on-everywhere
   :init (sotlisp-turn-on-everywhere)
   :config

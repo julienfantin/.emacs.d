@@ -16,7 +16,6 @@
 ;; * Builtins
 
 (use-package recentf
-  :defer t
   :init (after-init #'recentf-mode)
   :after no-littering
   :config
@@ -25,12 +24,10 @@
    recentf-max-menu-items 200))
 
 (use-package autorevert
-  :defer t
   :init (after-init #'global-auto-revert-mode)
   :config (validate-setq auto-revert-check-vc-info nil))
 
 (use-package simple
-  :defer t
   :config
   (progn
     (validate-setq
@@ -39,7 +36,6 @@
      make-backup-files nil)))
 
 (use-package dired
-  :defer t
   :config
   (progn
     (validate-setq dired-auto-revert-buffer t)
@@ -48,7 +44,6 @@
 (use-package dired-k
   :disabled t
   :ensure t
-  :defer t
   :config
   (progn
     (add-hook 'dired-initial-position-hook 'dired-k)
@@ -77,7 +72,6 @@
 
 (use-package super-save
   :ensure t
-  :defer t
   :init (after-init #'super-save-mode)
   :config
   (progn
@@ -112,7 +106,6 @@
 
 (use-package dired-narrow
   :ensure t
-  :defer t
   :init
   (after 'dired
     (bind-keys

@@ -31,7 +31,6 @@
 (use-package ace-window
   :ensure t
   :commands (aw-window-list)
-  :defer t
   :config
   (setq aw-keys '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0)
         aw-scope 'frame))
@@ -41,24 +40,23 @@
 
 ;; * Undo and redo
 
-(use-package winner :defer t :init (after-init #'winner-mode))
+(use-package winner :init (after-init #'winner-mode))
 
 
 ;; * Focus
 
-(use-package zygospore :ensure t :defer t)
+(use-package zygospore :ensure t)
 
 
 ;; * Drag
 
-(use-package buffer-move :ensure t :defer t)
+(use-package buffer-move :ensure t)
 
 
 ;; * Resize
 
 (use-package windresize
   :ensure t
-  :defer t
   :commands (windresize-left windresize-right windresize-up windresize-down)
   :config (validate-setq windresize-default-increment 5))
 
@@ -66,8 +64,8 @@
 ;; * Buffer display rules
 
 (use-package shackle
+  :disabled t
   :ensure t
-  :defer t
   :init (after-init #'shackle-mode)
   :config
   (validate-setq

@@ -34,8 +34,7 @@
 (setq package-archives
       '(("melpa"        . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")
-        ("gnu"          . "https://elpa.gnu.org/packages/")
-        ("org"          . "http://orgmode.org/elpa/")))
+        ("gnu"          . "https://elpa.gnu.org/packages/")))
 
 ;; ** TLS configuration for elpa over HTTPS
 
@@ -67,28 +66,34 @@
         (error (format "tls misconfigured; retrieved %s ok" bad-hosts)) ;
       (url-retrieve "https://badssl.com" (lambda (_retrieved) t)))))
 
-;; ** ELPA init
-
-(package-initialize)
-
 
 ;; * Package helpers
-;; ** use-package
+
+(package-initialize)
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
+(defvar use-package-always-defer t)
+
 (require 'use-package)
 
-;; ** paradox
+(use-package system-packages
+  :ensure t
+  :config
+  (setq
+   system-packages-use-sudo nil
+   system-packages-package-manager 'brew))
+
+(use-package use-package-ensure-system-package :ensure t)
 
 (use-package paradox
   :ensure t
-  :defer t
   :config
-  (setq paradox-execute-asynchronously t
-        paradox-github-token t))
+  (progn
+    (setq paradox-execute-asynchronously t
+          paradox-github-token t)))
 
 (provide 'config-elpa)
 ;;; config-elpa.el ends here

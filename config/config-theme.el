@@ -44,7 +44,6 @@
 ;; * Built-inss
 
 (use-package custom
-  :defer t
   :commands load-theme
   :init
   (progn
@@ -58,23 +57,22 @@
 
 (use-package theme-sync
   :disabled t
-  :defer t
   :commands theme-sync-mode
   :init (after-init #'theme-sync-mode))
 
-(use-package duotone-theme)
-(use-package duotone-reload)
+(use-package duotone-theme :demand t :load-path "../themes/duotone")
+(use-package duotone-reload )
 
-(use-package doom-themes           :ensure t :defer t)
-(use-package dracula-theme         :ensure t :defer t)
-(use-package darktooth-theme       :ensure t :defer t)
-(use-package zerodark-theme        :ensure t :defer t)
-(use-package gruvbox-theme         :ensure t :defer t)
-(use-package challenger-deep-theme :ensure t :defer t)
-(use-package rebecca-theme         :ensure t :defer t)
-(use-package nord-theme            :ensure t :defer t)
-(use-package kaolin-themes         :ensure t :defer t)
-(use-package exotica-theme         :ensure t :defer t)
+(use-package doom-themes           :ensure t)
+(use-package dracula-theme         :ensure t)
+(use-package darktooth-theme       :ensure t)
+(use-package zerodark-theme        :ensure t)
+(use-package gruvbox-theme         :ensure t)
+(use-package challenger-deep-theme :ensure t)
+(use-package rebecca-theme         :ensure t)
+(use-package nord-theme            :ensure t)
+(use-package kaolin-themes         :ensure t)
+(use-package exotica-theme         :ensure t)
 
 (use-package customize-theme
   :disabled t
@@ -93,7 +91,6 @@
 (use-package kurecolor
   :disabled t
   :ensure t
-  :defer t
   :commands (hydra-kurecolor/body)
   :init
   (defhydra hydra-kurecolor (:color pink :hint  nil :body-pre (require 'kurecolor))

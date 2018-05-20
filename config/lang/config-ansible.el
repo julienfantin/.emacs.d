@@ -29,7 +29,6 @@
 
 (use-package ansible
   :ensure t
-  :defer t
   :after yaml-mode
   :mode
   (("group_vars/.*" . yaml-mode)
@@ -57,7 +56,6 @@
 
 (use-package ansible-doc
   :ensure t
-  :defer t
   :after ansible
   :init (add-hook 'ansible::hook #'ansible-doc-mode)
   :config
@@ -66,7 +64,6 @@
 
 (use-package company-ansible
   :ensure t
-  :defer t
   :after ansible
   :init
   (after config-completion

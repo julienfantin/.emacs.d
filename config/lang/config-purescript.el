@@ -25,11 +25,10 @@
 ;;; Code:
 (require 'use-config)
 
-(use-package purescript-mode :ensure t :defer t)
+(use-package purescript-mode :ensure)
 
 (use-package psc-ide
   :ensure t
-  :defer t
   :after purescript-mode
   :init
   (progn
@@ -38,14 +37,12 @@
 
 (use-package psci
   :ensure t
-  :defer t
   :after purescript-mode
   :config
   (add-hook 'purescript-mode-hook 'inferior-psci-mode))
 
 (use-package repl-toggle
   :ensure t
-  :defer t
   :after psci
   :config
   (add-to-list 'rtog/mode-repl-alist '(purescript-mode . psci)))

@@ -34,7 +34,6 @@
 ;; * Built-ins
 
 (use-package js
-  :defer t
   :config
   (validate-setq js-indent-level config-web-default-indent))
 
@@ -66,7 +65,6 @@
 
 (use-package company-web
   :ensure t
-  :defer t
   :init
   (after (web-mode config-completion)
     (config-completion-add-backends 'web-mode 'company-css 'company-web-html)))

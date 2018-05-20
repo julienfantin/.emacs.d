@@ -28,7 +28,6 @@
 
 (use-package savehist
   :disabled t
-  :defer t
   :after no-littering
   :init (after-init #'savehist-mode)
   :config
@@ -36,7 +35,6 @@
                  savehist-autosave-interval 60))
 
 (use-package saveplace
-  :defer t
   :init (setq-default save-place t))
 
 (provide 'config-persistence)

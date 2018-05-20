@@ -32,7 +32,6 @@
 
 (use-package eyebrowse
   :ensure t
-  :defer t
   :init (after-init #'eyebrowse-mode)
   :config
   (validate-setq

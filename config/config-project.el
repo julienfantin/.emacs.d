@@ -30,14 +30,12 @@
 
 (use-package direnv
   :ensure t
-  :defer t
   :init (after-init #'direnv-mode))
 
 ;; * Projectile
 
 (use-package projectile
   :ensure t
-  :defer t
   :after no-littering
   :init (after-init 'projectile-global-mode)
   :commands projectile-golbal-mode

@@ -43,7 +43,6 @@
 
 (use-package eldoc
   :ensure t
-  :defer t
   :hook (prog-mode . eldoc-mode)
   :config
   (progn
@@ -55,14 +54,13 @@
        'paredit-backward-delete
        'paredit-close-round))))
 
-(use-package know-your-http-well :ensure t :defer t)
+(use-package know-your-http-well :ensure t)
 
 (defvar config-completion-system)       ; silence warning
 
 (use-package counsel-dash
   :if (eq config-completion-system 'ivy)
   :ensure t
-  :defer t
   :after config-completion
   :functions (config-doc-set-docsets)
   :config
@@ -90,7 +88,7 @@
        (config-doc-set-docsets (car cell) (cdr cell)))
      config-doc-default-docsets)))
 
-(use-package google-this :disabled t :ensure t :defer t)
+(use-package google-this :disabled t :ensure t)
 
 (provide 'config-doc)
 ;;; config-doc.el ends here

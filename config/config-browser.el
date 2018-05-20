@@ -31,7 +31,6 @@
 
 
 (use-package browse-url
-  :defer t
   :config
   ;; Use Firefox Nightly on macOS
   (validate-setq

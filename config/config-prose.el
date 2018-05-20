@@ -35,14 +35,12 @@
 
 (use-package guess-language
   :ensure t
-  :defer t
   :after prose-mode
   :config
   (after 'prose-minor-mode
     (add-hook 'prose-minor-mode-hook 'guess-language-mode)))
 
 (use-package ispell
-  :defer t
   :config
   (progn
     (setq ispell-silently-savep t)
@@ -58,7 +56,6 @@
       (setq ispell-extra-args '("-d en_US"))))))
 
 (use-package flyspell
-  :defer t
   :functions (config-prose-enable-spell-checking)
   :commands (git-commit-turn-on-flyspell)
   :config
@@ -105,7 +102,6 @@
 
 (use-package adaptive-wrap
   :ensure t
-  :defer t
   :commands adaptive-wrap-prefix-mode
   :after prose-minor-mode
   :hook (prose-minor-mode . adaptive-wrap-prefix-mode))
@@ -115,7 +111,6 @@
 
 (use-package writegood-mode
   :ensure t
-  :defer t
   :after prose-minor-mode
   :hook (prose-minor-mode . writegood-mode))
 
@@ -125,8 +120,6 @@
 (use-package markdown-mode
   :ensure t
   :mode "\\.md\\'")
-
-(use-package org :defer t)
 
 (provide 'config-prose)
 ;;; config-prose.el ends here

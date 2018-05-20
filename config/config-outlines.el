@@ -29,7 +29,6 @@
 ;; * Built-ins
 
 (use-package outline
-  :defer t
   :init (add-hook 'prog-mode-hook #'outline-minor-mode))
 
 
@@ -38,7 +37,6 @@
 (use-package outshine
   :disabled t
   :ensure t
-  :defer t
   :commands
   (outshine-hook-function outshine-insert-heading)
   :preface
@@ -60,9 +58,9 @@
   (after 'lispy
     (add-hook 'lispy-mode-hook 'config-outline-lispy-compat)))
 
-(use-package outorg :disabled t :ensure t :defer t)
-(use-package navi-mode :disabled t :ensure t :defer t)
-(use-package outline-magic :disabled t :ensure t :defer t)
+(use-package outorg :disabled t :ensure t)
+(use-package navi-mode :disabled t :ensure t)
+(use-package outline-magic :disabled t :ensure t)
 
 
 ;; * Commands

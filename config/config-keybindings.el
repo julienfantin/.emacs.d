@@ -93,11 +93,10 @@ hyper when it's used as a modifier."
 
 (use-package general :ensure t)
 
-(use-package free-keys :ensure t :defer t)
+(use-package free-keys :ensure t)
 
 (use-package which-key
   :ensure t
-  :defer t
   :init (after-init #'which-key-mode)
   :config
   (validate-setq
@@ -107,7 +106,6 @@ hyper when it's used as a modifier."
 
 (use-package keyfreq
   :ensure t
-  :defer t
   :after no-littering
   :init
   (progn
@@ -127,13 +125,12 @@ hyper when it's used as a modifier."
 
 (use-package hydra
   :ensure  t
-  :defer t
   :config
   (use-package lv
     :config
     (validate-setq lv-use-separator t)))
 
-(use-package interaction-log :disabled t :ensure t :defer t :commands interaction-log-mode)
+(use-package interaction-log :disabled t :ensure t :commands interaction-log-mode)
 
 
 ;; * Hydras
