@@ -32,7 +32,12 @@
 
 (use-package browse-url
   :defer t
-  :config (validate-setq browse-url-browser-function 'eww-browse-url))
+  :config
+  ;; Use Firefox Nightly on macOS
+  (validate-setq
+   browse-url-browser-function #'browse-url-firefox
+   browse-url-firefox-program "open"
+   browse-url-firefox-arguments '("-a" "Firefox Nightly")))
 
 (provide 'config-browser)
 ;;; config-browser.el ends here
