@@ -38,6 +38,7 @@
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-candid-light
   (make-instance
    'duotone-palette
@@ -57,6 +58,7 @@
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-mono-light
   (make-instance
    'duotone-palette
@@ -73,6 +75,7 @@
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-mono-dark
   (make-instance
    'duotone-palette
@@ -105,6 +108,7 @@
 ;;   :group 'duotone
 ;;   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-fiat-light
   (make-instance
    'duotone-palette
@@ -122,23 +126,7 @@
   :group 'duotone
   :type 'duotone-palette)
 
-(defcustom duotone-palette-fiat-dark
-  (make-instance
-   'duotone-palette
-   :fg       (chroma-hex :hex "#F6fdfd")
-   :bg       (chroma-hex :hex "#2c3e50")
-   :uno-1    (chroma-hex :hex "#E92299")
-   :uno-2    (chroma-hex :hex "#32A5F2")
-   :uno-3    (chroma-hex :hex "#217EBE")
-   :uno-4    (chroma-hex :hex "#bdc3c7")
-   :duo-1    (chroma-hex :hex "#1F8BD3")
-   :duo-2    (chroma-hex :hex "#9270C4")
-   :duo-3    (chroma-hex :hex "#57769A")
-   :accent   (chroma-hex :hex "#DEDA5C"))
-  "Mono light palette."
-  :group 'duotone
-  :type 'duotone-palette)
-
+;;;###autoload
 (defcustom duotone-palette-earth-dark
   (make-instance
    'duotone-palette
@@ -158,6 +146,7 @@
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-sea-dark
   (make-instance
    'duotone-palette
@@ -178,6 +167,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-amethyst-dark
   (make-instance
    'duotone-palette
@@ -198,6 +188,7 @@ https://github.com/bynines/duotone-dark-amethyst-syntax"
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-blue-dark
   (make-instance
    'duotone-palette
@@ -218,6 +209,7 @@ https://github.com/smlombardi/duotone-blue-dark"
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-space-dark
   (make-instance
    'duotone-palette
@@ -238,7 +230,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
-
+;;;###autoload
 (defcustom duotone-palette-duotone-light
   (make-instance
    'duotone-palette
@@ -257,6 +249,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-duotone-dark
   (make-instance
    'duotone-palette
@@ -276,6 +269,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-watch-light
   (make-instance
    'duotone-palette
@@ -292,6 +286,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-two-watch-dark
   (make-instance
    'duotone-palette
@@ -308,6 +303,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-newspaper-light
   (make-instance
    'duotone-palette
@@ -324,6 +320,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-emacs-light
   (make-instance
    'duotone-palette
@@ -341,6 +338,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-vimsical-light
   (make-instance
    'duotone-palette
@@ -358,6 +356,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
   :group 'duotone
   :type 'duotone-palette)
 
+;;;###autoload
 (defcustom duotone-palette-default-palettes
   '(
     duotone-palette-amethyst-dark
@@ -378,8 +377,7 @@ https://github.com/simurai/duotone-dark-sea-syntax."
     duotone-palette-stark-sea
     duotone-palette-two-watch-dark
     duotone-palette-vimsical-light
-    duotone-palette-watch-light
-    )
+    duotone-palette-watch-light)
   "Duotone default palettes."
   :group 'duotone
   :type 'list)
