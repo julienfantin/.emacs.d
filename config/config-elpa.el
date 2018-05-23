@@ -71,31 +71,43 @@
 
 (package-initialize)
 
+;; * Use-package
+
+(defvar use-package-always-defer t)
+
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package)
   (package-install 'bind-key))
 
-(defvar use-package-always-defer t)
-
 (eval-when-compile (require 'use-package))
 (require 'bind-key)
 
+;; * System packages
+
 (use-package system-packages
   :ensure t
-  :config
-  (setq
-   system-packages-use-sudo nil
-   system-packages-package-manager 'brew))
+  :custom
+  (system-packages-use-sudo nil)
+  (system-packages-package-manager 'brew))
 
 (use-package use-package-ensure-system-package :ensure t)
 
+;; * Quelpa
+
+(use-package quelpa
+  :ensure t
+  :custom
+  (quelpa-update-melpa-p nil)
+  (quelpa-checkout-melpa-p nil))
+
+(use-package quelpa-use-package :ensure t :demand t)
+
 (use-package paradox
   :ensure t
-  :config
-  (progn
-    (setq paradox-execute-asynchronously t
-          paradox-github-token t)))
+  :custom
+  (paradox-execute-asynchronously t)
+  (paradox-github-token t))
 
 (provide 'config-elpa)
 ;;; config-elpa.el ends here

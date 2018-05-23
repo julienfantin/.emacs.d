@@ -129,10 +129,9 @@
               ("C-c C-e" . merlin-iedit-occurrences)))
 
 (use-package merlin-eldoc
-  :load-path "./vendor/merlin-eldoc/"
+  :quelpa (merlin-eldoc :repo "Khady/merlin-eldoc" :fetcher github)
   :hook ((reason-mode tuareg-mode caml-mode) . merlin-eldoc-setup)
-  :custom
-  (merlin-eldoc-max-lines 8))
+  :custom (merlin-eldoc-max-lines 8))
 
 (use-package flycheck-ocaml
   :ensure t
