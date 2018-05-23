@@ -73,11 +73,13 @@
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
-  (package-install 'use-package))
+  (package-install 'use-package)
+  (package-install 'bind-key))
 
 (defvar use-package-always-defer t)
 
-(require 'use-package)
+(eval-when-compile (require 'use-package))
+(require 'bind-key)
 
 (use-package system-packages
   :ensure t
