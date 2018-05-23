@@ -39,8 +39,6 @@
     (add-to-list 'clojure-align-binding-forms "gen/let")
     ;; reagent
     (add-to-list 'clojure-align-binding-forms "with-let")
-    (after 'config-completion
-      (config-completion-add-backends 'clojure-mode #'company-capf))
     (define-key clojure-mode-map [remap forward-sexp] #'clojure-forward-logical-sexp)
     (define-key clojure-mode-map [remap backward-sexp] #'clojure-backward-logical-sexp)))
 
@@ -53,6 +51,7 @@
 
 (use-package cider
   :ensure t
+  :ensure-system-package (lein . leiningen)
   ;; :pin melpa-stable
   :config
   (progn
@@ -111,9 +110,9 @@
   :ensure t
   ;; :pin melpa-stable
   :after clojure-mode
-  :hook (clojure-mode . config-clojure-cljr-enable)
+  :hook (clojure-mode . config-clojure-cljr)
   :preface
-  (defun config-clojure-cljr-enable ()
+  (defun config-clojure-cljr ()
     (clj-refactor-mode 1)
     (yas-minor-mode 1)
     (cljr-add-keybindings-with-prefix "C-c ."))
@@ -126,6 +125,7 @@
    cljr-magic-require-namespaces
    (append cljr-magic-require-namespaces
            '(("edn"       . "clojure.edn")
+             ("d"         . "datomic.api")
              ("a"         . "clojure.core.async")
              ("cp"        . "com.stuartsierra.component")
              ("s"         . "clojure.spec.alpah")
@@ -145,28 +145,16 @@
 
 (use-package flycheck-joker
   :ensure t
-  :after (clojure-mode flycheck))
-
-(use-package flycheck-clojure
-  :disabled t
-  :ensure t
-  :functions (config-clojure-disable-checkers)
-  :preface
-  (defun config-clojure-disable-checkers ()
-    (flycheck-disable-checker 'clojure-cider-typed))
-  :init
-  ;; This doesn't even seem to work...
-  (after (clojure-mode flycheck)
-    (flycheck-clojure-setup)
-    (add-hook 'clojure-mode-hook 'config-clojure-disable-checkers)))
-
+  :ensure-system-package (joker . candid82/brew/joker)
+  :after flycheck
+  :init (require 'flycheck-joker nil t))
 
 
 ;; * Smart Jump
 
 (use-package smart-jump
   :ensure t
-  :after cider
+  :after (cider)
   :config
   (smart-jump-register
    :modes '(clojure-mode cider-mode cider-repl-mode)
