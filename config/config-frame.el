@@ -25,13 +25,9 @@
 ;;; Code:
 (require 'use-config)
 
-
 ;; * Customs
 
-(defvar config-frame-center t)
-(defvar config-frame-width-pct 80)
-(defvar config-frame-height-pct 80)
-(defvar config-frame-text-scale-step 10)
+(defvar config-frame-border-width 30)
 
 (defvar config-frame-mono-fonts
   '("-*-SF Mono-light-normal-ultracondensed-*-*-*-*-*-m-0-iso10646-1"
@@ -65,58 +61,34 @@
 
 ;; * Frame
 
-(defun config-frame-size (width-pct height-pct)
-  "Compute a frame size as a list of (width, height) in pixels.
-
-'WIDTH-PCT' and 'HEIGHT-PCT' are integer percentages of the display size."
-  (list
-   (* (display-pixel-width) (/ width-pct 100.0))
-   (* (display-pixel-height) (/ height-pct 100.0))))
-
-(defun config-frame-origin (size)
-  "Compute a list of (x, y) as the origin for a frame of 'SIZE'."
-  (let ((width (car size))
-        (height (cadr size)))
-    (list
-     (* 0.5 (- (display-pixel-width) width))
-     (* 0.5 (- (display-pixel-height) height)))))
-
-(defun config-frame-config ()
-  "Return a frame alist compatible with 'initial-frame-alist'."
-  (let* ((size (config-frame-size config-frame-width-pct config-frame-height-pct))
-         (origin (if config-frame-center (config-frame-origin size) '(0 0))))
-    `(;; in pixels
-      (left   . ,(round (car origin)))
-      (top    . ,(round (cadr origin)))
-      ;; in chars
-      (width  . ,(round (/ (car size) (frame-char-width))))
-      (height . ,(round (/ (cadr size) (frame-char-height)))))))
+(defvar config-frame-frame-alist
+  `((menu-bar-lines        . nil)
+    (tool-bar-lines        . nil)
+    (vertical-scroll-bars  . nil)
+    (internal-border-width . ,config-frame-border-width)))
 
 (use-package frame
-  :init
-  (let ((config (append
-                 (config-frame-config)
-                 `((menu-bar-lines       . nil)
-                   (tool-bar-lines       . nil)
-                   (vertical-scroll-bars . nil)))))
-    (setq
-     default-frame-alist config
-     initial-frame-alist
-     config))
+  :init (after-init #'window-divider-mode)
   :config
   (progn
-    (setq frame-resize-pixelwise t)
     (scroll-bar-mode -1)
     (tool-bar-mode -1)
     (blink-cursor-mode -1)
-    (pixel-scroll-mode 1)))
+    (pixel-scroll-mode 1))
+  :custom
+  (frame-resize-pixelwise t)
+  (default-frame-alist config-frame-frame-alist)
+  (initial-frame-alist config-frame-frame-alist)
+  (window-divider-default-places t)
+  (window-divider-default-right-width config-frame-border-width)
+  (window-divider-default-bottom-width 10))
 
 (use-package mwheel
   :disabled t
-  :config
+  :custom
   ;; Smooth-ish mouse scrolling
-  (setq mouse-wheel-progressive-speed nil
-        mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil))))
+  (mouse-wheel-progressive-speed nil)
+  (mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil))))
 
 
 ;; * Commands
