@@ -31,110 +31,115 @@
 (require 'subr-x)
 
 
-;; * Ocaml dev environment
+;; * Opam config
+
+(defun config-ocaml-opam-load-path ()
+  "Add the site-lisp for the current opam switch to the `load-path'."
+  (when-let
+      ((opam-switch (string-trim (shell-command-to-string "opam config var prefix")))
+       (opam-site-lisp (expand-file-name "share/emacs/site-lisp" opam-switch)))
+    (add-to-list 'load-path opam-site-lisp)))
 
 (use-package opam
   :ensure t
-  :defer t
-  :preface
-  (defun add-opam-load-path ()
-    (interactive)
-    (when-let ((opam-switch (string-trim (shell-command-to-string "opam config var prefix"))))
-      (add-to-list 'load-path (expand-file-name "share/emacs/site-lisp" opam-switch))))
+  :ensure-system-package opam
   :init
-  (after 'tuareg
-    (opam-init)
-    (add-opam-load-path)))
+  (progn
+    (config-ocaml-opam-load-path)
+    (opam-init)))
+
+
+;; * Ocaml tooling
+
+(use-package merlin
+  :ensure-system-package (ocamlmerlin . "opam install merlin")
+  :after (tuareg)
+  :hook (tuareg-mode . merlin-mode)
+  :bind
+  (:map merlin-mode-map
+        ("M-."        . merlin-locate)
+        ("M-,"        . merlin-pop-stack)
+        ("M-?"        . merlin-occurrences)
+        ("C-c C-j"    . merlin-jump)
+        ("C-c i"      . merlin-locate-ident)
+        ("C-c C-d"    . merlin-document)
+        ("C-c <up>"   . merlin-type-enclosing-go-up)
+        ("C-c <down>" . merlin-type-enclosing-go-down))
+
+  :custom
+  (merlin-completion-types t)
+  (merlin-completion-arg-type t)
+  (merlin-completion-with-doc t)
+  (merlin-completion-dwim t)
+  (merlin-error-after-save t)
+  (merlin-command 'opam)
+  (merlin-default-flags '("-principal")))
 
 (use-package utop
-  :defer t
+  :ensure t
+  :ensure-system-package (utop . "opam install utop")
+  :after (opam)
+  :hook (tuareg-mode . utop-minor-mode)
   :commands utop-minor-mode
-  :init
-  (after 'tuareg
-    (add-hook 'tuareg-mode-hook 'utop-minor-mode))
-  :config
-  (after 'paredit
-    (add-hook 'utop-mode-hook 'paredit-mode)
-    (add-hook 'utop-mode-hook  #'(lambda () (ocaml-bind-paredit utop-mode-map)))))
+  :custom
+  (utop-edit-command nil)
+  :hook
+  ((tuareg-mode reason-mode) . utop-minor-mode)
+  (tuareg-mode . (lambda ()
+                   (setq utop-command "utop -emacs")
+                   (setq utop-prompt
+                         (lambda ()
+                           (let ((prompt (format "utop[%d]> " utop-command-number)))
+                             (add-text-properties 0 (length prompt) '(face utop-prompt) prompt)
+                             prompt)))))
+  (reason-mode . (lambda ()
+                   (setq utop-command "rtop -emacs")
+                   (setq utop-prompt
+                         (lambda ()
+                           (let ((prompt (format "rtop[%d]> " utop-command-number)))
+                             (add-text-properties 0 (length prompt) '(face utop-prompt) prompt)
+                             prompt))))))
 
 (use-package ocp-indent
-  :defer t
-  :init
-  (after 'tuareg
-    (require 'ocp-indent nil t)))
+  :ensure-system-package (ocp-indent . "opam install ocp-indent")
+  :after (tuareg)
+  :commands (ocp-indent-caml-mode-setup)
+  :hook (tuareg-mode . ocp-indent-caml-mode-setup))
 
-;; * Emacs tools
+
+;; * Ocaml modes
 
 (use-package tuareg
   :ensure t
-  :defer t
-  :preface
-  (defun ocaml-bind-paredit (keymap)
-    (bind-keys
-     :map keymap
-     ("C-M-f" . smie-forward-sexp-command)
-     ("C-M-b" . smie-backward-sexp-command)
-     ("[" . paredit-open-square)
-     ("]" . paredit-close-square)
-     ("{" . paredit-open-curly)
-     ("}" . paredit-close-curly)
-     ("}" . paredit-close-curly)
-     ("<backspace>" . paredit-backward-delete)))
-  :commands esk-tuareg-eval
+  :after (opam)
   :mode (("\\.ml[ily]?$" . tuareg-mode)
          ("\\.topml$" . tuareg-mode))
-  :config
-  (progn
-    (after 'paredit
-      (add-hook 'tuareg-mode-hook 'paredit-mode)
-      (add-hook 'tuareg-mode-hook  #'(lambda () (ocaml-bind-paredit tuareg-mode-map)))
-      (bind-keys
-       :map tuareg-mode-map
-       ("RET" . reindent-then-newline-and-indent)
-       ("C-c C-k" . tuareg-eval-buffer)
-       ("C-c C-s" . utop)))))
+  :bind (:map tuareg-mode-map
+              ;; ("C-M-f" . smie-forward-sexp-command)
+              ;; ("C-M-b" . smie-backward-sexp-command)
+              ("C-c C-k" . tuareg-eval-buffer)
+              ("C-c C-z" . utop)))
 
-(use-package merlin
-  :defer t
-  :init
-  (progn
-    ;; NOTE: from the merlin docs
-    ;;
-    ;; To use merlin-locate to go to the source of things installed with
-    ;; opam, you first of all need to keep the source around when
-    ;; installing, and let opam create .cmt files:
-    ;; Set this in ~/.bash_profile:
-    ;; export OPAMKEEPBUILDDIR=true
-    ;; export OCAMLPARAM="_,bin-annot=1"
-    ;; export OPAMBUILDDOC=true
-    (setenv "OPAMKEEPBUILDDIR" "true")
-    (setenv "OCAMLPARAM" "_,bin-annot=1")
-    (setenv "OPAMBUILDDOC" "true")
-    (after 'tuareg
-      (add-hook 'tuareg-mode-hook 'merlin-mode)))
-  :config
-  (after 'tuareg
-    (use-package merlin-company :defer t)
-    (validate-setq
-     merlin-completion-types nil
-     merlin-completion-arg-type nil
-     merlin-completion-with-doc t
-     merlin-completion-dwim nil
-     merlin-error-after-save nil
-     merlin-command 'opam
-     merlin-default-flags '("-principal"))
-    (define-key merlin-mode-map (kbd "C-c <up>") 'merlin-type-enclosing-go-up)
-    (define-key merlin-mode-map (kbd "C-c <down>") 'merlin-type-enclosing-go-down)))
+(use-package merlin-company
+  :after (merlin company))
+
+(use-package merlin-iedit
+  :after (merlin)
+  :bind (:map merlin-mode-map
+              ("C-c C-e" . merlin-iedit-occurrences)))
+
+(use-package merlin-eldoc
+  :load-path "./vendor/merlin-eldoc/"
+  :hook ((reason-mode tuareg-mode caml-mode) . merlin-eldoc-setup)
+  :custom
+  (merlin-eldoc-max-lines 8))
 
 (use-package flycheck-ocaml
   :ensure t
-  :defer t
-  :init
-  (after 'merlin
-    (flycheck-ocaml-setup))
-  :config
-  (after 'merlin
-    (validate-setq merlin-error-after-save nil)))
+  :after (merlin)
+  :init (flycheck-ocaml-setup)
+  :custom
+  (merlin-error-after-save nil))
 
 (provide 'config-ocaml)
 ;;; config-ocaml.el ends here
