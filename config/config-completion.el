@@ -39,10 +39,11 @@
 
 (use-package abbrev
   :if (file-exists-p abbrev-file-name)
+  :custom
+  (save-abbrevs 'silently)
   :config
   (progn
     (setq-default abbrev-mode t)
-    (validate-setq save-abbrevs 'silently)
     (quietly-read-abbrev-file)))
 
 ;; ** Mini-buffer
@@ -55,34 +56,44 @@
 (use-package company
   :ensure t
   :init (after-init #'global-company-mode)
-  :config
-  (progn
-    (bind-key "TAB" #'company-complete-common-or-cycle company-active-map)
-    (validate-setq
-     company-backends '((company-elisp) (company-capf company-dabbrev company-files) (company-dabbrev-code company-keywords))
-     company-echo-delay 0
-     company-frontends '(company-pseudo-tooltip-frontend company-echo-metadata-frontend)
-     company-idle-delay 0.2
-     company-minimum-prefix-length 2
-     company-require-match nil
-     company-search-regexp-function 'company-search-words-regexp
-     company-tooltip-align-annotations t
-     company-tooltip-limit 10
-     company-transformers '(company-sort-by-occurrence))
-    (setq company-global-modes '(not text-mode message-mode git-commit-mode org-mode))))
+  :bind (:map company-active-map
+              ("TAB" . company-complete-common-or-cycle))
+  :custom
+  (company-global-modes
+   '(not text-mode message-mode git-commit-mode org-mode))
+  (company-backends
+   '((company-elisp)
+     (company-capf company-dabbrev company-files)
+     (company-dabbrev-code company-keywords)))
+  (company-echo-delay 0)
+  (company-frontends
+   '((company-pseudo-tooltip-frontend
+      company-echo-metadata-frontend)))
+  (company-idle-delay 0.2)
+  (company-minimum-prefix-length 2)
+  (company-require-match nil)
+  (company-search-regexp-function 'company-search-words-regexp)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations t)
+  (company-tooltip-limit 10)
+  (company-tooltip-minimum 10)
+  (company-tooltip-minimum-width 50)
+  (company-transformers '(company-sort-by-occurrence)))
 
 (use-package company-dabbrev
-  :config
-  (validate-setq
-   company-dabbrev-downcase nil
-   company-dabbrev-ignore-case nil
-   company-dabbrev-minimum-length 2))
+  :custom
+  (company-dabbrev-downcase nil)
+  (company-dabbrev-ignore-case nil)
+  (company-dabbrev-minimum-length 2))
 
 (use-package company-quickhelp
   :ensure t
   :after company
-  :init (bind-key "C-h" 'company-quickhelp-mode company-active-map)
-  :config (validate-setq company-quickhelp-delay 0.2))
+  :bind (:map company-active-map
+              ("C-h" . company-quickhelp-mode))
+  :custom
+  (company-quickhelp-delay 0.2)
+  (company-quickhelp-use-propertized-text t))
 
 (provide 'config-completion)
 ;;; config-completion.el ends here

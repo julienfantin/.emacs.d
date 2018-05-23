@@ -29,7 +29,6 @@
 ;; * Built-ins
 
 (use-package paren
-  :init (add-hook 'prog-mode-hook #'show-paren-mode)
   :preface
   (progn
     (defvar config-sexp-show-paren nil)
@@ -41,17 +40,14 @@
       (when (bound-and-true-p config-sexp-show-paren)
         (setq config-sexp-show-paren nil)
         (show-paren-mode 1))))
-  :config
-  (progn
-    (validate-setq
-     show-paren-style 'expression
-     show-paren-priority 1000
-     show-paren-delay 0.05)
-    (add-hook 'activate-mark-hook #'(lambda () (show-paren-mode -1)))
-    (add-hook 'deactivate-mark-hook #'(lambda () (show-paren-mode 1)))
-    (after 'pulse-eval
-      (add-hook 'pulse-eval-before-pulse-hook #'config-sexp-show-paren-turn-off)
-      (add-hook 'pulse-eval-after-pulse-hook #'config-sexp-show-paren-turn-on))))
+  :hook
+  ((prog-mode                                . show-paren-mode)
+   ((activate-mark pulse-eval-before-pulse)  . config-sexp-show-paren-turn-off)
+   ((deactivate-mark pulse-eval-after-pulse) . config-sexp-show-paren-turn-on))
+  :custom
+  (show-paren-style 'expression)
+  (show-paren-priority 1000)
+  (show-paren-delay 0.05))
 
 
 ;; * Lisp minor-mode
@@ -164,16 +160,16 @@
     (after 'pulse-eval
       (add-to-list
        'pulse-eval-advices-alist
-       (cons 'lispy-mode '((lispy-eval . pulse-eval-highlight-forward-sexp-advice)))))
-    (validate-setq lispy-no-space t)
-    (validate-setq
-     lispy-no-permanent-semantic t
-     lispy-completion-method 'ivy
-     lispy-visit-method 'projectile
-     lispy-compat '(edebug cider)
-     lispy-avy-style-char 'at-full
-     lispy-avy-style-paren 'at-full
-     lispy-avy-style-symbol 'at-full)))
+       (cons 'lispy-mode '((lispy-eval . pulse-eval-highlight-forward-sexp-advice))))))
+  :custom
+  (lispy-no-space t)
+  (lispy-no-permanent-semantic t)
+  (lispy-completion-method 'ivy)
+  (lispy-visit-method 'projectile)
+  (lispy-compat '(edebug cider))
+  (lispy-avy-style-char 'at-full)
+  (lispy-avy-style-paren 'at-full)
+  (lispy-avy-style-symbol 'at-full))
 
 (use-package lispy-mnemonic
   :commands lispy-mnemonic-mode

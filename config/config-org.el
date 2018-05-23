@@ -62,51 +62,39 @@
         (org-babel-do-load-languages 'org-babel-load-languages))))
   :config
   (progn
-    (validate-setq
-     org-agenda-files (list config-org-user-directory)
-     org-log-done 'time
-     org-src-window-setup 'current-window
-     org-src-fontify-natively t
-     org-startup-indented t
-     org-startup-folded nil
-     org-hide-leading-stars t
-     org-fontify-whole-heading-line t
-     org-fontify-quote-and-verse-blocks t
-     org-use-fast-tag-selection nil
-     org-use-speed-commands t
-     ;; org-speed-commands-user
-     ;; '(("N" . org-shiftmetadown)
-     ;;   ("P" . org-shiftmetaup)
-     ;;   ("F" . org-shiftmetaright)
-     ;;   ("B" . org-shiftmetaleft))
-     )
     (config-org-add-structure-templates)
-    (config-org-load-languages)))
+    (config-org-load-languages))
+  :custom
+  (org-agenda-files (list config-org-user-directory))
+  (org-log-done 'time)
+  (org-src-window-setup 'current-window)
+  (org-src-fontify-natively t)
+  (org-startup-indented t)
+  (org-startup-folded nil)
+  (org-hide-leading-stars t)
+  (org-fontify-whole-heading-line t)
+  (org-fontify-quote-and-verse-blocks t)
+  (org-use-fast-tag-selection nil)
+  (org-use-speed-commands t)
+  (org-speed-commands-user
+   '(("N" . org-shiftmetadown)
+     ("P" . org-shiftmetaup)
+     ("F" . org-shiftmetaright)
+     ("B" . org-shiftmetaleft))))
 
 (use-package ob-core
-  :config (validate-setq org-confirm-babel-evaluate nil))
+  :custom (org-confirm-babel-evaluate nil))
 
 (use-package org-capture
-  :config
-  (validate-setq org-reverse-note-order t))
+  :custom (org-reverse-note-order t))
 
 
 ;; * Packages
 
 (use-package org-journal
   :ensure t
-  :config
-  (validate-setq org-journal-dir (expand-file-name "journal" config-org-user-directory)))
-
-(use-package org-variable-pitch
-  :disabled t
-  :ensure t
-  :hook (org-mode . org-variable-pitch-minor-mode)
-  :config
-  (after (config-frame org-variable-pitch)
-    (setq org-variable-pitch-fixed-font (config-frame-font config-frame-mono-fonts))
-    (when window-system
-      (set-face-attribute 'org-variable-pitch-face nil :font (config-frame-font config-frame-fonts)))))
+  :custom
+  (org-journal-dir (expand-file-name "journal" config-org-user-directory)))
 
 (use-package worf
   :disabled t
@@ -116,21 +104,20 @@
 (use-package deft
   :disabled t
   :ensure t
-  :config
-  (validate-setq
-   deft-recursive t
-   deft-use-filename-as-title t
-   deft-default-extension "org"))
+  :custom
+  (deft-recursive t)
+  (deft-use-filename-as-title t)
+  (deft-default-extension "org"))
 
 (use-package org-projectile
   :disabled t
   :ensure t
   :config
   (progn
-    (setq org-projectile-projects-file (expand-file-name "projects.org" org-directory))
-    (setq org-agenda-files (append org-agenda-files (org-projectile-todo-files)))
-    (push (org-projectile-project-todo-entry) org-capture-templates)))
-
+    (push (org-projectile-project-todo-entry) org-capture-templates))
+  :custom
+  (org-projectile-projects-file (expand-file-name "projects.org" org-directory))
+  (org-agenda-files (append org-agenda-files (org-projectile-todo-files))))
 
 (provide 'config-org)
 ;;; config-org.el ends here

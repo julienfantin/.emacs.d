@@ -113,7 +113,6 @@
 
 (use-package mwheel
   :disabled t
-  :defer t
   :config
   ;; Smooth-ish mouse scrolling
   (setq mouse-wheel-progressive-speed nil

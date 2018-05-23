@@ -53,55 +53,52 @@
   :ensure t
   :ensure-system-package (lein . leiningen)
   ;; :pin melpa-stable
+  :bind
+  (:map clojure-mode-map
+        ("C-c C-t" . cider-test-jump)
+        ("C-c C-z" . cider-switch-to-repl-buffer))
+  :hook
+  ((cider-mode cider-repl-mode) . eldoc-mode)
   :config
-  (progn
-    (bind-key "C-c C-t" 'cider-test-jump clojure-mode-map)
-    (bind-key "C-c C-z" 'cider-switch-to-repl-buffer clojure-mode-map)
-    (validate-setq
-     cider-font-lock-dynamically '(macro core function deprecated var) ;; Too slow
-     cider-font-lock-dynamically nil
-     cider-save-file-on-load t
-     cider-save-files-on-cider-refresh t
-     cider-prompt-for-symbol nil
-     cider-auto-jump-to-error nil
-     cider-prefer-local-resources t
-     cider-dynamic-indentation nil
-     cider-pprint-fn 'pprint)
-    (add-hook 'cider-mode-hook 'eldoc-mode)
-    (add-hook 'cider-repl-mode-hook 'eldoc-mode)
-    (after (lispy-mnemonic cider-interaction)
-      (defun config-clojure--set-lispy-pp-eval-function ()
-        (setq-local lispy-pp-eval-sexp-function #'(lambda (&optional _) (cider-pprint-eval-last-sexp))))
-      (add-hook 'cider-mode-hook #'config-clojure--set-lispy-pp-eval-function)
-      (add-hook 'cider-repl-mode-hook #'config-clojure--set-lispy-pp-eval-function))))
+  (after (lispy-mnemonic cider-interaction)
+    (defun config-clojure--set-lispy-pp-eval-function ()
+      (setq-local lispy-pp-eval-sexp-function #'(lambda (&optional _) (cider-pprint-eval-last-sexp))))
+    (add-hook 'cider-mode-hook #'config-clojure--set-lispy-pp-eval-function)
+    (add-hook 'cider-repl-mode-hook #'config-clojure--set-lispy-pp-eval-function))
+  :custom
+  (cider-font-lock-dynamically '(macro core function deprecated var)) ;; Too slow
+  (cider-font-lock-dynamically nil)
+  (cider-save-file-on-load t)
+  (cider-save-files-on-cider-refresh t)
+  (cider-prompt-for-symbol nil)
+  (cider-auto-jump-to-error nil)
+  (cider-prefer-local-resources t)
+  (cider-dynamic-indentation nil)
+  (cider-pprint-fn 'pprint))
 
 (use-package cider-stacktrace
-  :config
-  (setq cider-stacktrace-default-filters '(tooling dup java repl)))
+  :custom (cider-stacktrace-default-filters '(tooling dup java repl)))
 
 (use-package cider-debug
-  :config
-  (progn
-    (defun cider-debug-toggle-eldoc ()
-      "Disable eldoc during debugging."
-      (if (bound-and-true-p cider--debug-mode)
-          (eldoc-mode -1)
-        (eldoc-mode 1)))
-    (add-hook 'cider--debug-mode-hook 'cider-debug-toggle-eldoc)))
+  :preface
+  (defun cider-debug-toggle-eldoc ()
+    "Disable eldoc during debugging."
+    (if (bound-and-true-p cider--debug-mode)
+        (eldoc-mode -1)
+      (eldoc-mode 1)))
+  :hook (cider--debug-mode . cider-debug-toggle-eldoc))
 
 (use-package cider-repl
-  :config
-  (progn
-    (bind-key "C-c C-o" 'cider-repl-clear-buffer cider-repl-mode-map)
-    (setq cider-repl-pop-to-buffer-on-connect nil
-          cider-repl-use-clojure-font-lock nil
-          cider-repl-use-pretty-printing t
-          cider-repl-history-file (user-var-file "nrepl-history")
-          cider-repl-display-help-banner nil)))
+  :bind (:map cider-repl-mode-map ("C-c C-o" . cider-repl-clear-buffer))
+  :custom
+  (cider-repl-pop-to-buffer-on-connect nil)
+  (cider-repl-use-clojure-font-lock nil)
+  (cider-repl-use-pretty-printing t)
+  (cider-repl-history-file (user-var-file "nrepl-history"))
+  (cider-repl-display-help-banner nil))
 
 (use-package cider-debug
-  :config
-  (validate-setq cider-debug-display-locals nil))
+  :custom (cider-debug-display-locals nil))
 
 
 ;; * clj-refactor
@@ -116,13 +113,12 @@
     (clj-refactor-mode 1)
     (yas-minor-mode 1)
     (cljr-add-keybindings-with-prefix "C-c ."))
-  :config
-  (validate-setq
-   cljr-favor-prefix-notation nil
-   cljr-warn-on-eval nil
-   cljr-ignore-analyzer-errors t
-   cljr-magic-requires t
-   cljr-magic-require-namespaces
+  :custom
+  (cljr-favor-prefix-notation nil)
+  (cljr-warn-on-eval nil)
+  (cljr-ignore-analyzer-errors t)
+  (cljr-magic-requires t)
+  (cljr-magic-require-namespaces
    (append cljr-magic-require-namespaces
            '(("edn"       . "clojure.edn")
              ("d"         . "datomic.api")

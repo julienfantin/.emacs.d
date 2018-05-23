@@ -56,10 +56,12 @@
 (defun config-keybindings-macbook ()
   (interactive)
   (cl-case system-type
-    ('darwin (validate-setq mac-command-modifier 'control
-                            mac-control-modifier 'meta
-                            mac-option-modifier 'super
-                            mac-function-modifier 'hyper))))
+    ('darwin
+     (validate-setq
+      mac-command-modifier 'control
+      mac-control-modifier 'meta
+      mac-option-modifier 'super
+      mac-function-modifier 'hyper))))
 
 (when config-keybdings-default-setup
   (funcall config-keybdings-default-setup))

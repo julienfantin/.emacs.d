@@ -29,25 +29,23 @@
 ;; * Built-ins
 
 (use-package vc
-  :config
+  :custom
   ;; Don't refresh remote files
-  (validate-setq
-   vc-handled-backends '(Git)
-   vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+  (vc-handled-backends '(Git))
+  (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
                                 vc-ignore-dir-regexp
                                 tramp-file-name-regexp)))
 
 (use-package ediff
-  :config
-  (validate-setq
-   ;; Remove noisy highlights
-   ediff-highlight-all-diffs nil
-   ;; Avoid the crazy multi-frames setup
-   ediff-window-setup-function 'ediff-setup-windows-plain
-   ;; Ignore whitespace
-   ediff-diff-options "-w"
-   ;; Counter-intuitve naming here, but windows should be side-by-side...
-   ediff-split-window-function 'split-window-horizontally))
+  :custom
+  ;; Remove noisy highlights
+  (ediff-highlight-all-diffs nil)
+  ;; Avoid the crazy multi-frames setup
+  (ediff-window-setup-function 'ediff-setup-windows-plain)
+  ;; Ignore whitespace
+  (ediff-diff-options "-w")
+  ;; Counter-intuitve naming here, but windows should be side-by-side...
+  (ediff-split-window-function 'split-window-horizontally))
 
 
 ;; * Packages
@@ -56,10 +54,9 @@
 
 (use-package magit
   :ensure t
-  :config
-  (validate-setq
-   magit-save-repository-buffers 'dontask
-   magit-display-buffer-function
+  :custom
+  (magit-save-repository-buffers 'dontask)
+  (magit-display-buffer-function
    (lambda (buffer)
      (display-buffer-same-window buffer nil))))
 
@@ -88,7 +85,7 @@
 (use-package helm-hunks
   :disabled t
   :ensure t
-  :config (setq helm-hunks-preview-diffs t))
+  :custom (helm-hunks-preview-diffs t))
 
 (provide 'config-git)
 ;;; config-git.el ends here

@@ -18,28 +18,24 @@
 (use-package recentf
   :init (after-init #'recentf-mode)
   :after no-littering
-  :config
-  (validate-setq
-   recentf-max-saved-items 1000
-   recentf-max-menu-items 200))
+  :custom
+  (recentf-max-saved-items 1000)
+  (recentf-max-menu-items 200))
 
 (use-package autorevert
   :init (after-init #'global-auto-revert-mode)
-  :config (validate-setq auto-revert-check-vc-info nil))
+  :custom (auto-revert-check-vc-info nil))
 
 (use-package simple
-  :config
-  (progn
-    (validate-setq
-     save-interprogram-paste-before-kill t
-     create-lockfiles nil
-     make-backup-files nil)))
+  :custom
+  (save-interprogram-paste-before-kill t)
+  (create-lockfiles nil)
+  (make-backup-files nil))
 
 (use-package dired
-  :config
-  (progn
-    (validate-setq dired-auto-revert-buffer t)
-    (add-hook 'dired-mode-hook 'dired-hide-details-mode)))
+  :hook (dired-mode . dired-hide-details-mode)
+  :custom
+  (dired-auto-revert-buffer t))
 
 (use-package dired-k
   :disabled t
@@ -61,12 +57,12 @@
 (use-package no-littering
   :ensure t
   :demand t
+  :custom
+  (auto-save-file-name-transforms
+   `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
   :config
-  (progn
-    (setq auto-save-file-name-transforms
-          `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
-    (after 'recentf
-      (add-to-list 'recentf-exclude no-littering-var-directory))))
+  (after 'recentf
+    (add-to-list 'recentf-exclude no-littering-var-directory)))
 
 (use-package vlf-setup :ensure vlf)
 
@@ -91,6 +87,7 @@
 
 (use-package dired-hacks-utils
   :ensure t
+  :after dired
   :bind
   (:map dired-mode-map
         (("n" . dired-hacks-next-file)
@@ -99,27 +96,22 @@
 (use-package dired-subtree
   :ensure t
   :after dired
-  :config
-  (bind-keys
-   :map dired-mode-map
-   ("i" . dired-subtree-toggle)))
+  :bind (:map dired-mode-map
+              ("i" . dired-subtree-toggle)))
 
 (use-package dired-narrow
   :ensure t
-  :init
-  (after 'dired
-    (bind-keys
-     :map dired-mode-map
-     ("/" . dired-narrow-fuzzy))))
+  :after dired
+  :bind (:map dired-mode-map
+              ("/" . dired-narrow-fuzzy)))
 
 (use-package dired-x
   :disabled t
   :after dired
-  :config
-  (setq-default dired-omit-files-p t)
-  (validate-setq
-   dired-listing-switches "-alh"
-   dired-omit-files "^\\.\\|^#.#$\\|.~$"))
+  :config (setq-default dired-omit-files-p t)
+  :custom
+  (dired-listing-switches "-alh")
+  (dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
 
 ;; * Commands

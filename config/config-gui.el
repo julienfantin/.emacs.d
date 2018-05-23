@@ -48,10 +48,9 @@
 
 (use-package hl-line
   :hook ((magit-mode dired-mode) . hl-line-mode)
-  :config
-  (validate-setq
-   global-hl-line-sticky-flag nil
-   hl-line-sticky-flag nil))
+  :custom
+  (global-hl-line-sticky-flag nil)
+  (hl-line-sticky-flag nil))
 
 
 
@@ -60,7 +59,7 @@
 (use-package rich-minority
   :ensure t
   :init (rich-minority-mode 1)
-  :config (validate-setq rm-whitelist '(" λ")))
+  :custom (rm-whitelist '(" λ")))
 
 (use-package focus :disabled t :ensure t)
 

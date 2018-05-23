@@ -58,33 +58,30 @@
 (use-package flyspell
   :functions (config-prose-enable-spell-checking)
   :commands (git-commit-turn-on-flyspell)
-  :config
-  (progn
-    (defun config-prose-enable-spell-checking ()
-      (cond
-       ((and config-prose-enable-code-spell-checking (derived-mode-p 'prog-mode))
-        (flyspell-prog-mode))
-       ((and config-prose-enable-prose-spell-checking (bound-and-true-p prose-minor-mode))
-        (flyspell-mode))))
-    (validate-setq
-     ;; Save corrections
-     flyspell-abbrev-p t
-     flyspell-issue-welcome-flag nil
-     flyspell-issue-message-flag nil)
-    (add-hook 'prog-mode-hook #'config-prose-enable-spell-checking)
-    (after 'prose-minor-mode
-      (add-hook 'prose-mode-hook #'config-prose-enable-spell-checking))))
+  :hook ((prog-mode prose-mode) . config-prose-enable-spell-checking)
+  :preface
+  (defun config-prose-enable-spell-checking ()
+    (cond
+     ((and config-prose-enable-code-spell-checking (derived-mode-p 'prog-mode))
+      (flyspell-prog-mode))
+     ((and config-prose-enable-prose-spell-checking (bound-and-true-p prose-minor-mode))
+      (flyspell-mode))))
+  :custom
+  ;; Save corrections
+  (flyspell-abbrev-p t)
+  (flyspell-issue-welcome-flag nil)
+  (flyspell-issue-message-flag nil))
 
 (use-package flyspell-lazy
   :ensure t
-  :init (after 'flyspell (flyspell-lazy-mode 1)))
+  :after flyspell
+  :init (flyspell-lazy-mode 1))
 
 (use-package flyspell-correct-ivy
   :ensure t
   :after flyspell
-  :config
-  (define-key flyspell-mode-map
-    (kbd "C-c $") 'flyspell-correct-previous-word-generic))
+  :bind (:map flyspell-mode-map
+              ("C-c $" . 'flyspell-correct-previous-word-generic)))
 
 
 ;; * Prose minor mode

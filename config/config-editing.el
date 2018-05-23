@@ -46,15 +46,16 @@
 (use-package auto-highlight-symbol
   :ensure t
   :config
-  (validate-setq ahs-case-fold-search nil)
-  ;; Fix -> symbols in clojure
-  (setq ahs-include "^[0-9A-Za-z/_>.,:;*+=&%|$#@!^?-]+$")
-  (validate-setq ahs-default-range 'ahs-range-whole-buffer)
-  (validate-setq ahs-idle-interval -1.0)
-  (validate-setq ahs-inhibit-face-list '())
   (add-to-list 'ahs-plugin-bod-modes 'clojure-mode)
   (add-to-list 'ahs-plugin-bod-modes 'clojurescript-mode)
-  (add-to-list 'ahs-plugin-bod-modes 'clojurec-mode))
+  (add-to-list 'ahs-plugin-bod-modes 'clojurec-mode)
+  :custom
+  (ahs-case-fold-search nil)
+  ;; Fix -> symbols in clojure
+  (ahs-include "^[0-9A-Za-z/_>.,:;*+=&%|$#@!^?-]+$")
+  (ahs-default-range 'ahs-range-whole-buffer)
+  (ahs-idle-interval -1.0)
+  (ahs-inhibit-face-list '()))
 
 (use-package iedit :ensure t)
 
@@ -64,15 +65,14 @@
   :after no-littering
   :commands (undo-tree)
   :init (after-init #'global-undo-tree-mode)
-  :config
-  (validate-setq undo-tree-auto-save-history t))
+  :custom (undo-tree-auto-save-history t))
 
 
 ;; * Builtins
 
 (use-package simple
-  :config
-  (setq kill-ring-max most-positive-fixnum))
+  :custom
+  (kill-ring-max most-positive-fixnum))
 
 
 ;; * Commands

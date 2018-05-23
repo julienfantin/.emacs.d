@@ -30,18 +30,16 @@
 
 (use-package isearch
   :commands (isearch-forward-symbol-at-point isearch-forward)
-  :init
+  :bind (:map isearch-mode-map
+              ;; Allow deleting chars in the search string, use C-r to search backwards
+              ([remap isearch-delete-char] . isearch-del-char))
+  :custom
+  (isearch-allow-scroll t)
+  (lazy-highlight-initial-delay 0)
+  :config
   (progn
     ;; Reveal content of subtrees during isearch, alse see reveal-mode
-    (setq-default isearch-invisible 'open)
-    (validate-setq isearch-allow-scroll t
-                   lazy-highlight-initial-delay 0))
-
-  :config
-  (bind-keys
-   :map isearch-mode-map
-   ;; Allow deleting chars in the search string, use C-r to search backwards
-   ([remap isearch-delete-char] . isearch-del-char)))
+    (setq-default isearch-invisible 'open)))
 
 
 ;; * Packages
@@ -57,15 +55,14 @@
 
 (use-package avy
   :ensure t
+  :custom
+  (avy-style 'at-full)
+  (avy-background t)
+  (avy-all-windows t)
+  (avy-timeout-seconds 0.28)
   :config
-  (progn
-    (validate-setq
-     avy-style 'at-full
-     avy-background t
-     avy-all-windows t
-     avy-timeout-seconds 0.28)
-    ;; Use C-' in isearch to bring up avy
-    (avy-setup-default)))
+  ;; Use C-' in isearch to bring up avy
+  (avy-setup-default))
 
 
 ;; * Commands

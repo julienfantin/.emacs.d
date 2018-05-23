@@ -37,39 +37,27 @@
 (use-package ivy
   :init (after-init #'ivy-mode)
   :commands (ivy-set-actions)
-  :config
-  (progn
-    (validate-setq
-     ivy-initial-inputs-alist nil
-     ivy-re-builders-alist '((t . ivy--regex-plus))
-     ivy-use-virtual-buffers t
-     ivy-virtual-abbreviate 'full)))
+  :custom
+  (ivy-fixed-height-minibuffer nil)
+  (ivy-initial-inputs-alist nil)
+  (ivy-re-builders-alist '((t . ivy--regex-plus)))
+  (ivy-use-virtual-buffers t)
+  (ivy-virtual-abbreviate 'full)
+  (ivy-display-style nil))
 
 (use-package counsel
   :ensure t
   :init (after-init #'counsel-mode)
   :preface
-  (progn
-    (defun config-counsel-delete-file (x)
-      (delete-file (expand-file-name x ivy--directory)))
-    (defun config-counsel-find-file-other-window (x)
-      (find-file-other-window (expand-file-name x ivy--directory))))
-  :config
-  (progn
-    (ivy-set-actions
-     'counsel-find-file
-     `(("x" config-counsel-delete-file ,(propertize "delete" 'face 'font-lock-warning-face))
-       ("4" config-counsel-find-file-other-window "other-window")))
-    (validate-setq
-     counsel-rg-base-command "rg -S -M 200 --no-heading --line-number --color never %s ."
-     ivy-extra-directories nil)))
+  :custom
+  (counsel-rg-base-command "rg -S -M 200 --no-heading --line-number --color never %s .")
+  (ivy-extra-directories nil))
 
 ;; Counsel makes use of smex
 (use-package smex
   :ensure t
   :after (no-littering)
-  :config
-  (validate-setq smex-history-length 1000))
+  :custom (smex-history-length 1000))
 
 (use-package counsel-projectile
   :ensure t
@@ -80,8 +68,7 @@
   :ensure t
   :after (ivy no-littering)
   :hook (ivy-mode . ivy-historian-mode)
-  :config
-  (validate-setq historian-history-length 1000))
+  :custom (historian-history-length 1000))
 
 ;; * Commands
 
