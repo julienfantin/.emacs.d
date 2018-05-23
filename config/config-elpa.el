@@ -29,6 +29,7 @@
 (require 'gnutls)
 
 
+
 ;; * Package archives
 
 (setq package-archives
@@ -36,7 +37,8 @@
         ("melpa-stable" . "https://stable.melpa.org/packages/")
         ("gnu"          . "https://elpa.gnu.org/packages/")))
 
-;; ** TLS configuration for elpa over HTTPS
+
+;; * TLS configuration for elpa over HTTPS
 
 (defvar config-elpa-pip-tls-trustfile
   (if-let ((out (shell-command-to-string "python -m certifi")))
@@ -67,19 +69,13 @@
       (url-retrieve "https://badssl.com" (lambda (_retrieved) t)))))
 
 
-;; * Package helpers
-
-(package-initialize)
-
 ;; * Use-package
 
 (defvar use-package-always-defer t)
-
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package)
   (package-install 'bind-key))
-
 (eval-when-compile (require 'use-package))
 (require 'bind-key)
 
@@ -103,8 +99,12 @@
 
 (use-package quelpa-use-package :ensure t :demand t)
 
+;; * Paradox
+
 (use-package paradox
   :ensure t
+  :config
+  (package-initialize)
   :custom
   (paradox-execute-asynchronously t)
   (paradox-github-token t))
