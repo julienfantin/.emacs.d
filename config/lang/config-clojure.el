@@ -66,18 +66,20 @@
     (add-hook 'cider-mode-hook #'config-clojure--set-lispy-pp-eval-function)
     (add-hook 'cider-repl-mode-hook #'config-clojure--set-lispy-pp-eval-function))
   :custom
+  (cider-auto-jump-to-error nil)
+  (cider-dynamic-indentation nil)
   (cider-font-lock-dynamically '(macro core function deprecated var)) ;; Too slow
   (cider-font-lock-dynamically nil)
-  (cider-save-file-on-load t)
-  (cider-save-files-on-cider-refresh t)
-  (cider-prompt-for-symbol nil)
-  (cider-auto-jump-to-error nil)
+  (cider-pprint-fn 'pprint)
   (cider-prefer-local-resources t)
-  (cider-dynamic-indentation nil)
-  (cider-pprint-fn 'pprint))
+  (cider-prompt-for-symbol nil)
+  (cider-save-file-on-load t)
+  (cider-save-files-on-cider-refresh t))
 
 (use-package cider-stacktrace
-  :custom (cider-stacktrace-default-filters '(tooling dup java repl)))
+  :custom
+  (cider-stacktrace-default-filters '(clj tooling dup java repl))
+  (cider-stacktrace-positive-filters '(project)))
 
 (use-package cider-debug
   :preface
@@ -89,16 +91,17 @@
   :hook (cider--debug-mode . cider-debug-toggle-eldoc))
 
 (use-package cider-repl
-  :bind (:map cider-repl-mode-map ("C-c C-o" . cider-repl-clear-buffer))
+  :bind (:map cider-repl-mode-map
+              ("C-c C-o" . cider-repl-clear-buffer))
   :custom
+  (cider-repl-display-help-banner nil)
+  (cider-repl-history-file (user-var-file "nrepl-history"))
   (cider-repl-pop-to-buffer-on-connect nil)
   (cider-repl-use-clojure-font-lock nil)
-  (cider-repl-use-pretty-printing t)
-  (cider-repl-history-file (user-var-file "nrepl-history"))
-  (cider-repl-display-help-banner nil))
+  (cider-repl-use-pretty-printing t))
 
 (use-package cider-debug
-  :custom (cider-debug-display-locals nil))
+  :custom (cider-debug-display-locals t))
 
 
 ;; * clj-refactor
@@ -107,28 +110,28 @@
   :ensure t
   ;; :pin melpa-stable
   :after clojure-mode
-  :hook (clojure-mode . config-clojure-cljr)
-  :preface
-  (defun config-clojure-cljr ()
-    (clj-refactor-mode 1)
-    (yas-minor-mode 1)
-    (cljr-add-keybindings-with-prefix "C-c ."))
+  :hook  (clojure-mode . clj-refactor-mode)
+  :config
+  (cljr-add-keybindings-with-prefix "C-c .")
   :custom
   (cljr-favor-prefix-notation nil)
-  (cljr-warn-on-eval nil)
   (cljr-ignore-analyzer-errors t)
   (cljr-magic-requires t)
   (cljr-magic-require-namespaces
-   (append cljr-magic-require-namespaces
-           '(("edn"       . "clojure.edn")
-             ("d"         . "datomic.api")
-             ("a"         . "clojure.core.async")
-             ("cp"        . "com.stuartsierra.component")
-             ("s"         . "clojure.spec.alpah")
-             ("st"        . "clojure.spec.alpha.test")
-             ("json"      . "cheshire.core")
-             ("log"       . "clojure.tools.logging")))))
-
+   '(("a"    . "clojure.core.async")
+     ("d"    . "datomic.api")
+     ("edn"  . "clojure.edn")
+     ("io"   . "clojure.java.io")
+     ("json" . "cheshire.core")
+     ("log"  . "clojure.tools.logging")
+     ("s"    . "clojure.spec.alpha")
+     ("set"  . "clojure.set")
+     ("st"   . "clojure.spec.alpha.test")
+     ("str"  . "clojure.string")
+     ("walk" . "clojure.walk")
+     ("zip"  . "clojure.zip")
+     ("rf"   . "re-frame.core")))
+  (cljr-warn-on-eval nil))
 
 
 ;; * Sayid
@@ -142,7 +145,7 @@
 (use-package flycheck-joker
   :ensure t
   :ensure-system-package (joker . candid82/brew/joker)
-  :after flycheck
+  :after (flycheck clojure-mode)
   :init (require 'flycheck-joker nil t))
 
 
