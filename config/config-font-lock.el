@@ -9,7 +9,7 @@
 
 (use-package rainbow-mode
   :ensure t
-  :hook (emacs-lisp-mode ccs-mode web-mode))
+  :hook (help-mode info-mode emacs-lisp-mode ccs-mode web-mode))
 
 (use-package rainbow-delimiters
   :ensure t
