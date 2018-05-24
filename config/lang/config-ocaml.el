@@ -67,13 +67,7 @@
         ("C-c <down>" . merlin-type-enclosing-go-down))
 
   :custom
-  (merlin-completion-types t)
-  (merlin-completion-arg-type t)
-  (merlin-completion-with-doc t)
-  (merlin-completion-dwim t)
-  (merlin-error-after-save t)
-  (merlin-command 'opam)
-  (merlin-default-flags '("-principal")))
+  (merlin-completion-with-doc t))
 
 (use-package utop
   :ensure t
@@ -137,8 +131,7 @@
   :ensure t
   :after (merlin)
   :init (flycheck-ocaml-setup)
-  :custom
-  (merlin-error-after-save nil))
+  :custom (merlin-error-after-save nil))
 
 (provide 'config-ocaml)
 ;;; config-ocaml.el ends here

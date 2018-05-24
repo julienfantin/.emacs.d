@@ -65,10 +65,6 @@
    '((company-elisp)
      (company-capf company-dabbrev company-files)
      (company-dabbrev-code company-keywords)))
-  (company-echo-delay 0)
-  (company-frontends
-   '((company-pseudo-tooltip-frontend
-      company-echo-metadata-frontend)))
   (company-idle-delay 0.2)
   (company-minimum-prefix-length 2)
   (company-require-match nil)
@@ -89,11 +85,16 @@
 (use-package company-quickhelp
   :ensure t
   :after company
+  :hook (company-mode . company-quickhelp-mode)
   :bind (:map company-active-map
-              ("C-h" . company-quickhelp-mode))
+              ("M-h" . company-quickhelp-mode))
   :custom
   (company-quickhelp-delay 0.2)
   (company-quickhelp-use-propertized-text t))
+
+(use-package company-elisp
+  :custom
+  (company-elisp-detect-function-context nil))
 
 (provide 'config-completion)
 ;;; config-completion.el ends here
