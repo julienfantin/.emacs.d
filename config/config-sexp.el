@@ -162,20 +162,22 @@
        'pulse-eval-advices-alist
        (cons 'lispy-mode '((lispy-eval . pulse-eval-highlight-forward-sexp-advice))))))
   :custom
-  (lispy-no-space t)
   (lispy-no-permanent-semantic t)
-  (lispy-completion-method 'ivy)
+  (lispy-close-quotes-at-end-p t)
+  (lispy-eval-display-style 'overlay)
   (lispy-visit-method 'projectile)
   (lispy-compat '(edebug cider))
   (lispy-avy-style-char 'at-full)
   (lispy-avy-style-paren 'at-full)
-  (lispy-avy-style-symbol 'at-full))
+  (lispy-avy-style-symbol 'at-full)
+  (lispy-safe-copy t)
+  (lispy-safe-delete t)
+  (lispy-safe-paste t))
 
 (use-package lispy-mnemonic
   :commands lispy-mnemonic-mode
-  :init
-  (after 'lisp-minor-mode
-    (add-hook 'lisp-minor-mode-hook #'lispy-mnemonic-mode t))
+  :after lisp-minor-mode
+  :hook (lisp-minor-mode . lispy-mnemonic-mode)
   :config
   (after 'outline-magic
     ;; lispy's outline promotion is hardwired to it's comment convention
