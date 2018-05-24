@@ -37,7 +37,8 @@
   ((reason-cli-esy-sandbox . "npm install -g reason-cli@3.1.0-darwin")
    (bsb                    . "npm install -g bs-platform"))
   :hook ((reason-mode . refmt-mode)
-         (reason-mode . merlin-mode)))
+         (reason-mode . merlin-mode)
+         (reason-mode . lispy-mnemonic-mode)))
 
 (use-package refmt
   :defer t
@@ -45,9 +46,10 @@
   (define-minor-mode refmt-mode
     "Refmt minor-mode"
     :lighter "refmt"
-    :keymap (let ((m (make-sparse-keymap)))
-              (define-key m (kbd "C-M-\\") #'refmt)
-              m)
+    :keymap
+    (let ((m (make-sparse-keymap)))
+      (define-key m (kbd "C-M-\\") #'refmt)
+      m)
     (if refmt-mode
         (add-hook 'before-save-hook #'refmt-before-save)
       (remove-hook 'before-save-hook #'refmt-before-save)))

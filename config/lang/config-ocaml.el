@@ -79,20 +79,22 @@
   (utop-edit-command nil)
   :hook
   ((tuareg-mode reason-mode) . utop-minor-mode)
-  (tuareg-mode . (lambda ()
-                   (setq utop-command "utop -emacs")
-                   (setq utop-prompt
-                         (lambda ()
-                           (let ((prompt (format "utop[%d]> " utop-command-number)))
-                             (add-text-properties 0 (length prompt) '(face utop-prompt) prompt)
-                             prompt)))))
-  (reason-mode . (lambda ()
-                   (setq utop-command "rtop -emacs")
-                   (setq utop-prompt
-                         (lambda ()
-                           (let ((prompt (format "rtop[%d]> " utop-command-number)))
-                             (add-text-properties 0 (length prompt) '(face utop-prompt) prompt)
-                             prompt))))))
+  (tuareg-mode
+   . (lambda ()
+       (setq utop-command "utop -emacs")
+       (setq utop-prompt
+             (lambda ()
+               (let ((prompt (format "utop[%d]> " utop-command-number)))
+                 (add-text-properties 0 (length prompt) '(face utop-prompt) prompt)
+                 prompt)))))
+  (reason-mode
+   . (lambda ()
+       (setq utop-command "rtop -emacs")
+       (setq utop-prompt
+             (lambda ()
+               (let ((prompt (format "rtop[%d]> " utop-command-number)))
+                 (add-text-properties 0 (length prompt) '(face utop-prompt) prompt)
+                 prompt))))))
 
 (use-package ocp-indent
   :ensure-system-package (ocp-indent . "opam install ocp-indent")
@@ -108,6 +110,7 @@
   :after (opam)
   :mode (("\\.ml[ily]?$" . tuareg-mode)
          ("\\.topml$" . tuareg-mode))
+  :hook (tuareg-mode . lispy-mnemonic-mode)
   :bind (:map tuareg-mode-map
               ;; ("C-M-f" . smie-forward-sexp-command)
               ;; ("C-M-b" . smie-backward-sexp-command)
