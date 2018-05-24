@@ -60,6 +60,11 @@
    (lambda (buffer)
      (display-buffer-same-window buffer nil))))
 
+(use-package git-commit
+  :after magit
+  :custom
+  (git-commit-summary-max-length 72))
+
 (use-package magit-imerge :disabled t :ensure t)
 
 (use-package magithub
@@ -73,14 +78,10 @@
   :disabled t
   :ensure t
   :commands diff-hl-mode
-  :init
-  (progn
-    (global-diff-hl-amend-mode 1)
-    (add-hook 'dired-mode-hook #'diff-hl-dired-mode))
-  :config
-  (progn
-    (validate-setq diff-hl-draw-borders t)
-    (diff-hl-margin-mode 1)))
+  :hook (dired-mode . diff-hl-dired-mode)
+  :init (global-diff-hl-amend-mode 1)
+  :config (diff-hl-margin-mode 1)
+  :custom (diff-hl-draw-borders t))
 
 (use-package helm-hunks
   :disabled t
