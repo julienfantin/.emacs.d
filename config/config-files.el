@@ -76,11 +76,8 @@
   :config
   (progn
     (setq-default save-silently t)
-    (add-to-list 'super-save-triggers "select-window")
     (add-to-list 'super-save-triggers "eyebrowse-switch-to-window-config")
-    (add-to-list 'super-save-triggers "persp-switch")
-    (add-to-list 'super-save-triggers "completing-read")
-    (add-to-list 'super-save-triggers "ivy--read")))
+    (add-to-list 'super-save-triggers "persp-switch")))
 
 (use-package dired-hacks-utils
   :ensure t
