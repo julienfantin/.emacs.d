@@ -115,7 +115,7 @@ Remap all faces when called with a prefix argument."
               palette
               #'(lambda (face chrom)
                   `(,face ((t (:fg ,chrom :bg nil)))))
-              (theme-faces-match '("[0-9]" "powerline" "swiper" "match")))
+              (theme-faces-match '("[0-9]" "swiper" "match")))
 
            ;; Underline in mini-buffer
            ,@(duotone-hierarchical-chroma-mapping
@@ -355,6 +355,12 @@ Remap all faces when called with a prefix argument."
            (mode-line-buffer-id                        ((t (:f nil :b nil :weight semibold))))
            (mode-line                                  ((t (:f ,duo-1 :b ,bg-sfade :weight normal))))
            (mode-line-inactive                         ((t (:f ,uno-4 :b ,bg-sfade))))
+           (powerline-active0                          ((t (:f ,uno-4 :b ,bg-sfade))))
+           (powerline-active1                          ((t (:f ,uno-4 :b ,bg-sfade))))
+           (powerline-active2                          ((t (:f ,uno-4 :b ,bg-sfade))))
+           (powerline-inactive0                        ((t (:f ,uno-4 :b ,bg))))
+           (powerline-inactive1                        ((t (:f ,uno-4 :b ,bg))))
+           (powerline-inactive2                        ((t (:f ,uno-4 :b ,bg))))
            (line-number                                ((t (:f ,bg-mfade :b nil))))
            (line-number-current-line                   ((t (:f ,bg :b ,duo-1))))
            (eyebrowse-mode-line-active                 ((t (:f ,duo-2 :b ,bg))))
