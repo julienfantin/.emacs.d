@@ -61,11 +61,25 @@
 
 ;; * Frame
 
-(defvar config-frame-frame-alist
+(defvar config-frame-default-frame-alist
   `((menu-bar-lines        . nil)
     (tool-bar-lines        . nil)
     (vertical-scroll-bars  . nil)
+    (scroll-bars           . nil)
     (internal-border-width . ,config-frame-border-width)))
+
+(defun config-frame-frame-alist ()
+  "Compute the default and initial frame alist."
+  (append
+   (when window-system
+     (let* ((width (if (> (nth 2 (frame-monitor-geometry)) 1920) 240 120))
+            (height (nth 3 (frame-monitor-geometry)))
+            (margin (/ (- (nth 2 (frame-monitor-geometry)) (* width (frame-char-width))) 2)))
+       `((width . ,width)
+         (height . ,height)
+         (left . ,margin)
+         (top . 0))))
+   config-frame-default-frame-alist))
 
 (use-package frame
   :init (after-init #'window-divider-mode)
@@ -77,8 +91,8 @@
     (pixel-scroll-mode 1))
   :custom
   (frame-resize-pixelwise t)
-  (default-frame-alist config-frame-frame-alist)
-  (initial-frame-alist config-frame-frame-alist)
+  (default-frame-alist (config-frame-frame-alist))
+  (initial-frame-alist (config-frame-frame-alist))
   (window-divider-default-places t)
   (window-divider-default-right-width config-frame-border-width)
   (window-divider-default-bottom-width 10))
