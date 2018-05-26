@@ -37,8 +37,7 @@
   ((reason-cli-esy-sandbox . "npm install -g reason-cli@3.1.0-darwin")
    (bsb                    . "npm install -g bs-platform"))
   :hook ((reason-mode . refmt-mode)
-         (reason-mode . merlin-mode)
-         (reason-mode . lispy-mnemonic-mode)))
+         (reason-mode . merlin-mode)))
 
 (use-package refmt
   :defer t

@@ -110,7 +110,6 @@
   :after (opam)
   :mode (("\\.ml[ily]?$" . tuareg-mode)
          ("\\.topml$" . tuareg-mode))
-  :hook (tuareg-mode . lispy-mnemonic-mode)
   :bind (:map tuareg-mode-map
               ;; ("C-M-f" . smie-forward-sexp-command)
               ;; ("C-M-b" . smie-backward-sexp-command)
@@ -134,7 +133,9 @@
   :ensure t
   :after (merlin)
   :init (flycheck-ocaml-setup)
-  :custom (merlin-error-after-save nil))
+  :custom
+  (merlin-error-after-save nil)
+  (flycheck-check-syntax-automatically '(save mode-enabled)))
 
 (provide 'config-ocaml)
 ;;; config-ocaml.el ends here
