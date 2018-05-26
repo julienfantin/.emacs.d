@@ -86,7 +86,6 @@
   :init (after-init 'global-aggressive-indent-mode)
   :config
   (progn
-    (validate-setq aggressive-indent-comments-too t)
     ;; Skip large forms
     (add-to-list 'aggressive-indent-dont-indent-if '(config-indentation-aggressive-indent-skip-p))
     ;; Disabled commands
@@ -94,7 +93,9 @@
       (add-to-list 'aggressive-indent-protected-commands command))
     ;; Disabled modes
     (dolist (mode '(makefile-mode tuareg-mode reason-mode cider-repl-mode))
-      (add-to-list 'aggressive-indent-excluded-modes mode))))
+      (add-to-list 'aggressive-indent-excluded-modes mode)))
+  :custom
+  (aggressive-indent-comments-too t))
 
 (provide 'config-indentation)
 ;;; config-indentation.el ends here
