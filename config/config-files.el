@@ -53,7 +53,8 @@
                    (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
           (make-directory dir t)))))
   :hook
-  (before-save-hook . config-files--create-buffer-file-parent-directories))
+  ((before-save-hook . config-files--create-buffer-file-parent-directories)
+   (after-save-hook  . executable-make-buffer-file-executable-if-script-p)))
 
 
 ;; * Packages

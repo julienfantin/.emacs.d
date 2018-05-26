@@ -31,8 +31,6 @@
 (use-package comint
   :custom (comint-prompt-read-only t))
 
-(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
-
 
 ;; * Eshell
 
