@@ -27,15 +27,14 @@
 
 
 (use-package prog-mode
-  :config
-  (progn
-    (add-hook 'prog-mode-hook #'auto-fill-mode)
-    (add-hook 'prog-mode-hook #'display-line-numbers-mode)))
+  :hook
+  (prog-mode . auto-fill-mode)
+  (prog-mode . display-line-numbers-mode))
 
 ;; Spell checking code comments
 (use-package flyspell
   :disabled t
-  :init (add-hook 'prog-mode-hook #'flyspell-prog-mode))
+  :hook (prog-mode . flyspell-prog-mode))
 
 ;; Automatic file headers
 (use-package autoinsert

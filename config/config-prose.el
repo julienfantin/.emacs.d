@@ -56,18 +56,7 @@
       (setq ispell-extra-args '("-d en_US"))))))
 
 (use-package flyspell
-  :functions (config-prose-enable-spell-checking)
-  :commands (git-commit-turn-on-flyspell)
-  :hook ((prog-mode prose-mode) . config-prose-enable-spell-checking)
-  :preface
-  (defun config-prose-enable-spell-checking ()
-    (cond
-     ((and config-prose-enable-code-spell-checking (derived-mode-p 'prog-mode))
-      (flyspell-prog-mode))
-     ((and config-prose-enable-prose-spell-checking (bound-and-true-p prose-minor-mode))
-      (flyspell-mode))))
   :custom
-  ;; Save corrections
   (flyspell-abbrev-p t)
   (flyspell-issue-welcome-flag nil)
   (flyspell-issue-message-flag nil))
@@ -92,7 +81,8 @@
   :hook ((org-mode . prose-minor-mode)
          (markdown-mode . prose-minor-mode)
          (prose-minor-mode . visual-line-mode)
-         (prose-minor-mode . visual-fill-column-mode)))
+         (prose-minor-mode . visual-fill-column-mode)
+         (prose-minor-mode . flyspell-mode)))
 
 
 ;; * Wrapping
