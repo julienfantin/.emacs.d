@@ -30,6 +30,10 @@
 
 (use-package clojure-mode
   :ensure t
+  :ensure-system-package
+  ((clj . clojure)
+   (lein . leiningen)
+   (boot . boot-clj))
   :mode "\\.repl\\'"
   :config
   (progn
@@ -44,14 +48,14 @@
 
 (use-package clojure-mode-extra-font-locking
   :ensure t
-  :after clojure-mode)
+  :after clojure-mode
+  :init (require 'clojure-mode-extra-font-locking nil t))
 
 
 ;; * cider
 
 (use-package cider
   :ensure t
-  :ensure-system-package (lein . leiningen)
   ;; :pin melpa-stable
   :bind
   (:map clojure-mode-map
@@ -141,6 +145,9 @@
   ;; :pin melpa-stable
   :after cider
   :init (sayid-setup-package))
+
+
+;; * Flycheck
 
 (use-package flycheck-joker
   :ensure t
