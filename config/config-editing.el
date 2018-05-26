@@ -45,6 +45,7 @@
 
 (use-package auto-highlight-symbol
   :ensure t
+  :commands (ahs-edit-mode)
   :config
   (add-to-list 'ahs-plugin-bod-modes 'clojure-mode)
   (add-to-list 'ahs-plugin-bod-modes 'clojurescript-mode)
