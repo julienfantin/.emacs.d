@@ -61,7 +61,7 @@
   :init (after-init #'theme-sync-mode))
 
 (use-package duotone-theme :demand t :load-path "../themes/duotone")
-(use-package duotone-reload )
+(use-package duotone-reload :demand t)
 
 (use-package doom-themes           :ensure t)
 (use-package dracula-theme         :ensure t)

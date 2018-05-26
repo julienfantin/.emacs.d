@@ -25,10 +25,14 @@
 ;;; Code:
 (require 'duotone-theme)
 
+(defvar duotone-reload--debounce-timer nil)
+
 (defun duotone-reload-apply-theme (&rest _)
   "Apply the duotone theme if currently enabled."
   (when (member 'duotone custom-enabled-themes)
-    (duotone-theme-apply)))
+    (when duotone-reload--debounce-timer
+      (cancel-timer duotone-reload--debounce-timer))
+    (setq duotone-reload--debounce-timer (run-with-idle-timer 1 nil #'duotone-theme-apply))))
 
 (defun duotone-reload-install-load-hook ()
   "Install a hook to apply the theme when a file is loaded."
@@ -38,13 +42,7 @@
   "Add an advice to re-apply duotone after a theme is loaded."
   (advice-add #'load-theme :after #'duotone-reload-apply-theme))
 
-(progn
-  ;; Run with timer so we don't install the hook while emacs is busy loading
-  (run-with-idle-timer
-   5 nil
-   (lambda ()
-     (add-hook 'after-init-hook #'duotone-reload-install-load-hook)))
-  (duotone-reload-install-theme-advice))
+(add-hook 'after-init-hook #'duotone-reload-install-load-hook)
 
 (provide 'duotone-reload)
 ;;; duotone-reload.el ends here

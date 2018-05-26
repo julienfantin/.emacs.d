@@ -5,6 +5,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'cl-extra)
 (require 'chroma)
 (require 'theme-helpers)
 (require 'duotone-palette)
@@ -191,7 +192,7 @@ Remap all faces when called with a prefix argument."
            ;; Matches
            (,(theme-faces-match-all "match" "current")
             ((t (:f ,duo-1 :b ,(chroma-blend bg duo-1 sblend)))))
-           (,(concatenate
+           (,(cl-concatenate
               'list
               (theme-faces-match '("match" "\\(mis\\|un\\)match"  "[0-9]"))
               (theme-faces-match '("required" "common" "current")))
@@ -210,7 +211,7 @@ Remap all faces when called with a prefix argument."
             ((t (:b ,bg-fade))))
            ;;
            ;; Selection
-           (,(concatenate
+           (,(cl-concatenate
               'list
               '(hl-line helm-selection line-number-current-line)
               (theme-faces-match "selection" "selected"))
@@ -318,7 +319,7 @@ Remap all faces when called with a prefix argument."
            (ivy-modified-buffer                        ((t (:f ,uno-2))))
            (ivy-match-required                         ((t (:f ,uno-1))))
            (ivy-confirm-face                           ((t (:f ,duo-3))))
-           (ivy-current-match                          ((t (:f ,bg :b ,(chroma-blend duo-2 bg sblend)))))
+           (ivy-current-match                          ((t (:f ,bg :b ,duo-1))))
            (cider-stacktrace                           ((t (:b ,bg))))
            (cider-enlightened-face                     ((t (:f ,duo-1 :b ,bg-fade))))
            (cider-result-overlay-face                  ((t (:f ,duo-1 :b ,bg-sfade :border nil))))
@@ -375,6 +376,7 @@ Remap all faces when called with a prefix argument."
            (ahs-plugin-default-face                    ((t (:b ,bg-mfade))))
            (compilation-info                           ((t (:f ,duo-3))))
            (ivy-posframe                               ((t (:b ,(chroma-fade bg 0.03) :f ,fg))))
+           (ivy-posframe-cursor                        ((t (:inherit cursor))))
            (window-divider                             ((t (:f ,bg))))
            (window-divider-first-pixel                 ((t (:f ,bg))))
            (window-divider-last-pixel                  ((t (:f ,bg))))
