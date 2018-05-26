@@ -135,6 +135,7 @@
 (use-config config-clojure)
 (use-config config-clojurescript)
 (use-config config-emacs-lisp)
+(use-config config-js)
 (use-config config-nix :disabled t)
 (use-config config-ocaml)
 (use-config config-sql :disabled t)
