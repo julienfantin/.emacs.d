@@ -30,9 +30,9 @@
   :disabled t
   :after no-littering
   :init (after-init #'savehist-mode)
-  :config
-  (validate-setq savehist-additional-variables '(search-ring regexp-search-ring)
-                 savehist-autosave-interval 60))
+  :custom
+  (savehist-additional-variables '(search-ring regexp-search-ring))
+  (savehist-autosave-interval 60))
 
 (use-package saveplace
   :init (setq-default save-place t))

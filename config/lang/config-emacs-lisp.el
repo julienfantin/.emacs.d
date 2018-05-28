@@ -67,17 +67,6 @@
   ;; plists
   (nameless-prefix "/"))
 
-(use-package sotlisp
-  :disabled t
-  :ensure t
-  :commands sotlisp-turn-on-everywhere
-  :init (sotlisp-turn-on-everywhere)
-  :config
-  (progn
-    (add-hook 'emacs-lisp-mode-hook #'speed-of-thought-mode)
-    (unbind-key "C-c f" sotlisp-mode-map)
-    (unbind-key "C-c v" sotlisp-mode-map)))
-
 (use-package auto-compile
   :ensure t
   :commands auto-compile-on-save-mode

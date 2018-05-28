@@ -132,8 +132,6 @@ hyper when it's used as a modifier."
     :config
     (validate-setq lv-use-separator t)))
 
-(use-package interaction-log :disabled t :ensure t :commands interaction-log-mode)
-
 
 ;; * Hydras
 ;; ** (b)uffers
@@ -383,10 +381,6 @@ hyper when it's used as a modifier."
   ("l" goto-last-change)
   ("<" diff-hl-previous-hunk)
   (">" diff-hl-next-hunk))
-
-(general-define-key
- :keymaps '(help-mode-map)
- "/" 'link-hint-open-link)
 
 ;; ** (tab)navigation
 

@@ -97,13 +97,6 @@
   (window-divider-default-right-width config-frame-border-width)
   (window-divider-default-bottom-width 10))
 
-(use-package mwheel
-  :disabled t
-  :custom
-  ;; Smooth-ish mouse scrolling
-  (mouse-wheel-progressive-speed nil)
-  (mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil))))
-
 
 ;; * Commands
 

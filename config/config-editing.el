@@ -41,22 +41,12 @@
 
 (use-package multiple-cursors :ensure t :after no-littering)
 
-(use-package beginend :disabled t :ensure t :init (beginend-global-mode 1))
-
 (use-package iedit
   :ensure t
   :bind (:map isearch-mode-map
               ("C-c e i" . iedit-mode-from-isearch))
   :custom
   (iedit-buffering t))
-
-(use-package undo-tree
-  :disabled t                           ; undo-tree considered harmful
-  :ensure t
-  :after no-littering
-  :commands (undo-tree)
-  :init (after-init #'global-undo-tree-mode)
-  :custom (undo-tree-auto-save-history t))
 
 
 ;; * Builtins

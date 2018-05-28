@@ -34,18 +34,6 @@
   :config
   (line-number-mode -1))
 
-(use-package fringe
-  :disabled t
-  :init (fringe-mode 4)
-  :config
-  (progn
-    (validate-setq
-     indicate-empty-lines t
-     indicate-buffer-boundaries t
-     indicate-unused-lines t)
-    (setf (cdr (assq 'continuation fringe-indicator-alist))
-          '(nil right-curly-arrow))))
-
 (use-package hl-line
   :hook ((magit-mode dired-mode) . hl-line-mode)
   :custom
@@ -60,8 +48,6 @@
   :ensure t
   :init (rich-minority-mode 1)
   :custom (rm-whitelist '(" λ")))
-
-(use-package focus :disabled t :ensure t)
 
 (provide 'config-gui)
 ;;; config-gui.el ends here

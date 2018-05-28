@@ -101,49 +101,5 @@
                                 (goto-char (flycheck-error-pos error))))
                     :history 'counsel-flycheck-history))))))
 
-
-;; * Semantic
-
-(use-package semantic
-  :disabled t
-  :init (after-init #'semantic-mode)
-  :functions
-  (semanticdb-file-table-object
-   semanticdb-save-all-db)
-  :config
-  (progn
-    (defun config-parsers-semantic-parse-recursively (file-or-dir)
-      "Recursively parse all files 'file-or-dir'"
-      (cond
-       ((null file-or-dir) nil)
-       ((file-directory-p file-or-dir)
-        (mapcar #'config-parsers-semantic-parse-recursively
-                (directory-files-recursively file-or-dir ".+\\.el\\(\\.gz\\)?$")))
-       (t (ignore-errors
-            (semanticdb-file-table-object file-or-dir)))))
-    (defun -semantic-parse-load-path ()
-      "Parse all elisp files in 'load-path'"
-      (interactive)
-      (dolist (path load-path) (config-parsers-semantic-parse-recursively path))
-      (semanticdb-save-all-db))))
-
-(use-package semantic/db
-  :disabled t
-  :defines
-  (semanticdb-database-list
-   semanticdb-file-table-object)
-  :config
-  ;; Redefined as a fix for:
-  ;; http://debbugs.gnu.org/cgi/bugreport.cgi?bug=22287
-  (defun semanticdb-save-all-db-idle ()
-    "Save all semantic tag databases from idle time.
-Exit the save between databases if there is user input."
-    (save-excursion
-      (semantic-exit-on-input 'semanticdb-idle-save
-                              (mapc (lambda (db)
-                                      (semantic-throw-on-input 'semanticdb-idle-save)
-                                      (semanticdb-save-db db t))
-                                    semanticdb-database-list)))))
-
 (provide 'config-parsers)
 ;;; config-parsers.el ends here

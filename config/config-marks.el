@@ -47,22 +47,14 @@ the point doesn't move before calling 'POP-TO-MARK-COMMAND' with 'ARGS'."
     (advice-add #'pop-to-mark-command :around #'config-marks-pop-duplicate-marks-advice)))
 
 
-;; * Packages
-
-(use-package bm
-  :disabled t
-  :ensure t
-  :defines (bm-buffer-persistence))
-
-
 ;; * Commands
 
 ;;;###autoload
 (defun -push-mark-no-activate ()
   "Push `point' to `mark-ring' without activating region.
 Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled" (interactive)
-(push-mark (point) t nil)
-(message "Pushed mark to ring"))
+  (push-mark (point) t nil)
+  (message "Pushed mark to ring"))
 
 ;;;###autoload
 

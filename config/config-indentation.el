@@ -51,25 +51,12 @@
 
 (add-hook 'prog-mode-hook #'config-whitespace-show-trailing-whitespace)
 
-(use-package clean-aindent-mode
-  :disabled t
-  :ensure t
-  :hook prog-mode)
-
 (use-package ws-butler
   :ensure t
   :hook (prog-mode . ws-butler-mode))
 
 
 ;; * Indentation
-
-(use-package dtrt-indent
-  :disabled t
-  :ensure t
-  :after cc-mode
-  :hook (cc-mode . dtrt-indent-mode)
-  :config
-  (validate-setq dtrt-indent-verbosity 0))
 
 (use-package aggressive-indent
   :ensure t

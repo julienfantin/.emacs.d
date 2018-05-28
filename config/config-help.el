@@ -25,10 +25,6 @@
 ;;; Code:
 (require 'use-config)
 
-(use-package help-fns+ :disabled t :ensure t)
-
-(use-package niceify-info :disabled t :ensure t :after info)
-
 (use-package helpful
   :ensure t
   :bind

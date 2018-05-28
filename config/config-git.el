@@ -65,8 +65,6 @@
   :custom
   (git-commit-summary-max-length 72))
 
-(use-package magit-imerge :disabled t :ensure t)
-
 (use-package magithub
   :ensure t
   :after (magit no-littering)
@@ -74,17 +72,7 @@
 
 (use-package gited :ensure t)
 
-(use-package diff-hl
-  :disabled t
-  :ensure t
-  :commands diff-hl-mode
-  :hook (dired-mode . diff-hl-dired-mode)
-  :init (global-diff-hl-amend-mode 1)
-  :config (diff-hl-margin-mode 1)
-  :custom (diff-hl-draw-borders t))
-
 (use-package helm-hunks
-  :disabled t
   :ensure t
   :custom (helm-hunks-preview-diffs t))
 

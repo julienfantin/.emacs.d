@@ -52,15 +52,8 @@ With a prefix argument P, isearch for the symbol at point."
 
 ;; * Packages
 
-(use-package anzu
-  :ensure t
-  :init (global-anzu-mode)
-  :custom
-  (anzu-cons-mode-line-p nil))
-
 (use-package imenu-anywhere :ensure t)
-(use-package link-hint :ensure t)
-(use-package goto-last-change :disabled t :ensure t :commands goto-last-change)
+
 (use-package swiper
   :ensure t
   :config

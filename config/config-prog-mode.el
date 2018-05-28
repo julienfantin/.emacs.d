@@ -31,11 +31,6 @@
   (prog-mode . auto-fill-mode)
   (prog-mode . display-line-numbers-mode))
 
-;; Spell checking code comments
-(use-package flyspell
-  :disabled t
-  :hook (prog-mode . flyspell-prog-mode))
-
 ;; Automatic file headers
 (use-package autoinsert
   :init (after-init #'auto-insert-mode))

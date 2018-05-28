@@ -96,28 +96,5 @@
   :custom
   (org-journal-dir (expand-file-name "journal" config-org-user-directory)))
 
-(use-package worf
-  :disabled t
-  :ensure t
-  :commands worf-goto)
-
-(use-package deft
-  :disabled t
-  :ensure t
-  :custom
-  (deft-recursive t)
-  (deft-use-filename-as-title t)
-  (deft-default-extension "org"))
-
-(use-package org-projectile
-  :disabled t
-  :ensure t
-  :config
-  (progn
-    (push (org-projectile-project-todo-entry) org-capture-templates))
-  :custom
-  (org-projectile-projects-file (expand-file-name "projects.org" org-directory))
-  (org-agenda-files (append org-agenda-files (org-projectile-todo-files))))
-
 (provide 'config-org)
 ;;; config-org.el ends here

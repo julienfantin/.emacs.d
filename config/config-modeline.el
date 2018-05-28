@@ -27,11 +27,6 @@
 
 ;; * Packages
 
-(use-package all-the-icons
-  :disabled t
-  :ensure t
-  :commands (all-the-icons-icon-for-buffer))
-
 (use-package spaceline
   :ensure t
   :init
