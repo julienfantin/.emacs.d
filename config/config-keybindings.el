@@ -191,7 +191,8 @@ hyper when it's used as a modifier."
  "a" '(align-current :which-key "align")
  "c" '(-cleanup :which-key "cleanup")
  "o" '(outorg-edit-as-org :which-key "outorg")
- "r" '(align-regexp))
+ "r" '(align-regexp)
+ "i" '(iedit-mode :which-key "iedit"))
 
 ;;  ** (f)ind
 
@@ -387,54 +388,6 @@ hyper when it's used as a modifier."
  :keymaps '(help-mode-map)
  "/" 'link-hint-open-link)
 
-;; ** Symbols
-
-(advice-add
- #'ahs-edit-mode :before
- (lambda (arg &optional temporary)
-   (unless (bound-and-true-p auto-highlight-symbol-mode)
-     (auto-highlight-symbol-mode 1))))
-
-(advice-add
- #'ahs-edit-mode-off :after
- (lambda (nomsg interactive)
-   (auto-highlight-symbol-mode -1)))
-
-(defun config-keybindings-ahs-pre ()
-  "Start `auto-highlight-symbol-mode` and highlight."
-  (unless (bound-and-true-p auto-highlight-symbol-mode)
-    (auto-highlight-symbol-mode 1))
-  (ahs-highlight-now))
-
-(defun config-keybindings-ahs-post ()
-  "Start `auto-highlight-symbol-mode` and highlight."
-  (when (bound-and-true-p auto-highlight-symbol-mode)
-    (auto-highlight-symbol-mode -1)))
-
-(defhydra hydra-ahs
-  (:color red :pre (config-keybindings-ahs-pre) :post (config-keybindings-ahs-post))
-  "Symbol"
-  ("M-n" ahs-forward "next")
-  ("n" ahs-forward "next")
-  ("N" ahs-forward-definition "next def")
-  ("M-p" ahs-backward "prev")
-  ("p" ahs-backward "prev")
-  ("P" ahs-backward-definition "prev def")
-  ("r" ahs-change-range "range")
-  ("<" ahs-back-to-start "back")
-  ("e" ahs-edit-mode "edit" :exit t))
-
-(comment
- (defhydra hydra-iedit (:color red)
-   "Symbol"
-   ("M-n" iedit-next-occurrence "next")
-   ("n" iedit-next-occurrence "next")
-   ("M-p" iedit-prev-occurrence "prev")
-   ("p" iedit-prev-occurrence "prev")
-   ("f" iedit-restrict-function "function")
-   ("r" iedit-restrict-region "region")
-   ("e" ahs-edit-mode "edit" :exit t)))
-
 ;; ** (tab)navigation
 
 ;; (defhydra hydra-pop (:color blue)
@@ -525,26 +478,6 @@ hyper when it's used as a modifier."
  "C-k" 'find-function-on-key
  "C-v" 'find-variable
  "C-l" 'find-library)
-
-(general-define-key
- :keymaps 'prog-mode-map
- "M-n" '(hydra-ahs/ahs-forward :which-key "ahs-forward")
- "M-p" '(hydra-ahs/ahs-backward :which-key "ahs-backward")
- "M-i" '(ahs-edit-mode :which-key "ahs-edit-mode"))
-
-(comment
- (defun config-keybindings-iedit (&optional arg)
-   (interactive)
-   (if (or (bound-and-true-p lispy-mode)
-           (bound-and-true-p lispy-mnemonic-mode))
-       (funcall-interactively 'lispy-iedit arg)
-     (funcall-interactively 'iedit arg)))
-
- (general-define-key
-  :keymaps 'prog-mode-map
-  "M-n" '(hydra-iedit/iedit-next-occurrence :which-key "iedit-next")
-  "M-p" '(hydra-ahs/ahs-backward :which-key "iedit-prev")
-  "M-i" '(config-keybindings-iedit :which-key "iedit")))
 
 (after 'org
   (bind-keys

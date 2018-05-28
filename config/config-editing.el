@@ -43,22 +43,12 @@
 
 (use-package beginend :disabled t :ensure t :init (beginend-global-mode 1))
 
-(use-package auto-highlight-symbol
+(use-package iedit
   :ensure t
-  :commands (ahs-edit-mode)
-  :config
-  (add-to-list 'ahs-plugin-bod-modes 'clojure-mode)
-  (add-to-list 'ahs-plugin-bod-modes 'clojurescript-mode)
-  (add-to-list 'ahs-plugin-bod-modes 'clojurec-mode)
+  :bind (:map isearch-mode-map
+              ("C-c e i" . iedit-mode-from-isearch))
   :custom
-  (ahs-case-fold-search nil)
-  ;; Fix -> symbols in clojure
-  (ahs-include "^[0-9A-Za-z/_>.,:;*+=&%|$#@!^?-]+$")
-  (ahs-default-range 'ahs-range-whole-buffer)
-  (ahs-idle-interval -1.0)
-  (ahs-inhibit-face-list '()))
-
-(use-package iedit :ensure t)
+  (iedit-buffering t))
 
 (use-package undo-tree
   :disabled t                           ; undo-tree considered harmful

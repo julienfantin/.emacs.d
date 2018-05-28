@@ -30,16 +30,24 @@
 
 (use-package isearch
   :commands (isearch-forward-symbol-at-point isearch-forward)
-  :bind (:map isearch-mode-map
-              ;; Allow deleting chars in the search string, use C-r to search backwards
-              ([remap isearch-delete-char] . isearch-del-char))
+  :preface
+  (defun config-search-isearch-symbol-with-prefix (p)
+    "Like isearch, unless prefix argument is provided.
+With a prefix argument P, isearch for the symbol at point."
+    (interactive "P")
+    (let ((current-prefix-arg nil))
+      (call-interactively
+       (if p #'isearch-forward-symbol-at-point
+         #'isearch-forward))))
+  :bind
+  (([remap isearch-forward] . config-search-isearch-symbol-with-prefix)
+   (:map isearch-mode-map
+         ;; Allow deleting chars in the search string, use C-r to search backwards
+         ([remap isearch-delete-char] . isearch-del-char)))
   :custom
   (isearch-allow-scroll t)
   (lazy-highlight-initial-delay 0)
-  :config
-  (progn
-    ;; Reveal content of subtrees during isearch, alse see reveal-mode
-    (setq-default isearch-invisible 'open)))
+  (isearch-invisible 'open))
 
 
 ;; * Packages

@@ -108,8 +108,6 @@
       (let ((map lispy-mode-map))
         (bind-keys
          :map map
-         ;; Prefer our global binding for AHS
-         ("M-i" . nil)
          ;; lispy's sometimes don't work when inside a sexp
          ([remap lispy-forward-slurp-sexp]  . paredit-forward-slurp-sexp)
          ([remap lispy-forward-barf-sexp]   . paredit-forward-barf-sexp)
@@ -135,8 +133,6 @@
          :map map
          ;; Delete trailing parens
          ("C-<backspace>"                   . backward-delete-char)
-         ;; Prefer our global binding for AHS
-         ("M-i"                             . nil)
          ;; lispy's sometimes don't work when inside a sexp
          ([remap lispy-forward-slurp-sexp]  . paredit-forward-slurp-sexp)
          ([remap lispy-forward-barf-sexp]   . paredit-forward-barf-sexp)
