@@ -34,6 +34,7 @@
 
 (use-package dired
   :hook (dired-mode . dired-hide-details-mode)
+  :bind ("C-x C-j" . dired-jump)
   :custom
   (dired-auto-revert-buffer t))
 
@@ -42,7 +43,11 @@
   :after dired
   :hook
   (dired-initial-position . dired-k)
-  (dired-after-readin     . dired-k-no-revert))
+  (dired-after-readin     . dired-k-no-revert)
+  :custom
+  (dired-k-style nil)
+  (dired-listing-switches "-alh")
+  (dired-k-human-readable t))
 
 (use-package files
   :preface
@@ -80,6 +85,8 @@
     (add-to-list 'super-save-triggers "eyebrowse-switch-to-window-config")
     (add-to-list 'super-save-triggers "persp-switch")))
 
+;; ** Dired extensions
+
 (use-package dired-hacks-utils
   :ensure t
   :after dired
@@ -101,11 +108,9 @@
               ("/" . dired-narrow-fuzzy)))
 
 (use-package dired-x
-  :disabled t
   :after dired
-  :config (setq-default dired-omit-files-p t)
   :custom
-  (dired-listing-switches "-alh")
+  (dired-omit-files-p t)
   (dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
 
