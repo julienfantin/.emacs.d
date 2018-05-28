@@ -97,7 +97,7 @@
   (quelpa-update-melpa-p nil)
   (quelpa-checkout-melpa-p nil))
 
-(use-package quelpa-use-package :ensure t :demand t)
+(use-package quelpa-use-package :ensure t)
 
 ;; * Paradox
 

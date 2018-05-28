@@ -58,7 +58,7 @@
 (use-package windresize
   :ensure t
   :commands (windresize-left windresize-right windresize-up windresize-down)
-  :config (validate-setq windresize-default-increment 5))
+  :custom (windresize-default-increment 5))
 
 
 ;; * Buffer display rules

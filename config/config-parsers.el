@@ -32,7 +32,9 @@
 (use-package flycheck
   :ensure t
   :init (after-init #'global-flycheck-mode)
-  :commands (flycheck-mode flycheck-list-errors)
+  :commands (flycheck-mode flycheck-list-errors counsel-flycheck)
+  :bind (:map flycheck-mode-map
+              ("C-c !" . counsel-flycheck))
   :defines
   (flycheck-error-list-buffer
    flycheck-display-errors-function)
@@ -49,8 +51,6 @@
    config-parsers-flycheck-turn-messages-off)
   :config
   (progn
-    ;; Custom
-    (validate-setq flycheck-emacs-lisp-load-path 'inherit)
     ;; Advices
     (defun config-parsers-flycheck-select-window ()
       (select-window (get-buffer-window flycheck-error-list-buffer)))
@@ -99,7 +99,9 @@
                               (-when-let* ( (error (get-text-property 0 'tabulated-list-id s))
                                             (pos (flycheck-error-pos error)) )
                                 (goto-char (flycheck-error-pos error))))
-                    :history 'counsel-flycheck-history))))))
+                    :history 'counsel-flycheck-history)))))
+  :custom
+  (flycheck-emacs-lisp-load-path 'inherit))
 
 (provide 'config-parsers)
 ;;; config-parsers.el ends here

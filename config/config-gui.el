@@ -28,7 +28,7 @@
 
 ;; * Built-ins
 
-(validate-setq window-resize-pixelwise t)
+(setq window-resize-pixelwise t)
 
 (use-package simple
   :config

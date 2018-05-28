@@ -57,7 +57,7 @@
   (interactive)
   (cl-case system-type
     ('darwin
-     (validate-setq
+     (setq
       mac-command-modifier 'control
       mac-control-modifier 'meta
       mac-option-modifier 'super
@@ -100,11 +100,10 @@ hyper when it's used as a modifier."
 (use-package which-key
   :ensure t
   :init (after-init #'which-key-mode)
-  :config
-  (validate-setq
-   which-key-sort-order 'which-key-key-order-alpha
-   which-key-side-window-max-width 0.4
-   which-key-idle-delay 0.4))
+  :custom
+  (which-key-sort-order 'which-key-key-order-alpha)
+  (which-key-side-window-max-width 0.4)
+  (which-key-idle-delay 0.4))
 
 (use-package keyfreq
   :ensure t
@@ -113,9 +112,8 @@ hyper when it's used as a modifier."
   (progn
     (after-init #'keyfreq-mode)
     (after-init #'keyfreq-autosave-mode))
-  :config
-  (validate-setq
-   keyfreq-excluded-commands
+  :custom
+  (keyfreq-excluded-commands
    '(self-insert-command
      outshine-self-insert-command
      org-self-insert-command
@@ -129,8 +127,8 @@ hyper when it's used as a modifier."
   :ensure  t
   :config
   (use-package lv
-    :config
-    (validate-setq lv-use-separator t)))
+    :custom
+    (lv-use-separator t)))
 
 
 ;; * Hydras

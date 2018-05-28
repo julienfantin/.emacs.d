@@ -159,10 +159,5 @@ loading the pacakges."
 
 (put 'use-config 'lisp-indent-function 'defun)
 
-
-;; ** Required packages
-
-(use-package validate :ensure t :demand t)
-
 (provide 'use-config)
 ;;; use-config.el ends here

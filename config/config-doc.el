@@ -66,7 +66,6 @@
   :functions (config-doc-set-docsets)
   :config
   (progn
-    (validate-setq helm-dash-docsets-path (expand-file-name ".docsets" "~/"))
     (defun config-doc--docset-install-name (docset)
       (if (listp docset) (car docset) docset))
     (defun config-doc--docset-enable-name (docset)
@@ -79,17 +78,17 @@
       (unless (config-docs--docset-installed-p docset)
 	(counsel-dash-install-docset (config-doc--docset-install-name docset))))
     (defun config-doc--enable-docsets (docsets)
-      (validate-setq counsel-dash-docsets
-                     (mapcar #'config-doc--docset-enable-name docsets)))
+      (setq counsel-dash-docsets
+            (mapcar #'config-doc--docset-enable-name docsets)))
     (defun config-doc-set-docsets (mode-hook docsets)
       (mapc 'config-doc--ensure-installed docsets)
       (add-hook mode-hook #'(lambda () (config-doc--enable-docsets docsets))))
     (mapc
      (lambda (cell)
        (config-doc-set-docsets (car cell) (cdr cell)))
-     config-doc-default-docsets)))
-
-(use-package google-this :disabled t :ensure t)
+     config-doc-default-docsets))
+  :custom
+  (helm-dash-docsets-path (expand-file-name ".docsets" "~/")))
 
 (provide 'config-doc)
 ;;; config-doc.el ends here
