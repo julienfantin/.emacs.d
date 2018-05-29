@@ -95,12 +95,6 @@
         (("n" . dired-hacks-next-file)
          ("p" . dired-hacks-previous-file))))
 
-(use-package dired-subtree
-  :ensure t
-  :after dired
-  :bind (:map dired-mode-map
-              ("i" . dired-subtree-toggle)))
-
 (use-package dired-narrow
   :ensure t
   :after dired
@@ -110,17 +104,9 @@
 (use-package dired-x
   :after dired
   :custom
-  (dired-omit-files-p t)
   (dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
-
-;; * Commands
-
-(defun -find-file-as-sudo ()
-  "Find file with sudo.  Default to function `buffer-file-name'."
-  (interactive)
-  (let ((file-name (buffer-file-name)))
-    (find-alternate-file (concat "/sudo::" file-name))))
+(use-package auto-sudoedit :ensure t)
 
 (provide 'config-files)
 ;;; config-files.el ends here
