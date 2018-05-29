@@ -131,14 +131,23 @@ hyper when it's used as a modifier."
     (lv-use-separator t)))
 
 
-;; * Hydras
-;; ** (b)uffers
+;; * Keymaps
+
+;; ** (a) App
+
+(general-define-key
+ :prefix "C-c"
+ :infix "a"
+ "f"     '(counsel-faces :which-key "faces")
+ "t"     '(counsel-load-theme :which-key "theme")
+ "p"     '(counsel-package :which-key "package"))
+
+;; ** (b) Buffers
 
 (defhydra hydra-buffers (:color red)
   "Buffers"
-  ("C-c b" -switch-to-last-buffer "last")
   ("TAB"   -switch-to-last-buffer "last")
-  ("`"     -switch-to-last-buffer "last")
+  ("b"     switch-to-buffer "switch")
   ("h"     bury-buffer "hide")
   ("k"     kill-current-buffer "kill")
   ("K"     kill-buffer-and-window "kill (window)")
@@ -162,7 +171,7 @@ hyper when it's used as a modifier."
  "r"     '(revert-buffer :which-key "revert")
  "t"     '(-temp-buffer :which-key "temp"))
 
-;; ** (e)diting
+;; ** (e) Editing
 
 (defvar hydra-multiple-cursors-lispy-p nil)
 
@@ -190,7 +199,7 @@ hyper when it's used as a modifier."
  "r" '(align-regexp)
  "i" '(iedit-mode :which-key "iedit"))
 
-;;  ** (f)ind
+;;  ** (f) Find
 
 (general-define-key
  :prefix "C-c"
@@ -198,13 +207,13 @@ hyper when it's used as a modifier."
  "C-c f" '(counsel-find-file :which-key "find-file")
  "f"     '(counsel-find-file :which-key "find-file")
  "h"     '(helm-hunks :which-key "hunks")
+ "e"     '(-counsel-flycheck :which-key "flycheck")
  "r"     '(counsel-rg :which-key "ripgrep")
  "g"     '(counsel-git-grep :which-key "git-grep")
  "p"     '(projectile-find-file :which-key "(projectile) find-file")
- "s"     '(-find-file-as-sudo :which-key "sudo")
  "t"     '(-counsel-todos :which-key "todos"))
 
-;; ** (v)ersion control
+;; ** (v) Version control
 
 (general-define-key
  :prefix "C-c"
@@ -223,34 +232,29 @@ hyper when it's used as a modifier."
  "s"     '(magit-stage-file :which-key "stage")
  "t"     '(git-timemachine :which-key "timemachine"))
 
-;; ** (t)oggle modes
+;; ** (t) Toggles
 
 (general-define-key
  :prefix "C-c"
- :infix "m"
- "a" 'auto-fill-mode
- "c" 'centered-window-mode
- "d" 'toggle-debug-on-error
- "s" 'flyspell-mode
- "f" 'focus-mode
- "h" 'hl-line-mode
- "l" 'linum-mode
- "m" 'counsel-mark-ring
- "n" 'linum-mode
- "p" 'flyspell-prog-mode
- "r" 'read-only-mode
- "t" 'toggle-truncate-lines
- "v" 'visual-line-mode)
+ :infix "t"
+ "a" '(auto-fill-mode :which-key "aufto-fill")
+ "d" '(toggle-debug-on-error :which-key "debug")
+ "s" '(flyspell-mode :which-key "spell")
+ "p" '(flyspell-prog-mode :which-key "spell-prog")
+ "h" '(hl-line-mode :which-key "hl-line")
+ "r" '(read-only-mode :which-key "read-only")
+ "t" '(toggle-truncate-lines :which-key "truncate")
+ "v" '(visual-line-mode :which-key "visual-line"))
 
-;; ** (n)otes
+;; ** (n) Notes
 
 (general-define-key
  :prefix "C-c"
  :infix "n"
  "c" '(org-capture :which-key "capture")
- "d" '(deft :which-key "deft"))
+ "j" '(org-journal-new-entry :which-key "journal"))
 
-;; ** Term
+;; ** (t) Term
 
 (general-define-key
  :prefix "C-c"
@@ -261,7 +265,7 @@ hyper when it's used as a modifier."
  "t" 'term
  "a" 'ansi-term)
 
-;; ** (w)indows
+;; ** (w) Windows
 
 (defun config-keybindings-ace-switch ()
   "Switch the current window with ace window and restart the hydra."
@@ -346,7 +350,7 @@ hyper when it's used as a modifier."
  "8" '(aw-switch-to-window-8 :which-key "window-8")
  "9" '(aw-switch-to-window-9 :which-key "window-9"))
 
-;; ** (g)oto
+;; ** (g) Goto
 
 (defvar hydra-goto-pre-pos nil)
 
@@ -361,35 +365,25 @@ hyper when it's used as a modifier."
   (:color blue :body-pre (hydra-goto-init))
   ;; Positions
   ("C-g" hydra-goto-reset :exit t)
-  ("M-g" goto-line)
-  ("g" avy-goto-line)
-  ("/" link-hint-open-link)
-  ("i" counsel-imenu)
-  ("I" ivy-imenu-anywhere)
-  ("e" counsel-flycheck)
+  ("M-g" goto-line "line")
+  ("g" avy-goto-line "avy-line")
+  ("/" link-hint-open-link "link")
+  ("i" counsel-imenu "imenu")
+  ("I" ivy-imenu-anywhere "imenu-anywhere")
+  ("e" -counsel-flycheck "flycheck")
   ;; Pages
-  ("p" ivy-pages)
-  ("[" backward-page)
-  ("]" forward-page)
-  ;; Edits
-  ("l" goto-last-change)
-  ("<" diff-hl-previous-hunk)
-  (">" diff-hl-next-hunk))
+  ("p" ivy-pages "pages")
+  ("[" backward-page "back-page" :exit nil)
+  ("]" forward-page "forw-page" :exit nil))
 
-;; ** (tab)navigation
-
-;; (defhydra hydra-pop (:color blue)
-;;   ("n" pop-mark)
-;;   ("C-c" pop-global-mark))
-
-;; ** (d)ocumentation
+;; ** (d) Documentation
 
 (general-define-key
  :prefix "C-c"
  :infix "d"
  "SPC" 'counsel-dash)
 
-;; ** (o)utlines
+;; ** (o) Outlines
 
 (defhydra hydra-outline
   (:body-pre (outline-minor-mode 1) :color pink)
@@ -476,18 +470,14 @@ hyper when it's used as a modifier."
    ("C-M-u"          . org-up-heading-safe)))
 
 
-;; * User bindings
-
-(defhydra hydra-text (:color red)
-  ("+" -text-scale-increase)
-  ("-" -text-scale-decrease));; Mark
+;; * Keymaps
 
 (general-define-key
  :prefix "C-c"
  :keymaps 'global
  "r" 'ivy-resume
- "+"   '(hydra-text/-text-scale-increase :which-key "text-+")
- "-"   '(hydra-text/-text-scale-decrease :which-key "text--")
+ "+"   '(text-scale-increase :which-key "text-+")
+ "-"   '(text-scale-decrease :which-key "text--")
  "g"   '(hydra-goto/body :which-key "goto")
  "i"   '(counsel-imenu :which-key "imenu")
  "I"   '(ivy-imenu-anywhere :which-key "imenu anywher")

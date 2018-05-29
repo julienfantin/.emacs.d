@@ -32,9 +32,9 @@
 (use-package flycheck
   :ensure t
   :init (after-init #'global-flycheck-mode)
-  :commands (flycheck-mode flycheck-list-errors counsel-flycheck)
+  :commands (flycheck-mode flycheck-list-errors -counsel-flycheck)
   :bind (:map flycheck-mode-map
-              ("C-c !" . counsel-flycheck))
+              ("C-c !" . -counsel-flycheck))
   :defines
   (flycheck-error-list-buffer
    flycheck-display-errors-function)
@@ -77,9 +77,9 @@
       (add-hook 'company-completion-cancelled-hook #'config-parsers-flycheck-turn-messages-on))
     (after 'counsel
       ;; https://github.com/nathankot/dotemacs/blob/ef76773c69cac36c04935edcfa631052bd2c679d/init.el#L566
-      (defvar counsel-flycheck-history nil
-        "History for `counsel-flycheck'")
-      (defun counsel-flycheck ()
+      (defvar -counsel-flycheck-history nil
+        "History for `-counsel-flycheck'")
+      (defun -counsel-flycheck ()
         (interactive)
         (if (not (bound-and-true-p flycheck-mode))
             (message "Flycheck mode is not available or enabled")
@@ -99,7 +99,7 @@
                               (-when-let* ( (error (get-text-property 0 'tabulated-list-id s))
                                             (pos (flycheck-error-pos error)) )
                                 (goto-char (flycheck-error-pos error))))
-                    :history 'counsel-flycheck-history)))))
+                    :history '-counsel-flycheck-history)))))
   :custom
   (flycheck-emacs-lisp-load-path 'inherit))
 
