@@ -92,22 +92,6 @@
   :group 'duotone
   :type 'duotone-palette)
 
-;; (defcustom duotone-palette-mono-dark
-;;   (make-instance
-;;    'duotone-palette
-;;    :bg       (chroma-hex :hex "#0F0F0F")
-;;    :uno-1    (chroma-hex :hex "#FFFFFF")
-;;    :uno-2    (chroma-hex :hex "#D7DCDE")
-;;    :uno-3    (chroma-hex :hex "#DEE0E0")
-;;    :uno-4    (chroma-hex :hex "#D9D9D9")
-;;    :duo-1    (chroma-hex :hex "#D7DCDE")
-;;    :duo-2    (chroma-hex :hex "#DEE0E0")
-;;    :duo-3    (chroma-hex :hex "#D9D9D9")
-;;    :accent   (chroma-hex :hex "#DEDA5C"))
-;;   "Mono light palette."
-;;   :group 'duotone
-;;   :type 'duotone-palette)
-
 ;;;###autoload
 (defcustom duotone-palette-fiat-light
   (make-instance
@@ -366,7 +350,6 @@ https://github.com/simurai/duotone-dark-sea-syntax."
     duotone-palette-duotone-light
     duotone-palette-earth-dark
     duotone-palette-emacs-light
-    duotone-palette-fiat-dark
     duotone-palette-fiat-light
     duotone-palette-mono-dark
     duotone-palette-mono-light
