@@ -35,5 +35,16 @@
 (use-package autoinsert
   :init (after-init #'auto-insert-mode))
 
+(use-package highlight-symbol
+  :ensure t
+  :hook
+  ((highlight-symbol-mode . highlight-symbol-nav-mode)
+   (prog-mode . highlight-symbol-mode))
+  :custom
+  (highlight-symbol-highlight-single-occurrence nil)
+  (highlight-symbol-idle-delay 0.25)
+  (highlight-symbol-on-navigation-p t))
+
+
 (provide 'config-prog-mode)
 ;;; config-prog-mode.el ends here
