@@ -34,10 +34,6 @@
 
 ;; * Eshell
 
-(use-package eshell
-  :bind (:map eshell-mode-map
-              ("M-r" . counsel-esh-history)))
-
 (use-package esh-mode
   :functions (eshell/clear eshell/x eshell/clear!)
   :commands (eshell-send-input)
@@ -81,6 +77,8 @@
 
 (use-package em-hist
   :after eshell
+  :bind (:map eshell-mode-map
+              ("M-r" . counsel-esh-history))
   :custom (eshell-hist-ignoredups t))
 
 
