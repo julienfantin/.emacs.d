@@ -281,10 +281,30 @@ hyper when it's used as a modifier."
     (windresize)
     (windresize-cancel-and-quit)))
 
+(defhydra hydra-eyebrowse (:color red :hint nil)
+  "Eyebrowse"
+  ("<tab>" eyebrowse-last-window-config "last")
+  ("1" eyebrowse-switch-to-window-config-1)
+  ("2" eyebrowse-switch-to-window-config-2)
+  ("3" eyebrowse-switch-to-window-config-3)
+  ("4" eyebrowse-switch-to-window-config-4)
+  ("5" eyebrowse-switch-to-window-config-5)
+  ("6" eyebrowse-switch-to-window-config-6)
+  ("7" eyebrowse-switch-to-window-config-7)
+  ("8" eyebrowse-switch-to-window-config-8)
+  ("9" eyebrowse-switch-to-window-config-9)
+  ("w" eyebrowse-switch-to-window-config "switch")
+  ("r" eyebrowse-rename-window-config "rename")
+  ("c" eyebrowse-new-workspace "new")
+  ("n" eyebrowse-next-window-config "next")
+  ("p" eyebrowse-prev-window-config "prev")
+  ("k" eyebrowse-close-window-config "kill"))
+
 (defhydra hydra-windows
-  (:color blue :hint nil :pre (config-keybindings-init-window-modes))
+  (:color red :hint nil :pre (config-keybindings-init-window-modes))
   ("<tab>" -switch-to-last-window "last" :exit t)
   ("C-c w" -switch-to-last-window "last" :exit t)
+  ("w"   hydra-eyebrowse/body :exit t)
   ("p"   windmove-up)
   ("n"   windmove-down)
   ("f"   windmove-right)
@@ -301,8 +321,8 @@ hyper when it's used as a modifier."
   ("o"   ace-window "ace")
   ("k"   config-keybindings-ace-delete "ace delete")
   ("s"   config-keybindings-ace-switch "ace switch")
-  ("<left>" winner-undo "undo" :exit nil)
-  ("<right>" winner-redo "redo" :exit nil)
+  ("u"   winner-undo "undo")
+  ("r"   winner-redo "redo")
   ("q"   ignore :exit t))
 
 (dolist (n (number-sequence 1 10))
@@ -325,30 +345,6 @@ hyper when it's used as a modifier."
  "7" '(aw-switch-to-window-7 :which-key "window-7")
  "8" '(aw-switch-to-window-8 :which-key "window-8")
  "9" '(aw-switch-to-window-9 :which-key "window-9"))
-
-(defhydra hydra-eyebrowse (:color red)
-  "Eyebrowse"
-  ("<tab>" eyebrowse-last-window-config "last")
-  ("w" eyebrowse-switch-to-window-config "switch")
-  ("r" eyebrowse-rename-window-config "rename")
-  ("c" eyebrowse-new-workspace "new")
-  ("n" eyebrowse-next-window-config "next")
-  ("p" eyebrowse-prev-window-config "prev")
-  ("k" eyebrowse-close-window-config "kill"))
-
-(general-define-key
- ;; Eyeberowse: Space+Ctrl+NumRow
- ;;
- "C-c l"     '(hydra-eyebrowse/body :which-key "eye")
- "C-c C-1"    '(eyebrowse-switch-to-window-config-1 :which-key "eye-1")
- "C-c C-2"    '(eyebrowse-switch-to-window-config-2 :which-key "eye-2")
- "C-c C-3"    '(eyebrowse-switch-to-window-config-3 :which-key "eye-3")
- "C-c C-4"    '(eyebrowse-switch-to-window-config-4 :which-key "eye-4")
- "C-c C-5"    '(eyebrowse-switch-to-window-config-5 :which-key "eye-5")
- "C-c C-6"    '(eyebrowse-switch-to-window-config-6 :which-key "eye-6")
- "C-c C-7"    '(eyebrowse-switch-to-window-config-7 :which-key "eye-7")
- "C-c C-8"    '(eyebrowse-switch-to-window-config-8 :which-key "eye-8")
- "C-c C-9"    '(eyebrowse-switch-to-window-config-9 :which-key "eye-9"))
 
 ;; ** (g)oto
 
