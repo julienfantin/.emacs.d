@@ -66,8 +66,7 @@
             name))))
 
     (spaceline-define-segment config-modeline-ace-window-number
-      (when (and (featurep 'ace-window)
-                 (> (length (aw-window-list)) 1))
+      (when (featurep 'ace-window)
         (when-let ((pos (cl-position (selected-window) (aw-window-list)))
                    (key (nth pos aw-keys)))
           (char-to-string key))))
@@ -85,7 +84,7 @@
         `(((flycheck-error flycheck-warning flycheck-info) :when active)
           (buffer-encoding-abbrev :when (and active (not (eq buffer-file-coding-system 'utf-8-unix))))
           (config-modeline-version-control :when active)
-          (config-modeline-eyebrowse :when active)))
+          (config-modeline-eyebrowse)))
       (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
       (force-mode-line-update))
     (after-init #'config-modeline-install))
