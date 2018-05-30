@@ -15,7 +15,7 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; You should have received a copy of the GNU General Public License
+;; You should have received c copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
@@ -25,52 +25,52 @@
 ;;; Code:
 (require 'use-config)
 
-;; * Customs
+(defvar config-prose-dicts-dir
+  (expand-file-name "etc/dictionaries/" user-emacs-directory))
 
-(defvar config-prose-enable-prose-spell-checking t)
-(defvar config-prose-enable-code-spell-checking t)
+;; (setq ispell-library-directory (expand-file-name "etc/dictionaries/" user-emacs-directory))
 
 
 ;; * Spell-checking
 
-(use-package guess-language
-  :ensure t
-  :after prose-mode
-  :config
-  (after 'prose-minor-mode
-    (add-hook 'prose-minor-mode-hook 'guess-language-mode)))
-
 (use-package ispell
+  :ensure-system-package (hunspell)
   :config
   (progn
-    (setq ispell-silently-savep t)
+    (require 'dash)
+    (setenv "DICPATH" config-prose-dicts-dir)
     (cond
+     ((executable-find "hunspell")
+      (setq ispell-program-name "hunspell")
+      (setq ispell-extra-args '("-d en_US,fr-classique")))
      ((executable-find "aspell")
       (setq ispell-program-name "aspell")
       (setq ispell-extra-args '("--sug-mode=ultra"
                                 "--lang=en_US"
                                 "--add-filter=url"
-                                "--add-filter=email")))
-     ((executable-find "hunspell")
-      (setq ispell-program-name "hunspell")
-      (setq ispell-extra-args '("-d en_US"))))))
+                                "--add-filter=email")))))
+  :custom (ispell-silently-savep t))
 
 (use-package flyspell
+  :hook (prog-mode . flyspell-prog-mode)
   :custom
   (flyspell-abbrev-p t)
   (flyspell-issue-welcome-flag nil)
   (flyspell-issue-message-flag nil))
 
 (use-package flyspell-lazy
+  :disabled t
   :ensure t
   :after flyspell
-  :init (flyspell-lazy-mode 1))
+  :hook (flyspell-mode . flyspell-lazy-load))
 
 (use-package flyspell-correct-ivy
   :ensure t
   :after flyspell
-  :bind (:map flyspell-mode-map
-              ("C-c $" . 'flyspell-correct-previous-word-generic)))
+  :init (require 'flyspell-correct-ivy nil t)
+  :bind
+  (:map flyspell-mode-map
+        ("C-c $" . 'flyspell-correct-previous-word-generic)))
 
 
 ;; * Prose minor mode
@@ -78,8 +78,8 @@
 (use-package visual-fill-column :ensure t)
 
 (use-package prose-minor-mode
-  :hook ((org-mode . prose-minor-mode)
-         (markdown-mode . prose-minor-mode)
+  :hook ((org-mode         . prose-minor-mode)
+         (markdown-mode    . prose-minor-mode)
          (prose-minor-mode . visual-line-mode)
          (prose-minor-mode . visual-fill-column-mode)
          (prose-minor-mode . flyspell-mode)))
@@ -106,7 +106,8 @@
 
 (use-package markdown-mode
   :ensure t
-  :mode "\\.md\\'")
+  :mode "\\.md\\'"
+  :custom (markdown-fontify-code-blocks-natively t))
 
 (provide 'config-prose)
 ;;; config-prose.el ends here
