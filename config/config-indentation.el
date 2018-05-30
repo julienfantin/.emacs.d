@@ -45,15 +45,15 @@
 
 ;; * Whitespace cleanup
 
-(defun config-whitespace-show-trailing-whitespace ()
+(defun config-indentation-show-trailing-whitespace ()
   "Enable 'SHOW-TRAILING-WHITESPACE' in current buffer."
   (setq-local show-trailing-whitespace t))
 
-(add-hook 'prog-mode-hook #'config-whitespace-show-trailing-whitespace)
+(add-hook 'prog-mode-hook #'config-indentation-show-trailing-whitespace)
 
 (use-package ws-butler
   :ensure t
-  :hook (prog-mode . ws-butler-mode))
+  :hook ((prog-mode . ws-butler-mode)))
 
 
 ;; * Indentation

@@ -27,11 +27,9 @@
 
 
 (use-package prog-mode
-  :hook
-  (prog-mode . auto-fill-mode)
-  (prog-mode . display-line-numbers-mode))
+  :hook ((prog-mode . auto-fill-mode)
+         (prog-mode . display-line-numbers-mode)))
 
-;; Automatic file headers
 (use-package autoinsert
   :init (after-init #'auto-insert-mode))
 

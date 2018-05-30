@@ -70,6 +70,8 @@ With a prefix argument P, isearch for the symbol at point."
   ;; Use C-' in isearch to bring up avy
   (avy-setup-default))
 
+(use-package wgrep :ensure t)
+
 
 ;; * Commands
 

@@ -56,11 +56,16 @@
 (use-package company
   :ensure t
   :init (after-init #'global-company-mode)
-  :bind (:map company-active-map
-              ("TAB" . company-complete-common-or-cycle))
+  :bind ((:map company-mode-map
+               ("TAB" . company-indent-or-complete-common))
+         (:map company-active-map
+               ("TAB" . company-complete-common-or-cycle)
+               ("C-n" . company-select-next)
+               ("C-p" . company-select-previous)
+               ("M-/" . company-other-backend)))
   :custom
   (company-global-modes
-   '(not text-mode message-mode git-commit-mode org-mode))
+   '(not text-mode message-mode git-commit-mode org-mode magit-status-mode))
   (company-backends
    '((company-elisp)
      (company-capf company-dabbrev company-files)
