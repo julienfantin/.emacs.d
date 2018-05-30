@@ -40,14 +40,5 @@
   (global-hl-line-sticky-flag nil)
   (hl-line-sticky-flag nil))
 
-
-
-;; * Packages
-
-(use-package rich-minority
-  :ensure t
-  :init (rich-minority-mode 1)
-  :custom (rm-whitelist '(" λ")))
-
 (provide 'config-gui)
 ;;; config-gui.el ends here

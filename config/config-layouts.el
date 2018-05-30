@@ -35,7 +35,7 @@
   :init (after-init #'eyebrowse-mode)
   :custom
   (eyebrowse-switch-back-and-forth t)
-  (eyebrowse-mode-line-separator ","))
+  (eyebrowse-mode-line-style nil))
 
 (provide 'config-layouts)
 ;;; config-layouts.el ends here

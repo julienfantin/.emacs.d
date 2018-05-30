@@ -27,81 +27,56 @@
 
 ;; * Packages
 
-(use-package spaceline
+(defvar config-modeline-eyebrowse-mode-line
+  '(:eval
+    (when (bound-and-true-p eyebrowse-mode)
+      (let* ((num (eyebrowse--get 'current-slot))
+             (tag (when num (nth 2 (assoc num (eyebrowse--get 'window-configs)))))
+             (tag-or-num (if (and tag (< 0 (length tag))) tag (when num (int-to-string num))))
+             (str (concat " " tag-or-num " ")))
+        str)))
+  "Mode line format for Eyebrowse.")
+(put 'config-modeline-eyebrowse-mode-line 'risky-local-variable t)
+
+(defvar config-modeline-window-mode-line
+  '(:eval
+    (when (featurep 'ace-window)
+      (when-let ((pos (cl-position (selected-window) (aw-window-list)))
+                 (key (nth pos aw-keys)))
+        (char-to-string key)))))
+(put 'config-modeline-window-mode-line 'risky-local-variable t)
+
+(setq-default
+ mode-line-format
+ '("%e"
+   config-modeline-eyebrowse-mode-line
+   config-modeline-window-mode-line
+   ;; mode-line-front-space
+   ;; mode-line-mule-info
+   ;; mode-line-client
+   ;; mode-line-modified
+   ;; mode-line-remote
+   mode-line-frame-identification
+   mode-line-buffer-identification "   " mode-line-position
+   (vc-mode vc-mode)
+   (multiple-cursors-mode mc/mode-line)
+   "  " mode-line-modes
+   mode-line-misc-info
+   mode-line-end-spaces))
+
+(use-package moody
   :ensure t
   :init
-  (progn
-    (use-package spaceline-segments :demand t)
-    (spaceline-define-segment config-modeline-eyebrowse
-      (when (bound-and-true-p eyebrowse-mode)
-        (let* ((num (eyebrowse--get 'current-slot))
-               (num-str (int-to-string num))
-               (num-tag (when num (nth 2 (assoc num (eyebrowse--get 'window-configs))))))
-          (if (and num-tag (< 0 (length num-tag)))
-              (format "%s [%s]" num-str num-tag)
-            num-str))))
-
-    (spaceline-define-segment config-modeline-version-control
-      "Version control information."
-      (when (bound-and-true-p vc-mode)
-        (let ((sym (when (buffer-file-name)
-                     (pcase (vc-state (buffer-file-name))
-                       (`up-to-date " ")
-                       (`edited " *")
-                       (`added " +")
-                       (`unregistered " ??")
-                       (`removed " -")
-                       (`needs-merge " M")
-                       (`needs-update " X")
-                       (`ignored " ")
-                       (_ " Unk"))))
-              (desc (s-replace "Git:" "" vc-mode)))
-          (powerline-raw (concat sym desc " ")))))
-
-    (spaceline-define-segment config-modeline-persp
-      (when (bound-and-true-p persp-mode)
-        (let ((name (safe-persp-name (get-frame-persp))))
-          (if (file-directory-p name)
-              (file-name-nondirectory (directory-file-name name))
-            name))))
-
-    (spaceline-define-segment config-modeline-ace-window-number
-      (when (featurep 'ace-window)
-        (when-let ((pos (cl-position (selected-window) (aw-window-list)))
-                   (key (nth pos aw-keys)))
-          (char-to-string key))))
-
-    (spaceline-define-segment config-modeline-buffer-id
-      "Name of buffer."
-      (concat " " (s-trim (powerline-buffer-id 'mode-line-buffer-id)) " "))
-
-    (defun config-modeline-install ()
-      (spaceline-install
-        `(config-modeline-ace-window-number
-          buffer-id
-          (buffer-position :when active)
-          (remote-host (global :when active)) selection-info)
-        `(((flycheck-error flycheck-warning flycheck-info) :when active)
-          (buffer-encoding-abbrev :when (and active (not (eq buffer-file-coding-system 'utf-8-unix))))
-          (config-modeline-version-control :when active)
-          (config-modeline-eyebrowse)))
-      (setq-default mode-line-format '("%e" (:eval (spaceline-ml-main))))
-      (force-mode-line-update))
-    (after-init #'config-modeline-install))
+  (moody-replace-mode-line-buffer-identification)
+  (moody-replace-vc-mode)
   :custom
-  (spaceline-highlight-face-func #'spaceline-highlight-face-default))
+  (x-underline-at-descent-line t)
+  (moody-slant-function #'moody-slant-apple-rgb))
 
-
-(use-package powerline
+(use-package rich-minority
   :ensure t
-  :functions (powerline-reset)
-  :config
-  (advice-add
-   'load-theme :after
-   (lambda (_theme &optional _no-confirm _no-enable)
-     (powerline-reset)))
-  :custom
-  (powerline-default-separator nil))
+  :init (rich-minority-mode 1)
+  :custom (rm-whitelist '(" λ")))
 
 (provide 'config-modeline)
 ;;; config-modeline.el ends here
