@@ -38,7 +38,7 @@
     ("sql" "#+begin_src sql\n  ?\n#+end_src" "<src lang=\"sql\">\n?\n</src>")))
 
 (defvar conf-org-babel-languages
-  '(emacs-lisp sql ocaml clojure))
+  '(emacs-lisp sql ocaml clojure shell))
 
 
 ;; * Core
@@ -49,21 +49,6 @@
   (insert "- [ ] "))
 
 (use-package org
-  :preface
-  (progn
-    (defun config-org-add-structure-templates ()
-      "Add templates from 'config-org-structure-templates'."
-      (dolist (template config-org-structure-templates)
-        (add-to-list 'org-structure-template-alist template)))
-    (defun config-org-load-languages ()
-      "Load languages from 'conf-org-babel-languages'."
-      (thread-last conf-org-babel-languages
-        (cl-mapcar (lambda (mode) `(,mode . t)))
-        (org-babel-do-load-languages 'org-babel-load-languages))))
-  :config
-  (progn
-    (config-org-add-structure-templates)
-    (config-org-load-languages))
   :custom
   (org-agenda-files (list config-org-user-directory))
   (org-log-done 'time)
@@ -80,7 +65,18 @@
    '(("N" . org-shiftmetadown)
      ("P" . org-shiftmetaup)
      ("F" . org-shiftmetaright)
-     ("B" . org-shiftmetaleft))))
+     ("B" . org-shiftmetaleft)))
+  :config
+  ;; Add templates from 'config-org-structure-templates'.
+  (dolist (template config-org-structure-templates)
+    (add-to-list 'org-structure-template-alist template)))
+
+(use-package ob
+  :config
+  ;; Load languages from 'conf-org-babel-languages'.
+  (thread-last conf-org-babel-languages
+    (cl-mapcar (lambda (mode) `(,mode . t)))
+    (org-babel-do-load-languages 'org-babel-load-languages)))
 
 (use-package ob-core
   :custom (org-confirm-babel-evaluate nil))
