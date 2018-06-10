@@ -39,11 +39,6 @@ With a prefix argument P, isearch for the symbol at point."
       (call-interactively
        (if p #'isearch-forward-symbol-at-point
          #'isearch-forward))))
-  :bind
-  (([remap isearch-forward] . config-search-isearch-symbol-with-prefix)
-   (:map isearch-mode-map
-         ;; Allow deleting chars in the search string, use C-r to search backwards
-         ([remap isearch-delete-char] . isearch-del-char)))
   :custom
   (isearch-allow-scroll t)
   (lazy-highlight-initial-delay 0)
@@ -56,8 +51,18 @@ With a prefix argument P, isearch for the symbol at point."
 
 (use-package swiper
   :ensure t
-  :config
-  (advice-add 'swiper :after #'recenter-top-bottom))
+  :commands (-swiper-at-point)
+  :bind
+  (([remap isearch-forward] . -swiper-at-point)
+   (:map swiper-map
+         ("C-r" . ivy-previous-line-or-history)))
+  :custom
+  ;; Always recentre when leaving Swiper
+  (swiper-action-recenter t)
+  ;; Jump to the beginning of match when leaving Swiper
+  (swiper-goto-start-of-match t)
+  ;; C-k C-g to go back to where the research started
+  (swiper-stay-on-quit t))
 
 (use-package avy
   :ensure t
@@ -79,7 +84,7 @@ With a prefix argument P, isearch for the symbol at point."
 (defun -swiper-at-point (_arg)
   "Swiper with 'thing-at-point'."
   (interactive "P")
-  (swiper (thing-at-point 'symbol)))
+  (swiper (when _arg (thing-at-point 'symbol))))
 
 (provide 'config-search)
 ;;; config-search.el ends here

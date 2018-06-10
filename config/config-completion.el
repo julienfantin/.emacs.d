@@ -26,7 +26,6 @@
 (require 'use-config)
 (require 'map)
 
-
 
 ;; * Defaults
 
@@ -49,6 +48,15 @@
 ;; ** Mini-buffer
 
 (setq history-length most-positive-fixnum)
+(setq enable-recursive-minibuffers t)
+
+
+;; * Prescient
+
+(use-package prescient
+  :ensure t
+  :after no-littering
+  :config (prescient-persist-mode 1))
 
 
 ;; * Company
@@ -78,8 +86,7 @@
   (company-tooltip-align-annotations t)
   (company-tooltip-limit 10)
   (company-tooltip-minimum 10)
-  (company-tooltip-minimum-width 50)
-  (company-transformers '(company-sort-by-occurrence)))
+  (company-tooltip-minimum-width 50))
 
 (use-package company-dabbrev
   :custom
@@ -87,19 +94,29 @@
   (company-dabbrev-ignore-case nil)
   (company-dabbrev-minimum-length 2))
 
-(use-package company-quickhelp
-  :ensure t
-  :after company
-  :hook (company-mode . company-quickhelp-mode)
-  :bind (:map company-active-map
-              ("M-h" . company-quickhelp-mode))
-  :custom
-  (company-quickhelp-delay 0.2)
-  (company-quickhelp-use-propertized-text t))
-
 (use-package company-elisp
   :custom
   (company-elisp-detect-function-context nil))
 
+;; this frontend properly renders propertized text, variable pitch font and
+;; doesn't have to it within the parent-frame
+(use-package company-box
+  :ensure t
+  :after company
+  :hook (company-mode . company-box-mode)
+  :custom
+  ;; Icons are huge!?
+  (company-box-enable-icon t)
+  (comp)
+  ;; Search is kinda broken this helps mitigate the issue
+  (company-search-filtering nil))
+
+(use-package company-prescient
+  :ensure t
+  :after company
+  :init (require 'company-prescient nil t)
+  :config (company-prescient-mode 1))
+
 (provide 'config-completion)
 ;;; config-completion.el ends here
+

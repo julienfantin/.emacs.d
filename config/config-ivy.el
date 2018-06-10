@@ -28,56 +28,45 @@
 
 ;; * Packages
 
-(use-package swiper :ensure t)
-
 (use-package uniquify
-  :config
-  (setq-default uniquify-buffer-name-style 'forward))
+  :custom
+  (uniquify-buffer-name-style 'forward))
 
 (use-package ivy
   :init (after-init #'ivy-mode)
   :commands (ivy-set-actions)
   :custom
-  (ivy-fixed-height-minibuffer nil)
+  (ivy-extra-directories nil)
+  (ivy-fixed-height-minibuffer t)
   (ivy-initial-inputs-alist nil)
   (ivy-re-builders-alist '((t . ivy--regex-plus)))
   (ivy-use-virtual-buffers t)
-  (ivy-virtual-abbreviate 'full)
-  (ivy-display-style nil))
+  :config
+  (after 'magit
+    (setq magit-completing-read-function 'ivy-completing-read))
+  (after 'projectile
+    (setq projectile-completion-system 'ivy)))
 
 (use-package counsel
   :ensure t
   :init (after-init #'counsel-mode)
-  :preface
   :custom
-  (counsel-rg-base-command "rg -S -M 200 --no-heading --line-number --color never %s .")
-  (ivy-extra-directories nil))
-
-;; Counsel makes use of smex
-(use-package smex
-  :ensure t
-  :after (no-littering)
-  :custom (smex-history-length 1000))
+  (counsel-rg-base-command "rg -S -M 200 --no-heading --line-number --color never %%s ."))
 
 (use-package counsel-projectile
   :ensure t
   :after (counsel projectile)
-  :init (counsel-projectile-mode))
+  :init (counsel-projectile-mode)
+  :custom
+  (counsel-projectile-remove-current-project t)
+  (counsel-projectile-remove-current-buffer t))
 
-(use-package ivy-historian
+(use-package ivy-prescient
   :ensure t
-  :after (ivy no-littering)
-  :hook (ivy-mode . ivy-historian-mode)
-  :custom (historian-history-length 1000))
+  :after ivy
+  :init (ivy-prescient-mode 1))
 
 ;; * Commands
-
-
-;; NOTE use .dir-locals.el to ignore folders:
-;;
-;; (counsel-todos-cmd
-;;  . "git --no-pager grep --full-name -n --no-color -i -e TODO -e FIXME -e HACK
-;; -e XXX -- './*' ':!resources/public/js/**' ':!resources/public/vs/**'")
 
 (after 'counsel
   (defun -counsel-todos  ()
@@ -91,5 +80,3 @@
 
 (provide 'config-ivy)
 ;;; config-ivy.el ends here
-
-;;  LocalWords:  flx
