@@ -89,16 +89,6 @@
 
 (use-package use-package-ensure-system-package :ensure t)
 
-;; * Quelpa
-
-(use-package quelpa
-  :ensure t
-  :custom
-  (quelpa-update-melpa-p nil)
-  (quelpa-checkout-melpa-p nil))
-
-(use-package quelpa-use-package :ensure t)
-
 ;; * Paradox
 
 (use-package paradox
