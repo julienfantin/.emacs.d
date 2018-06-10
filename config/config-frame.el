@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016  Julien Fantin
 
-;; Author: Julien Fantin(require 'use-config) <julienfantin@gmail.com>
+;; Author: Julien Fantin <julienfantin@gmail.com>
 ;; Keywords: frames
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -27,15 +27,16 @@
 
 ;; * Customs
 
-(defvar config-frame-border-width 30)
+(defvar config-frame-border-width 15)
 
 (defvar config-frame-mono-fonts
-  '("-*-SF Mono-light-normal-ultracondensed-*-*-*-*-*-m-0-iso10646-1"
-    "-*-Iosevka-light-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-IBM Plex Mono-light-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-Source Code Pro-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+  '("-*-Menlo-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+    "-*-Fira Code-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-Fira Code-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"))
+    "-*-Source Code Pro-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+    "-*-IBM Plex Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+    "-*-Iosevka-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+    "-*-SF Mono-normal-normal-ultracondensed-*-*-*-*-*-m-0-iso10646-1"))
 
 (defvar config-frame-fonts
   '("-*-SF UI Text-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1"))
@@ -45,8 +46,7 @@
 
 (defun config-frame-mono-font ()
   "Return the first available font in 'config-frame-mono-fonts'."
-  (when (eq 'darwin system-type)
-    (cl-find-if #'font-exists-p config-frame-mono-fonts)))
+  (cl-find-if #'font-exists-p config-frame-mono-fonts))
 
 (defun font-exists-p (font)
   "Existing 'FONT' predicate."
@@ -55,7 +55,7 @@
 (defun config-frame-font (fonts-list)
   (cl-find-if #'font-exists-p fonts-list))
 
-(set-face-attribute 'default nil :font (config-frame-font config-frame-mono-fonts))
+(set-face-attribute 'default        nil :font (config-frame-font config-frame-mono-fonts))
 (set-face-attribute 'variable-pitch nil :font (config-frame-font config-frame-fonts))
 
 
@@ -75,14 +75,14 @@
      (let* ((width (if (> (nth 2 (frame-monitor-geometry)) 1920) 240 120))
             (height (nth 3 (frame-monitor-geometry)))
             (margin (/ (- (nth 2 (frame-monitor-geometry)) (* width (frame-char-width))) 2)))
-       `((width . ,width)
+       `((width  . ,width)
          (height . ,height)
-         (left . ,margin)
-         (top . 0))))
+         (left   . ,margin)
+         (top    . 0))))
    config-frame-default-frame-alist))
 
 (use-package frame
-  :init (after-init #'window-divider-mode)
+  ;; :init (after-init #'window-divider-mode)
   :config
   (progn
     (scroll-bar-mode -1)
@@ -90,29 +90,45 @@
     (blink-cursor-mode -1)
     (pixel-scroll-mode 1))
   :custom
-  (frame-resize-pixelwise t)
   (default-frame-alist (config-frame-frame-alist))
   (initial-frame-alist (config-frame-frame-alist))
+  (frame-resize-pixelwise t)
+  ;; The window dividers give some nice padding to the layout but look ugly in
+  ;; themes where the face is different from the default background
   (window-divider-default-places t)
   (window-divider-default-right-width config-frame-border-width)
   (window-divider-default-bottom-width 10))
+
+(use-package mwheel
+  :custom
+  ;; Use the trackpade to scroll the buffer horizontally
+  (mouse-wheel-flip-direction t)
+  (mouse-wheel-tilt-scroll t))
+
+(when (eq 'darwin system-type)
+  ;; Enable standard retina font rendering
+  (setq ns-use-thin-smoothing t))
 
 
 ;; * Commands
 
 ;;;###autoload
 (defun -text-scale-increase ()
-  "Increase height of default face by 'CONFIG-FRAME-TEXT-SCALE-STEP'."
+  "Increase height of default face."
   (interactive)
-  (let ((old-face-attribute (face-attribute 'default :height)))
-    (set-face-attribute 'default nil :height (+ old-face-attribute 10))))
+  (let ((height (face-attribute 'default :height)))
+    (set-face-attribute 'default nil :height (+ height 10))))
+
+(global-set-key [remap text-scale-increase] #'-text-scale-increase)
 
 ;;;###autoload
 (defun -text-scale-decrease ()
-  "Decrease height of default face by 'CONFIG-FRAME-TEXT-SCALE-STEP'."
+  "Decrease height of default face."
   (interactive)
-  (let ((old-face-attribute (face-attribute 'default :height)))
-    (set-face-attribute 'default nil :height (- old-face-attribute 10))))
+  (let ((height (face-attribute 'default :height)))
+    (set-face-attribute 'default nil :height (- height 10))))
+
+(global-set-key [remap text-scale-decrease] #'-text-scale-decrease)
 
 ;;;###autoload
 (defun -transparency-increase ()
