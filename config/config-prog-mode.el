@@ -25,10 +25,14 @@
 ;;; Code:
 (require 'use-config)
 
-
 (use-package prog-mode
   :hook ((prog-mode . auto-fill-mode)
          (prog-mode . display-line-numbers-mode)))
+
+(use-package conf-mode
+  :preface (defun config-prog-run-hooks () (run-hooks 'prog-mode-hook))
+  :after prog-mode
+  :config (add-hook 'conf-mode-hook #'config-prog-run-hooks))
 
 (use-package autoinsert
   :init (after-init #'auto-insert-mode))
@@ -42,7 +46,6 @@
   (highlight-symbol-highlight-single-occurrence nil)
   (highlight-symbol-idle-delay 0.25)
   (highlight-symbol-on-navigation-p t))
-
 
 (provide 'config-prog-mode)
 ;;; config-prog-mode.el ends here
