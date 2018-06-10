@@ -239,14 +239,6 @@ Remap all faces when called with a prefix argument."
          (,(theme-faces-match "diff-hl" "git-gutter" "border")
           ((t (:f ,uno-3 :b ,bg))))
          ;;
-         ;; Diff
-         (,(theme-faces-match '("removed" "indicator") "delete")
-          ((t (:f ,removed))))
-         (,(theme-faces-match '("added" "indicator") "copied" "insert" "inserted")
-          ((t (:f ,added))))
-         (,(theme-faces-match '("change" "change-log") '("modified" "unmodified" "added") "saved")
-          ((t (:f ,modified))))
-         ;;
          ;; Todos
          (,(theme-faces-match "todo")
           ((t (:f ,duo-1 :b nil :w bold))))
@@ -310,7 +302,6 @@ Remap all faces when called with a prefix argument."
          (org-block-begin-line                       ((t (:f ,uno-4 :b ,(chroma-blend bg uno-3 0.03)))))
          (org-block                                  ((t (:b ,(chroma-blend bg uno-3 0.03)))))
          (org-block-end-line                         ((t (:f ,uno-4 :b ,(chroma-blend bg uno-3 0.03)))))
-         (pulse-eval-face                            ((t (:b ,(chroma-blend bg accent sblend)))))
          (page-break-lines                           ((t (:f ,uno-4))))
          (aw-leading-char-face                       ((t (:f ,uno-1 :bg ,(chroma-blend bg uno-1 sblend)))))
          (avy-background-face                        ((t (:f ,(chroma-blend uno-4 bg sblend)))))
@@ -327,7 +318,7 @@ Remap all faces when called with a prefix argument."
          (cider-enlightened-face                     ((t (:f ,duo-1 :b ,bg-fade))))
          (cider-result-overlay-face                  ((t (:f ,duo-1 :b ,bg-sfade :border nil))))
          (cider-enlightened-local-face               ((t (:f ,duo-3 :b ,bg-mfade))))
-         (tooltip                                    ((t (:f ,fg :b ,bg-sfade))))
+         (tooltip                                    ((t (:f ,fg :b ,bg-sfade :inherit default))))
          (company-preview                            ((t (:f ,fg :b ,uno-3))))
          (company-tooltip-search                     ((t (:f ,bg :b ,uno-3))))
          (company-tooltip-search-selection           ((t (:f ,(chroma-fade bg-sfade sfade) :b ,duo-2 ))))
@@ -380,7 +371,8 @@ Remap all faces when called with a prefix argument."
          (window-divider                             ((t (:f ,bg))))
          (window-divider-first-pixel                 ((t (:f ,bg))))
          (window-divider-last-pixel                  ((t (:f ,bg))))
-         (merlin-type-face                           ((t (:f ,bg :b ,duo-2)))))))))
+         (merlin-type-face                           ((t (:f ,bg :b ,duo-2))))
+         (pulse-eval-face                            ((t (:f ,bg :b ,duo-2-fade)))))))))
 
 ;;;###autoload
 (when load-file-name
