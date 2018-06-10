@@ -101,7 +101,7 @@ hyper when it's used as a modifier."
   :ensure t
   :init (after-init #'which-key-mode)
   :custom
-  (which-key-sort-order 'which-key-key-order-alpha)
+  (which-key-sort-order 'which-key-prefix-then-key-order)
   (which-key-side-window-max-width 0.4)
   (which-key-idle-delay 0.4))
 
@@ -472,21 +472,35 @@ hyper when it's used as a modifier."
 
 ;; * Keymaps
 
+(which-key-add-key-based-replacements
+  "C-c &" "shells"
+  "C-c a" "apps"
+  "C-c b" "buffers"
+  "C-c d" "doc"
+  "C-c e" "editing"
+  "C-c f" "find"
+  "C-c g" "goto"
+  "C-c n" "notes"
+  "C-c o" "outlines"
+  "C-c t" "toggles"
+  "C-c v" "vc "
+  "C-c w" "windows")
+
 (general-define-key
  :prefix "C-c"
  :keymaps 'global
  "r" 'ivy-resume
- "+"   '(text-scale-increase :which-key "text-+")
- "-"   '(text-scale-decrease :which-key "text--")
- "g"   '(hydra-goto/body :which-key "goto")
- "i"   '(counsel-imenu :which-key "imenu")
- "I"   '(ivy-imenu-anywhere :which-key "imenu anywher")
- "j"   '(avy-goto-char-timer :which-key "avy-char")
- "k"   '(kill-this-buffer :which-key "kill-this-buffer")
- "o"   '(hydra-outline/body :which-key "hydra-outline")
- "s"   '(swiper-all :which-key "swiper-all")
- "S"   '(-swiper-at-point :which-key "-swiper-at-point")
- "w"   '(hydra-windows/body :which-key "hydra-windows"))
+ "+" '(text-scale-increase :which-key "text-+")
+ "-" '(text-scale-decrease :which-key "text--")
+ "g" '(hydra-goto/body :which-key "goto")
+ "i" '(counsel-imenu :which-key "imenu")
+ "I" '(ivy-imenu-anywhere :which-key "imenu anywher")
+ "j" '(avy-goto-char-timer :which-key "avy-char")
+ "k" '(kill-this-buffer :which-key "kill-this-buffer")
+ "o" '(hydra-outline/body :which-key "hydra-outline")
+ "s" '(swiper-all :which-key "swiper-all")
+ "S" '(-swiper-at-point :which-key "-swiper-at-point")
+ "w" '(hydra-windows/body :which-key "hydra-windows"))
 
 (provide 'config-keybindings)
 ;;; config-keybindings.el ends here
