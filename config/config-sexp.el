@@ -127,8 +127,7 @@
        ("M-{" . paredit-wrap-curly-lispy)
        ("M-)" . paredit-wrap-round-from-behind)
        ("M-]" . paredit-wrap-square-from-behind)
-       ("M-}" . paredit-wrap-curly-from-behind)
-       ("C-c h" . lispy-ace-paren))
+       ("M-}" . paredit-wrap-curly-from-behind))
       (dolist (map (list lispy-mnemonic-mode-map
                          lispy-mnemonic-mode-map-base
                          lispy-mnemonic-mode-map-special))
