@@ -47,7 +47,6 @@
 (setq use-package-verbose t)
 (defvar init--file-name-handler-alist file-name-handler-alist)
 
-
 (setq file-name-handler-alist nil)
 
 

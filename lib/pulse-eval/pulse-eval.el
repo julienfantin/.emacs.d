@@ -10,10 +10,20 @@
 
 ;; * Customs
 
-(defcustom pulse-eval-overlay-priority 1000
+(defcustom pulse-eval-overlay-priority 100
   "Priority of the pulse eval overlay."
   :group 'pulse-eval
-  :type 'integer)
+  :type 'number)
+
+(defcustom pulse-eval-iterations pulse-iterations
+  "Priority of the pulse eval overlay."
+  :group 'pulse-eval
+  :type 'number)
+
+(defcustom pulse-eval-delay pulse-delay
+  "Priority of the pulse eval overlay."
+  :group 'pulse-eval
+  :type 'number)
 
 (defcustom pulse-eval-advices-alist
   '((emacs-lisp-mode
@@ -77,14 +87,16 @@ other overlay-based modes such as flycheck."
 
 In case fn signals an error, pulse region with
 'pulse-eval-error-face' before signaling the error."
-  (run-hooks 'pulse-eval-before-pulse-hook)
-  (pulse-momentary-highlight-region start end 'pulse-eval-face)
-  (condition-case e
-      (apply fn args)
-    (error
-     (pulse-momentary-highlight-region start end 'pulse-eval-error-face)
-     (signal (car e) (cdr e))))
-  (run-with-timer (* pulse-iterations pulse-delay) nil #'(lambda () (run-hooks 'pulse-eval-after-pulse-hook))))
+  (let ((pulse-iterations pulse-eval-iterations)
+        (pulse-delay pulse-eval-delay))
+    (run-hooks 'pulse-eval-before-pulse-hook)
+    (pulse-momentary-highlight-region start end 'pulse-eval-face)
+    (condition-case e
+        (apply fn args)
+      (error
+       (pulse-momentary-highlight-region start end 'pulse-eval-error-face)
+       (signal (car e) (cdr e))))
+    (run-with-timer (* pulse-iterations pulse-delay) nil #'(lambda () (run-hooks 'pulse-eval-after-pulse-hook)))))
 
 (defun pulse-eval--momentary-highlight-sexp* (fn args)
   (save-excursion

@@ -61,7 +61,10 @@
 
 (use-package pulse-eval
   :after lisp-minor-mode
-  :hook (lisp-minor-mode . pulse-eval-mode))
+  :hook (lisp-minor-mode . pulse-eval-mode)
+  :custom
+  (pulse-eval-iterations 1)
+  (pulse-eval-delay .13))
 
 
 ;; * Paredit
