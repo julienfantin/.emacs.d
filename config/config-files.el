@@ -36,7 +36,9 @@
   :hook (dired-mode . dired-hide-details-mode)
   :bind ("C-x C-j" . dired-jump)
   :custom
-  (dired-auto-revert-buffer t))
+  (dired-auto-revert-buffer t)
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes ' always))
 
 (use-package dired-k
   :ensure t
@@ -106,7 +108,7 @@
   :custom
   (dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
-(use-package auto-sudoedit :ensure t)
+(use-package sudo-edit :ensure t)
 
 (provide 'config-files)
 ;;; config-files.el ends here
