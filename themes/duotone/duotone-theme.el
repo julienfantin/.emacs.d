@@ -232,7 +232,7 @@ Remap all faces when called with a prefix argument."
           ((t (:f ,duo-1))))
          ;;
          ;; Highlights
-         (,(theme-faces-match '("highlight" "warning" "error" "mode-line" "lazy" "number"))
+         (,(theme-faces-match '(("highlight" "magit" "match") "warning" "error" "mode-line" "lazy" "number"))
           ((t (:b ,(chroma-blend bg uno-1 sblend)))))
          ;;
          ;; Fringe elements
