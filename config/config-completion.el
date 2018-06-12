@@ -106,8 +106,7 @@
   :hook (company-mode . company-box-mode)
   :custom
   ;; Icons are huge!?
-  (company-box-enable-icon t)
-  (comp)
+  (company-box-enable-icon nil)
   ;; Search is kinda broken this helps mitigate the issue
   (company-search-filtering nil))
 
