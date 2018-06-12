@@ -72,8 +72,9 @@
   :after eshell
   :custom
   (eshell-destroy-buffer-when-process-dies t)
-  (eshell-visual-commands
-   (append '("tmux" "screen" "ssh" "htop" "git log") eshell-visual-commands)))
+  :config
+  (setq eshell-visual-commands
+        (append '("tmux" "screen" "ssh" "htop" "git log") eshell-visual-commands)))
 
 (use-package em-hist
   :after eshell
