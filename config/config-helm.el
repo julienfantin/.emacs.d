@@ -88,17 +88,11 @@
 (use-package helm-mode
   :after helm
   :init (after-init #'helm-mode)
-  :config (helm-mode 1)
   :custom
   (helm-input-idle-delay 0.01)
   (helm-ff-transformer-show-only-basename t)
   (helm-ff-file-name-history-use-recentf t)
   (helm-ff-skip-boring-files nil))
-
-(use-package helm-flx
-  :ensure t
-  :after helm
-  :init (helm-flx-mode 1))
 
 (use-package helm-org
   :disabled t
