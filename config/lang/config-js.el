@@ -30,6 +30,7 @@
   :mode (("\\.js$" . js2-mode)))
 
 (use-package indium
+  :disabled t
   :ensure t
   :after js2-mode
   :hook (js2-mode . indium-interaction-mode)
@@ -44,12 +45,22 @@
 
 (use-package tide
   :ensure t
+  :disabled t
   :after typescript-mode
   :hook
   ((typescript-mode . tide-setup)
    (typescript-mode . tide-hl-identifier-mode))
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled)))
+
+(use-package eglot
+  :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver")
+  :config
+  (add-to-list 'eglot-server-programs '(typescript-mode . ("javascript-typescript-stdio"))))
+
+(use-package lsp-javascript
+  :ensure lsp-javascript-typescript
+  :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver"))
 
 (provide 'config-js)
 ;;; config-js.el ends here
