@@ -44,15 +44,14 @@
   :config
   (progn
     (add-to-list 'projectile-globally-ignored-files ".DS_Store")
+    (add-to-list 'projectile-globally-ignored-directories "elpa")
     (advice-add #'projectile-replace :before #'projectile-save-project-buffers)
     (projectile-load-known-projects))
   :custom
   (projectile-mode-line nil)
   (projectile-enable-caching nil)
   (projectile-use-git-grep t)
-  (projectile-create-missing-test-files t)
-  (projectile-globally-ignored-directories
-   (append projectile-globally-ignored-directories '("elpa"))))
+  (projectile-create-missing-test-files t))
 
 (provide 'config-project)
 ;;; config-project.el ends here
