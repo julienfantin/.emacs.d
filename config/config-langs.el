@@ -27,15 +27,15 @@
 
 (use-config config-ansible :disabled t)
 (use-config config-cl :disabled t)
-(use-config config-clojure :defer 2)
-(use-config config-clojurescript :defer 2)
+(use-config config-clojure)
+(use-config config-clojurescript)
 (use-config config-emacs-lisp)
-(use-config config-js :defer 2)
+(use-config config-js)
 (use-config config-nix :disabled t)
-(use-config config-ocaml :defer 2)
+(use-config config-ocaml)
 (use-config config-sql :disabled t)
-(use-config config-web :defer 2)
-(use-config config-yaml :defer 2)
+(use-config config-web)
+(use-config config-yaml)
 
 (provide 'config-langs)
 ;;; config-langs.el ends here
