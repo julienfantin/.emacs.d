@@ -48,6 +48,18 @@
   :custom
   (iedit-buffering t))
 
+(use-package smart-hungry-delete
+  :ensure t
+  :bind
+  (:map prog-mode-map
+        ("<backspace>" . smart-hungry-delete-backward-char)
+        ("C-d"         . smart-hungry-delete-forward-char))
+  :hook
+  ((prog-mode     . smart-hungry-delete-default-prog-mode-hook)
+   (c-mode-common . smart-hungry-delete-default-c-mode-common-hook)
+   (python-mode   . smart-hungry-delete-default-c-mode-common-hook)
+   (text-mode     . smart-hungry-delete-default-text-mode-hook)))
+
 
 ;; * Builtins
 

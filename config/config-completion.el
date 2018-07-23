@@ -118,4 +118,3 @@
 
 (provide 'config-completion)
 ;;; config-completion.el ends here
-
