@@ -28,6 +28,7 @@
 (require 'tls)
 (require 'gnutls)
 
+(package-initialize)
 
 
 ;; * Package archives

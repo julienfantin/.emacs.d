@@ -29,8 +29,15 @@
 ;; * Direnv
 
 (use-package direnv
+  :ensure-system-package direnv
   :ensure t
   :init (after-init #'direnv-mode))
+
+;; * Editorconfig
+
+(use-package editorconfig
+  :ensure t
+  :init (after-init 'editorconfig-mode))
 
 ;; * Projectile
 

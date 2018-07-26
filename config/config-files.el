@@ -69,12 +69,12 @@
 (use-package no-littering
   :ensure t
   :demand t
-  :custom
-  (auto-save-file-name-transforms
-   `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
   :config
-  (after 'recentf
-    (add-to-list 'recentf-exclude no-littering-var-directory)))
+  (progn
+    (setq auto-save-file-name-transforms
+	  `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+    (after 'recentf
+      (add-to-list 'recentf-exclude no-littering-var-directory))))
 
 (use-package vlf-setup :ensure vlf)
 

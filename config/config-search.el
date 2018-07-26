@@ -53,8 +53,7 @@ With a prefix argument P, isearch for the symbol at point."
   :ensure t
   :commands (-swiper-at-point)
   :bind
-  (([remap isearch-forward] . -swiper-at-point)
-   (:map swiper-map
+  ((:map swiper-map
          ("C-r" . ivy-previous-line-or-history)))
   :custom
   ;; Always recentre when leaving Swiper

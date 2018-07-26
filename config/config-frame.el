@@ -44,19 +44,21 @@
 
 ;; * Fonts
 
-(defun config-frame-mono-font ()
-  "Return the first available font in 'config-frame-mono-fonts'."
-  (cl-find-if #'font-exists-p config-frame-mono-fonts))
-
 (defun font-exists-p (font)
   "Existing 'FONT' predicate."
   (if (null (x-list-fonts font)) nil t))
 
-(defun config-frame-font (fonts-list)
-  (cl-find-if #'font-exists-p fonts-list))
+(defun config-frame-mono-font ()
+  (cl-find-if #'font-exists-p config-frame-mono-fonts))
 
-(set-face-attribute 'default        nil :font (config-frame-font config-frame-mono-fonts))
-(set-face-attribute 'variable-pitch nil :font (config-frame-font config-frame-fonts))
+(defun config-frame-font ()
+  (cl-find-if #'font-exists-p config-frame-fonts))
+
+(when-let ((font (config-frame-mono-font)))
+  (set-face-attribute 'default nil :font font))
+
+(when-let ((font (config-frame-font)))
+  (set-face-attribute 'variable-pitch nil :font font))
 
 
 ;; * Frame
