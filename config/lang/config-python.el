@@ -1,4 +1,4 @@
-;;; config-python.el --- Python config with LSP      -*- lexical-binding: t; -*-
+ ;;; config-python.el --- Python config with LSP      -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018  Julien Fantin
 
@@ -26,13 +26,64 @@
 (require 'use-config)
 
 (use-package python
+  :hook (python-mode . subword-mode)
   :custom
-  (python-shell-interpreter "python3"))
+  (python-shell-interpreter "python3")
+  :config
+  (add-hook 'python-mode-hook (lambda () (set-fill-column 120))))
 
 (use-package eglot
+  :disabled t
   :ensure t
   :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
-  :hook (python-mode . eglot))
+  :hook ((python-mode . eglot-ensure)))
+
+(use-package lsp-mode
+  :ensure t
+  :config
+  (defun lsp-set-cfg ()
+    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
+      (lsp--set-configuration lsp-cfg)))
+  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
+
+(use-package lsp-imenu
+  :hook (lsp-after-open . lsp-enable-imenu))
+
+(use-package lsp-ui
+  :ensure t
+  :after lsp-mode
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-sideline-ignore-duplicate t)
+  (lsp-ui-doc-position 'at-point))
+
+(use-package company-lsp
+  :after (lsp-mode company)
+  :config
+  (push 'company-lsp company-backends))
+
+(use-package lsp-python
+  :ensure t
+  :hook (python-mode . lsp-python-enable))
+
+(use-package flycheck
+  :disabled t
+  :config
+  (add-to-list 'flycheck-enabled-checkers 'flycheck-flake8))
+
+(use-package dap-mode
+  :ensure t
+  :config
+  (require 'dap-python))
+
+(use-package aggressive-indent-mode
+  :config
+  (add-to-list 'aggressive-indent-excluded-modes 'python-mode))
+
+
+(use-package indent-tools
+  :ensure t
+  :hook (python-mode . indent-tools-minor-mode))
 
 (provide 'config-python)
 ;;; config-python.el ends here
