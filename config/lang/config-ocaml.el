@@ -53,7 +53,7 @@
 
 (use-package merlin
   :ensure-system-package (ocamlmerlin . "opam install merlin")
-  :after (tuareg)
+  :after (opam tuareg)
   :hook (tuareg-mode . merlin-mode)
   :bind
   (:map merlin-mode-map
