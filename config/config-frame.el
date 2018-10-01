@@ -89,9 +89,9 @@
   (progn
     (scroll-bar-mode -1)
     (tool-bar-mode -1)
-    (blink-cursor-mode -1)
     (pixel-scroll-mode 1))
   :custom
+  (cursor-type 'bar)
   (default-frame-alist (config-frame-frame-alist))
   (initial-frame-alist (config-frame-frame-alist))
   (frame-resize-pixelwise t)
