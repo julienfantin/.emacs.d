@@ -41,6 +41,7 @@
 
 (use-package typescript-mode
   :ensure t
+  :mode ("\\.tsx\\'")
   :ensure-system-package (tsc . typescript))
 
 (use-package tide
@@ -53,14 +54,16 @@
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled)))
 
-(use-package eglot
-  :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver")
-  :config
-  (add-to-list 'eglot-server-programs '(typescript-mode . ("javascript-typescript-stdio"))))
-
 (use-package lsp-javascript
   :ensure lsp-javascript-typescript
   :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver"))
+
+(use-package lsp-typescript
+  :after typescript-mode
+  :hook (typescript-mode . lsp-javascript-typescript-enable)
+  :ensure lsp-javascript-typescript
+  :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver"))
+
 
 (provide 'config-js)
 ;;; config-js.el ends here
