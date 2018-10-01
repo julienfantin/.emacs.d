@@ -84,8 +84,8 @@
   :config
   (progn
     (setq-default save-silently t)
-    (add-to-list 'super-save-triggers "eyebrowse-switch-to-window-config")
-    (add-to-list 'super-save-triggers "persp-switch")))
+    (add-to-list 'super-save-triggers 'eyebrowse-switch-to-window-config)
+    (add-to-list 'super-save-triggers 'persp-switch)))
 
 ;; ** Dired extensions
 
