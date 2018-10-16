@@ -348,7 +348,8 @@ hyper when it's used as a modifier."
  "6" '(aw-switch-to-window-6 :which-key "window-6")
  "7" '(aw-switch-to-window-7 :which-key "window-7")
  "8" '(aw-switch-to-window-8 :which-key "window-8")
- "9" '(aw-switch-to-window-9 :which-key "window-9"))
+ "9" '(aw-switch-to-window-9 :which-key "window-9")
+ "p" '(projectile-command-map :which-key "projectile"))
 
 ;; ** (g) Goto
 
