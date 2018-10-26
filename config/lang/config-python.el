@@ -80,10 +80,13 @@
   :config
   (add-to-list 'aggressive-indent-excluded-modes 'python-mode))
 
-
 (use-package indent-tools
   :ensure t
   :hook (python-mode . indent-tools-minor-mode))
+
+(use-package smartparens-python
+  :ensure smartparens
+  :hook (python-mode . smartparens-mode))
 
 (provide 'config-python)
 ;;; config-python.el ends here
