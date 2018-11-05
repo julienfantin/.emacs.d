@@ -60,6 +60,9 @@
    (python-mode   . smart-hungry-delete-default-c-mode-common-hook)
    (text-mode     . smart-hungry-delete-default-text-mode-hook)))
 
+(use-package expand-region
+  :ensure t)
+
 
 ;; * Builtins
 

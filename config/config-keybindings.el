@@ -490,6 +490,8 @@ hyper when it's used as a modifier."
 (general-define-key
  :prefix "C-c"
  :keymaps 'global
+ "+" 'er/expand-region
+ "-" 'er/contract-region
  "r" 'ivy-resume
  "g" '(hydra-goto/body :which-key "goto")
  "i" '(counsel-imenu :which-key "imenu")
