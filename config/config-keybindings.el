@@ -491,11 +491,9 @@ hyper when it's used as a modifier."
  :prefix "C-c"
  :keymaps 'global
  "r" 'ivy-resume
- "+" '(text-scale-increase :which-key "text-+")
- "-" '(text-scale-decrease :which-key "text--")
  "g" '(hydra-goto/body :which-key "goto")
  "i" '(counsel-imenu :which-key "imenu")
- "I" '(ivy-imenu-anywhere :which-key "imenu anywher")
+ "I" '(ivy-imenu-anywhere :which-key "imenu anywhere")
  "j" '(avy-goto-char-timer :which-key "avy-char")
  "k" '(kill-this-buffer :which-key "kill-this-buffer")
  "o" '(hydra-outline/body :which-key "hydra-outline")
