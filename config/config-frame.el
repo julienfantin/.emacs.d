@@ -63,13 +63,6 @@
 
 ;; * Frame
 
-(defvar config-frame-default-frame-alist
-  `((menu-bar-lines        . nil)
-    (tool-bar-lines        . nil)
-    (vertical-scroll-bars  . nil)
-    (scroll-bars           . nil)
-    (internal-border-width . ,config-frame-border-width)))
-
 (defun config-frame-frame-alist ()
   "Compute the default and initial frame alist."
   (append
@@ -81,8 +74,12 @@
          (height                  . ,height)
          (left                    . ,margin)
          (top                     . 0)
-         (ns-transparent-titlebar . t))))
-   config-frame-default-frame-alist))
+         (menu-bar-lines          . nil)
+         (tool-bar-lines          . nil)
+         (vertical-scroll-bars    . nil)
+         (scroll-bars             . nil)
+         (ns-transparent-titlebar . t)
+         (internal-border-width   . ,config-frame-border-width))))))
 
 (use-package frame
   ;; :init (after-init #'window-divider-mode)
