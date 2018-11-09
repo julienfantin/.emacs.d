@@ -73,16 +73,10 @@
       (if (listp docset) (car docset) docset))
     (defun config-doc--docset-enable-name (docset)
       (if (listp docset) (cadr docset) docset))
-    (defun config-docs--docset-installed-p (docset)
-      (member
-       (config-doc--docset-enable-name docset)
-       (helm-dash-installed-docsets)))
-    (defun config-doc--ensure-installed (docset)
-      (unless (config-docs--docset-installed-p docset)
-        (counsel-dash-install-docset (config-doc--docset-install-name docset))))
     (defun config-doc--enable-docsets ()
-      (when-let ((docsets (assoc major-mode config-doc-default-docsets)))
-        (mapc 'config-doc--ensure-installed docsets)
+      (when-let ((docsets (cadr (assoc major-mode config-doc-default-docsets))))
+        (mapc 'helm-dash-ensure-docset-installed
+              (mapcar 'config-doc--docset-install-name docsets))
         (setq counsel-dash-docsets
               (mapcar #'config-doc--docset-enable-name docsets))))
     (defun config-doc--init ()
