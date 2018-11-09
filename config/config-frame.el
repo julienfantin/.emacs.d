@@ -77,10 +77,11 @@
      (let* ((width (if (> (nth 2 (frame-monitor-geometry)) 1920) 240 120))
             (height (nth 3 (frame-monitor-geometry)))
             (margin (/ (- (nth 2 (frame-monitor-geometry)) (* width (frame-char-width))) 2)))
-       `((width  . ,width)
-         (height . ,height)
-         (left   . ,margin)
-         (top    . 0))))
+       `((width                   . ,width)
+         (height                  . ,height)
+         (left                    . ,margin)
+         (top                     . 0)
+         (ns-transparent-titlebar . t))))
    config-frame-default-frame-alist))
 
 (use-package frame
