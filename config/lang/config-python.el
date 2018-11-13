@@ -42,7 +42,7 @@
   :ensure t
   :config
   (defun lsp-set-cfg ()
-    (let ((lsp-cfg `(:pyls (:configurationSources ("flake8")))))
+    (let ((lsp-cfg `(:pyls (:configurationSources ["flake8"]))))
       (lsp--set-configuration lsp-cfg)))
   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
 
