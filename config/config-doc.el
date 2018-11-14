@@ -74,7 +74,7 @@
     (defun config-doc--docset-enable-name (docset)
       (if (listp docset) (cadr docset) docset))
     (defun config-doc--enable-docsets ()
-      (when-let ((docsets (cadr (assoc major-mode config-doc-default-docsets))))
+      (when-let ((docsets (cdr (assoc major-mode config-doc-default-docsets))))
         (mapc 'helm-dash-ensure-docset-installed
               (mapcar 'config-doc--docset-install-name docsets))
         (setq counsel-dash-docsets
