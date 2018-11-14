@@ -60,8 +60,11 @@
    (python-mode   . smart-hungry-delete-default-c-mode-common-hook)
    (text-mode     . smart-hungry-delete-default-text-mode-hook)))
 
-(use-package expand-region
-  :ensure t)
+(use-package easy-kill
+  :ensure t
+  :bind
+  ([remap kill-ring-save] . #'easy-kill)
+  ([remap mark-sexp] . #'easy-mark))
 
 
 ;; * Builtins
