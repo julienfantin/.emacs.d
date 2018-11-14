@@ -25,6 +25,19 @@
 ;;; Code:
 (require 'use-config)
 
+(use-package eglot
+  :disabled t
+  :ensure t
+  :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
+  :hook ((python-mode . eglot-ensure)))
+
+(use-package flycheck
+  ;;  eglot uses flymake
+  :disabled t
+  :config
+  (add-to-list 'flycheck-enabled-checkers 'flycheck-flake8))
+
+
 (use-package python
   :hook (python-mode . subword-mode)
   :custom
@@ -32,11 +45,7 @@
   :config
   (add-hook 'python-mode-hook (lambda () (set-fill-column 120))))
 
-(use-package eglot
-  :disabled t
-  :ensure t
-  :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
-  :hook ((python-mode . eglot-ensure)))
+(use-package pyenv-mode :ensure t)
 
 (use-package lsp-mode
   :ensure t
@@ -52,24 +61,19 @@
 (use-package lsp-ui
   :ensure t
   :after lsp-mode
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-sideline-ignore-duplicate t)
-  (lsp-ui-doc-position 'at-point))
+  :hook (lsp-mode . lsp-ui-mode))
 
 (use-package company-lsp
+  :ensure t
   :after (lsp-mode company)
-  :config
-  (push 'company-lsp company-backends))
+  :hook (lsp-mode . config-python--enable-company-lsp)
+  :preface
+  (defun config-python--enable-company-lsp ()
+    (setq-local company-backends (cons 'company-lsp company-backends))))
 
 (use-package lsp-python
   :ensure t
   :hook (python-mode . lsp-python-enable))
-
-(use-package flycheck
-  :disabled t
-  :config
-  (add-to-list 'flycheck-enabled-checkers 'flycheck-flake8))
 
 (use-package dap-mode
   :ensure t
