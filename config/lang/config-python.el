@@ -25,11 +25,25 @@
 ;;; Code:
 (require 'use-config)
 
+
+(defvar config-python-pyls-lsp-mode-config
+  '(:pyls
+    (:configurationSources
+     ["pycodestyle" "pyflakes" "flake8"]
+     ;; There's an annoying completion bug in
+     ;; Jedi: https://github.com/palantir/python-language-server/issues/432
+     :plugins
+     (:jedi_completion
+      (:enabled nil)
+
+      :rope_completion
+      (:enabled t)))))
+
 (use-package eglot
   :disabled t
   :ensure t
   :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
-  :hook ((python-mode . eglot-ensure)))
+  :hook ((python-mode . eglot)))
 
 (use-package flycheck
   ;;  eglot uses flymake
@@ -45,14 +59,14 @@
   :config
   (add-hook 'python-mode-hook (lambda () (set-fill-column 120))))
 
-(use-package pyenv-mode :ensure t)
+(use-package pyvenv :ensure t)
 
 (use-package lsp-mode
   :ensure t
+  :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
   :config
   (defun lsp-set-cfg ()
-    (let ((lsp-cfg `(:pyls (:configurationSources ["flake8"]))))
-      (lsp--set-configuration lsp-cfg)))
+    (lsp--set-configuration config-python-pyls-lsp-mode-config))
   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
 
 (use-package lsp-imenu
