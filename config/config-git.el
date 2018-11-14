@@ -52,6 +52,8 @@
 
 (use-package git-timemachine :ensure t)
 
+(use-package git-link :ensure t)
+
 (use-package magit
   :ensure t
   :custom
