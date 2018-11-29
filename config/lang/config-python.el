@@ -46,11 +46,9 @@
   :hook ((python-mode . eglot)))
 
 (use-package flycheck
-  ;;  eglot uses flymake
-  :disabled t
+  :disabled t ;; disable flake8 when using eglot which uses flymake
   :config
   (add-to-list 'flycheck-enabled-checkers 'flycheck-flake8))
-
 
 (use-package python
   :hook (python-mode . subword-mode)
@@ -59,7 +57,10 @@
   :config
   (add-hook 'python-mode-hook (lambda () (set-fill-column 120))))
 
-(use-package pyvenv :ensure t)
+(use-package pyvenv
+  ;; Set `pyvenv-workon' to the absolute path for the current venv in a .dir-locals.el
+  :ensure t
+  :hook (python-mode . pyvenv-mode))
 
 (use-package lsp-mode
   :ensure t
