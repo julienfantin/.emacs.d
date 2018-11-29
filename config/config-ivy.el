@@ -50,7 +50,8 @@
   :ensure t
   :init (after-init #'counsel-mode)
   :custom
-  (counsel-rg-base-command "rg -S -M 200 --no-heading --line-number --color never %%s ."))
+  (counsel-rg-base-command "rg -S -M 200 --no-heading --line-number --color never %%s .")
+  (counsel-find-file-at-point t))
 
 (use-package counsel-projectile
   :ensure t
