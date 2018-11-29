@@ -26,6 +26,83 @@
 (require 'use-config)
 
 
+
+;; * Python
+
+(use-package python
+  :hook (python-mode . subword-mode)
+  :preface
+  (defvar config-python-interpreters
+    '(("ipython3" "-i --simple-prompt")
+      ("python3")
+      ("python"))
+    "List of '(\"interpreter\" \"args\")")
+
+  (defun config-python-set-interpreter ()
+    "Configure `python-shell-interpreter' according to `config-python-interpreters'."
+    (when-let
+        ((cell (cl-find-if
+                (lambda (cell)
+                  (executable-find (car cell)))
+                config-python-interpreters)))
+      (let ((interpreter (car cell))
+            (args (cadr cell)))
+        (setq python-shell-interpreter interpreter
+              python-shell-interpreter-args args))))
+  :custom
+  (python-shell-interpreter "ipython3")
+  (python-shell-interpreter-args "-i --simple-prompt")
+  :config
+  (add-hook 'python-mode-hook #'config-python-set-interpreter)
+  (add-hook 'python-mode-hook (lambda () (set-fill-column 120))))
+
+
+;; * Environment
+
+
+(use-package pyvenv
+  ;; Set `pyvenv-workon' to the absolute path for the current venv in a .dir-locals.el
+  :ensure t
+  :hook (python-mode . pyvenv-mode))
+
+(use-package elpy
+  :ensure t
+  :hook (python-mode . elpy-enable))
+
+
+;; * Editing
+
+(use-package indent-tools
+  :ensure t
+  :hook (python-mode . indent-tools-minor-mode)
+  :bind (:map python-mode-map ("C-c SPC" . indent-tools-hydra/body)))
+
+(use-package smartparens-python
+  :ensure smartparens
+  :hook (python-mode . smartparens-mode))
+
+(use-package markdown-mode
+  :config
+  (add-to-list 'markdown-code-lang-modes '("python" . python-mode)))
+
+
+;; * Language server protocol
+
+;; ** Eglot
+
+(use-package eglot
+  :disabled t
+  :ensure t
+  :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
+  :hook ((python-mode . eglot)))
+
+(use-package flycheck
+  :disabled t ;; disable flake8 when using eglot which uses flymake
+  :config
+  (add-to-list 'flycheck-enabled-checkers 'flycheck-flake8))
+
+;; ** lsp-mode
+
 (defvar config-python-pyls-lsp-mode-config
   '(:pyls
     (:configurationSources
@@ -42,29 +119,6 @@
       :pyls_mypy
       (:live_mode t)))))
 
-(use-package eglot
-  :disabled t
-  :ensure t
-  :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
-  :hook ((python-mode . eglot)))
-
-(use-package flycheck
-  :disabled t ;; disable flake8 when using eglot which uses flymake
-  :config
-  (add-to-list 'flycheck-enabled-checkers 'flycheck-flake8))
-
-(use-package python
-  :hook (python-mode . subword-mode)
-  :custom
-  (python-shell-interpreter "python3")
-  :config
-  (add-hook 'python-mode-hook (lambda () (set-fill-column 120))))
-
-(use-package pyvenv
-  ;; Set `pyvenv-workon' to the absolute path for the current venv in a .dir-locals.el
-  :ensure t
-  :hook (python-mode . pyvenv-mode))
-
 (use-package lsp-mode
   :ensure t
   :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
@@ -80,7 +134,9 @@
 (use-package lsp-ui
   :ensure t
   :after lsp-mode
-  :hook (lsp-mode . lsp-ui-mode))
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-sideline-enable nil))
 
 (use-package company-lsp
   :ensure t
@@ -92,24 +148,16 @@
 
 (use-package lsp-python
   :ensure t
+  :disabled t
   :hook (python-mode . lsp-python-enable))
+
+
+;; * Debug adapter protocol
 
 (use-package dap-mode
   :ensure t
   :config
   (require 'dap-python))
 
-(use-package aggressive-indent-mode
-  :config
-  (add-to-list 'aggressive-indent-excluded-modes 'python-mode))
-
-(use-package indent-tools
-  :ensure t
-  :hook (python-mode . indent-tools-minor-mode))
-
-(use-package smartparens-python
-  :ensure smartparens
-  :hook (python-mode . smartparens-mode))
-
-(provide 'config-python)
 ;;; config-python.el ends here
+(provide 'config-python)
