@@ -37,7 +37,10 @@
       (:enabled nil)
 
       :rope_completion
-      (:enabled t)))))
+      (:enabled t)
+
+      :pyls_mypy
+      (:live_mode t)))))
 
 (use-package eglot
   :disabled t
@@ -67,7 +70,8 @@
   :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
   :config
   (defun lsp-set-cfg ()
-    (lsp--set-configuration config-python-pyls-lsp-mode-config))
+    (when config-python-pyls-lsp-mode-config
+      (lsp--set-configuration config-python-pyls-lsp-mode-config)))
   (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
 
 (use-package lsp-imenu
