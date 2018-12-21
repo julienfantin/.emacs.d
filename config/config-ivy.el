@@ -39,6 +39,7 @@
   (ivy-extra-directories nil)
   (ivy-fixed-height-minibuffer t)
   (ivy-initial-inputs-alist nil)
+  (ivy-re-builders-alist '((counsel-rg . ivy--regex)))
   (ivy-use-virtual-buffers t)
   :config
   (after 'magit

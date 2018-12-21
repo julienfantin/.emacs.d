@@ -1,4 +1,4 @@
- ;;; config-python.el --- Python config with LSP      -*- lexical-binding: t; -*-
+;;; config-python.el --- Python config with LSP      -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018  Julien Fantin
 
@@ -25,6 +25,7 @@
 ;;; Code:
 (require 'use-config)
 
+(defvar config-python-lsp-frontend nil)
 
 
 ;; * Python
@@ -33,49 +34,123 @@
   :hook (python-mode . subword-mode)
   :preface
   (defvar config-python-interpreters
-    '(("ipython3" "-i --simple-prompt")
-      ("python3")
+    '(("ipython" "-i --simple-prompt")
+      ("python3" "-i")
       ("python"))
     "List of '(\"interpreter\" \"args\")")
-
   (defun config-python-set-interpreter ()
     "Configure `python-shell-interpreter' according to `config-python-interpreters'."
-    (when-let
-        ((cell (cl-find-if
-                (lambda (cell)
-                  (executable-find (car cell)))
-                config-python-interpreters)))
-      (let ((interpreter (car cell))
-            (args (cadr cell)))
-        (setq python-shell-interpreter interpreter
-              python-shell-interpreter-args args))))
-  :custom
-  (python-shell-interpreter "ipython3")
-  (python-shell-interpreter-args "-i --simple-prompt")
+    (if-let ((cell (cl-find-if
+                    (lambda (cell)
+                      (executable-find (car cell)))
+                    config-python-interpreters)))
+        (setq python-shell-interpreter (car cell)
+              python-shell-interpreter-args (cadr cell))
+      (error "Interpreter not found")))
   :config
   (add-hook 'python-mode-hook #'config-python-set-interpreter)
   (add-hook 'python-mode-hook (lambda () (set-fill-column 120))))
 
-
-;; * Environment
-
-
 (use-package pyvenv
   ;; Set `pyvenv-workon' to the absolute path for the current venv in a .dir-locals.el
   :ensure t
-  :hook (python-mode . pyvenv-mode))
+  :hook (python-mode . pyvenv-mode)
+  :config
+  (add-hook 'pyvenv-post-create-hooks #'config-python-set-interpreter))
+
+(use-package python-docstring
+  :ensure t
+  :after python
+  :bind
+  (:map python-mode-map
+        ([remap fill-paragraph] . python-docstring-fill)))
+
+
+;; * Environment
+
+(use-package flycheck
+  :after elpy
+  :hook (elpy-mode . flycheck-mode)
+  :config
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)))
+
+;; pip install elpy rope jedi autopep8 yapf flake8 isort
 
 (use-package elpy
   :ensure t
-  :hook (python-mode . elpy-enable))
+  :hook (python-mode . elpy-enable)
+  :custom
+  (elpy-get-info-from-shell t))
+
+(use-package isortify
+  :ensure t
+  :hook (python-mode . isortify-mode))
+
+(use-package py-autopep8
+  :ensure t
+  :hook (python-mode . py-autopep8-enable-on-save))
+
+(use-package importmagic
+    :ensure t
+    :hook (python-mode . importmagic-mode)
+    :config
+    (after isortify
+      (defun config-python--after-importmagic (&rest _)
+        (isortify-buffer))
+      (advice-add #'importmagic-fix-symbol-at-point :after #'config-python--after-importmagic)
+      (advice-add #'importmagic-fix-imports :after #'config-python--after-importmagic)))
+
+(defvar config-python-autoflake-before-save-enabled nil)
+
+(defun config-python-autoflake ()
+  "Use Autoflake to remove unused function.
+
+$ autoflake --remove-all-unused-imports -i unused_imports.py"
+  (interactive)
+  (when (eq major-mode 'python-mode)
+    (when-let ((autoflake (executable-find "autoflake")))
+      (basic-save-buffer)
+      (shell-command
+       (format "%s --remove-unused-variables --remove-all-unused-imports -i %s"
+	       autoflake
+	       (shell-quote-argument (buffer-file-name)))))
+    (revert-buffer t t t))
+  nil)
+
+(defun config-python-autoflake-before-save ()
+  "Run autoflake if `config-python-autoflake-before-save-enabled' is true."
+  (when config-python-autoflake-before-save-enabled
+    (config-python-autoflake)))
+
+(defun config-python-autoflake-turn-on ()
+  "Register a buffer local `before-save-hook' for `config-python-autoflake-before-save'."
+  (add-hook 'before-save-hook #'config-python-autoflake-before-save nil t))
+
+(after python
+  (add-hook 'before-save-hook 'config-python-autoflake-turn-on))
+
+(use-package pytest
+  :ensure t
+  :config
+  (defun config-python-pytest-integration ()
+    (setq pytest-global-name "onepy"
+          pytest-project-root-test (lambda (dirname) (equal dirname "/code/lastmile")))))
+
+(use-package python-pytest
+    :ensure t
+    :config
+    (defun python-pytest--project-root ()
+      "/code/lastmile")
+    :custom
+    (python-pytest-executable "onepytest"))
 
 
 ;; * Editing
 
 (use-package indent-tools
-  :ensure t
-  :hook (python-mode . indent-tools-minor-mode)
-  :bind (:map python-mode-map ("C-c SPC" . indent-tools-hydra/body)))
+    :ensure t
+    :hook (python-mode . indent-tools-minor-mode)
+    :bind (:map python-mode-map ("C-c SPC" . indent-tools-hydra/body)))
 
 (use-package smartparens-python
   :ensure smartparens
@@ -88,25 +163,26 @@
 
 ;; * Language server protocol
 
+;; Disable default flycheck checkers
+(use-package flycheck
+  :config
+  (add-to-list 'flycheck-enabled-checkers 'flycheck-flake8)
+  (add-to-list 'flycheck-disabled-checkers 'python-pylint))
+
 ;; ** Eglot
 
 (use-package eglot
-  :disabled t
+  :if (eq config-python-lsp-frontend 'eglot)
   :ensure t
   :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
-  :hook ((python-mode . eglot)))
-
-(use-package flycheck
-  :disabled t ;; disable flake8 when using eglot which uses flymake
-  :config
-  (add-to-list 'flycheck-enabled-checkers 'flycheck-flake8))
+  :hook ((python-mode . eglot-ensure)))
 
 ;; ** lsp-mode
 
 (defvar config-python-pyls-lsp-mode-config
   '(:pyls
     (:configurationSources
-     ["pycodestyle" "pyflakes" "flake8"]
+     ["flake8"]
      ;; There's an annoying completion bug in
      ;; Jedi: https://github.com/palantir/python-language-server/issues/432
      :plugins
@@ -120,18 +196,24 @@
       (:live_mode t)))))
 
 (use-package lsp-mode
+  :if (eq config-python-lsp-frontend 'lsp-mode)
+  :hook ((python-mode . lsp))
   :ensure t
   :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
   :config
   (defun lsp-set-cfg ()
     (when config-python-pyls-lsp-mode-config
       (lsp--set-configuration config-python-pyls-lsp-mode-config)))
-  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg))
+  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
+  (require 'lsp-clients))
 
 (use-package lsp-imenu
+  :disabled t
+  :if (eq config-python-lsp-frontend 'lsp-mode)
   :hook (lsp-after-open . lsp-enable-imenu))
 
 (use-package lsp-ui
+  :if (eq config-python-lsp-frontend 'lsp-mode)
   :ensure t
   :after lsp-mode
   :hook (lsp-mode . lsp-ui-mode)
@@ -144,12 +226,7 @@
   :hook (lsp-mode . config-python--enable-company-lsp)
   :preface
   (defun config-python--enable-company-lsp ()
-    (setq-local company-backends (cons 'company-lsp company-backends))))
-
-(use-package lsp-python
-  :ensure t
-  :disabled t
-  :hook (python-mode . lsp-python-enable))
+    (setq-local company-backends '(company-lsp))))
 
 
 ;; * Debug adapter protocol

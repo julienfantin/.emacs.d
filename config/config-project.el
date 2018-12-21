@@ -37,6 +37,7 @@
 
 (use-package editorconfig
   :ensure t
+  :commands (editorconfig-mode)
   :init (after-init 'editorconfig-mode))
 
 ;; * Projectile

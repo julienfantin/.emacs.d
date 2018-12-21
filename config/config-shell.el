@@ -35,23 +35,6 @@
 ;; * Eshell
 
 (use-package esh-mode
-  :functions (eshell/clear eshell/x eshell/clear!)
-  :commands (eshell-send-input)
-  :preface
-  (progn
-    (unless (boundp 'eshell/clear)
-      (defun eshell/clear (_)
-        (let ((inhibit-read-only t))
-          (erase-buffer))))
-    (defun eshell/x ()
-      (kill-buffer)
-      (delete-window))
-    (defun eshell/clear! ()
-      (interactive)
-      (eshell/clear t)
-      (eshell-send-input)))
-  :bind (:map eshell-mode-map
-              ("C-l" . eshell/clear!))
   :custom
   (eshell-scroll-to-bottom-on-output 'this)
   (eshell-scroll-show-maximum-output t))
