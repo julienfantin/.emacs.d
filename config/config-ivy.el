@@ -66,6 +66,10 @@
   :ensure t
   :after ivy
   :init (ivy-prescient-mode 1))
+(use-package ivy-rich
+  :ensure t
+  :after ivy
+  :init (after-init #'ivy-rich-mode))
 
 ;; * Commands
 
