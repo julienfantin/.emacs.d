@@ -37,13 +37,13 @@
 ;; ** Abbrev
 
 (use-package abbrev
-  :if (file-exists-p abbrev-file-name)
-  :custom
-  (save-abbrevs 'silently)
+  :after no-littering
   :config
   (progn
     (setq-default abbrev-mode t)
-    (quietly-read-abbrev-file)))
+    (quietly-read-abbrev-file))
+  :custom
+  (save-abbrevs 'silently))
 
 ;; ** Mini-buffer
 
