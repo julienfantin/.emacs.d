@@ -27,56 +27,12 @@
 
 ;; * Packages
 
-(defvar config-modeline-eyebrowse-mode-line
-  '(:eval
-    (when (bound-and-true-p eyebrowse-mode)
-      (let* ((num (eyebrowse--get 'current-slot))
-             (tag (when num (nth 2 (assoc num (eyebrowse--get 'window-configs)))))
-             (tag-or-num (if (and tag (< 0 (length tag))) tag (when num (int-to-string num))))
-             (str (concat " " tag-or-num " ")))
-        str)))
-  "Mode line format for Eyebrowse.")
-(put 'config-modeline-eyebrowse-mode-line 'risky-local-variable t)
-
-(defvar config-modeline-window-mode-line
-  '(:eval
-    (when (featurep 'ace-window)
-      (when-let ((pos (cl-position (selected-window) (aw-window-list)))
-                 (key (nth pos aw-keys)))
-        (char-to-string key)))))
-(put 'config-modeline-window-mode-line 'risky-local-variable t)
-
-(setq-default
- mode-line-format
- '("%e"
-   config-modeline-eyebrowse-mode-line
-   config-modeline-window-mode-line
-   ;; mode-line-front-space
-   ;; mode-line-mule-info
-   ;; mode-line-client
-   ;; mode-line-modified
-   ;; mode-line-remote
-   mode-line-frame-identification
-   mode-line-buffer-identification "   " mode-line-position
-   (vc-mode vc-mode)
-   (multiple-cursors-mode mc/mode-line)
-   "  " mode-line-modes
-   mode-line-misc-info
-   mode-line-end-spaces))
-
-(use-package moody
-  :ensure t
-  :init
-  (moody-replace-mode-line-buffer-identification)
-  (moody-replace-vc-mode)
+(use-package doom-modeline
   :custom
-  (x-underline-at-descent-line t)
-  (moody-slant-function #'moody-slant-apple-rgb))
-
-(use-package rich-minority
-  :ensure t
-  :init (after-init #'rich-minority-mode)
-  :custom (rm-whitelist '(" λ")))
+  (doom-modeline-icon nil)
+  (doom-modeline-bar-width 32)
+  (doom-modeline-height 32)
+  (doom-modeline-buffer-file-name-style 'relative-to-project))
 
 (provide 'config-modeline)
 ;;; config-modeline.el ends here
