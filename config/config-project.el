@@ -26,29 +26,40 @@
 (require 'use-config)
 (require 'config-path)
 
+;; * Direnv
+
+(use-package direnv
+  :ensure-system-package direnv
+  :ensure t
+  :init (after-init #'direnv-mode))
+
+;; * Editorconfig
+
+(use-package editorconfig
+  :ensure t
+  :commands (editorconfig-mode)
+  :init (after-init 'editorconfig-mode))
+
 ;; * Projectile
 
 (use-package projectile
   :ensure t
-  :defer t
-  :init (after-init #'projectile-global-mode)
+  :after no-littering
+  :init (after-init 'projectile-global-mode)
   :commands projectile-golbal-mode
   :functions (projectile-load-known-projects)
+  :hook (projectile-idle-timer . projectile-invalidate-cache)
   :config
   (progn
-    (validate-setq
-     projectile-mode-line nil
-     projectile-enable-caching nil
-     projectile-cache-file (user-var-file "projectile.cache")
-     projectile-known-projects-file (user-var-file "projectile-bookmarks.el")
-     projectile-use-git-grep t
-     projectile-create-missing-test-files t
-     projectile-globally-ignored-directories
-     (append projectile-globally-ignored-directories '("elpa")))
     (add-to-list 'projectile-globally-ignored-files ".DS_Store")
-    (add-hook 'projectile-idle-timer-hook #'projectile-invalidate-cache)
+    (add-to-list 'projectile-globally-ignored-directories "elpa")
     (advice-add #'projectile-replace :before #'projectile-save-project-buffers)
-    (projectile-load-known-projects)))
+    (projectile-load-known-projects))
+  :custom
+  (projectile-mode-line nil)
+  (projectile-enable-caching nil)
+  (projectile-use-git-grep t)
+  (projectile-create-missing-test-files t))
 
 (provide 'config-project)
 ;;; config-project.el ends here

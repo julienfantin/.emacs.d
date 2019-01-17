@@ -23,9 +23,31 @@
 ;;
 
 ;;; Code:
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.6)
+
 (require 'cl-lib)
+
 (require 'cl-macs)
 (require 'package)
+(set-default 'truncate-lines t)
+
+(setq use-package-verbose t)
+(defvar init--file-name-handler-alist file-name-handler-alist)
+
+(setq file-name-handler-alist nil)
 
 
 ;; * Config options
@@ -52,6 +74,7 @@
   (load-file (expand-file-name "lib/use-config/use-config.el" user-emacs-directory)))
 
 (require 'use-package)
+(require 'no-littering nil t)
 
 ;; Setup our env path here, some configs might need this to be set
 (use-package exec-path-from-shell
@@ -65,11 +88,11 @@
 ;; - Demand use-config and config-path
 ;; - Load keybindings last
 
-(use-package use-config :demand t)
-(use-package private :demand t)
+(use-package use-config)
+(use-package private)
 
 (use-config config-theme)
-(use-config config-path :demand t)
+(use-config config-path)
 (use-config config-browser)
 (use-config config-buffers)
 (use-config config-completion)
@@ -90,9 +113,9 @@
 (use-config config-ivy :if (equal 'ivy config-completion-system))
 (use-config config-layouts)
 (use-config config-marks)
-;; (use-config config-modeline)
+(use-config config-modeline)
 (use-config config-org)
-(use-config config-outlines)
+(use-config config-outlines :disabled t)
 (use-config config-parsers)
 (use-config config-persistence)
 (use-config config-prog-mode)
@@ -106,24 +129,28 @@
 
 ;; ** Langs
 
-(use-config config-ansible)
-(use-config config-cl)
-(use-config config-clojure)
-(use-config config-clojurescript)
-(use-config config-emacs-lisp)
-(use-config config-nix)
-(use-config config-ocaml)
-(use-config config-sql)
-(use-config config-web)
-(use-config config-yaml)
+(use-config config-langs)
 
 ;; ** Tools
 
-(use-config config-docker)
+(use-config config-docker :defer 2)
 
 ;; ** Keybindings
 
 (use-config config-keybindings)
+
+;; ** WIP
+
+(use-config config-wip)
+
+(add-hook 'after-init-hook
+          #'(lambda ()
+              (setq gc-cons-threshold 16777216
+                    gc-cons-percentage 0.1)))
+
+(add-hook 'after-init-hook
+          #'(lambda ()
+              (setq file-name-handler-alist init--file-name-handler-alist)))
 
 (provide 'init)
 ;;; init.el ends here

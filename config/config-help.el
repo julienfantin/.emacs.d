@@ -25,9 +25,13 @@
 ;;; Code:
 (require 'use-config)
 
-(use-package help-fns+ :ensure t)
-
-(use-package niceify-info :ensure t :after info)
+(use-package helpful
+  :ensure t
+  :bind
+  (("C-h f" . helpful-callable)
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key)
+   ("C-h ," . helpful-at-point)))
 
 (provide 'config-help)
 ;;; config-help.el ends here

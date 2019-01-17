@@ -29,45 +29,56 @@
 ;; * Builtins
 
 (use-package isearch
-  :defer t
   :commands (isearch-forward-symbol-at-point isearch-forward)
-  :init
-  (progn
-    ;; Reveal content of subtrees during isearch, alse see reveal-mode
-    (setq-default isearch-invisible 'open)
-    (validate-setq isearch-allow-scroll t
-                   lazy-highlight-initial-delay 0))
-
-  :config
-  (bind-keys
-   :map isearch-mode-map
-   ;; Allow deleting chars in the search string, use C-r to search backwards
-   ([remap isearch-delete-char] . isearch-del-char)))
+  :preface
+  (defun config-search-isearch-symbol-with-prefix (p)
+    "Like isearch, unless prefix argument is provided.
+With a prefix argument P, isearch for the symbol at point."
+    (interactive "P")
+    (let ((current-prefix-arg nil))
+      (call-interactively
+       (if p #'isearch-forward-symbol-at-point
+         #'isearch-forward))))
+  :custom
+  (isearch-allow-scroll t)
+  (lazy-highlight-initial-delay 0)
+  (isearch-invisible 'open))
 
 
 ;; * Packages
 
-(use-package anzu :ensure t :init (global-anzu-mode))
-(use-package imenu-anywhere :ensure t :defer t)
-(use-package link-hint :ensure t :defer t)
-(use-package goto-last-change :ensure t :commands goto-last-change :defer t)
+(use-package imenu-anywhere :ensure t)
+
 (use-package swiper
   :ensure t
-  :defer t
-  :config
-  (advice-add 'swiper :after #'recenter-top-bottom))
+  :commands (-swiper-at-point)
+  :bind
+  ((:map swiper-map
+         ("C-r" . ivy-previous-line-or-history)))
+  :custom
+  ;; Always recentre when leaving Swiper
+  (swiper-action-recenter t)
+  ;; Jump to the beginning of match when leaving Swiper
+  (swiper-goto-start-of-match t)
+  ;; C-k C-g to go back to where the research started
+  (swiper-stay-on-quit t))
 
 (use-package avy
   :ensure t
+  :custom
+  (avy-style 'at-full)
+  (avy-background t)
+  (avy-all-windows t)
+  (avy-timeout-seconds 0.28)
   :config
-  (progn
-    (validate-setq
-     avy-style 'at-full
-     avy-background t
-     avy-all-windows t
-     avy-timeout-seconds 0.28)
-    ;; Use C-' in isearch to bring up avy
-    (avy-setup-default)))
+  ;; Use C-' in isearch to bring up avy
+  (avy-setup-default))
+
+(use-package wgrep :ensure t)
+
+(use-package deadgrep
+  :ensure t
+  :ensure-system-package (rg . "ripgrep"))
 
 
 ;; * Commands
@@ -76,7 +87,7 @@
 (defun -swiper-at-point (_arg)
   "Swiper with 'thing-at-point'."
   (interactive "P")
-  (swiper (thing-at-point 'symbol)))
+  (swiper (when _arg (thing-at-point 'symbol))))
 
 (provide 'config-search)
 ;;; config-search.el ends here

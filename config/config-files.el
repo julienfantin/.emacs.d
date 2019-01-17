@@ -16,127 +16,127 @@
 ;; * Builtins
 
 (use-package recentf
-  :defer t
   :init (after-init #'recentf-mode)
-  :config
-  (validate-setq
-   recentf-max-saved-items 1000
-   recentf-max-menu-items 200))
-
-(use-package tramp-cache
-  :defer t
-  :config
-  (validate-setq tramp-persistency-file-name (user-var-file "tramp")))
+  :after no-littering
+  :custom
+  (recentf-max-saved-items 1000)
+  (recentf-max-menu-items 200))
 
 (use-package autorevert
-  :defer t
   :init (after-init #'global-auto-revert-mode)
-  :config (validate-setq auto-revert-check-vc-info nil))
+  :custom (auto-revert-check-vc-info nil))
 
 (use-package simple
-  :defer t
-  :config
-  (progn
-    (validate-setq
-     save-interprogram-paste-before-kill t
-     create-lockfiles nil
-     make-backup-files nil)))
+  :custom
+  (save-interprogram-paste-before-kill t)
+  (create-lockfiles nil)
+  (make-backup-files nil))
 
 (use-package dired
-  :defer t
-  :config
-  (progn
-    (validate-setq dired-auto-revert-buffer t)
-    (add-hook 'dired-mode-hook 'dired-hide-details-mode)))
+  :hook (dired-mode . dired-hide-details-mode)
+  :bind ("C-x C-j" . dired-jump)
+  :custom
+  (dired-auto-revert-buffer t)
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes ' always))
 
 (use-package dired-k
   :ensure t
-  :defer t
-  :config
-  (progn
-    (add-hook 'dired-initial-position-hook 'dired-k)
-    (add-hook 'dired-after-readin-hook #'dired-k-no-revert)))
-
-(use-package ls-lisp
   :after dired
-  :config
-  (validate-setq ls-lisp-use-insert-directory-program t))
+  :hook
+  (dired-initial-position . dired-k)
+  (dired-after-readin     . dired-k-no-revert)
+  :custom
+  (dired-k-style nil)
+  (dired-listing-switches "-alh")
+  (dired-k-human-readable t))
+
+(use-package files
+  :preface
+  (defun config-files--create-buffer-file-parent-directories ()
+    (when buffer-file-name
+      (let ((dir (file-name-directory buffer-file-name)))
+        (when (and (not (file-exists-p dir))
+                   (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
+          (make-directory dir t)))))
+  :hook
+  ((before-save-hook . config-files--create-buffer-file-parent-directories)
+   (after-save-hook  . executable-make-buffer-file-executable-if-script-p)))
 
 
 ;; * Packages
 
 (use-package no-littering
   :ensure t
+  :demand t
   :config
-  (setq auto-save-file-name-transforms
-        `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
-
-(after (recentf no-littering)
-  (add-to-list 'recentf-exclude no-littering-var-directory))
+  (progn
+    (setq auto-save-file-name-transforms
+	  `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+    (after 'recentf
+      (add-to-list 'recentf-exclude no-littering-var-directory))))
 
 (use-package vlf-setup :ensure vlf)
 
 (use-package super-save
   :ensure t
-  :defer t
   :init (after-init #'super-save-mode)
   :config
   (progn
-    (defun config-files--create-buffer-file-parent-directories ()
-      (when buffer-file-name
-        (let ((dir (file-name-directory buffer-file-name)))
-          (when (and (not (file-exists-p dir))
-                     (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
-            (make-directory dir t)))))
     (setq-default save-silently t)
-    (add-to-list 'super-save-triggers "ace-window")
-    (add-to-list 'super-save-triggers "eyebrowse-switch-to-window-config")
-    (add-to-list 'super-save-triggers "persp-switch")
-    (add-to-list 'super-save-triggers "completing-read")
-    (add-to-list 'super-save-triggers "ivy--read")
-    (add-hook 'before-save-hook 'config-files--create-buffer-file-parent-directories)))
+    (add-to-list 'super-save-triggers 'eyebrowse-switch-to-window-config)
+    (add-to-list 'super-save-triggers 'persp-switch)))
+
+;; ** Dired extensions
 
 (use-package dired-hacks-utils
   :ensure t
+  :after dired
   :bind
   (:map dired-mode-map
         (("n" . dired-hacks-next-file)
          ("p" . dired-hacks-previous-file))))
 
-(use-package dired-subtree
-  :ensure t
-  :defer t
-  :init
-  (after 'dired
-    (bind-keys
-     :map dired-mode-map
-     ("i" . dired-subtree-toggle))))
-
 (use-package dired-narrow
   :ensure t
-  :defer t
-  :init
-  (after 'dired
-    (bind-keys
-     :map dired-mode-map
-     ("/" . dired-narrow-fuzzy))))
+  :after dired
+  :bind (:map dired-mode-map
+              ("/" . dired-narrow-fuzzy)))
 
 (use-package dired-x
   :after dired
-  :config
-  (setq-default dired-omit-files-p t)
-  (validate-setq
-   dired-listing-switches "-alhv"
-   dired-omit-files "^\\.\\|^#.#$\\|.~$"))
+  :custom
+  (dired-omit-files "^\\.\\|^#.#$\\|.~$"))
+
+(use-package sudo-edit :ensure t)
 
 
 ;; * Commands
 
-(defun -find-file-as-sudo ()
-  "Find file with sudo.  Default to function `buffer-file-name'."
+;; https://emacs.stackexchange.com/questions/24459/revert-all-open-buffers-and-ignore-errors
+(defun -revert-all-file-buffers ()
+  "Refresh all open file buffers without confirmation.
+
+Buffers in modified (not yet saved) state in emacs will not be
+reverted.  They will be reverted though if they were modified
+outside emacs.  Buffers visiting files which do not exist any
+more or are no longer readable will be killed."
   (interactive)
-  (let ((file-name (buffer-file-name)))
-    (find-alternate-file (concat "/sudo::" file-name))))
+  (dolist (buf (buffer-list))
+    (let ((filename (buffer-file-name buf)))
+      ;; Revert only buffers containing files, which are not modified;
+      ;; do not try to revert non-file buffers like *Messages*.
+      (when (and filename
+                 (not (buffer-modified-p buf)))
+        (if (file-readable-p filename)
+            ;; If the file exists and is readable, revert the buffer.
+            (with-current-buffer buf
+              (revert-buffer :ignore-auto :noconfirm :preserve-modes))
+          ;; Otherwise, kill the buffer.
+          (let (kill-buffer-query-functions) ; No query done when killing buffer
+            (kill-buffer buf)
+            (message "Killed non-existing/unreadable file buffer: %s" filename))))))
+  (message "Finished reverting buffers containing unmodified files."))
 
 (provide 'config-files)
 ;;; config-files.el ends here

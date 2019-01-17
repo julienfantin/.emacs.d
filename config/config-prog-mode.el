@@ -25,20 +25,27 @@
 ;;; Code:
 (require 'use-config)
 
-
 (use-package prog-mode
-  :defer t
-  :config (add-hook 'prog-mode-hook #'auto-fill-mode))
+  :hook ((prog-mode . auto-fill-mode)
+         (prog-mode . display-line-numbers-mode)))
 
-;; Spell checking code comments
-(use-package flyspell
-  :disabled t
-  :defer t
-  :init (add-hook 'prog-mode-hook #'flyspell-prog-mode))
+(use-package conf-mode
+  :preface (defun config-prog-run-hooks () (run-hooks 'prog-mode-hook))
+  :after prog-mode
+  :config (add-hook 'conf-mode-hook #'config-prog-run-hooks))
 
-;; Automatic file headers
 (use-package autoinsert
   :init (after-init #'auto-insert-mode))
+
+(use-package highlight-symbol
+  :ensure t
+  :hook
+  ((highlight-symbol-mode . highlight-symbol-nav-mode)
+   (prog-mode . highlight-symbol-mode))
+  :custom
+  (highlight-symbol-highlight-single-occurrence nil)
+  (highlight-symbol-idle-delay 0.25)
+  (highlight-symbol-on-navigation-p t))
 
 (provide 'config-prog-mode)
 ;;; config-prog-mode.el ends here

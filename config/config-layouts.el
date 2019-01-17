@@ -32,12 +32,10 @@
 
 (use-package eyebrowse
   :ensure t
-  :defer t
   :init (after-init #'eyebrowse-mode)
-  :config
-  (validate-setq
-   eyebrowse-switch-back-and-forth t
-   eyebrowse-mode-line-separator ","))
+  :custom
+  (eyebrowse-switch-back-and-forth t)
+  (eyebrowse-mode-line-style nil))
 
 (provide 'config-layouts)
 ;;; config-layouts.el ends here

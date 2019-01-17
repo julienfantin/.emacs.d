@@ -29,8 +29,6 @@
 ;; * Built-ins
 
 (use-package paren
-  :defer t
-  :init (add-hook 'prog-mode-hook #'show-paren-mode)
   :preface
   (progn
     (defvar config-sexp-show-paren nil)
@@ -42,17 +40,14 @@
       (when (bound-and-true-p config-sexp-show-paren)
         (setq config-sexp-show-paren nil)
         (show-paren-mode 1))))
-  :config
-  (progn
-    (validate-setq
-     show-paren-style 'expression
-     show-paren-priority 1000
-     show-paren-delay 0.05)
-    (add-hook 'activate-mark-hook #'(lambda () (show-paren-mode -1)))
-    (add-hook 'deactivate-mark-hook #'(lambda () (show-paren-mode 1)))
-    (after 'pulse-eval
-      (add-hook 'pulse-eval-before-pulse-hook #'config-sexp-show-paren-turn-off)
-      (add-hook 'pulse-eval-after-pulse-hook #'config-sexp-show-paren-turn-on))))
+  :hook
+  ((prog-mode                                . show-paren-mode)
+   ((activate-mark pulse-eval-before-pulse)  . config-sexp-show-paren-turn-off)
+   ((deactivate-mark pulse-eval-after-pulse) . config-sexp-show-paren-turn-on))
+  :custom
+  (show-paren-style 'expression)
+  (show-paren-priority 1000)
+  (show-paren-delay 0.05))
 
 
 ;; * Lisp minor-mode
@@ -65,18 +60,17 @@
 ;; * Pulse eval
 
 (use-package pulse-eval
-  :defer t
-  :commands pulse-eval-mode
-  :init
-  (after 'lisp-minor-mode
-    (add-hook 'lisp-minor-mode-hook #'pulse-eval-mode)))
+  :after lisp-minor-mode
+  :hook (lisp-minor-mode . pulse-eval-mode)
+  :custom
+  (pulse-eval-iterations 1)
+  (pulse-eval-delay .13))
 
 
 ;; * Paredit
 
 (use-package paredit
   :ensure t
-  :defer t
   :commands paredit-mode
   :functions
   (paredit-wrap-round paredit-wrap-square paredit-wrap-curly)
@@ -117,8 +111,6 @@
       (let ((map lispy-mode-map))
         (bind-keys
          :map map
-         ;; Prefer our global binding for AHS
-         ("M-i" . nil)
          ;; lispy's sometimes don't work when inside a sexp
          ([remap lispy-forward-slurp-sexp]  . paredit-forward-slurp-sexp)
          ([remap lispy-forward-barf-sexp]   . paredit-forward-barf-sexp)
@@ -143,8 +135,6 @@
          :map map
          ;; Delete trailing parens
          ("C-<backspace>"                   . backward-delete-char)
-         ;; Prefer our global binding for AHS
-         ("M-i"                             . nil)
          ;; lispy's sometimes don't work when inside a sexp
          ([remap lispy-forward-slurp-sexp]  . paredit-forward-slurp-sexp)
          ([remap lispy-forward-barf-sexp]   . paredit-forward-barf-sexp)
@@ -160,7 +150,6 @@
 
 (use-package lispy
   :ensure t
-  :defer t
   :config
   (progn
     (after 'outline-magic
@@ -169,24 +158,24 @@
     (after 'pulse-eval
       (add-to-list
        'pulse-eval-advices-alist
-       (cons 'lispy-mode '((lispy-eval . pulse-eval-highlight-forward-sexp-advice)))))
-    (validate-setq lispy-no-space t)
-    (validate-setq
-     lispy-no-permanent-semantic t
-     lispy-completion-method 'ivy
-     lispy-visit-method 'projectile
-     lispy-compat '(edebug cider)
-     lispy-avy-style-char 'at-full
-     lispy-avy-style-paren 'at-full
-     lispy-avy-style-symbol 'at-full)))
+       (cons 'lispy-mode '((lispy-eval . pulse-eval-highlight-forward-sexp-advice))))))
+  :custom
+  (lispy-no-permanent-semantic t)
+  (lispy-close-quotes-at-end-p t)
+  (lispy-eval-display-style 'overlay)
+  (lispy-visit-method 'projectile)
+  (lispy-compat '(edebug cider))
+  (lispy-avy-style-char 'at-full)
+  (lispy-avy-style-paren 'at-full)
+  (lispy-avy-style-symbol 'at-full)
+  (lispy-safe-copy t)
+  (lispy-safe-delete t)
+  (lispy-safe-paste t))
 
 (use-package lispy-mnemonic
-  :after lispy
-  ;; The autoload in the file doesn't work?
   :commands lispy-mnemonic-mode
-  :init
-  (after 'lisp-minor-mode
-    (add-hook 'lisp-minor-mode-hook #'lispy-mnemonic-mode t))
+  :after lisp-minor-mode
+  :hook (lisp-minor-mode . lispy-mnemonic-mode)
   :config
   (after 'outline-magic
     ;; lispy's outline promotion is hardwired to it's comment convention

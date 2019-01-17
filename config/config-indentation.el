@@ -36,47 +36,30 @@
 (setq-default indent-tabs-mode nil)
 
 (use-package makefile
-  :defer t
   :preface
   (defun config-indentation-makefile ()
     (set (make-local-variable 'indent-tabs-mode) t)
     (set (make-local-variable 'tab-width) 4))
-  :config (add-hook 'makefile-mode-hook 'config-indentation-makefile))
+  :hook (makefile-mode . config-indentation-makefile))
 
 
 ;; * Whitespace cleanup
 
-(defun config-whitespace-show-trailing-whitespace ()
+(defun config-indentation-show-trailing-whitespace ()
   "Enable 'SHOW-TRAILING-WHITESPACE' in current buffer."
   (setq-local show-trailing-whitespace t))
 
-(add-hook 'prog-mode-hook #'config-whitespace-show-trailing-whitespace)
-
-(use-package clean-aindent-mode
-  :ensure t
-  :defer t
-  :init (add-hook 'prog-mode-hook #'clean-aindent-mode))
+(add-hook 'prog-mode-hook #'config-indentation-show-trailing-whitespace)
 
 (use-package ws-butler
   :ensure t
-  :defer t
-  :commands ws-butler-mode
-  :init (add-hook 'prog-mode-hook #'ws-butler-mode))
+  :hook ((prog-mode . ws-butler-mode)))
 
 
 ;; * Indentation
 
-(use-package dtrt-indent
-  :ensure t
-  :defer t
-  :after cc-mode
-  :init (add-hook 'cc-mode-hook #'dtrt-indent-mode)
-  :config
-  (validate-setq dtrt-indent-verbosity 0))
-
 (use-package aggressive-indent
   :ensure t
-  :defer t
   :preface
   (defun config-indentation-aggressive-indent-skip-p ()
     "Return true if the current defun is longer than
@@ -90,15 +73,16 @@
   :init (after-init 'global-aggressive-indent-mode)
   :config
   (progn
-    (validate-setq aggressive-indent-comments-too t)
     ;; Skip large forms
     (add-to-list 'aggressive-indent-dont-indent-if '(config-indentation-aggressive-indent-skip-p))
     ;; Disabled commands
     (dolist (command '(next-line previous-line))
       (add-to-list 'aggressive-indent-protected-commands command))
     ;; Disabled modes
-    (dolist (mode '(makefile-mode tuareg-mode cider-repl-mode))
-      (add-to-list 'aggressive-indent-excluded-modes mode))))
+    (dolist (mode '(makefile-mode tuareg-mode reason-mode cider-repl-mode))
+      (add-to-list 'aggressive-indent-excluded-modes mode)))
+  :custom
+  (aggressive-indent-comments-too t))
 
 (provide 'config-indentation)
 ;;; config-indentation.el ends here

@@ -26,25 +26,6 @@
 (require 'use-config)
 (require 'map)
 
-
-;; * Customs
-
-(defvar config-completion-enable-yasnippet t
-  "Enable yasnippet for all backends.")
-
-(defvar config-completion-backends-alist
-  '((emacs-lisp-mode
-     . (company-elisp
-        company-files
-        company-dabbrev-code
-        company-keywords
-        company-dabbrev))))
-
-(defvar config-completion--default-backends
-  '(company-capf
-    company-files
-    (company-dabbrev-code company-keywords)))
-
 
 ;; * Defaults
 
@@ -56,130 +37,84 @@
 ;; ** Abbrev
 
 (use-package abbrev
-  :defer t
   :if (file-exists-p abbrev-file-name)
+  :custom
+  (save-abbrevs 'silently)
   :config
   (progn
     (setq-default abbrev-mode t)
-    (validate-setq save-abbrevs 'silently)
     (quietly-read-abbrev-file)))
 
 ;; ** Mini-buffer
 
 (setq history-length most-positive-fixnum)
+(setq enable-recursive-minibuffers t)
+
+
+;; * Prescient
+
+(use-package prescient
+  :ensure t
+  :after no-littering
+  :config (prescient-persist-mode 1))
 
 
 ;; * Company
 
-(use-package smart-tab :ensure t :defer t)
-
-(defun config-completion-add-backends (mode &rest backends)
-  "Add 'MODE' specific 'BACKENDS' to 'config-completion-backends-alist'."
-  (let* ((existing (map-elt config-completion-backends-alist mode)))
-    (map-put config-completion-backends-alist mode (append existing backends))))
-
-(defun config-completion--company-backends ()
-  (cl-reduce
-   (lambda (acc mode)
-     (if-let ((backend (alist-get mode config-completion-backends-alist)))
-         (cons backend acc)
-       acc))
-   (config-completion--enabled-modes)
-   :initial-value (if config-completion-enable-yasnippet '(company-yasnippet) '())))
-
 (use-package company
   :ensure t
-  :defer t
-  :commands (company-mode company-complete-common-or-cycle)
-  :preface
-  (defun config-completion--enabled-minor-modes ()
-    (cl-remove-if-not
-     (lambda (mode)
-       (and (boundp mode) (symbol-value mode)))
-     minor-mode-list))
+  :init (after-init #'global-company-mode)
+  :bind ((:map company-mode-map
+               ("TAB" . company-indent-or-complete-common))
+         (:map company-active-map
+               ("TAB" . company-complete-common-or-cycle)
+               ("C-n" . company-select-next)
+               ("C-p" . company-select-previous)
+               ("M-/" . company-other-backend)))
+  :custom
+  (company-global-modes
+   '(not text-mode message-mode git-commit-mode org-mode magit-status-mode))
+  (company-backends
+   '((company-elisp)
+     (company-capf company-dabbrev company-files)
+     (company-dabbrev-code company-keywords)))
+  (company-idle-delay 0.2)
+  (company-minimum-prefix-length 2)
+  (company-require-match nil)
+  (company-search-regexp-function 'company-search-words-regexp)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations t)
+  (company-tooltip-limit 10)
+  (company-tooltip-minimum 10)
+  (company-tooltip-minimum-width 50))
 
-  (defun config-completion--enabled-modes ()
-    (cons major-mode (config-completion--enabled-minor-modes)))
-
-  (defun config-completion--company-backends ()
-    (cl-reduce
-     (lambda (acc mode)
-       (if-let ((backend (alist-get mode config-completion-backends-alist)))
-           (cons backend acc)
-         acc))
-     (config-completion--enabled-modes)
-     :initial-value '()))
-
-  (defun config-completion-backend-with-yasnippet (backend)
-    ;; Avoid double-wrapping
-    (if (and (listp backend) (member 'company-yasnippet backend))
-        backend
-      (append (if (consp backend) backend (list backend))
-              '(:with company-yasnippet))))
-
-  (defun config-completion-company-turn-on ()
-    (let ((backends (append (config-completion--company-backends) config-completion--default-backends)))
-      ;; Set company backends, conditionally enabling yasnippet
-      (setq company-backends
-            (if config-completion-enable-yasnippet
-                (mapcar #'config-completion-backend-with-yasnippet backends)
-              backends))
-      ;; Make smart-tab use company-mode
-      (setq-local smart-tab-completion-functions-alist
-                  `((,major-mode . company-complete-common)))
-      ;; Smart-tab is our completion entry point
-      (smart-tab-mode 1)
-      (company-mode 1)))
-  :init (add-hook 'prog-mode-hook 'config-completion-company-turn-on)
-  :config
-  (progn
-    (bind-key "TAB" #'company-complete-common-or-cycle company-active-map)
-    (validate-setq
-     company-idle-delay nil
-     company-minimum-prefix-length 2
-     company-tooltip-align-annotations t
-     company-require-match nil)))
+(use-package company-dabbrev
+  :custom
+  (company-dabbrev-downcase nil)
+  (company-dabbrev-ignore-case nil)
+  (company-dabbrev-minimum-length 2))
 
 (use-package company-elisp
-  :defer t
-  :config
-  (validate-setq company-elisp-detect-function-context nil))
+  :custom
+  (company-elisp-detect-function-context nil))
 
-(use-package company-quickhelp
+;; this frontend properly renders propertized text, variable pitch font and
+;; doesn't have to it within the parent-frame
+(use-package company-box
   :ensure t
-  :defer t
-  :init
-  (after 'company
-    (bind-key "C-h" 'company-quickhelp-mode company-active-map)))
+  :after company
+  :hook (company-mode . company-box-mode)
+  :custom
+  ;; Icons are huge!?
+  (company-box-enable-icon nil)
+  ;; Search is kinda broken this helps mitigate the issue
+  (company-search-filtering nil))
 
-(use-package company-statistics
+(use-package company-prescient
   :ensure t
-  :defer t
-  :init
-  (after 'company
-    (add-hook 'company-mode-hook #'company-statistics-mode))
-  :config
-  (validate-setq
-   company-statistics-file
-   (expand-file-name "company-statistics.el" user-var-directory)
-   company-statistics-size 200))
-
-(use-package yasnippet
-  :if config-completion-enable-yasnippet
-  :ensure t
-  :defer t
-  :init (after-init #'yas-global-mode)
-  :config
-  (progn
-    (unbind-key "<tab>" yas-minor-mode-map)
-    (unbind-key "TAB" yas-minor-mode-map)
-    (unbind-key "C-c <tab>" yas-minor-mode-map)
-    (unbind-key "C-c TAB" yas-minor-mode-map)
-    (add-to-list 'yas-snippet-dirs (expand-file-name "snippets/" user-emacs-directory))
-    (validate-setq
-     yas-fallback-behavior 'return-nil
-     yas-triggers-in-field t
-     yas-verbosity 0)))
+  :after company
+  :init (require 'company-prescient nil t)
+  :config (company-prescient-mode 1))
 
 (provide 'config-completion)
 ;;; config-completion.el ends here

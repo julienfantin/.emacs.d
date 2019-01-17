@@ -27,7 +27,6 @@
 
 (use-package nix-mode
   :ensure t
-  :defer t
   :config
   (progn
     (after 'paredit
@@ -35,17 +34,16 @@
     (after 'aggressive-indent
       (add-to-list 'aggressive-indent-excluded-modes 'nix-mode))))
 
-(use-package nixos-options :ensure t :defer t)
+(use-package nixos-options :ensure t)
 
 (use-package company-nixos-options
   :ensure t
-  :defer t
   :init
   (after 'config-completion
     (add-to-list 'config-completion-backends-alist
                  (cons 'nix-mode '(company-nixos-options)))))
 
-(use-package nix-sandbox :ensure t :defer t)
+(use-package nix-sandbox :ensure t)
 
 (after (ivy nix-mode)
   (require 'nixos-options)

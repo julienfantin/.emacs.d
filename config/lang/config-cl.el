@@ -27,11 +27,10 @@
 (require 'use-config)
 (require 'config-completion)
 
-(use-package slime :ensure t :defer t)
+(use-package slime :ensure t)
 
 (use-package slime-company
   :ensure t
-  :defer t
   :init
   (after 'slime
     (slime-setup '(slime-company))

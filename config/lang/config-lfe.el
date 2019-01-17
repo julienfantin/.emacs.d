@@ -29,7 +29,6 @@
 
 (use-package lfe-mode
   :ensure t
-  :defer t
   :config
   (progn
     (defun lfe-eval-sexp-or-defun (&optional and-go)

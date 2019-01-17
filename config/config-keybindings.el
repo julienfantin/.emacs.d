@@ -56,10 +56,12 @@
 (defun config-keybindings-macbook ()
   (interactive)
   (cl-case system-type
-    ('darwin (validate-setq mac-command-modifier 'control
-                            mac-control-modifier 'meta
-                            mac-option-modifier 'super
-                            mac-function-modifier 'hyper))))
+    ('darwin
+     (setq
+      mac-command-modifier 'control
+      mac-control-modifier 'meta
+      mac-option-modifier 'super
+      mac-function-modifier 'hyper))))
 
 (when config-keybdings-default-setup
   (funcall config-keybdings-default-setup))
@@ -93,31 +95,25 @@ hyper when it's used as a modifier."
 
 (use-package general :ensure t)
 
-(use-package free-keys :ensure t :defer t)
+(use-package free-keys :ensure t)
 
 (use-package which-key
   :ensure t
-  :defer t
   :init (after-init #'which-key-mode)
-  :config
-  (validate-setq
-   which-key-sort-order 'which-key-key-order-alpha
-   which-key-side-window-max-width 0.4
-   which-key-idle-delay 0.4))
+  :custom
+  (which-key-sort-order 'which-key-prefix-then-key-order)
+  (which-key-side-window-max-width 0.4)
+  (which-key-idle-delay 0.4))
 
 (use-package keyfreq
   :ensure t
-  :defer t
-  :init
-  :preface
-  (defvar keyfreq-file (user-var-file "keyfreq"))
+  :after no-littering
   :init
   (progn
     (after-init #'keyfreq-mode)
     (after-init #'keyfreq-autosave-mode))
-  :config
-  (validate-setq
-   keyfreq-excluded-commands
+  :custom
+  (keyfreq-excluded-commands
    '(self-insert-command
      outshine-self-insert-command
      org-self-insert-command
@@ -128,26 +124,32 @@ hyper when it's used as a modifier."
      next-line)))
 
 (use-package hydra
-  :ensure t
-  :defer t
+  :ensure  t
   :config
   (use-package lv
-    :config
-    (validate-setq lv-use-separator t)))
-
-(use-package interaction-log :ensure t :defer t :commands interaction-log-mode)
+    :custom
+    (lv-use-separator t)))
 
 
-;; * Hydras
-;; ** (b)uffers
+;; * Keymaps
+
+;; ** (a) App
+
+(general-define-key
+ :prefix "C-c"
+ :infix "a"
+ "f"     '(counsel-faces :which-key "faces")
+ "t"     '(counsel-load-theme :which-key "theme")
+ "p"     '(counsel-package :which-key "package"))
+
+;; ** (b) Buffers
 
 (defhydra hydra-buffers (:color red)
   "Buffers"
-  ("C-c b" -switch-to-last-buffer "last")
   ("TAB"   -switch-to-last-buffer "last")
-  ("`"     -switch-to-last-buffer "last")
+  ("b"     switch-to-buffer "switch")
   ("h"     bury-buffer "hide")
-  ("k"     kill-this-buffer "kill")
+  ("k"     kill-current-buffer "kill")
   ("K"     kill-buffer-and-window "kill (window)")
   ("n"     next-buffer "next")
   ("p"     previous-buffer "prev")
@@ -163,13 +165,13 @@ hyper when it's used as a modifier."
  "K"     '(hydra-buffers/kill-buffer-and-window :which-key "kill (window)")
  "b"     '(ivy-switch-buffer :which-key "buffers")
  "h"     '(hydra-buffers/bury-buffer :which-key "bury")
- "k"     '(hydra-buffers/kill-buffer :which-key "kill")
+ "k"     '(hydra-buffers/kill-current-buffer :which-key "kill")
  "n"     '(hydra-buffers/next-buffer :which-key "next")
  "p"     '(hydra-buffers/previous-buffer :which-key "prev")
  "r"     '(revert-buffer :which-key "revert")
  "t"     '(-temp-buffer :which-key "temp"))
 
-;; ** (e)diting
+;; ** (e) Editing
 
 (defvar hydra-multiple-cursors-lispy-p nil)
 
@@ -194,9 +196,10 @@ hyper when it's used as a modifier."
  "a" '(align-current :which-key "align")
  "c" '(-cleanup :which-key "cleanup")
  "o" '(outorg-edit-as-org :which-key "outorg")
- "r" '(align-regexp))
+ "r" '(align-regexp)
+ "i" '(iedit-mode :which-key "iedit"))
 
-;;  ** (f)ind
+;;  ** (f) Find
 
 (general-define-key
  :prefix "C-c"
@@ -204,13 +207,13 @@ hyper when it's used as a modifier."
  "C-c f" '(counsel-find-file :which-key "find-file")
  "f"     '(counsel-find-file :which-key "find-file")
  "h"     '(helm-hunks :which-key "hunks")
+ "e"     '(-counsel-flycheck :which-key "flycheck")
  "r"     '(counsel-rg :which-key "ripgrep")
  "g"     '(counsel-git-grep :which-key "git-grep")
  "p"     '(projectile-find-file :which-key "(projectile) find-file")
- "s"     '(-find-file-as-sudo :which-key "sudo")
- "t"     '(-counsel-git-grep-project-todos :which-key "todos"))
+ "t"     '(-counsel-todos :which-key "todos"))
 
-;; ** (v)ersion control
+;; ** (v) Version control
 
 (general-define-key
  :prefix "C-c"
@@ -229,34 +232,29 @@ hyper when it's used as a modifier."
  "s"     '(magit-stage-file :which-key "stage")
  "t"     '(git-timemachine :which-key "timemachine"))
 
-;; ** (t)oggle modes
+;; ** (t) Toggles
 
 (general-define-key
  :prefix "C-c"
- :infix "m"
- "a" 'auto-fill-mode
- "c" 'centered-window-mode
- "d" 'toggle-debug-on-error
- "s" 'flyspell-mode
- "f" 'focus-mode
- "h" 'hl-line-mode
- "l" 'linum-mode
- "m" 'counsel-mark-ring
- "n" 'linum-mode
- "p" 'flyspell-prog-mode
- "r" 'read-only-mode
- "t" 'toggle-truncate-lines
- "v" 'visual-line-mode)
+ :infix "t"
+ "a" '(auto-fill-mode :which-key "aufto-fill")
+ "d" '(toggle-debug-on-error :which-key "debug")
+ "s" '(flyspell-mode :which-key "spell")
+ "p" '(flyspell-prog-mode :which-key "spell-prog")
+ "h" '(hl-line-mode :which-key "hl-line")
+ "r" '(read-only-mode :which-key "read-only")
+ "t" '(toggle-truncate-lines :which-key "truncate")
+ "v" '(visual-line-mode :which-key "visual-line"))
 
-;; ** (n)otes
+;; ** (n) Notes
 
 (general-define-key
  :prefix "C-c"
  :infix "n"
  "c" '(org-capture :which-key "capture")
- "d" '(deft :which-key "deft"))
+ "j" '(org-journal-new-entry :which-key "journal"))
 
-;; ** Term
+;; ** (t) Term
 
 (general-define-key
  :prefix "C-c"
@@ -267,7 +265,7 @@ hyper when it's used as a modifier."
  "t" 'term
  "a" 'ansi-term)
 
-;; ** (w)indows
+;; ** (w) Windows
 
 (defun config-keybindings-ace-switch ()
   "Switch the current window with ace window and restart the hydra."
@@ -287,10 +285,30 @@ hyper when it's used as a modifier."
     (windresize)
     (windresize-cancel-and-quit)))
 
+(defhydra hydra-eyebrowse (:color red :hint nil)
+  "Eyebrowse"
+  ("<tab>" eyebrowse-last-window-config "last")
+  ("1" eyebrowse-switch-to-window-config-1)
+  ("2" eyebrowse-switch-to-window-config-2)
+  ("3" eyebrowse-switch-to-window-config-3)
+  ("4" eyebrowse-switch-to-window-config-4)
+  ("5" eyebrowse-switch-to-window-config-5)
+  ("6" eyebrowse-switch-to-window-config-6)
+  ("7" eyebrowse-switch-to-window-config-7)
+  ("8" eyebrowse-switch-to-window-config-8)
+  ("9" eyebrowse-switch-to-window-config-9)
+  ("w" eyebrowse-switch-to-window-config "switch")
+  ("r" eyebrowse-rename-window-config "rename")
+  ("c" eyebrowse-new-workspace "new")
+  ("n" eyebrowse-next-window-config "next")
+  ("p" eyebrowse-prev-window-config "prev")
+  ("k" eyebrowse-close-window-config "kill"))
+
 (defhydra hydra-windows
-  (:color blue :hint nil :pre (config-keybindings-init-window-modes))
+  (:color red :hint nil :pre (config-keybindings-init-window-modes))
   ("<tab>" -switch-to-last-window "last" :exit t)
   ("C-c w" -switch-to-last-window "last" :exit t)
+  ("w"   hydra-eyebrowse/body :exit t)
   ("p"   windmove-up)
   ("n"   windmove-down)
   ("f"   windmove-right)
@@ -307,8 +325,8 @@ hyper when it's used as a modifier."
   ("o"   ace-window "ace")
   ("k"   config-keybindings-ace-delete "ace delete")
   ("s"   config-keybindings-ace-switch "ace switch")
-  ("<left>" winner-undo "undo" :exit nil)
-  ("<right>" winner-redo "redo" :exit nil)
+  ("u"   winner-undo "undo")
+  ("r"   winner-redo "redo")
   ("q"   ignore :exit t))
 
 (dolist (n (number-sequence 1 10))
@@ -330,33 +348,10 @@ hyper when it's used as a modifier."
  "6" '(aw-switch-to-window-6 :which-key "window-6")
  "7" '(aw-switch-to-window-7 :which-key "window-7")
  "8" '(aw-switch-to-window-8 :which-key "window-8")
- "9" '(aw-switch-to-window-9 :which-key "window-9"))
+ "9" '(aw-switch-to-window-9 :which-key "window-9")
+ "p" '(projectile-command-map :which-key "projectile"))
 
-(defhydra hydra-eyebrowse (:color red)
-  "Eyebrowse"
-  ("<tab>" eyebrowse-last-window-config "last")
-  ("w" eyebrowse-switch-to-window-config "switch")
-  ("r" eyebrowse-rename-window-config "rename")
-  ("c" eyebrowse-new-workspace "new")
-  ("n" eyebrowse-next-window-config "next")
-  ("p" eyebrowse-prev-window-config "prev")
-  ("k" eyebrowse-close-window-config "kill"))
-
-(general-define-key
- ;; Eyeberowse: Space+Ctrl+NumRow
- ;;
- "C-c l"     '(hydra-eyebrowse/body :which-key "eye")
- "C-c C-1"    '(eyebrowse-switch-to-window-config-1 :which-key "eye-1")
- "C-c C-2"    '(eyebrowse-switch-to-window-config-2 :which-key "eye-2")
- "C-c C-3"    '(eyebrowse-switch-to-window-config-3 :which-key "eye-3")
- "C-c C-4"    '(eyebrowse-switch-to-window-config-4 :which-key "eye-4")
- "C-c C-5"    '(eyebrowse-switch-to-window-config-5 :which-key "eye-5")
- "C-c C-6"    '(eyebrowse-switch-to-window-config-6 :which-key "eye-6")
- "C-c C-7"    '(eyebrowse-switch-to-window-config-7 :which-key "eye-7")
- "C-c C-8"    '(eyebrowse-switch-to-window-config-8 :which-key "eye-8")
- "C-c C-9"    '(eyebrowse-switch-to-window-config-9 :which-key "eye-9"))
-
-;; ** (g)oto
+;; ** (g) Goto
 
 (defvar hydra-goto-pre-pos nil)
 
@@ -371,87 +366,25 @@ hyper when it's used as a modifier."
   (:color blue :body-pre (hydra-goto-init))
   ;; Positions
   ("C-g" hydra-goto-reset :exit t)
-  ("M-g" goto-line)
-  ("g" avy-goto-line)
-  ("/" link-hint-open-link)
-  ("i" counsel-imenu)
-  ("I" ivy-imenu-anywhere)
-  ("e" counsel-flycheck)
+  ("M-g" goto-line "line")
+  ("g" avy-goto-line "avy-line")
+  ("/" link-hint-open-link "link")
+  ("i" counsel-imenu "imenu")
+  ("I" ivy-imenu-anywhere "imenu-anywhere")
+  ("e" -counsel-flycheck "flycheck")
   ;; Pages
-  ("p" ivy-pages)
-  ("[" backward-page)
-  ("]" forward-page)
-  ;; Edits
-  ("l" goto-last-change)
-  ("<" diff-hl-previous-hunk)
-  (">" diff-hl-next-hunk))
+  ("p" ivy-pages "pages")
+  ("[" backward-page "back-page" :exit nil)
+  ("]" forward-page "forw-page" :exit nil))
 
-(general-define-key
- :keymaps '(help-mode-map)
- "/" 'link-hint-open-link)
-
-;; ** Symbols
-
-(advice-add
- #'ahs-edit-mode :before
- (lambda (arg &optional temporary)
-   (unless (bound-and-true-p auto-highlight-symbol-mode)
-     (auto-highlight-symbol-mode 1))))
-
-(advice-add
- #'ahs-edit-mode-off :after
- (lambda (nomsg interactive)
-   (auto-highlight-symbol-mode -1)))
-
-(defun config-keybindings-ahs-pre ()
-  "Start `auto-highlight-symbol-mode` and highlight."
-  (unless (bound-and-true-p auto-highlight-symbol-mode)
-    (auto-highlight-symbol-mode 1))
-  (ahs-highlight-now))
-
-(defun config-keybindings-ahs-post ()
-  "Start `auto-highlight-symbol-mode` and highlight."
-  (when (bound-and-true-p auto-highlight-symbol-mode)
-    (auto-highlight-symbol-mode -1)))
-
-(defhydra hydra-ahs
-  (:color red :pre (config-keybindings-ahs-pre) :post (config-keybindings-ahs-post))
-  "Symbol"
-  ("M-n" ahs-forward "next")
-  ("n" ahs-forward "next")
-  ("N" ahs-forward-definition "next def")
-  ("M-p" ahs-backward "prev")
-  ("p" ahs-backward "prev")
-  ("P" ahs-backward-definition "prev def")
-  ("r" ahs-change-range "range")
-  ("<" ahs-back-to-start "back")
-  ("e" ahs-edit-mode "edit" :exit t))
-
-(comment
- (defhydra hydra-iedit (:color red)
-   "Symbol"
-   ("M-n" iedit-next-occurrence "next")
-   ("n" iedit-next-occurrence "next")
-   ("M-p" iedit-prev-occurrence "prev")
-   ("p" iedit-prev-occurrence "prev")
-   ("f" iedit-restrict-function "function")
-   ("r" iedit-restrict-region "region")
-   ("e" ahs-edit-mode "edit" :exit t)))
-
-;; ** (tab)navigation
-
-;; (defhydra hydra-pop (:color blue)
-;;   ("n" pop-mark)
-;;   ("C-c" pop-global-mark))
-
-;; ** (d)ocumentation
+;; ** (d) Documentation
 
 (general-define-key
  :prefix "C-c"
  :infix "d"
  "SPC" 'counsel-dash)
 
-;; ** (o)utlines
+;; ** (o) Outlines
 
 (defhydra hydra-outline
   (:body-pre (outline-minor-mode 1) :color pink)
@@ -529,26 +462,6 @@ hyper when it's used as a modifier."
  "C-v" 'find-variable
  "C-l" 'find-library)
 
-(general-define-key
- :keymaps 'prog-mode-map
- "M-n" '(hydra-ahs/ahs-forward :which-key "ahs-forward")
- "M-p" '(hydra-ahs/ahs-backward :which-key "ahs-backward")
- "M-i" '(ahs-edit-mode :which-key "ahs-edit-mode"))
-
-(comment
- (defun config-keybindings-iedit (&optional arg)
-   (interactive)
-   (if (or (bound-and-true-p lispy-mode)
-           (bound-and-true-p lispy-mnemonic-mode))
-       (funcall-interactively 'lispy-iedit arg)
-     (funcall-interactively 'iedit arg)))
-
- (general-define-key
-  :keymaps 'prog-mode-map
-  "M-n" '(hydra-iedit/iedit-next-occurrence :which-key "iedit-next")
-  "M-p" '(hydra-ahs/ahs-backward :which-key "iedit-prev")
-  "M-i" '(config-keybindings-iedit :which-key "iedit")))
-
 (after 'org
   (bind-keys
    :map org-mode-map
@@ -558,27 +471,35 @@ hyper when it's used as a modifier."
    ("C-M-u"          . org-up-heading-safe)))
 
 
-;; * User bindings
+;; * Keymaps
 
-(defhydra hydra-text (:color red)
-  ("+" -text-scale-increase)
-  ("-" -text-scale-decrease));; Mark
+(which-key-add-key-based-replacements
+  "C-c &" "shells"
+  "C-c a" "apps"
+  "C-c b" "buffers"
+  "C-c d" "doc"
+  "C-c e" "editing"
+  "C-c f" "find"
+  "C-c g" "goto"
+  "C-c n" "notes"
+  "C-c o" "outlines"
+  "C-c t" "toggles"
+  "C-c v" "vc "
+  "C-c w" "windows")
 
 (general-define-key
  :prefix "C-c"
  :keymaps 'global
  "r" 'ivy-resume
- "+"   '(hydra-text/-text-scale-increase :which-key "text-+")
- "-"   '(hydra-text/-text-scale-decrease :which-key "text--")
- "g"   '(hydra-goto/body :which-key "goto")
- "i"   '(counsel-imenu :which-key "imenu")
- "I"   '(ivy-imenu-anywhere :which-key "imenu anywher")
- "j"   '(avy-goto-char-timer :which-key "avy-char")
- "k"   '(kill-this-buffer :which-key "kill-this-buffer")
- "o"   '(hydra-outline/body :which-key "hydra-outline")
- "s"   '(swiper-all :which-key "swiper-all")
- "S"   '(-swiper-at-point :which-key "-swiper-at-point")
- "w"   '(hydra-windows/body :which-key "hydra-windows"))
+ "g" '(hydra-goto/body :which-key "goto")
+ "i" '(counsel-imenu :which-key "imenu")
+ "I" '(ivy-imenu-anywhere :which-key "imenu anywhere")
+ "j" '(avy-goto-char-timer :which-key "avy-char")
+ "k" '(kill-this-buffer :which-key "kill-this-buffer")
+ "o" '(hydra-outline/body :which-key "hydra-outline")
+ "s" '(swiper-all :which-key "swiper-all")
+ "S" '(-swiper-at-point :which-key "-swiper-at-point")
+ "w" '(hydra-windows/body :which-key "hydra-windows"))
 
 (provide 'config-keybindings)
 ;;; config-keybindings.el ends here

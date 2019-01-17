@@ -31,9 +31,10 @@
 
 (use-package flycheck
   :ensure t
-  :defer t
   :init (after-init #'global-flycheck-mode)
-  :commands (flycheck-mode flycheck-list-errors)
+  :commands (flycheck-mode flycheck-list-errors -counsel-flycheck)
+  :bind (:map flycheck-mode-map
+              ("C-c !" . -counsel-flycheck))
   :defines
   (flycheck-error-list-buffer
    flycheck-display-errors-function)
@@ -50,8 +51,6 @@
    config-parsers-flycheck-turn-messages-off)
   :config
   (progn
-    ;; Custom
-    (validate-setq flycheck-emacs-lisp-load-path 'inherit)
     ;; Advices
     (defun config-parsers-flycheck-select-window ()
       (select-window (get-buffer-window flycheck-error-list-buffer)))
@@ -78,9 +77,9 @@
       (add-hook 'company-completion-cancelled-hook #'config-parsers-flycheck-turn-messages-on))
     (after 'counsel
       ;; https://github.com/nathankot/dotemacs/blob/ef76773c69cac36c04935edcfa631052bd2c679d/init.el#L566
-      (defvar counsel-flycheck-history nil
-        "History for `counsel-flycheck'")
-      (defun counsel-flycheck ()
+      (defvar -counsel-flycheck-history nil
+        "History for `-counsel-flycheck'")
+      (defun -counsel-flycheck ()
         (interactive)
         (if (not (bound-and-true-p flycheck-mode))
             (message "Flycheck mode is not available or enabled")
@@ -100,57 +99,9 @@
                               (-when-let* ( (error (get-text-property 0 'tabulated-list-id s))
                                             (pos (flycheck-error-pos error)) )
                                 (goto-char (flycheck-error-pos error))))
-                    :history 'counsel-flycheck-history))))))
-
-
-;; * Semantic
-
-(use-package semantic
-  :defer t
-  :init (after-init #'semantic-mode)
-  :functions
-  (semanticdb-file-table-object
-   semanticdb-save-all-db)
-  :config
-  (progn
-    (defun config-parsers-semantic-parse-recursively (file-or-dir)
-      "Recursively parse all files 'file-or-dir'"
-      (cond
-       ((null file-or-dir) nil)
-       ((file-directory-p file-or-dir)
-        (mapcar #'config-parsers-semantic-parse-recursively
-                (directory-files-recursively file-or-dir ".+\\.el\\(\\.gz\\)?$")))
-       (t (ignore-errors
-            (semanticdb-file-table-object file-or-dir)))))
-    (defun -semantic-parse-load-path ()
-      "Parse all elisp files in 'load-path'"
-      (interactive)
-      (dolist (path load-path) (config-parsers-semantic-parse-recursively path))
-      (semanticdb-save-all-db))))
-
-(use-package semantic/db
-  :defer t
-  :defines
-  (semanticdb-database-list
-   semanticdb-file-table-object)
-  :config
-  ;; Redefined as a fix for:
-  ;; http://debbugs.gnu.org/cgi/bugreport.cgi?bug=22287
-  (defun semanticdb-save-all-db-idle ()
-    "Save all semantic tag databases from idle time.
-Exit the save between databases if there is user input."
-    (save-excursion
-      (semantic-exit-on-input 'semanticdb-idle-save
-        (mapc (lambda (db)
-                (semantic-throw-on-input 'semanticdb-idle-save)
-                (semanticdb-save-db db t))
-              semanticdb-database-list)))))
-
-(use-package semantic/db-file
-  :defer t
-  :config
-  (validate-setq
-   semanticdb-default-save-directory (user-var-directory "semantic-db/")))
+                    :history '-counsel-flycheck-history)))))
+  :custom
+  (flycheck-emacs-lisp-load-path 'inherit))
 
 (provide 'config-parsers)
 ;;; config-parsers.el ends here

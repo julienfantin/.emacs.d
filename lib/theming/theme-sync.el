@@ -71,16 +71,18 @@
 
 (defvar theme-sync-fallback-to-default-bg t)
 
-(defvar theme-sync-color-visible-distance-min 5
+(defvar theme-sync-color-visible-distance-min 3
   "Like `shr-color-visible-distance-min' default was 5.")
 
-(defvar theme-sync-color-visible-luminance-min 40
+(defvar theme-sync-color-visible-luminance-min 20
   "Like `shr-color-visible-luminance-min' default was 40.")
 
 
 ;; * Internal state
 
 (defvar theme-sync--original-faces nil)
+
+(defvar theme-sync--debounce-timer nil)
 
 (defun theme-sync--remember-original-face (face attr)
   "Add `FACE' to the `theme-sync--original-faces' alist and put
@@ -122,7 +124,7 @@ nil."
   "Return an hex representation of `CIELAB'."
   (cl-destructuring-bind (l a b) cielab
     (cl-destructuring-bind (r g b) (color-lab-to-srgb l a b)
-      (color-rgb-to-hex r g b))))
+      (color-rgb-to-hex (max 0 r) (max 0 g) (max 0 b)))))
 
 (defun theme-sync--get-face-cielab-color (face attr)
   "Return `FACE' `ATTR' in cielab unless it is 'unspecified."
@@ -258,17 +260,27 @@ This relies on `loadhist.el' so `FILE' needs to be loaded."
            (theme-sync--defface-symbol elt))))
     (cl-remove-if #'null)))
 
+(defun theme-sync--files-sync ()
+  (theme-sync--sync-faces (face-list)))
+
 (defun theme-sync--sync-file-faces (file)
   "Sync faces defined in `FILE' when `theme-sync-load-history' is t."
   (when theme-sync-load-history
-    (theme-sync--sync-faces (theme-sync--file-faces file))))
+    (when theme-sync--debounce-timer
+      (cancel-timer theme-sync--debounce-timer))
+    (setq theme-sync--debounce-timer (run-with-idle-timer 1 nil #'theme-sync--files-sync))))
 
 
 ;; * Load theme advice
 
+(defun theme-sync--advice-sync ()
+  (theme-sync--sync-faces (face-list)))
+
 (defun theme-sync--load-theme-advice (_theme &optional _ _)
   "Sync faces after loading `THEME'."
-  (theme-sync--sync-faces (face-list)))
+  (when theme-sync--debounce-timer
+    (cancel-timer theme-sync--debounce-timer))
+  (setq theme-sync--debounce-timer (run-with-idle-timer 1 nil #'theme-sync--advice-sync)))
 
 (defun theme-sync--unload-theme-advice (_theme &optional _ _)
   "Restore faces before loading `THEME'."

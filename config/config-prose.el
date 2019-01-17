@@ -15,7 +15,7 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; You should have received a copy of the GNU General Public License
+;; You should have received c copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
@@ -25,121 +25,81 @@
 ;;; Code:
 (require 'use-config)
 
-;; * Customs
+(defvar config-prose-dicts-dir
+  (expand-file-name "etc/dictionaries/" user-emacs-directory))
 
-(defvar config-prose-enable-prose-spell-checking t)
-(defvar config-prose-enable-code-spell-checking t)
+;; (setq ispell-library-directory (expand-file-name "etc/dictionaries/" user-emacs-directory))
 
 
 ;; * Spell-checking
 
-(use-package guess-language
-  :disabled t
-  :ensure t
-  :defer t
-  :after prose-mode
-  :config
-  (after 'prose-minor-mode
-    (add-hook 'prose-minor-mode-hook 'guess-language-mode)))
-
 (use-package ispell
-  :defer t
+  :ensure-system-package (hunspell)
   :config
   (progn
-    (setq ispell-silently-savep t)
+    (require 'dash)
+    (setenv "DICPATH" config-prose-dicts-dir)
     (cond
+     ((executable-find "hunspell")
+      (setq ispell-program-name "hunspell")
+      (setq ispell-extra-args '("-d en_US,fr-classique")))
      ((executable-find "aspell")
       (setq ispell-program-name "aspell")
       (setq ispell-extra-args '("--sug-mode=ultra"
                                 "--lang=en_US"
                                 "--add-filter=url"
-                                "--add-filter=email")))
-     ((executable-find "hunspell")
-      (setq ispell-program-name "hunspell")
-      (setq ispell-extra-args '("-d en_US"))))))
-
-(use-package company
-  :ensure t
-  :defer t
-  :preface
-  (defun config-prose-completion-turn-on ()
-    (setq-local company-tooltip-limit 3)
-    (setq-local company-frontends '(company-preview-frontend))
-    (company-mode 1))
-  :init
-  (progn
-    (after 'config-completion
-      (config-completion-add-backends 'prose-minor-mode 'company-ispell))
-    (after 'prose-minor-mode
-      (add-to-list 'prose-minor-mode-hook 'config-prose-completion-turn-on))))
+                                "--add-filter=email")))))
+  :custom (ispell-silently-savep t))
 
 (use-package flyspell
-  :defer t
-  :functions (config-prose-enable-spell-checking)
-  :config
-  (progn
-    (defun config-prose-enable-spell-checking ()
-      (cond
-       ((and config-prose-enable-code-spell-checking (derived-mode-p 'prog-mode))
-        (flyspell-prog-mode))
-       ((and config-prose-enable-prose-spell-checking (bound-and-true-p prose-minor-mode))
-        (flyspell-mode))))
-    (validate-setq
-     ;; Save corrections
-     flyspell-abbrev-p t
-     flyspell-issue-welcome-flag nil
-     flyspell-issue-message-flag nil)
-    (add-hook 'prog-mode-hook #'config-prose-enable-spell-checking)
-    (after 'prose-minor-mode
-      (add-hook 'prose-mode-hook #'config-prose-enable-spell-checking))))
+  :hook (prog-mode . flyspell-prog-mode)
+  :custom
+  (flyspell-abbrev-p t)
+  (flyspell-issue-welcome-flag nil)
+  (flyspell-issue-message-flag nil))
 
 (use-package flyspell-lazy
+  :disabled t
   :ensure t
-  :init (after 'flyspell (flyspell-lazy-mode 1)))
+  :after flyspell
+  :hook (flyspell-mode . flyspell-lazy-load))
 
-(use-package flyspell-correct
+(use-package flyspell-correct-ivy
   :ensure t
-  :config
-  (use-package flyspell-correct-ivy
-    :ensure t
-    :config
-    (define-key flyspell-mode-map
-      (kbd "C-c $") 'flyspell-correct-previous-word-generic)))
+  :after flyspell
+  :init (require 'flyspell-correct-ivy nil t)
+  :bind
+  (:map flyspell-mode-map
+        ("C-c $" . 'flyspell-correct-previous-word-generic)))
 
 
 ;; * Prose minor mode
 
+(use-package visual-fill-column :ensure t)
+
 (use-package prose-minor-mode
-  :config
-  (add-hook 'prose-minor-mode-hook 'visual-line-mode))
+  :hook ((org-mode         . prose-minor-mode)
+         (markdown-mode    . prose-minor-mode)
+         (prose-minor-mode . visual-line-mode)
+         (prose-minor-mode . visual-fill-column-mode)
+         (prose-minor-mode . flyspell-mode)))
 
 
 ;; * Wrapping
 
 (use-package adaptive-wrap
   :ensure t
-  :defer t
   :commands adaptive-wrap-prefix-mode
-  :init
-  (after 'prose-minor-mode
-    (add-hook 'prose-minor-mode-hook 'adaptive-wrap-prefix-mode)))
+  :after prose-minor-mode
+  :hook (prose-minor-mode . adaptive-wrap-prefix-mode))
 
 
 ;; * Linters
 
 (use-package writegood-mode
   :ensure t
-  :defer t
-  :init
-  (after 'prose-minor-mode
-    (add-hook 'prose-minor-mode-hook #'writegood-mode)))
-
-(use-package artbollocks-mode
-  :ensure t
-  :defer t
-  :init
-  (after 'prose-minor-mode
-    (add-hook 'prose-minor-mode-hook #'artbollocks-mode)))
+  :after prose-minor-mode
+  :hook (prose-minor-mode . writegood-mode))
 
 
 ;; * Major modes
@@ -147,15 +107,7 @@
 (use-package markdown-mode
   :ensure t
   :mode "\\.md\\'"
-  :config
-  (after 'prose-minor-mode
-    (add-hook 'markdown-mode-hook 'prose-minor-mode)))
-
-(use-package org
-  :defer t
-  :config
-  (after 'prose-minor-mode
-    (add-hook 'org-mode-hook 'prose-minor-mode)))
+  :custom (markdown-fontify-code-blocks-natively t))
 
 (provide 'config-prose)
 ;;; config-prose.el ends here

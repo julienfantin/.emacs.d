@@ -29,7 +29,6 @@
 
 (use-package ansible
   :ensure t
-  :defer t
   :after yaml-mode
   :mode
   (("group_vars/.*" . yaml-mode)
@@ -40,8 +39,6 @@
     (defun config-devops-ansible-prog ()
       (run-hooks 'prog-mode-hook))
     (add-hook 'ansible-hook 'config-devops-ansible-prog)
-    (after yasnippet
-      (ansible::snippets-initialize))
     ;; Ansible vault
     (defvar config-devops-vault-pass-filename ".vault_pass")
     (defun config-devops-locate-vault-pass-file ()
@@ -49,7 +46,7 @@
       (when-let ((dir (locate-dominating-file "." config-devops-vault-pass-filename)))
         (expand-file-name config-devops-vault-pass-filename dir)))
     (defun config-devops-set-ansible-vault-pass ()
-      (validate-setq ansible::vault-password-file (config-devops-locate-vault-pass-file)))
+      (setq ansible::vault-password-file (config-devops-locate-vault-pass-file)))
     (add-hook 'ansible-hook 'config-devops-set-ansible-vault-pass)
     (add-hook 'ansible-hook 'ansible::auto-decrypt-encrypt)))
 
@@ -59,7 +56,6 @@
 
 (use-package ansible-doc
   :ensure t
-  :defer t
   :after ansible
   :init (add-hook 'ansible::hook #'ansible-doc-mode)
   :config
@@ -68,7 +64,6 @@
 
 (use-package company-ansible
   :ensure t
-  :defer t
   :after ansible
   :init
   (after config-completion

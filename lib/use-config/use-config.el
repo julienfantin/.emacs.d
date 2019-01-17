@@ -22,12 +22,6 @@
       (add-hook 'after-init-hook sym))
     (apply 'after-init (cdr syms))))
 
-(defun add-hooks (hook &rest syms)
-  "Call 'add-hook' on 'HOOK' for all 'SYMS'."
-  (when syms
-    (add-hook hook (car syms))
-    (apply 'add-hooks hook (cdr syms))))
-
 
 ;; * Eval after load
 
@@ -164,11 +158,6 @@ loading the pacakges."
 (font-lock-add-keywords 'emacs-lisp-mode use-config-font-lock-keywords)
 
 (put 'use-config 'lisp-indent-function 'defun)
-
-
-;; ** Required packages
-
-(use-package validate :ensure t :demand t)
 
 (provide 'use-config)
 ;;; use-config.el ends here

@@ -29,17 +29,17 @@
 ;; * Built-ins
 
 (use-package outline
-  :defer t
-  :init (add-hook 'prog-mode-hook #'outline-minor-mode))
+  :hook ((prog-mode . outline-minor-mode)
+         (text-mode . outline-minor-mode)))
 
 
 ;; * Packages
 
 (use-package outshine
   :ensure t
-  :defer t
   :commands
   (outshine-hook-function outshine-insert-heading)
+  :hook (outline-minor-mode . config-outline-outshine-enable)
   :preface
   (defun config-outline-outshine-enable ()
     (outshine-hook-function)
@@ -54,24 +54,14 @@
   (defun -swiper-outlines ()
     (interactive)
     (swiper (outshine-calc-outline-regexp)))
-  :init (add-hook 'outline-minor-mode-hook #'config-outline-outshine-enable)
   :config
   (after 'lispy
-    (add-hook 'lispy-mode-hook 'config-outline-lispy-compat)))
+    (add-hook 'lispy-mode-hook 'config-outline-lispy-compat))
+  :custom
+  (outshine-fontify-whole-heading-line t)
+  (outline-cycle-emulate-tab t))
 
-(use-package outorg :ensure t :defer t)
-(use-package navi-mode :ensure t :defer t)
-(use-package outline-magic :disabled t :ensure t :defer t)
-
-
-;; * Commands
-
-;;;###autoload
-(defun -insert-sub-heading ()
-  "Insert an outshine sub-heading."
-  (interactive)
-  (outshine-insert-heading)
-  (outline-demote))
+(use-package outline-magic :ensure t)
 
 (provide 'config-outlines)
 ;;; config-outlines.el ends here

@@ -29,24 +29,17 @@
 (use-package private :demand t)
 
 (use-package erc
-  :defer t
   :commands erc
-  :config
-  (progn
-    ;; Ignoring
-    (setq erc-hide-list '("JOIN" "PART" "QUIT"))
-    ;; Tracking
-    (setq erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT"))
-    ;; Filling chan buffers
-    (setq erc-fill-function 'erc-fill-static
-          erc-fill-static-center 15)))
+  :custom
+  (erc-hide-list '("JOIN" "PART" "QUIT"))
+  (erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT"))
+  (erc-fill-function 'erc-fill-static)
+  (erc-fill-static-center 15))
 
 (use-package erc-hl-nicks
   :ensure t
-  :defer t
-  :init
-  (after 'erc
-    (add-hook 'erc-mode-hook 'erc-hl-nicks-mode)))
+  :after erc
+  :hook (erc-mode . 'erc-hl-nicks-mode))
 
 (provide 'config-irc)
 ;;; config-irc.el ends here

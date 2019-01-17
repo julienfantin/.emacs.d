@@ -30,10 +30,10 @@
 ;; * Builtins
 
 (use-package elisp-mode
-  :defer t
-  :config
-  (bind-key "C-c C-k" #'-eval-buffer emacs-lisp-mode-map)
-  (bind-key "C-c C-p" #'pp-eval-last-sexp emacs-lisp-mode-map))
+  :bind
+  (:map emacs-lisp-mode-map
+        ("C-c C-k" . -eval-buffer)
+        ("C-c C-p" . pp-eval-last-sexp)))
 
 (after (simple paredit)
   (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
@@ -47,55 +47,43 @@
 
 (use-package lisp-extra-font-lock
   :ensure t
-  :defer t
   :after lisp
   :config (lisp-extra-font-lock-global-mode 1))
 
 (use-package elisp-slime-nav
   :ensure t
-  :defer t
   :commands (turn-on-elisp-slime-nav-mode)
-  :init (add-hook 'emacs-lisp-mode-hook #'turn-on-elisp-slime-nav-mode))
+  :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode))
 
 (use-package nameless
   :ensure t
-  :defer t
-  :init (add-hook 'emacs-lisp-mode-hook #'nameless-mode)
+  :hook (emacs-lisp-mode . nameless-mode)
   :commands (nameless-insert-name)
-  :config
-  (bind-key "C-c C--" #'nameless-insert-name emacs-lisp-mode-map)
-  (validate-setq
-   nameless-affect-indentation-and-filling nil
-   ;; the : prefix makes it hard to distinguish between function calls and
-   ;; plists
-   nameless-prefix "/"))
-
-(use-package sotlisp
-  :ensure t
-  :defer t
-  :commands sotlisp-turn-on-everywhere
-  :init (sotlisp-turn-on-everywhere)
-  :config
-  (progn
-    (add-hook 'emacs-lisp-mode-hook #'speed-of-thought-mode)
-    (unbind-key "C-c f" sotlisp-mode-map)
-    (unbind-key "C-c v" sotlisp-mode-map)))
+  :bind (:map emacs-lisp-mode-map
+              ("C-c C--" . nameless-insert-name))
+  :custom
+  (nameless-affect-indentation-and-filling nil)
+  ;; the : prefix makes it hard to distinguish between function calls and
+  ;; plists
+  (nameless-prefix "/"))
 
 (use-package auto-compile
   :ensure t
   :commands auto-compile-on-save-mode
-  :init (add-hook 'emacs-lisp-mode-hook #'auto-compile-on-save-mode)
+  :hook (emacs-lisp-mode . auto-compile-on-save-mode)
   :config
-  (setq auto-compile-display-buffer nil
-        auto-compile-use-mode-line nil)
-  (defun -auto-compile-load-after-compile (success)
-    "Reload the current emacs-lisp file after it's recompiled, if
+  (progn
+    (defun -auto-compile-load-after-compile (success)
+      "Reload the current emacs-lisp file after it's recompiled, if
 an older version is loaded."
-    (when (eq success t)
-      (let ((buffer-path (file-truename buffer-file-name)))
-        (when (assoc buffer-path load-history)
-          (load-file buffer-path)))))
-  (advice-add #'auto-compile-byte-compile :filter-return #'-auto-compile-load-after-compile))
+      (when (eq success t)
+        (let ((buffer-path (file-truename buffer-file-name)))
+          (when (assoc buffer-path load-history)
+            (load-file buffer-path)))))
+    (advice-add #'auto-compile-byte-compile :filter-return #'-auto-compile-load-after-compile))
+  :custom
+  (auto-compile-display-buffer nil)
+  (auto-compile-use-mode-line nil))
 
 
 ;; * Commands

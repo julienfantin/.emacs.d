@@ -29,66 +29,54 @@
 ;; * Built-ins
 
 (use-package vc
-  :defer t
-  :config
+  :custom
   ;; Don't refresh remote files
-  (validate-setq
-   vc-handled-backends '(Git)
-   vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
+  (vc-handled-backends '(Git))
+  (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
                                 vc-ignore-dir-regexp
                                 tramp-file-name-regexp)))
 
 (use-package ediff
-  :defer t
-  :config
-  (validate-setq
-   ;; Remove noisy highlights
-   ediff-highlight-all-diffs nil
-   ;; Avoid the crazy multi-frames setup
-   ediff-window-setup-function 'ediff-setup-windows-plain
-   ;; Ignore whitespace
-   ediff-diff-options "-w"
-   ;; Counter-intuitve naming here, but windows should be side-by-side...
-   ediff-split-window-function 'split-window-horizontally))
+  :custom
+  ;; Remove noisy highlights
+  (ediff-highlight-all-diffs nil)
+  ;; Avoid the crazy multi-frames setup
+  (ediff-window-setup-function 'ediff-setup-windows-plain)
+  ;; Ignore whitespace
+  (ediff-diff-options "-w")
+  ;; Counter-intuitve naming here, but windows should be side-by-side...
+  (ediff-split-window-function 'split-window-horizontally))
 
 
 ;; * Packages
 
-(use-package git-timemachine :ensure t :defer t)
+(use-package git-timemachine :ensure t)
+
+(use-package git-link :ensure t)
 
 (use-package magit
   :ensure t
-  :defer t
-  :config
-  (validate-setq magit-save-repository-buffers 'dontask))
+  :custom
+  (magit-save-repository-buffers 'dontask)
+  (magit-display-buffer-function
+   (lambda (buffer)
+     (display-buffer-same-window buffer nil))))
+
+(use-package git-commit
+  :after magit
+  :custom
+  (git-commit-summary-max-length 72))
 
 (use-package magithub
-  :disabled t
   :ensure t
-  :after magit
+  :after (magit no-littering)
   :config (magithub-feature-autoinject t))
 
-(use-package gited
-  :ensure t
-  :defer t)
-
-(use-package diff-hl
-  :ensure t
-  :defer t
-  :commands diff-hl-mode
-  :init
-  (progn
-    (add-hook 'prog-mode-hook #'diff-hl-mode)
-    (add-hook 'dired-mode-hook #'diff-hl-dired-mode))
-  :config
-  (progn
-    (validate-setq diff-hl-draw-borders t)
-    (diff-hl-margin-mode 1)))
+(use-package gited :ensure t)
 
 (use-package helm-hunks
   :ensure t
-  :defer t
-  :config (setq helm-hunks-preview-diffs t))
+  :custom (helm-hunks-preview-diffs t))
 
 (provide 'config-git)
 ;;; config-git.el ends here

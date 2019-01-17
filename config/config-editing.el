@@ -33,52 +33,45 @@
 (use-package delsel :init (delete-selection-mode 1))
 
 (use-package newcomment
-  :defer t
   :config
   (setq-default comment-auto-fill-only-comments t))
 
 
 ;; * Packages
 
-(use-package multiple-cursors
-  :ensure t
-  :defer t
-  :init
-  (defvar mc/list-file (user-var-file ".mc-lists.el")))
+(use-package multiple-cursors :ensure t :after no-littering)
 
-(use-package auto-highlight-symbol
+(use-package iedit
   :ensure t
-  :config
-  (validate-setq ahs-case-fold-search nil)
-  ;; Fix -> symbols in clojure
-  (setq ahs-include "^[0-9A-Za-z/_>.,:;*+=&%|$#@!^?-]+$")
-  (validate-setq ahs-default-range 'ahs-range-whole-buffer)
-  (validate-setq ahs-idle-interval -1.0)
-  (validate-setq ahs-inhibit-face-list '())
-  (add-to-list 'ahs-plugin-bod-modes 'clojure-mode)
-  (add-to-list 'ahs-plugin-bod-modes 'clojurescript-mode)
-  (add-to-list 'ahs-plugin-bod-modes 'clojurec-mode))
+  :bind (:map isearch-mode-map
+              ("C-c e i" . iedit-mode-from-isearch))
+  :custom
+  (iedit-buffering t))
 
-(use-package iedit :ensure t :defer t)
-
-(use-package undo-tree
-  :disabled t                           ; undo-tree considered harmful
+(use-package smart-hungry-delete
   :ensure t
-  :defer t
-  :commands (undo-tree)
-  :init (after-init #'global-undo-tree-mode)
-  :config
-  (validate-setq
-   undo-tree-auto-save-history t
-   undo-tree-history-directory-alist
-   `(("" . ,(user-var-directory ".undo-tree/")))))
+  :bind
+  (:map prog-mode-map
+        ("<backspace>" . smart-hungry-delete-backward-char)
+        ("C-d"         . smart-hungry-delete-forward-char))
+  :hook
+  ((prog-mode     . smart-hungry-delete-default-prog-mode-hook)
+   (c-mode-common . smart-hungry-delete-default-c-mode-common-hook)
+   (python-mode   . smart-hungry-delete-default-c-mode-common-hook)
+   (text-mode     . smart-hungry-delete-default-text-mode-hook)))
+
+(use-package easy-kill
+  :ensure t
+  :bind
+  ([remap kill-ring-save] . #'easy-kill)
+  ([remap mark-sexp] . #'easy-mark))
 
 
 ;; * Builtins
 
 (use-package simple
-  :config
-  (setq kill-ring-max most-positive-fixnum))
+  :custom
+  (kill-ring-max most-positive-fixnum))
 
 
 ;; * Commands

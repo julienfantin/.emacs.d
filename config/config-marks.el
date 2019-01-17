@@ -41,27 +41,10 @@ the point doesn't move before calling 'POP-TO-MARK-COMMAND' with 'ARGS'."
         (apply pop-to-mark-command args)))))
 
 (use-package simple
-  :defer t
   :config
   (progn
     (setq mark-ring-max 128 global-mark-ring-max 128)
     (advice-add #'pop-to-mark-command :around #'config-marks-pop-duplicate-marks-advice)))
-
-
-;; * Bookmarks
-
-(use-package bookmark
-  :defer t
-  :config
-  (setq bookmark-default-file (user-var-file "bookmarks")))
-
-
-;; * Packages
-
-(use-package bm
-  :ensure t
-  :defer t
-  :defines (bm-buffer-persistence))
 
 
 ;; * Commands
@@ -70,8 +53,8 @@ the point doesn't move before calling 'POP-TO-MARK-COMMAND' with 'ARGS'."
 (defun -push-mark-no-activate ()
   "Push `point' to `mark-ring' without activating region.
 Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled" (interactive)
-(push-mark (point) t nil)
-(message "Pushed mark to ring"))
+  (push-mark (point) t nil)
+  (message "Pushed mark to ring"))
 
 ;;;###autoload
 

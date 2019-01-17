@@ -29,7 +29,6 @@
 ;; * Built-ins
 
 (use-package sql
-  :defer t
   :config
   (progn
     (after 'aggressive-indent
@@ -44,7 +43,6 @@
 
 (use-package sql-indent
   :ensure t
-  :defer t
   :init
   (progn
     (after 'sql  (require 'sql-indent))
@@ -74,20 +72,17 @@
 
 (use-package edbi
   :ensure t
-  :defer t
   :config
   (add-hook 'edbi:sql-mode-hook #'(lambda () (run-hooks 'sql-mode-hook))))
 
 (use-package edbi-minor-mode
   :ensure t
-  :defer t
   :init
   (after 'sql
     (add-hook 'sql-mode-hook #'edbi-minor-mode)))
 
 (use-package company-edbi
   :ensure t
-  :defer t
   :commands (company-edbi)
   :init
   (after (sql company config-completion)

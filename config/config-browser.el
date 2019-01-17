@@ -29,13 +29,13 @@
 
 ;; * URL handling
 
-(use-package url
-  :defer t
-  :config (validate-setq url-configuration-directory (user-var-directory "url/")))
 
 (use-package browse-url
-  :defer t
-  :config (validate-setq browse-url-browser-function 'eww-browse-url))
+  :custom
+  ;; Use Firefox Nightly on macOS
+  (browse-url-browser-function #'browse-url-firefox)
+  (browse-url-firefox-program "open")
+  (browse-url-firefox-arguments '("-a" "Firefox Nightly")))
 
 (provide 'config-browser)
 ;;; config-browser.el ends here

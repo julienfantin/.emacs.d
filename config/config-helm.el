@@ -28,20 +28,22 @@
 
 ;; * Core
 
-(use-package helm
-  :ensure t
-  :functions (helm-autoresize-mode)
-  :commands (helm-mini helm-find-files)
+(use-package helm-config
+  :ensure helm
+  :bind
+  (("C-x C-f" . helm-find-files)
+   ("C-x C-b" . helm-buffers-list)
+   ("C-x C-r" . helm-recentf)
+   ("C-x b"   . helm-mini)
+   ("M-x"     . helm-M-x)
+   ("M-y"     . helm-show-kill-ring)
+   ("C-h a"   . helm-apropos)
+   ("C-c h"   . helm-command-prefix)
+   ("C-h C-l" . helm-locate-library))
   :preface (defvar helm-command-prefix-key "C-c h")
   :config
   (progn
     ;; Force vertical split at bottom
-    (setq helm-split-window-in-side-p t
-          helm-split-window-default-side 'above
-          helm-autoresize-min-height 30
-          helm-autoresize-max-height 30
-          helm-echo-input-in-header-line t
-          helm-candidate-number-limit 300)
     (helm-autoresize-mode 1)
     ;; Remap persistent action to TAB
     (bind-keys
@@ -56,43 +58,44 @@
     ;;  :around (lambda (fcn file)
     ;;            (unless (string-match "\\(?:/\\|\\`\\)\\.\\{2\\}\\'" file)
     ;;              (funcall fcn file))))
-    (defvar helm-M-x-fuzzy-match t)
-    (defvar helm-ff-fuzzy-matching t)
-    (defvar helm-apropos-fuzzy-match t)
-    (defvar helm-buffers-fuzzy-matching t)
-    (defvar helm-locate-fuzzy-match nil)
-    (defvar helm-mode-fuzzy-match t)
-    (defvar helm-recentf-fuzzy-match t)))
-
-(use-package helm-config :demand t)
+    )
+  :custom
+  (helm-split-window-in-side-p t)
+  (helm-split-window-default-side 'below)
+  (helm-autoresize-min-height 40)
+  (helm-autoresize-max-height 40)
+  (helm-echo-input-in-header-line t)
+  (helm-candidate-number-limit 300)
+  (helm-ff-fuzzy-matching t)
+  (helm-apropos-fuzzy-match t)
+  (helm-buffers-fuzzy-matching t)
+  (helm-locate-fuzzy-match nil)
+  (helm-mode-fuzzy-match t)
+  (helm-recentf-fuzzy-match t))
 
 (use-package helm-adaptive
-  :defer t
-  :after helm
-  :init (helm-adaptive-mode 1)
-  :config
-  (setq helm-adaptive-history-file (user-var-file "helm-adaptive-history")))
+  :disabled t
+  :after (helm no-littering)
+  :init (helm-adaptive-mode 1))
 
 (use-package helm-command
-  :defer t
   :after helm
   :commands (helm-M-x)
-  :config (setq helm-M-x-always-save-history t))
+  :custom
+  (helm-M-x-always-save-history t)
+  (helm-M-x-fuzzy-match t))
 
 (use-package helm-mode
-  :demand t
+  :after helm
   :init (after-init #'helm-mode)
-  :config
-  (progn
-    (setq helm-input-idle-delay 0.01
-          helm-ff-transformer-show-only-basename t
-          helm-ff-file-name-history-use-recentf t
-          helm-ff-skip-boring-files nil)
-    (add-to-list 'helm-boring-file-regexp-list "\\.DS_Store$")
-    (add-to-list 'helm-boring-file-regexp-list "\\.git$")))
+  :custom
+  (helm-input-idle-delay 0.01)
+  (helm-ff-transformer-show-only-basename t)
+  (helm-ff-file-name-history-use-recentf t)
+  (helm-ff-skip-boring-files nil))
 
 (use-package helm-org
-  :defer t
+  :disabled t
   :config
   (progn
     (defun helm-org-in-buffer-headings-preselection ()
@@ -112,9 +115,9 @@
 
 ;; * Packages
 
-(use-package helm-aws :ensure t :defer t)
-(use-package helm-org-rifle :ensure t :defer t)
+(use-package helm-aws :disabled t :ensure t)
 
+(use-package helm-org-rifle :disabled t :ensure t)
 
 (provide 'config-helm)
 ;;; config-helm.el ends here

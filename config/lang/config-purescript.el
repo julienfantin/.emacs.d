@@ -25,27 +25,23 @@
 ;;; Code:
 (require 'use-config)
 
-(use-package purescript-mode :ensure t :defer t)
+(use-package purescript-mode
+  :ensure t
+  :ensure-system-package (purs . "purescript"))
 
 (use-package psc-ide
   :ensure t
-  :defer t
   :after purescript-mode
-  :init
-  (progn
-    (add-hook 'purescript-mode-hook 'psc-ide-mode)
-    (add-hook 'purescript-mode-hook 'turn-on-purescript-indentation)))
+  :hook ((purescript-mode . psc-ide-mode)
+         (purescript-mode . turn-on-purescript-indentation)))
 
 (use-package psci
   :ensure t
-  :defer t
   :after purescript-mode
-  :config
-  (add-hook 'purescript-mode-hook 'inferior-psci-mode))
+  :hook (purescript-mode . inferior-psci-mode))
 
 (use-package repl-toggle
   :ensure t
-  :defer t
   :after psci
   :config
   (add-to-list 'rtog/mode-repl-alist '(purescript-mode . psci)))

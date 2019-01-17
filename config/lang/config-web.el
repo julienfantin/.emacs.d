@@ -34,9 +34,7 @@
 ;; * Built-ins
 
 (use-package js
-  :defer t
-  :config
-  (validate-setq js-indent-level config-web-default-indent))
+  :custom (js-indent-level config-web-default-indent))
 
 
 ;; * Packages
@@ -49,27 +47,22 @@
   :ensure t
   :mode (("\\.html?\\'" . web-mode)
          ("\\.css?\\'"  . web-mode))
-  :config
-  (progn
-    (after 'aggressive-indent
-      (add-hook 'web-mode-hook #'aggressive-indent-mode))
-    (after 'paredit
-      (add-hook 'web-mode-hook #'paredit-mode))
-    (validate-setq
-     web-mode-markup-indent-offset config-web-default-indent
-     web-mode-css-indent-offset config-web-default-indent
-     web-mode-code-indent-offset config-web-default-indent
-     web-mode-enable-auto-pairing t
-     web-mode-enable-css-colorization t
-     web-mode-enable-current-element-highlight t
-     web-mode-enable-current-column-highlight t)))
+  :hook
+  ((web-mode . aggressive-indent-mode)
+   (web-mode . paredit-mode))
+  :custom
+  (web-mode-markup-indent-offset config-web-default-indent)
+  (web-mode-css-indent-offset config-web-default-indent)
+  (web-mode-code-indent-offset config-web-default-indent)
+  (web-mode-enable-auto-pairing t)
+  (web-mode-enable-css-colorization t)
+  (web-mode-enable-current-element-highlight t)
+  (web-mode-enable-current-column-highlight t))
 
 (use-package company-web
   :ensure t
-  :defer t
-  :init
-  (after (web-mode config-completion)
-    (config-completion-add-backends 'web-mode 'company-css 'company-web-html)))
+  :after (web-mode config-completion)
+  :config (config-completion-add-backends 'web-mode 'company-css 'company-web-html))
 
 (provide 'config-web)
 ;;; config-web.el ends here

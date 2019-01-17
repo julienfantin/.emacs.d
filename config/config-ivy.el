@@ -28,74 +28,61 @@
 
 ;; * Packages
 
-(use-package swiper :ensure t :defer t)
-
 (use-package uniquify
-  :config
-  (setq-default uniquify-buffer-name-style 'forward))
+  :custom
+  (uniquify-buffer-name-style 'forward))
 
 (use-package ivy
   :init (after-init #'ivy-mode)
   :commands (ivy-set-actions)
+  :custom
+  (ivy-extra-directories nil)
+  (ivy-fixed-height-minibuffer t)
+  (ivy-initial-inputs-alist nil)
+  (ivy-re-builders-alist '((counsel-rg . ivy--regex)))
+  (ivy-use-virtual-buffers t)
   :config
-  (progn
-    (validate-setq
-     ivy-initial-inputs-alist nil
-     ivy-re-builders-alist '((t . ivy--regex-ignore-order))
-     ivy-use-virtual-buffers t
-     ivy-virtual-abbreviate 'full)))
+  (after 'magit
+    (setq magit-completing-read-function 'ivy-completing-read))
+  (after 'projectile
+    (setq projectile-completion-system 'ivy)))
 
 (use-package counsel
   :ensure t
   :init (after-init #'counsel-mode)
-  :preface
-  (progn
-    (defun config-counsel-delete-file (x)
-      (delete-file (expand-file-name x ivy--directory)))
-    (defun config-counsel-find-file-other-window (x)
-      (find-file-other-window (expand-file-name x ivy--directory))))
-  :config
-  (progn
-    (ivy-set-actions
-     'counsel-find-file
-     `(("x" config-counsel-delete-file ,(propertize "delete" 'face 'font-lock-warning-face))
-       ("4" config-counsel-find-file-other-window "other-window")))
-    (validate-setq
-     counsel-find-file-at-point t
-     ivy-extra-directories nil)))
-
-;; Counsel makes use of smex
-(use-package smex
-  :ensure t
-  :defer t
-  :init
-  (progn
-    (defvar smex-history-length 100)
-    (defvar smex-save-file (user-var-file "smex"))))
+  :custom
+  (counsel-rg-base-command "rg -S -M 200 --no-heading --line-number --color never %%s .")
+  (counsel-find-file-at-point t))
 
 (use-package counsel-projectile
   :ensure t
-  :defer t
-  :after projectile
-  :init (counsel-projectile-on))
+  :after (counsel projectile)
+  :init (after-init #'counsel-projectile-mode)
+  :custom
+  (counsel-projectile-remove-current-project t)
+  (counsel-projectile-remove-current-buffer t))
 
-(use-package ivy-historian
+(use-package ivy-prescient
   :ensure t
   :after ivy
-  :config (ivy-historian-mode 1))
+  :init (after-init #'ivy-prescient-mode))
+
+(use-package ivy-rich
+  :ensure t
+  :after ivy
+  :init (after-init #'ivy-rich-mode))
 
 ;; * Commands
 
 (after 'counsel
-  (defvar counsel-git-grep-todos-cmd
-    "git --no-pager grep --full-name -n --no-color -e TODO -e FIXME -e HACK -e XXX -e XXXX -e ??? -e FAIL")
+  (defun -counsel-todos  ()
+    (interactive)
+    (counsel-rg "TODO|FIXME|HACK|XXX" (projectile-project-root) nil "TODOs:"))
 
-  (defun -counsel-git-grep-project-todos ()
+  (defun -counsel-git-grep-project-history ()
     (interactive)
     (let ((default-directory (projectile-project-root)))
-      (counsel-git-grep counsel-git-grep-todos-cmd))))
+      (counsel-git-grep (concat "git log -p -S%s --no-pager --no-color -- " default-directory)))))
 
 (provide 'config-ivy)
 ;;; config-ivy.el ends here
-
-;;  LocalWords:  flx

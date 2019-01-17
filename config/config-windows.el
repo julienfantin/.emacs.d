@@ -31,7 +31,6 @@
 (use-package ace-window
   :ensure t
   :commands (aw-window-list)
-  :defer t
   :config
   (setq aw-keys '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0)
         aw-scope 'frame))
@@ -41,45 +40,56 @@
 
 ;; * Undo and redo
 
-(use-package winner :defer t :init (after-init #'winner-mode))
+(use-package winner :init (after-init #'winner-mode))
 
 
 ;; * Focus
 
-(use-package zygospore :ensure t :defer t)
+(use-package zygospore :ensure t)
 
 
 ;; * Drag
 
-(use-package buffer-move :ensure t :defer t)
+(use-package buffer-move :ensure t)
 
 
 ;; * Resize
 
 (use-package windresize
   :ensure t
-  :defer t
   :commands (windresize-left windresize-right windresize-up windresize-down)
-  :config (validate-setq windresize-default-increment 5))
+  :custom (windresize-default-increment 5))
 
 
 ;; * Buffer display rules
 
 (use-package shackle
+  :disabled t
   :ensure t
-  :defer t
   :init (after-init #'shackle-mode)
-  :config
-  (validate-setq
-   shackle-default-size 0.3
-   shackle-rules
-   '(("*Help*" :select t :popup t :align t)
-     ("*Pp Eval Output*" :select t :popup t :align t)
-     ("*cider-test-report*" :select t :popup t :align t)
-     ("*cider-result*" :select t)
-     ("*cider-result*" :select t)
-     ("*cider-repl*" :select t)
-     ("\*cider-repl.+" :select t :regexp t :align 'bottom))))
+  :custom
+  (shackle-default-size 0.3)
+  (shackle-inhibit-window-quit-on-same-windows t)
+  (shackle-default-alignment 'right)
+  (shackle-default-rule '(:select t))
+  (shackle-rules
+   '(("*Pp Eval Output*"  t)
+     ("*cider-error*")
+     ("*cider-result*")
+     ("*helm*")
+     (".+popup.+"  :regexp t :align below)
+     (apropos-mode)
+     (cider-test-report-mode)
+     (cider-stacktrace-mode)
+     (cider-repl-mode)
+     ("\*cider-repl.+" :regexp t)
+     (flycheck-error-list-mode)
+     ;; (magit-status-mode)
+     ;; (magit-commit)
+     (compilation-mode)
+     (help-mode)
+     (ivy-occur-mode)
+     (ivy-occur-grep-mode))))
 
 
 ;; * Commands
