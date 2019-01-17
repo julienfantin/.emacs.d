@@ -57,7 +57,7 @@
 (use-package counsel-projectile
   :ensure t
   :after (counsel projectile)
-  :init (counsel-projectile-mode)
+  :init (after-init #'counsel-projectile-mode)
   :custom
   (counsel-projectile-remove-current-project t)
   (counsel-projectile-remove-current-buffer t))
@@ -65,7 +65,8 @@
 (use-package ivy-prescient
   :ensure t
   :after ivy
-  :init (ivy-prescient-mode 1))
+  :init (after-init #'ivy-prescient-mode))
+
 (use-package ivy-rich
   :ensure t
   :after ivy

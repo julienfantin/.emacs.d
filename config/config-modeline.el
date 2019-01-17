@@ -75,7 +75,7 @@
 
 (use-package rich-minority
   :ensure t
-  :init (rich-minority-mode 1)
+  :init (after-init #'rich-minority-mode)
   :custom (rm-whitelist '(" λ")))
 
 (provide 'config-modeline)
