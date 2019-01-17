@@ -70,13 +70,16 @@
                ("TAB" . company-complete-common-or-cycle)
                ("C-n" . company-select-next)
                ("C-p" . company-select-previous)
-               ("M-/" . company-other-backend)))
+               ("M-/" . company-other-backend))
+         (:map company-search-map
+               ("C-n" . company-select-next)
+               ("C-p" . company-select-previous)))
   :custom
   (company-global-modes
    '(not text-mode message-mode git-commit-mode org-mode magit-status-mode))
   (company-backends
-   '((company-elisp)
-     (company-capf company-dabbrev company-files)
+   '((company-capf company-dabbrev company-files)
+     (company-elisp)
      (company-dabbrev-code company-keywords)))
   (company-idle-delay 0.2)
   (company-minimum-prefix-length 2)
