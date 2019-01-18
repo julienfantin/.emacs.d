@@ -85,6 +85,11 @@ an older version is loaded."
   (auto-compile-display-buffer nil)
   (auto-compile-use-mode-line nil))
 
+(use-package elisp-demos
+  :ensure t
+  :after helpful
+  :init (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
+
 
 ;; * Commands
 
@@ -101,7 +106,6 @@ and `defcustom' forms reset their default values."
           (eval-defun nil))
         (message "Redefined buffer!"))
     (eval-buffer)))
-
 
 (provide 'config-emacs-lisp)
 ;;; config-emacs-lisp.el ends here
