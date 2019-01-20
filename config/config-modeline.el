@@ -28,11 +28,14 @@
 ;; * Packages
 
 (use-package doom-modeline
+  :init (after-init #'doom-modeline-mode)
   :custom
-  (doom-modeline-icon nil)
+  (doom-modeline-icon t)
   (doom-modeline-bar-width 32)
   (doom-modeline-height 32)
   (doom-modeline-buffer-file-name-style 'relative-to-project))
+
+;; NOTE run (all-the-icons-install-fonts)
 
 (provide 'config-modeline)
 ;;; config-modeline.el ends here
