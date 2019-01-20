@@ -25,7 +25,8 @@
 ;;; Code:
 (require 'use-config)
 
-(defvar config-python-lsp-frontend nil)
+(defvar config-python-lsp-frontend 'lsp-mode)
+(defvar config-python-lsp-backend 'ms-python)
 
 
 ;; * Python
@@ -74,7 +75,7 @@
   :config
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules)))
 
-;; pip install elpy rope jedi autopep8 yapf flake8 isort
+;; pip install elpy rope jedi autopep8 yapf flake8 isort importmagic epc autoflake
 
 (use-package elpy
   :ensure t
@@ -91,14 +92,17 @@
   :hook (python-mode . py-autopep8-enable-on-save))
 
 (use-package importmagic
-    :ensure t
-    :hook (python-mode . importmagic-mode)
-    :config
-    (after isortify
-      (defun config-python--after-importmagic (&rest _)
-        (isortify-buffer))
-      (advice-add #'importmagic-fix-symbol-at-point :after #'config-python--after-importmagic)
-      (advice-add #'importmagic-fix-imports :after #'config-python--after-importmagic)))
+  :ensure t
+  :hook (python-mode . importmagic-mode)
+  :config
+  (after isortify
+    (defun config-python--after-importmagic (&rest _)
+      (let ((python-shell-interpreter "python")
+            (python-shell-interpreter-args "-i"))
+        (unwind-protect
+            (isortify-buffer))))
+    (advice-add #'importmagic-fix-symbol-at-point :after #'config-python--after-importmagic)
+    (advice-add #'importmagic-fix-imports :after #'config-python--after-importmagic)))
 
 (defvar config-python-autoflake-before-save-enabled nil)
 
@@ -179,46 +183,30 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 
 ;; ** lsp-mode
 
-(defvar config-python-pyls-lsp-mode-config
-  '(:pyls
-    (:configurationSources
-     ["flake8"]
-     ;; There's an annoying completion bug in
-     ;; Jedi: https://github.com/palantir/python-language-server/issues/432
-     :plugins
-     (:jedi_completion
-      (:enabled nil)
-
-      :rope_completion
-      (:enabled t)
-
-      :pyls_mypy
-      (:live_mode t)))))
-
-(use-package lsp-mode
-  :if (eq config-python-lsp-frontend 'lsp-mode)
-  :hook ((python-mode . lsp))
+(use-package ms-python
+  :if (and (eq config-python-lsp-frontend 'lsp-mode)
+           (eq config-python-lsp-backend 'ms-python))
   :ensure t
-  :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
-  :config
-  (defun lsp-set-cfg ()
-    (when config-python-pyls-lsp-mode-config
-      (lsp--set-configuration config-python-pyls-lsp-mode-config)))
-  (add-hook 'lsp-after-initialize-hook 'lsp-set-cfg)
-  (require 'lsp-clients))
+  :init (require 'ms-python)
+  :config (add-hook 'python-mode-hook 'lsp t)
+  :custom
+  (ms-python-server-install-dir (no-littering-expand-etc-file-name "ms-python/server/"))
+  (ms-python-dotnet-install-dir (no-littering-expand-etc-file-name "ms-python/dotnet/")))
+
+(use-package lsp-ui
+  :if (eq config-python-lsp-frontend 'lsp-mode)
+  :after lsp
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-sideline-ignore-duplicate t)
+  (lsp-ui-doc-header nil)
+  (lsp-ui-sideline-enable nil)
+  (lsp-ui-peek-always-show t))
 
 (use-package lsp-imenu
   :disabled t
   :if (eq config-python-lsp-frontend 'lsp-mode)
   :hook (lsp-after-open . lsp-enable-imenu))
-
-(use-package lsp-ui
-  :if (eq config-python-lsp-frontend 'lsp-mode)
-  :ensure t
-  :after lsp-mode
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-sideline-enable nil))
 
 (use-package company-lsp
   :ensure t
@@ -232,9 +220,11 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 ;; * Debug adapter protocol
 
 (use-package dap-mode
+  :if (eq config-python-lsp-frontend 'lsp-mode)
   :ensure t
-  :config
-  (require 'dap-python))
+  :hook ((lsp-mode . dap-mode)
+         (lsp-mode . dap-ui-mode))
+  :config (require 'dap-python))
 
 ;;; config-python.el ends here
 (provide 'config-python)
