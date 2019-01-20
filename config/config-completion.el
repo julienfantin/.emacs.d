@@ -109,15 +109,15 @@
   :hook (company-mode . company-box-mode)
   :custom
   ;; Icons are huge!?
-  (company-box-enable-icon nil)
-  ;; Search is kinda broken this helps mitigate the issue
-  (company-search-filtering nil))
+  (company-box-enable-icon t)
+  ;; Search doesn't scroll to focus the current selection
+  (company-search-filtering t))
+
 
 (use-package company-prescient
   :ensure t
   :after company
-  :init (require 'company-prescient nil t)
-  :config (company-prescient-mode 1))
+  :init (after-init #'company-prescient-mode))
 
 (provide 'config-completion)
 ;;; config-completion.el ends here
