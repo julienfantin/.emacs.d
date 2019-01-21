@@ -71,8 +71,11 @@
 (use-package challenger-deep-theme :ensure t)
 (use-package rebecca-theme         :ensure t)
 (use-package nord-theme            :ensure t)
-(use-package kaolin-themes         :ensure t)
 (use-package exotica-theme         :ensure t)
+(use-package kaolin-themes         :ensure t
+  :custom
+  (kaolin-themes-comments-style 'bright)
+  (kaolin-themes-distinct-company-scrollbar t))
 
 (use-package customize-theme
   :disabled t
