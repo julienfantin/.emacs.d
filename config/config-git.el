@@ -62,6 +62,10 @@
    (lambda (buffer)
      (display-buffer-same-window buffer nil))))
 
+(use-package magit-wip
+  :after magit
+  :init (after-init #'magit-wip-mode))
+
 (use-package git-commit
   :after magit
   :custom
