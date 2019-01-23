@@ -109,7 +109,7 @@
   :hook (company-mode . company-box-mode)
   :custom
   ;; Icons are huge!?
-  (company-box-enable-icon t)
+  (company-box-enable-icon nil)
   ;; Search doesn't scroll to focus the current selection
   (company-search-filtering t))
 
