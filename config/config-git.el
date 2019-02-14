@@ -82,5 +82,21 @@
   :ensure t
   :custom (helm-hunks-preview-diffs t))
 
+(use-package ediff
+  ;; NOTE using :bind ediff-mode-map somehow binds globally
+  :hook
+  (ediff-keymap-setup . config-git-add-d-to-ediff-mode-map)
+  :config
+  (defun config-git-ediff-copy-both-to-C ()
+    "Copy both sides of the diff to the C buffer"
+    (interactive)
+    (ediff-copy-diff
+     ediff-current-difference nil 'C nil
+     (concat
+      (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+      (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+  (defun config-git-add-d-to-ediff-mode-map ()
+    (define-key ediff-mode-map "d" 'config-git-ediff-copy-both-to-C)))
+
 (provide 'config-git)
 ;;; config-git.el ends here
