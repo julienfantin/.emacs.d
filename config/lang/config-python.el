@@ -152,9 +152,9 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 ;; * Editing
 
 (use-package indent-tools
-    :ensure t
-    :hook (python-mode . indent-tools-minor-mode)
-    :bind (:map python-mode-map ("C-c SPC" . indent-tools-hydra/body)))
+  :ensure t
+  :hook (python-mode . indent-tools-minor-mode)
+  :bind (:map python-mode-map ("C-c SPC" . indent-tools-hydra/body)))
 
 (use-package smartparens-python
   :ensure smartparens

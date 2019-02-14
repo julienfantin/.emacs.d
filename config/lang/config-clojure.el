@@ -95,8 +95,9 @@
   :hook (cider--debug-mode . cider-debug-toggle-eldoc))
 
 (use-package cider-repl
-  :bind (:map cider-repl-mode-map
-              ("C-c C-o" . cider-repl-clear-buffer))
+  :bind
+  (:map cider-repl-mode-map
+        ("C-c C-o" . cider-repl-clear-buffer))
   :custom
   (cider-repl-display-help-banner nil)
   (cider-repl-history-file (user-var-file "nrepl-history"))

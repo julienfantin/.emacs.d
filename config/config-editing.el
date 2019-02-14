@@ -43,8 +43,9 @@
 
 (use-package iedit
   :ensure t
-  :bind (:map isearch-mode-map
-              ("C-c e i" . iedit-mode-from-isearch))
+  :bind
+  (:map isearch-mode-map
+        ("C-c e i" . iedit-mode-from-isearch))
   :custom
   (iedit-buffering t))
 
@@ -63,8 +64,8 @@
 (use-package easy-kill
   :ensure t
   :bind
-  ([remap kill-ring-save] . #'easy-kill)
-  ([remap mark-sexp] . #'easy-mark))
+  (([remap kill-ring-save] . easy-kill)
+   ([remap mark-sexp] . easy-mark)))
 
 
 ;; * Builtins

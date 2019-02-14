@@ -66,7 +66,7 @@
 (use-package default-text-scale
   :ensure t
   :bind
-  ((([remap text-scale-adjust] . default-text-scale-mode))
+  (([remap text-scale-adjust] . default-text-scale-mode)
    (:map default-text-scale-mode-map
          ("+" . 'default-text-scale-increase)
          ("=" . 'default-text-scale-increase)

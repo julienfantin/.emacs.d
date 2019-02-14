@@ -61,8 +61,9 @@
 
 (use-package em-hist
   :after eshell
-  :bind (:map eshell-mode-map
-              ("M-r" . counsel-esh-history))
+  :bind
+  (:map eshell-mode-map
+        ("M-r" . counsel-esh-history))
   :custom (eshell-hist-ignoredups t))
 
 

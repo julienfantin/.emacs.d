@@ -34,7 +34,7 @@
 
 (use-package dired
   :hook (dired-mode . dired-hide-details-mode)
-  :bind ("C-x C-j" . dired-jump)
+  :bind (("C-x C-j" . dired-jump))
   :custom
   (dired-auto-revert-buffer t)
   (dired-recursive-copies 'always)
@@ -93,9 +93,9 @@
   :ensure t
   :after dired
   :bind
-  (:map dired-mode-map
-        (("n" . dired-hacks-next-file)
-         ("p" . dired-hacks-previous-file))))
+  ((:map dired-mode-map
+         (("n" . dired-hacks-next-file)
+          ("p" . dired-hacks-previous-file)))))
 
 (use-package dired-narrow
   :ensure t

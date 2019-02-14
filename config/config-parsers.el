@@ -33,8 +33,9 @@
   :ensure t
   :init (after-init #'global-flycheck-mode)
   :commands (flycheck-mode flycheck-list-errors -counsel-flycheck)
-  :bind (:map flycheck-mode-map
-              ("C-c !" . -counsel-flycheck))
+  :bind
+  (:map flycheck-mode-map
+        ("C-c !" . -counsel-flycheck))
   :defines
   (flycheck-error-list-buffer
    flycheck-display-errors-function)
