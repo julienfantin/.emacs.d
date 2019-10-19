@@ -37,6 +37,7 @@
 ;; ** Abbrev
 
 (use-package abbrev
+  :disabled t
   :after no-littering
   :config
   (progn
@@ -54,6 +55,7 @@
 ;; * Prescient
 
 (use-package prescient
+  :disabled t
   :ensure t
   :after no-littering
   :config (prescient-persist-mode 1))
@@ -81,7 +83,7 @@
    '((company-capf company-dabbrev company-files)
      (company-elisp)
      (company-dabbrev-code company-keywords)))
-  (company-idle-delay 0.2)
+  (company-idle-delay 0.1)
   (company-minimum-prefix-length 2)
   (company-require-match nil)
   (company-search-regexp-function 'company-search-words-regexp)
@@ -104,17 +106,19 @@
 ;; this frontend properly renders propertized text, variable pitch font and
 ;; doesn't have to it within the parent-frame
 (use-package company-box
+  :disabled t
   :ensure t
   :after company
   :hook (company-mode . company-box-mode)
   :custom
   ;; Icons are huge!?
-  (company-box-enable-icon nil)
+  (company-box-enable-icon t)
   ;; Search doesn't scroll to focus the current selection
   (company-search-filtering t))
 
 
 (use-package company-prescient
+  :disabled t
   :ensure t
   :after company
   :init (after-init #'company-prescient-mode))

@@ -24,30 +24,28 @@
 
 ;;; Code:
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
+;; Initialization
 
-
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-
+(defvar init--gc-cons-threshold gc-cons-threshold)
+(defvar init--gc-cons-percentage gc-cons-percentage)
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6)
+(add-hook 'after-init-hook
+          #'(lambda ()
+              (setq gc-cons-threshold init--gc-cons-threshold
+                    gc-cons-percentage init--gc-cons-percentage)))
+
+(defvar init--file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+(add-hook 'after-init-hook
+          #'(lambda ()
+              (setq file-name-handler-alist init--file-name-handler-alist)))
 
 (require 'cl-lib)
-
 (require 'cl-macs)
 (require 'package)
-(set-default 'truncate-lines t)
 
 (setq use-package-verbose t)
-(defvar init--file-name-handler-alist file-name-handler-alist)
-
-(setq file-name-handler-alist nil)
 
 
 ;; * Config options
@@ -93,12 +91,12 @@
 
 (use-config config-theme)
 (use-config config-path)
-(use-config config-browser)
+(use-config config-browser :disabled t)
 (use-config config-buffers)
 (use-config config-completion)
 (use-config config-debug)
 (use-config config-defaults)
-(use-config config-doc)
+(use-config config-doc :disabled t)
 (use-config config-editing)
 (use-config config-elpa)
 (use-config config-files)
@@ -109,14 +107,14 @@
 (use-config config-helm :if (equal 'helm config-completion-system))
 (use-config config-help)
 (use-config config-indentation)
-(use-config config-irc)
+(use-config config-irc :disabled t)
 (use-config config-ivy :if (equal 'ivy config-completion-system))
 (use-config config-layouts)
 (use-config config-marks)
-(use-config config-modeline)
-(use-config config-org)
+(use-config config-modeline :disabled t)
+(use-config config-org :disabled t)
 (use-config config-outlines :disabled t)
-(use-config config-parsers)
+(use-config config-parsers :disabled t)
 (use-config config-persistence)
 (use-config config-prog-mode)
 (use-config config-project)
@@ -133,7 +131,7 @@
 
 ;; ** Tools
 
-(use-config config-docker :defer 2)
+(use-config config-docker :disabled t :defer 2)
 
 ;; ** Keybindings
 
@@ -141,16 +139,7 @@
 
 ;; ** WIP
 
-(use-config config-wip)
-
-(add-hook 'after-init-hook
-          #'(lambda ()
-              (setq gc-cons-threshold 16777216
-                    gc-cons-percentage 0.1)))
-
-(add-hook 'after-init-hook
-          #'(lambda ()
-              (setq file-name-handler-alist init--file-name-handler-alist)))
+(use-config config-wip :disabled t)
 
 (provide 'init)
 ;;; init.el ends here

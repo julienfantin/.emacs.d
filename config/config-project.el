@@ -29,6 +29,7 @@
 ;; * Direnv
 
 (use-package direnv
+  :disabled t
   :ensure-system-package direnv
   :ensure t
   :init (after-init #'direnv-mode))

@@ -32,8 +32,7 @@
   :ensure t
   :ensure-system-package
   ((clj . clojure)
-   (lein . leiningen)
-   (boot . boot-clj))
+   (lein . leiningen))
   :mode "\\.repl\\'"
   :config
   (progn
@@ -70,6 +69,7 @@
     (add-hook 'cider-mode-hook #'config-clojure--set-lispy-pp-eval-function)
     (add-hook 'cider-repl-mode-hook #'config-clojure--set-lispy-pp-eval-function))
   :custom
+  (cider-preferred-build-tool 'clojure-cli)
   (cider-auto-jump-to-error nil)
   (cider-dynamic-indentation nil)
   (cider-font-lock-dynamically '(macro core function deprecated var)) ;; Too slow

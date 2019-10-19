@@ -25,8 +25,8 @@
 ;;; Code:
 (require 'use-config)
 
-(defvar config-python-lsp-frontend 'lsp-mode)
-(defvar config-python-lsp-backend 'ms-python)
+(defvar config-python-lsp-frontend nil)
+(defvar config-python-lsp-backend nil)
 
 
 ;; * Python
@@ -70,6 +70,7 @@
 ;; * Environment
 
 (use-package flycheck
+  :disabled t
   :after elpy
   :hook (elpy-mode . flycheck-mode)
   :config
@@ -78,20 +79,25 @@
 ;; pip install elpy rope jedi autopep8 yapf flake8 isort importmagic epc autoflake
 
 (use-package elpy
+  :disabled t
   :ensure t
   :hook (python-mode . elpy-enable)
   :custom
   (elpy-get-info-from-shell t))
 
-(use-package isortify
-  :ensure t
-  :hook (python-mode . isortify-mode))
+
+;; breaks on save if not installed
+;; (use-package isortify
+;;   :disabled t
+;;   :ensure t
+;;   :hook (python-mode . isortify-mode))
 
 (use-package py-autopep8
   :ensure t
   :hook (python-mode . py-autopep8-enable-on-save))
 
 (use-package importmagic
+  :disabled t
   :ensure t
   :hook (python-mode . importmagic-mode)
   :config
@@ -134,6 +140,7 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
   (add-hook 'before-save-hook 'config-python-autoflake-turn-on))
 
 (use-package pytest
+  :disabled t
   :ensure t
   :config
   (defun config-python-pytest-integration ()
@@ -169,6 +176,7 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 
 ;; Disable default flycheck checkers
 (use-package flycheck
+  :disabled t
   :config
   (add-to-list 'flycheck-enabled-checkers 'flycheck-flake8)
   (add-to-list 'flycheck-disabled-checkers 'python-pylint))

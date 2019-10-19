@@ -27,7 +27,7 @@
 
 (use-config config-ansible :disabled t)
 (use-config config-cl :disabled t)
-(use-config config-clojure :disabled t)
+(use-config config-clojure)
 (use-config config-clojurescript :disabled t)
 (use-config config-emacs-lisp)
 (use-config config-js)

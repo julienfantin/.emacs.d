@@ -64,6 +64,7 @@
 ;; * Packages
 
 (use-package default-text-scale
+  :disabled t
   :ensure t
   :bind
   ((([remap text-scale-adjust] . default-text-scale-mode))

@@ -200,7 +200,7 @@ Remap all faces when called with a prefix argument."
             (theme-faces-match '("required" "common" "current")))
           ((t (:f ,duo-1 :b ,(chroma-blend bg duo-2 mblend)))))
          ((show-paren-match show-paren-match-expression)
-          ((t (:f nil :b ,(chroma-blend bg duo-3 sblend)))))
+          ((t (:b ,(chroma-blend bg duo-2 mblend)))))
          ;;
          ;; Occurrences
          (,(theme-faces-match-all "occur")

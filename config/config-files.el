@@ -41,6 +41,7 @@
   (dired-recursive-deletes ' always))
 
 (use-package dired-k
+  :disabled t
   :ensure t
   :after dired
   :hook
@@ -90,6 +91,7 @@
 ;; ** Dired extensions
 
 (use-package dired-hacks-utils
+  :disabled t
   :ensure t
   :after dired
   :bind
@@ -98,6 +100,7 @@
          ("p" . dired-hacks-previous-file))))
 
 (use-package dired-narrow
+  :disabled t
   :ensure t
   :after dired
   :bind (:map dired-mode-map

@@ -72,6 +72,7 @@
   (git-commit-summary-max-length 72))
 
 (use-package magithub
+  :disabled t
   :ensure t
   :after (magit no-littering)
   :config (magithub-feature-autoinject t))

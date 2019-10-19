@@ -77,6 +77,7 @@ With a prefix argument P, isearch for the symbol at point."
 (use-package wgrep :ensure t)
 
 (use-package deadgrep
+  :disabled t
   :ensure t
   :ensure-system-package (rg . "ripgrep"))
 
