@@ -84,8 +84,8 @@ in case that file does not provide any feature."
 ;; * Package interop
 
 ;; Fixes auto-async-byte-compilation issues for config files
-(unless package--initialized
-  (package-initialize))
+;; (unless package--initialized
+;;   (package-initialize))
 
 
 ;; * Internal functions

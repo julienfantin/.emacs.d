@@ -56,7 +56,7 @@
 
 (use-package prescient
   :disabled t
-  :ensure t
+  :straight t
   :after no-littering
   :config (prescient-persist-mode 1))
 
@@ -64,7 +64,7 @@
 ;; * Company
 
 (use-package company
-  :ensure t
+  :straight t
   :init (after-init #'global-company-mode)
   :bind ((:map company-mode-map
                ("TAB" . company-indent-or-complete-common))
@@ -107,7 +107,7 @@
 ;; doesn't have to it within the parent-frame
 (use-package company-box
   :disabled t
-  :ensure t
+  :straight t
   :after company
   :hook (company-mode . company-box-mode)
   :custom
@@ -119,7 +119,7 @@
 
 (use-package company-prescient
   :disabled t
-  :ensure t
+  :straight t
   :after company
   :init (after-init #'company-prescient-mode))
 

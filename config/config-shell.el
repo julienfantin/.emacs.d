@@ -69,12 +69,12 @@
 ;; * Packages
 
 (use-package eshell-z
-  :ensure t
+  :straight t
   :after eshell
   :init (require 'eshell-z nil t))
 
 (use-package eshell-prompt-extras
-  :ensure t
+  :straight t
   :after em-prompt
   :commands epe-theme-lambda
   :custom

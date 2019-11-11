@@ -40,11 +40,11 @@
 ;; * Packages
 
 (use-package json-mode
-  :ensure t
+  :straight t
   :mode "\\.json?\\'")
 
 (use-package web-mode
-  :ensure t
+  :straight t
   :mode (("\\.html?\\'" . web-mode)
          ("\\.css?\\'"  . web-mode))
   :hook
@@ -60,7 +60,7 @@
   (web-mode-enable-current-column-highlight t))
 
 (use-package company-web
-  :ensure t
+  :straight t
   :after (web-mode config-completion)
   :config (config-completion-add-backends 'web-mode 'company-css 'company-web-html))
 

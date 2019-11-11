@@ -42,7 +42,7 @@
 
 (use-package dired-k
   :disabled t
-  :ensure t
+  :straight t
   :after dired
   :hook
   (dired-initial-position . dired-k)
@@ -68,7 +68,7 @@
 ;; * Packages
 
 (use-package no-littering
-  :ensure t
+  :straight t
   :demand t
   :config
   (progn
@@ -80,7 +80,7 @@
 (use-package vlf-setup :ensure vlf)
 
 (use-package super-save
-  :ensure t
+  :straight t
   :init (after-init #'super-save-mode)
   :config
   (progn
@@ -92,7 +92,7 @@
 
 (use-package dired-hacks-utils
   :disabled t
-  :ensure t
+  :straight t
   :after dired
   :bind
   (:map dired-mode-map
@@ -101,7 +101,7 @@
 
 (use-package dired-narrow
   :disabled t
-  :ensure t
+  :straight t
   :after dired
   :bind (:map dired-mode-map
               ("/" . dired-narrow-fuzzy)))
@@ -111,7 +111,7 @@
   :custom
   (dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
-(use-package sudo-edit :ensure t)
+(use-package sudo-edit :straight t)
 
 
 ;; * Commands

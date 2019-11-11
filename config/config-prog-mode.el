@@ -38,7 +38,7 @@
   :init (after-init #'auto-insert-mode))
 
 (use-package highlight-symbol
-  :ensure t
+  :straight t
   :hook
   ((highlight-symbol-mode . highlight-symbol-nav-mode)
    (prog-mode . highlight-symbol-mode))

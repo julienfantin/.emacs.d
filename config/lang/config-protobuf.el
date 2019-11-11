@@ -31,7 +31,7 @@
     (indent-tabs-mode . nil)))
 
 (use-package protobuf-mode
-  :ensure t
+  :straight t
   :mode "\\.proto\\'"
   :preface
   (defun config-protobuf-add-style ()

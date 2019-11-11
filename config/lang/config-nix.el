@@ -26,7 +26,7 @@
 (require 'use-config)
 
 (use-package nix-mode
-  :ensure t
+  :straight t
   :config
   (progn
     (after 'paredit
@@ -34,16 +34,16 @@
     (after 'aggressive-indent
       (add-to-list 'aggressive-indent-excluded-modes 'nix-mode))))
 
-(use-package nixos-options :ensure t)
+(use-package nixos-options :straight t)
 
 (use-package company-nixos-options
-  :ensure t
+  :straight t
   :init
   (after 'config-completion
     (add-to-list 'config-completion-backends-alist
                  (cons 'nix-mode '(company-nixos-options)))))
 
-(use-package nix-sandbox :ensure t)
+(use-package nix-sandbox :straight t)
 
 (after (ivy nix-mode)
   (require 'nixos-options)

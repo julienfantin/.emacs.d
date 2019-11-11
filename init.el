@@ -43,9 +43,9 @@
 
 (require 'cl-lib)
 (require 'cl-macs)
-(require 'package)
+;; (require 'package)
 
-(setq use-package-verbose t)
+;; (setq use-package-verbose t)
 
 
 ;; * Config options
@@ -67,16 +67,18 @@
   ;; Setup various paths before we do anything, use-config depends on this
   (load-file (expand-file-name "config/config-path.el" user-emacs-directory))
   ;; Setup elpa
-  (load-file (expand-file-name "config/config-elpa.el" user-emacs-directory))
+  (load-file (expand-file-name "config/config-straight.el" user-emacs-directory))
   ;; Manually load use-config, it also provide some useful helpers
   (load-file (expand-file-name "lib/use-config/use-config.el" user-emacs-directory)))
 
-(require 'use-package)
+(require 'use-config)
+(require 'private)
+
 (require 'no-littering nil t)
 
 ;; Setup our env path here, some configs might need this to be set
 (use-package exec-path-from-shell
-  :ensure t
+  :straight t
   :init (exec-path-from-shell-initialize))
 
 
@@ -86,8 +88,8 @@
 ;; - Demand use-config and config-path
 ;; - Load keybindings last
 
-(use-package use-config)
-(use-package private)
+
+
 
 (use-config config-theme)
 (use-config config-path)
@@ -139,7 +141,7 @@
 
 ;; ** WIP
 
-(use-config config-wip :disabled t)
+(use-config config-wip)
 
 (provide 'init)
 ;;; init.el ends here

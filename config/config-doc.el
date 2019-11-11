@@ -42,7 +42,7 @@
   :type 'alist)
 
 (use-package eldoc
-  :ensure t
+  :straight t
   :hook (prog-mode . eldoc-mode)
   :custom
   (eldoc-echo-area-use-multiline-p t)
@@ -55,14 +55,14 @@
      'paredit-backward-delete
      'paredit-close-round)))
 
-(use-package know-your-http-well :ensure t)
+(use-package know-your-http-well :straight t)
 
 (defvar config-completion-system)       ; silence warning
 
 (use-package counsel-dash
   :disabled t
   :if (eq config-completion-system 'ivy)
-  :ensure t
+  :straight t
   :after config-completion
   :functions (config-doc-set-docsets)
   :commands (counsel-dash-install-docset)

@@ -50,12 +50,12 @@
 
 ;; * Packages
 
-(use-package git-timemachine :ensure t)
+(use-package git-timemachine :straight t)
 
-(use-package git-link :ensure t)
+(use-package git-link :straight t)
 
 (use-package magit
-  :ensure t
+  :straight t
   :custom
   (magit-save-repository-buffers 'dontask)
   (magit-display-buffer-function
@@ -73,14 +73,14 @@
 
 (use-package magithub
   :disabled t
-  :ensure t
+  :straight t
   :after (magit no-littering)
   :config (magithub-feature-autoinject t))
 
-(use-package gited :ensure t)
+(use-package gited :straight t)
 
 (use-package helm-hunks
-  :ensure t
+  :straight t
   :custom (helm-hunks-preview-diffs t))
 
 (provide 'config-git)

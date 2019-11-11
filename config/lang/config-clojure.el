@@ -29,24 +29,25 @@
 ;; * clojure-mode
 
 (use-package clojure-mode
-  :ensure t
+  :straight t
   :ensure-system-package
   ((clj . clojure)
    (lein . leiningen))
   :mode "\\.repl\\'"
   :config
   (progn
-    (define-clojure-indent
-      (gen/let nil))
     ;; test.check
     (add-to-list 'clojure-align-binding-forms "gen/let")
     ;; reagent
     (add-to-list 'clojure-align-binding-forms "with-let")
     (define-key clojure-mode-map [remap forward-sexp] #'clojure-forward-logical-sexp)
-    (define-key clojure-mode-map [remap backward-sexp] #'clojure-backward-logical-sexp)))
+    (define-key clojure-mode-map [remap backward-sexp] #'clojure-backward-logical-sexp))
+  :custom
+  (clojure-indent-style 'always-indent)
+  (clojure-toplevel-inside-comment-form t))
 
 (use-package clojure-mode-extra-font-locking
-  :ensure t
+  :straight t
   :after clojure-mode
   :init (require 'clojure-mode-extra-font-locking nil t))
 
@@ -54,7 +55,7 @@
 ;; * cider
 
 (use-package cider
-  :ensure t
+  :straight t
   ;; :pin melpa-stable
   :bind
   (:map clojure-mode-map
@@ -70,20 +71,22 @@
     (add-hook 'cider-repl-mode-hook #'config-clojure--set-lispy-pp-eval-function))
   :custom
   (cider-preferred-build-tool 'clojure-cli)
-  (cider-auto-jump-to-error nil)
+  ;; (cider-auto-jump-to-error nil)
   (cider-dynamic-indentation nil)
   (cider-font-lock-dynamically '(macro core function deprecated var)) ;; Too slow
-  (cider-font-lock-dynamically nil)
-  (cider-pprint-fn 'pprint)
-  (cider-prefer-local-resources t)
+  ;; (cider-font-lock-dynamically nil)
+  (cider-invert-insert-eval-p t)                        ;; 1
+  (cider-switch-to-repl-after-insert-p nil)             ;; 2
+  (cider-eval-toplevel-inside-comment-form t)           ;; 3
+  (cider-pprint-fn 'zprint)
+  ;; (cider-prefer-local-resources t)
   (cider-prompt-for-symbol nil)
   (cider-save-file-on-load t)
   (cider-save-files-on-cider-refresh t))
 
 (use-package cider-stacktrace
   :custom
-  (cider-stacktrace-default-filters '(clj tooling dup java repl))
-  (cider-stacktrace-positive-filters '(project)))
+  (cider-stacktrace-default-filters '(tooling dup java)))
 
 (use-package cider-debug
   :preface
@@ -111,7 +114,7 @@
 ;; * clj-refactor
 
 (use-package clj-refactor
-  :ensure t
+  :straight t
   ;; :pin melpa-stable
   :after clojure-mode
   :hook  (clojure-mode . clj-refactor-mode)
@@ -141,7 +144,7 @@
 ;; * Sayid
 
 (use-package sayid
-  :ensure t
+  :straight t
   ;; :pin melpa-stable
   :after cider
   :init (sayid-setup-package))
@@ -149,8 +152,13 @@
 
 ;; * Flycheck
 
+(use-package flycheck-clj-kondo
+  :straight t
+  :hook ((clojure-mode . flycheck-mode)))
+
 (use-package flycheck-joker
-  :ensure t
+  :disabled t
+  :straight t
   :ensure-system-package (joker . candid82/brew/joker)
   :after (flycheck clojure-mode)
   :init (require 'flycheck-joker nil t))
@@ -159,7 +167,8 @@
 ;; * Smart Jump
 
 (use-package smart-jump
-  :ensure t
+  :disabled t
+  :straight t
   :after (cider)
   :config
   (smart-jump-register

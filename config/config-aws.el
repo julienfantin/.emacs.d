@@ -1,9 +1,9 @@
-;;; config-scratch.el --- Scratch buffer             -*- lexical-binding: t; -*-
+;;; config-aws.el --- AWS packages                   -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016  Julien Fantin
+;; Copyright (C) 2018  Julien Fantin
 
 ;; Author: Julien Fantin(require 'use-config) <julienfantin@gmail.com>
-;; Keywords: convenience, internal
+;; Keywords: hypermedia
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,28 +24,10 @@
 
 ;;; Code:
 (require 'use-config)
-(require 'config-path)
 
+(use-package s3ed
+  :ensure t
+  :commands (s3ed-find-file s3ed-save-file))
 
-(defvar persistent-scratch-save-file (user-var-file ".persistent-scratch"))
-
-(defun config-scratch-init ()
-  "Initialize the *scratch* buffer."
-  (when-let (buffer (get-buffer "*scratch*"))
-    (with-current-buffer buffer
-      (after 'elisp-mode
-        (emacs-lisp-mode)))))
-
-(use-package persistent-scratch
-  :straight t
-  :init
-  (progn
-    (after-init #'persistent-scratch-setup-default)
-    (after-init #'config-scratch-init)))
-
-(use-package unkillable-scratch
-  :straight t
-  :init (after-init #'unkillable-scratch))
-
-(provide 'config-scratch)
-;;; config-scratch.el ends here
+(provide 'config-aws)
+;;; config-aws.el ends here

@@ -48,14 +48,14 @@
     (setq projectile-completion-system 'ivy)))
 
 (use-package counsel
-  :ensure t
+  :straight t
   :init (after-init #'counsel-mode)
   :custom
   (counsel-rg-base-command "rg -S -M 200 --no-heading --line-number --color never %%s .")
   (counsel-find-file-at-point t))
 
 (use-package counsel-projectile
-  :ensure t
+  :straight t
   :after (counsel projectile)
   :init (after-init #'counsel-projectile-mode)
   :custom
@@ -63,12 +63,12 @@
   (counsel-projectile-remove-current-buffer t))
 
 (use-package ivy-prescient
-  :ensure t
+  :straight t
   :after ivy
   :init (after-init #'ivy-prescient-mode))
 
 (use-package ivy-rich
-  :ensure t
+  :straight t
   :after ivy
   :init (after-init #'ivy-rich-mode))
 

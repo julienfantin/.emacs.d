@@ -52,14 +52,14 @@
 (add-hook 'prog-mode-hook #'config-indentation-show-trailing-whitespace)
 
 (use-package ws-butler
-  :ensure t
+  :straight t
   :hook ((prog-mode . ws-butler-mode)))
 
 
 ;; * Indentation
 
 (use-package aggressive-indent
-  :ensure t
+  :straight t
   :preface
   (defun config-indentation-aggressive-indent-skip-p ()
     "Return true if the current defun is longer than

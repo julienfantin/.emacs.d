@@ -31,7 +31,7 @@
 ;; * Eyebrowse
 
 (use-package eyebrowse
-  :ensure t
+  :straight t
   :init (after-init #'eyebrowse-mode)
   :custom
   (eyebrowse-switch-back-and-forth t)

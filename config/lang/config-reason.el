@@ -31,7 +31,7 @@
   (car (ignore-errors (apply 'process-lines (split-string cmd)))))
 
 (use-package reason-mode
-  :ensure t
+  :straight t
   :after (refmt)
   :ensure-system-package
   ((reason-cli-esy-sandbox . "npm install -g reason-cli@3.1.0-darwin")

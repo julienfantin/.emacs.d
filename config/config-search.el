@@ -47,10 +47,10 @@ With a prefix argument P, isearch for the symbol at point."
 
 ;; * Packages
 
-(use-package imenu-anywhere :ensure t)
+(use-package imenu-anywhere :straight t)
 
 (use-package swiper
-  :ensure t
+  :straight t
   :commands (-swiper-at-point)
   :bind
   ((:map swiper-map
@@ -64,7 +64,7 @@ With a prefix argument P, isearch for the symbol at point."
   (swiper-stay-on-quit t))
 
 (use-package avy
-  :ensure t
+  :straight t
   :custom
   (avy-style 'at-full)
   (avy-background t)
@@ -74,11 +74,11 @@ With a prefix argument P, isearch for the symbol at point."
   ;; Use C-' in isearch to bring up avy
   (avy-setup-default))
 
-(use-package wgrep :ensure t)
+(use-package wgrep :straight t)
 
 (use-package deadgrep
   :disabled t
-  :ensure t
+  :straight t
   :ensure-system-package (rg . "ripgrep"))
 
 

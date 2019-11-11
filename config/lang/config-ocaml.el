@@ -41,7 +41,7 @@
     (add-to-list 'load-path opam-site-lisp)))
 
 (use-package opam
-  :ensure t
+  :straight t
   :ensure-system-package opam
   :init
   (progn
@@ -70,7 +70,7 @@
   (merlin-completion-with-doc t))
 
 (use-package utop
-  :ensure t
+  :straight t
   :ensure-system-package (utop . "opam install utop")
   :after (opam)
   :hook (tuareg-mode . utop-minor-mode)
@@ -106,7 +106,7 @@
 ;; * Ocaml modes
 
 (use-package tuareg
-  :ensure t
+  :straight t
   :after (opam)
   :mode (("\\.ml[ily]?$" . tuareg-mode)
          ("\\.topml$" . tuareg-mode))
@@ -125,12 +125,12 @@
               ("C-c C-e" . merlin-iedit-occurrences)))
 
 (use-package merlin-eldoc
-  :ensure t
+  :straight t
   :after (merlin)
   :hook ((reason-mode tuareg-mode caml-mode) . merlin-eldoc-setup))
 
 (use-package flycheck-ocaml
-  :ensure t
+  :straight t
   :after (merlin)
   :init (flycheck-ocaml-setup)
   :custom

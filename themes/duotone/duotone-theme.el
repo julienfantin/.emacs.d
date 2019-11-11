@@ -191,17 +191,6 @@ Remap all faces when called with a prefix argument."
          (,(theme-faces-match '("mark" "marked" "book" "bm" "markdown" "1" "2"))
           ((t (:b ,uno-3))))
          ;;
-         ;; Matches
-         (,(theme-faces-match-all "match" "current")
-          ((t (:f ,duo-1 :b ,(chroma-blend bg duo-1 sblend)))))
-         (,(cl-concatenate
-            'list
-            (theme-faces-match '("match" "\\(mis\\|un\\)match"  "[0-9]"))
-            (theme-faces-match '("required" "common" "current")))
-          ((t (:f ,duo-1 :b ,(chroma-blend bg duo-2 mblend)))))
-         ((show-paren-match show-paren-match-expression)
-          ((t (:b ,(chroma-blend bg duo-2 mblend)))))
-         ;;
          ;; Occurrences
          (,(theme-faces-match-all "occur")
           ((t (:f nil :b ,duo-1))))
@@ -280,6 +269,18 @@ Remap all faces when called with a prefix argument."
           ((t (:f ,uno-1))))
          (,(theme-faces-match '("doc" "docview"))
           ((t (:f ,uno-1 :b ,(when duotone-background-doc (chroma-blend bg uno-2 sblend))))))
+         ;;
+         ;; Matches
+         (,(theme-faces-match-all "match" "current")
+          ((t (:f ,duo-1 :b ,(chroma-blend bg duo-1 sblend)))))
+         (,(cl-concatenate
+            'list
+            (theme-faces-match '("match" "\\(mis\\|un\\)match"  "[0-9]"))
+            (theme-faces-match '("required" "common" "current")))
+          ((t (:f ,duo-1 :b ,(chroma-blend bg duo-2 mblend)))))
+         ((show-paren-match show-paren-match-expression)
+          ((t (:b ,(chroma-blend bg duo-2 sblend)))))
+
          ;;
          ;; Faces overrides
          ;;

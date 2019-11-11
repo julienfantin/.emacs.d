@@ -36,7 +36,7 @@
 ;; * Packages
 
 (use-package outshine
-  :ensure t
+  :straight t
   :commands
   (outshine-hook-function outshine-insert-heading)
   :hook (outline-minor-mode . config-outline-outshine-enable)
@@ -61,7 +61,7 @@
   (outshine-fontify-whole-heading-line t)
   (outline-cycle-emulate-tab t))
 
-(use-package outline-magic :ensure t)
+(use-package outline-magic :straight t)
 
 (provide 'config-outlines)
 ;;; config-outlines.el ends here

@@ -28,7 +28,7 @@
 (require 'use-config)
 
 (use-package lfe-mode
-  :ensure t
+  :straight t
   :config
   (progn
     (defun lfe-eval-sexp-or-defun (&optional and-go)

@@ -28,7 +28,7 @@
 
 
 (use-package ansible
-  :ensure t
+  :straight t
   :after yaml-mode
   :mode
   (("group_vars/.*" . yaml-mode)
@@ -51,11 +51,11 @@
     (add-hook 'ansible-hook 'ansible::auto-decrypt-encrypt)))
 
 (use-package jinja2-mode
-  :ensure t
+  :straight t
   :mode "\\.j2?\\'")
 
 (use-package ansible-doc
-  :ensure t
+  :straight t
   :after ansible
   :init (add-hook 'ansible::hook #'ansible-doc-mode)
   :config
@@ -63,7 +63,7 @@
     (bind-key "C-c C-d d" 'ansible-doc ansible-doc-mode-map)))
 
 (use-package company-ansible
-  :ensure t
+  :straight t
   :after ansible
   :init
   (after config-completion

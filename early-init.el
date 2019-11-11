@@ -1,9 +1,9 @@
-;;; config-help.el --- Emacs help and Info           -*- lexical-binding: t; -*-
+;;; early-init.el ---                                -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2016  Julien Fantin
+;; Copyright (C) 2019  Julien Fantin
 
-;; Author: Julien Fantin(require 'use-config) <julienfantin@gmail.com>
-;; Keywords: internal, help
+;; Author: Julien Fantin <julienfantin@gmail.com>
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -16,22 +16,16 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
 ;;
 
 ;;; Code:
-(require 'use-config)
 
-(use-package helpful
-  :straight t
-  :bind
-  (("C-h f" . helpful-callable)
-   ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key)
-   ("C-h ," . helpful-at-point)))
+(setq package-enable-at-startup nil)
 
-(provide 'config-help)
-;;; config-help.el ends here
+
+(provide 'early-init)
+;;; early-init.el ends here

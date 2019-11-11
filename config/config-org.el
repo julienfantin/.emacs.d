@@ -88,7 +88,7 @@
 ;; * Packages
 
 (use-package org-journal
-  :ensure t
+  :straight t
   :custom
   (org-journal-dir (expand-file-name "journal" config-org-user-directory)))
 

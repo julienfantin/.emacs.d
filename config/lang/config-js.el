@@ -26,12 +26,12 @@
 (require 'use-config)
 
 (use-package js2-mode
-  :ensure t
+  :straight t
   :mode (("\\.js$" . js2-mode)))
 
 (use-package indium
   :disabled t
-  :ensure t
+  :straight t
   :after js2-mode
   :hook (js2-mode . indium-interaction-mode)
   :custom
@@ -40,12 +40,12 @@
   (indium-script-enable-sourcemaps t))
 
 (use-package typescript-mode
-  :ensure t
+  :straight t
   :mode ("\\.tsx\\'")
   :ensure-system-package (tsc . typescript))
 
 (use-package tide
-  :ensure t
+  :straight t
   :disabled t
   :after typescript-mode
   :hook
@@ -54,14 +54,14 @@
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled)))
 
-(use-package lsp-javascript
-  :ensure lsp-javascript-typescript
-  :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver"))
+;; (use-package lsp-javascript
+;;   :straight lsp-javascript-typescript
+;;   :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver"))
 
 (use-package lsp-typescript
   :after typescript-mode
   :hook (typescript-mode . lsp-javascript-typescript-enable)
-  :ensure lsp-javascript-typescript
+  :straight lsp-javascript-typescript
   :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver"))
 
 

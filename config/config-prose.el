@@ -60,12 +60,12 @@
 
 (use-package flyspell-lazy
   :disabled t
-  :ensure t
+  :straight t
   :after flyspell
   :hook (flyspell-mode . flyspell-lazy-load))
 
 (use-package flyspell-correct-ivy
-  :ensure t
+  :straight t
   :after flyspell
   :init (require 'flyspell-correct-ivy nil t)
   :bind
@@ -75,7 +75,7 @@
 
 ;; * Prose minor mode
 
-(use-package visual-fill-column :ensure t)
+(use-package visual-fill-column :straight t)
 
 (use-package prose-minor-mode
   :hook ((org-mode         . prose-minor-mode)
@@ -88,7 +88,7 @@
 ;; * Wrapping
 
 (use-package adaptive-wrap
-  :ensure t
+  :straight t
   :commands adaptive-wrap-prefix-mode
   :after prose-minor-mode
   :hook (prose-minor-mode . adaptive-wrap-prefix-mode))
@@ -97,7 +97,7 @@
 ;; * Linters
 
 (use-package writegood-mode
-  :ensure t
+  :straight t
   :after prose-minor-mode
   :hook (prose-minor-mode . writegood-mode))
 
@@ -105,7 +105,7 @@
 ;; * Major modes
 
 (use-package markdown-mode
-  :ensure t
+  :straight t
   :mode "\\.md\\'"
   :custom (markdown-fontify-code-blocks-natively t))
 

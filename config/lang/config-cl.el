@@ -27,10 +27,10 @@
 (require 'use-config)
 (require 'config-completion)
 
-(use-package slime :ensure t)
+(use-package slime :straight t)
 
 (use-package slime-company
-  :ensure t
+  :straight t
   :init
   (after 'slime
     (slime-setup '(slime-company))

@@ -8,23 +8,23 @@
 ;; * Buffer colors
 
 (use-package rainbow-mode
-  :ensure t
+  :straight t
   :hook (help-mode info-mode emacs-lisp-mode ccs-mode web-mode))
 
 (use-package rainbow-delimiters
-  :ensure t
+  :straight t
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package page-break-lines
-  :ensure t
+  :straight t
   :hook (prog-mode . page-break-lines-mode))
 
 (use-package hl-todo
-  :ensure t
+  :straight t
   :hook (prog-mode . hl-todo-mode))
 
 (use-package highlight-numbers
-  :ensure t
+  :straight t
   :hook (prog-mode . highlight-numbers-mode))
 
 (provide 'config-font-lock)

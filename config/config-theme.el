@@ -63,16 +63,18 @@
 (use-package duotone-theme :demand t :load-path "../themes/duotone")
 (use-package duotone-reload :demand t)
 
-(use-package doom-themes           :ensure t)
-(use-package dracula-theme         :ensure t)
-(use-package darktooth-theme       :ensure t)
-(use-package zerodark-theme        :ensure t)
-(use-package gruvbox-theme         :ensure t)
-(use-package challenger-deep-theme :ensure t)
-(use-package rebecca-theme         :ensure t)
-(use-package nord-theme            :ensure t)
-(use-package exotica-theme         :ensure t)
-(use-package kaolin-themes         :ensure t
+(use-package doom-themes           :straight t :defer t)
+(use-package dracula-theme         :straight t :defer t)
+(use-package darktooth-theme       :straight t :defer t)
+(use-package zerodark-theme        :straight t :defer t)
+(use-package gruvbox-theme         :straight t :defer t)
+(use-package challenger-deep-theme :straight t :defer t)
+(use-package rebecca-theme         :straight t :defer t)
+(use-package nord-theme            :straight t :defer t)
+;; (use-package exotica-theme         :straight t)
+(use-package kaolin-themes
+  :straight t
+  :defer t
   :custom
   (kaolin-themes-comments-style 'bright)
   (kaolin-themes-distinct-company-scrollbar t))

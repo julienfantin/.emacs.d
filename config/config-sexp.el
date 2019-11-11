@@ -70,7 +70,7 @@
 ;; * Paredit
 
 (use-package paredit
-  :ensure t
+  :straight t
   :commands paredit-mode
   :functions
   (paredit-wrap-round paredit-wrap-square paredit-wrap-curly)
@@ -149,7 +149,7 @@
 ;; * Lispy
 
 (use-package lispy
-  :ensure t
+  :straight t
   :config
   (progn
     (after 'outline-magic

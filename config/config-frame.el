@@ -41,6 +41,8 @@
 (defvar config-frame-fonts
   '("-*-SF UI Text-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1"))
 
+(defvar config-frame-default-font-height 130)
+
 
 ;; * Fonts
 
@@ -55,27 +57,16 @@
   (cl-find-if #'font-exists-p config-frame-fonts))
 
 (when-let ((font (config-frame-mono-font)))
-  (set-face-attribute 'default nil :font font))
+  (set-face-attribute 'default nil :font font :height config-frame-default-font-height))
 
 (when-let ((font (config-frame-font)))
   (set-face-attribute 'variable-pitch nil :font font))
 
-
-;; * Packages
-
-(use-package default-text-scale
-  :disabled t
-  :ensure t
-  :bind
-  ((([remap text-scale-adjust] . default-text-scale-mode))
-   (:map default-text-scale-mode-map
-         ("+" . 'default-text-scale-increase)
-         ("=" . 'default-text-scale-increase)
-         ("-" . 'default-text-scale-decrease)
-         ("0" . 'default-text-scale-reset))))
+(setq-default line-spacing 3)
 
 
 ;; * Frame
+
 
 (defun config-frame-frame-alist ()
   "Compute the default and initial frame alist."

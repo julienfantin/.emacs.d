@@ -93,12 +93,12 @@ hyper when it's used as a modifier."
 
 ;; * Packages
 
-(use-package general :ensure t)
+(use-package general :straight t)
 
-(use-package free-keys :ensure t)
+(use-package free-keys :straight t)
 
 (use-package which-key
-  :ensure t
+  :straight t
   :init (after-init #'which-key-mode)
   :custom
   (which-key-sort-order 'which-key-prefix-then-key-order)
@@ -106,7 +106,7 @@ hyper when it's used as a modifier."
   (which-key-idle-delay 0.4))
 
 (use-package keyfreq
-  :ensure t
+  :straight t
   :after no-littering
   :init
   (progn
@@ -124,7 +124,7 @@ hyper when it's used as a modifier."
      next-line)))
 
 (use-package hydra
-  :ensure  t
+  :straight  t
   :config
   (use-package lv
     :custom

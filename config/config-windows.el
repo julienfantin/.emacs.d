@@ -29,7 +29,7 @@
 ;; * Navigation
 
 (use-package ace-window
-  :ensure t
+  :straight t
   :commands (aw-window-list)
   :config
   (setq aw-keys '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0)
@@ -45,18 +45,18 @@
 
 ;; * Focus
 
-(use-package zygospore :ensure t)
+(use-package zygospore :straight t)
 
 
 ;; * Drag
 
-(use-package buffer-move :ensure t)
+(use-package buffer-move :straight t)
 
 
 ;; * Resize
 
 (use-package windresize
-  :ensure t
+  :straight t
   :commands (windresize-left windresize-right windresize-up windresize-down)
   :custom (windresize-default-increment 5))
 
@@ -65,7 +65,7 @@
 
 (use-package shackle
   :disabled t
-  :ensure t
+  :straight t
   :init (after-init #'shackle-mode)
   :custom
   (shackle-default-size 0.3)

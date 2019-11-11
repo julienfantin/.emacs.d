@@ -27,17 +27,17 @@
 
 (use-package go-mode
   :ensure-system-package go
-  :ensure t)
+  :straight t)
 
 (use-package eglot
-  :ensure t
+  :straight t
   :ensure-system-package (go-langserver . "go get -u github.com/sourcegraph/go-langserver")
   :after go-mode
   :config
   (add-to-list 'eglot-server-programs '(go-mode . ("go-langserver"))))
 
 (use-package lsp-go
-  :ensure t
+  :straight t
   :ensure-system-package (go-langserver . "go get -u github.com/sourcegraph/go-langserver")
   :after go-mode)
 

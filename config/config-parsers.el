@@ -30,7 +30,7 @@
 ;; * Flycheck
 
 (use-package flycheck
-  :ensure t
+  :straight t
   :init (after-init #'global-flycheck-mode)
   :commands (flycheck-mode flycheck-list-errors -counsel-flycheck)
   :bind (:map flycheck-mode-map

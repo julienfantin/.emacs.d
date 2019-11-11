@@ -54,13 +54,13 @@
 
 (use-package pyvenv
   ;; Set `pyvenv-workon' to the absolute path for the current venv in a .dir-locals.el
-  :ensure t
+  :straight t
   :hook (python-mode . pyvenv-mode)
   :config
   (add-hook 'pyvenv-post-create-hooks #'config-python-set-interpreter))
 
 (use-package python-docstring
-  :ensure t
+  :straight t
   :after python
   :bind
   (:map python-mode-map
@@ -80,7 +80,7 @@
 
 (use-package elpy
   :disabled t
-  :ensure t
+  :straight t
   :hook (python-mode . elpy-enable)
   :custom
   (elpy-get-info-from-shell t))
@@ -89,16 +89,16 @@
 ;; breaks on save if not installed
 ;; (use-package isortify
 ;;   :disabled t
-;;   :ensure t
+;;   :straight t
 ;;   :hook (python-mode . isortify-mode))
 
 (use-package py-autopep8
-  :ensure t
+  :straight t
   :hook (python-mode . py-autopep8-enable-on-save))
 
 (use-package importmagic
   :disabled t
-  :ensure t
+  :straight t
   :hook (python-mode . importmagic-mode)
   :config
   (after isortify
@@ -141,14 +141,14 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 
 (use-package pytest
   :disabled t
-  :ensure t
+  :straight t
   :config
   (defun config-python-pytest-integration ()
     (setq pytest-global-name "onepy"
           pytest-project-root-test (lambda (dirname) (equal dirname "/code/lastmile")))))
 
 (use-package python-pytest
-    :ensure t
+    :straight t
     :config
     (defun python-pytest--project-root ()
       "/code/lastmile")
@@ -159,12 +159,12 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 ;; * Editing
 
 (use-package indent-tools
-    :ensure t
+    :straight t
     :hook (python-mode . indent-tools-minor-mode)
     :bind (:map python-mode-map ("C-c SPC" . indent-tools-hydra/body)))
 
 (use-package smartparens-python
-  :ensure smartparens
+  :straight smartparens
   :hook (python-mode . smartparens-mode))
 
 (use-package markdown-mode
@@ -185,7 +185,7 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 
 (use-package eglot
   :if (eq config-python-lsp-frontend 'eglot)
-  :ensure t
+  :straight t
   :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
   :hook ((python-mode . eglot-ensure)))
 
@@ -194,7 +194,7 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 (use-package ms-python
   :if (and (eq config-python-lsp-frontend 'lsp-mode)
            (eq config-python-lsp-backend 'ms-python))
-  :ensure t
+  :straight t
   :init (require 'ms-python)
   :config (add-hook 'python-mode-hook 'lsp t)
   :custom
@@ -217,7 +217,7 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
   :hook (lsp-after-open . lsp-enable-imenu))
 
 (use-package company-lsp
-  :ensure t
+  :straight t
   :after (lsp-mode company)
   :hook (lsp-mode . config-python--enable-company-lsp)
   :preface
@@ -229,7 +229,7 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 
 (use-package dap-mode
   :if (eq config-python-lsp-frontend 'lsp-mode)
-  :ensure t
+  :straight t
   :hook ((lsp-mode . dap-mode)
          (lsp-mode . dap-ui-mode))
   :config (require 'dap-python))

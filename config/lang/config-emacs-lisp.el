@@ -46,17 +46,17 @@
 ;; * Packages
 
 (use-package lisp-extra-font-lock
-  :ensure t
+  :straight t
   :after lisp
   :config (lisp-extra-font-lock-global-mode 1))
 
 (use-package elisp-slime-nav
-  :ensure t
+  :straight t
   :commands (turn-on-elisp-slime-nav-mode)
   :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode))
 
 (use-package nameless
-  :ensure t
+  :straight t
   :hook (emacs-lisp-mode . nameless-mode)
   :commands (nameless-insert-name)
   :bind (:map emacs-lisp-mode-map
@@ -68,7 +68,7 @@
   (nameless-prefix "/"))
 
 (use-package auto-compile
-  :ensure t
+  :straight t
   :commands auto-compile-on-save-mode
   :hook (emacs-lisp-mode . auto-compile-on-save-mode)
   :config
@@ -86,7 +86,7 @@ an older version is loaded."
   (auto-compile-use-mode-line nil))
 
 (use-package elisp-demos
-  :ensure t
+  :straight t
   :after helpful
   :init (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
 

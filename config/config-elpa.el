@@ -83,17 +83,17 @@
 ;; * System packages
 
 (use-package system-packages
-  :ensure t
+  :straight t
   :custom
   (system-packages-use-sudo nil)
   (system-packages-package-manager 'brew))
 
-(use-package use-package-ensure-system-package :ensure t)
+(use-package use-package-ensure-system-package :straight t)
 
 ;; * Paradox
 
 (use-package paradox
-  :ensure t
+  :straight t
   :config
   (package-initialize)
   :custom

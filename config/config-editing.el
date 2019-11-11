@@ -39,17 +39,15 @@
 
 ;; * Packages
 
-(use-package multiple-cursors :ensure t :after no-littering)
+(use-package multiple-cursors :straight t :after no-littering)
 
 (use-package iedit
-  :ensure t
+  :straight t
   :bind (:map isearch-mode-map
-              ("C-c e i" . iedit-mode-from-isearch))
-  :custom
-  (iedit-buffering t))
+              ("C-c e i" . iedit-mode-from-isearch)))
 
 (use-package smart-hungry-delete
-  :ensure t
+  :straight t
   :bind
   ;; TODO doesn't play well with lispy, could write an advice when at paren...
   ;; (:map prog-mode-map
@@ -63,7 +61,7 @@
 
 (use-package easy-kill
   :disabled t
-  :ensure t
+  :straight t
   :bind
   ([remap kill-ring-save] . #'easy-kill)
   ([remap mark-sexp] . #'easy-mark))

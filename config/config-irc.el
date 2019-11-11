@@ -37,7 +37,7 @@
   (erc-fill-static-center 15))
 
 (use-package erc-hl-nicks
-  :ensure t
+  :straight t
   :after erc
   :hook (erc-mode . 'erc-hl-nicks-mode))
 

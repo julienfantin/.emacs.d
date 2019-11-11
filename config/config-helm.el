@@ -115,9 +115,9 @@
 
 ;; * Packages
 
-(use-package helm-aws :disabled t :ensure t)
+(use-package helm-aws :disabled t :straight t)
 
-(use-package helm-org-rifle :disabled t :ensure t)
+(use-package helm-org-rifle :disabled t :straight t)
 
 (provide 'config-helm)
 ;;; config-helm.el ends here

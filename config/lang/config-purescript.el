@@ -26,22 +26,22 @@
 (require 'use-config)
 
 (use-package purescript-mode
-  :ensure t
+  :straight t
   :ensure-system-package (purs . "purescript"))
 
 (use-package psc-ide
-  :ensure t
+  :straight t
   :after purescript-mode
   :hook ((purescript-mode . psc-ide-mode)
          (purescript-mode . turn-on-purescript-indentation)))
 
 (use-package psci
-  :ensure t
+  :straight t
   :after purescript-mode
   :hook (purescript-mode . inferior-psci-mode))
 
 (use-package repl-toggle
-  :ensure t
+  :straight t
   :after psci
   :config
   (add-to-list 'rtog/mode-repl-alist '(purescript-mode . psci)))
