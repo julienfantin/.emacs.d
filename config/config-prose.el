@@ -52,7 +52,6 @@
   :custom (ispell-silently-savep t))
 
 (use-package flyspell
-  :hook (prog-mode . flyspell-prog-mode)
   :custom
   (flyspell-abbrev-p t)
   (flyspell-issue-welcome-flag nil)
