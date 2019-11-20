@@ -80,9 +80,17 @@
   (company-global-modes
    '(not text-mode message-mode git-commit-mode org-mode magit-status-mode))
   (company-backends
-   '((company-capf company-dabbrev company-files)
-     (company-elisp)
-     (company-dabbrev-code company-keywords)))
+   '((company-files          ; files & directory
+      company-keywords       ; keywords
+      company-capf
+      company-yasnippet
+      )
+     ;; (company-abbrev company-dabbrev)
+     )
+   ;; '((company-capf company-files)
+   ;;   (company-elisp)
+   ;;   (company-keywords))
+   )
   (company-idle-delay 0.1)
   (company-minimum-prefix-length 2)
   (company-require-match nil)
@@ -97,7 +105,7 @@
   :custom
   (company-dabbrev-downcase nil)
   (company-dabbrev-ignore-case nil)
-  (company-dabbrev-minimum-length 2))
+  (company-dabbrev-minimum-length 4))
 
 (use-package company-elisp
   :custom
