@@ -38,7 +38,6 @@
       (eldoc-mode 1)))
   (add-hook 'cider--debug-mode-hook '-cider-debug-no-eldoc))
 
-
 ;; * UI tweaks
 ;; ** Show paren expression transparency hook
 
@@ -58,7 +57,6 @@
 
 (advice-add #'load-theme :after #'fix-show-parent-match)
 
-
 ;; * Keybindings
 
 (global-set-key (kbd "C-x =") 'balance-windows-area)
@@ -67,6 +65,24 @@
 (defun open-start-file () (find-file start-file))
 (after-init #'open-start-file)
 
+(setq cider-invert-insert-eval-p t)                        ;; 1
+(setq cider-switch-to-repl-after-insert-p nil)             ;; 2
+
+(setq-default line-spacing 5)
+(-text-scale-increase)
+(use-package doom-modeline
+  :straight t
+  :init (doom-modeline-mode 1))
+
+(use-package flycheck-posframe
+  :straight t
+  :hook ((flycheck-mode . flycheck-posframe-mode)))
+
+(use-package flycheck
+  :straight t
+  :init (global-flycheck-mode))
+
+(server-start)
 
 (provide 'config-wip)
 ;;; config-wip.el ends here
