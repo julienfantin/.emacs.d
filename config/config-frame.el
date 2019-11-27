@@ -30,8 +30,8 @@
 (defvar config-frame-border-width 15)
 
 (defvar config-frame-mono-fonts
-  '("-*-Menlo-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-Fira Code-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+  '("-*-Fira Code-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
+    "-*-Menlo-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-Source Code Pro-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-IBM Plex Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
@@ -41,7 +41,7 @@
 (defvar config-frame-fonts
   '("-*-SF UI Text-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1"))
 
-(defvar config-frame-default-font-height 130)
+(defvar config-frame-default-font-height 140)
 
 
 ;; * Fonts
@@ -92,7 +92,7 @@
   (progn
     (scroll-bar-mode -1)
     (tool-bar-mode -1)
-    (pixel-scroll-mode 1))
+    (pixel-scroll-mode -1))
   :custom
   (cursor-type 'bar)
   (default-frame-alist (config-frame-frame-alist))

@@ -44,6 +44,7 @@
     (define-key clojure-mode-map [remap backward-sexp] #'clojure-backward-logical-sexp))
   :custom
   (clojure-indent-style 'always-indent)
+  (clojure-align-forms-automatically t)
   (clojure-toplevel-inside-comment-form t))
 
 (use-package clojure-mode-extra-font-locking
@@ -71,13 +72,12 @@
     (add-hook 'cider-repl-mode-hook #'config-clojure--set-lispy-pp-eval-function))
   :custom
   (cider-preferred-build-tool 'clojure-cli)
-  ;; (cider-auto-jump-to-error nil)
   (cider-dynamic-indentation nil)
-  (cider-font-lock-dynamically '(macro core function deprecated var)) ;; Too slow
-  ;; (cider-font-lock-dynamically nil)
-  (cider-invert-insert-eval-p t)                        ;; 1
-  (cider-switch-to-repl-after-insert-p nil)             ;; 2
-  (cider-eval-toplevel-inside-comment-form t)           ;; 3
+  ;; (cider-font-lock-dynamically '(macro core function deprecated var))
+  ;; Too slow
+  (cider-invert-insert-eval-p t)
+  (cider-switch-to-repl-after-insert-p nil)
+  (cider-eval-toplevel-inside-comment-form t)
   (cider-pprint-fn 'zprint)
   ;; (cider-prefer-local-resources t)
   (cider-prompt-for-symbol nil)
@@ -86,7 +86,8 @@
 
 (use-package cider-stacktrace
   :custom
-  (cider-stacktrace-default-filters '(tooling dup java)))
+  (cider-stacktrace-default-filters '(tooling dup java))
+  (cider-stacktrace-positive-filters '(project)))
 
 (use-package cider-debug
   :preface
@@ -115,9 +116,8 @@
 
 (use-package clj-refactor
   :straight t
-  ;; :pin melpa-stable
   :after clojure-mode
-  :hook  (clojure-mode . clj-refactor-mode)
+  :hook ((clojure-mode . clj-refactor-mode))
   :config
   (cljr-add-keybindings-with-prefix "C-c .")
   :custom
@@ -145,7 +145,6 @@
 
 (use-package sayid
   :straight t
-  ;; :pin melpa-stable
   :after cider
   :init (sayid-setup-package))
 
@@ -154,7 +153,12 @@
 
 (use-package flycheck-clj-kondo
   :straight t
-  :hook ((clojure-mode . flycheck-mode)))
+  :ensure-system-package (clj-kondo . borkdude/brew/clj-kondo)
+  :after clojure-mode
+  :hook ((clojure-mode . flycheck-mode)
+         (clojurec-mode . flycheck-mode)
+         (clojurescript-mode . flycheck-mode))
+  :init (require 'flycheck-clj-kondo nil t))
 
 (use-package flycheck-joker
   :disabled t

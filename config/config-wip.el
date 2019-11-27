@@ -69,18 +69,35 @@
 (setq cider-switch-to-repl-after-insert-p nil)             ;; 2
 
 (setq-default line-spacing 5)
-(-text-scale-increase)
+
 (use-package doom-modeline
   :straight t
-  :init (doom-modeline-mode 1))
+  :init (after-init #'doom-modeline-mode))
 
 (use-package flycheck-posframe
   :straight t
+  :custom
+  (flycheck-posframe-border-width 20)
   :hook ((flycheck-mode . flycheck-posframe-mode)))
 
 (use-package flycheck
   :straight t
-  :init (global-flycheck-mode))
+  :init (after-init #'global-flycheck-mode))
+
+(use-package ivy-posframe
+  :straight t
+  :custom
+  (ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
+  (ivy-posframe-height 12)
+  (ivy-posframe-min-height 1)
+  (ivy-posframe-border-width 20)
+  :init
+  (defun config-wip-set-ivy-posframe-width (&rest _)
+    (setq ivy-posframe-width (- (frame-total-cols) 20)))
+  (add-hook
+   'window-configuration-change-hook
+   'config-wip-set-ivy-posframe-width)
+  (ivy-posframe-mode 1))
 
 (server-start)
 

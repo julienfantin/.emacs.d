@@ -60,8 +60,8 @@
   :commands theme-sync-mode
   :init (after-init #'theme-sync-mode))
 
-(use-package duotone-theme :demand t :load-path "../themes/duotone")
-(use-package duotone-reload :demand t)
+(use-package duotone-theme :load-path "../themes/duotone")
+(use-package duotone-reload :disabled t :demand t)
 
 (use-package doom-themes           :straight t :defer t)
 (use-package dracula-theme         :straight t :defer t)
@@ -71,7 +71,6 @@
 (use-package challenger-deep-theme :straight t :defer t)
 (use-package rebecca-theme         :straight t :defer t)
 (use-package nord-theme            :straight t :defer t)
-;; (use-package exotica-theme         :straight t)
 (use-package kaolin-themes
   :straight t
   :defer t

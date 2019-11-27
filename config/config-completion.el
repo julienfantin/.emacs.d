@@ -80,12 +80,13 @@
   (company-global-modes
    '(not text-mode message-mode git-commit-mode org-mode magit-status-mode))
   (company-backends
-   '((company-files          ; files & directory
-      company-keywords       ; keywords
+   '((company-files                     ; files & directory
       company-capf
       company-yasnippet
+      company-elisp
       )
-     ;; (company-abbrev company-dabbrev)
+     (company-elisp)
+     (company-abbrev company-dabbrev)
      )
    ;; '((company-capf company-files)
    ;;   (company-elisp)

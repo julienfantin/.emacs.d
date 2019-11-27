@@ -25,11 +25,12 @@
 ;;; Code:
 
 ;; Initialization
+(defvar init--gc-cons-threshold 16777216) ; 16mb
+(defvar init--gc-cons-percentage 0.1)
 
-(defvar init--gc-cons-threshold gc-cons-threshold)
-(defvar init--gc-cons-percentage gc-cons-percentage)
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6)
+
 (add-hook 'after-init-hook
           #'(lambda ()
               (setq gc-cons-threshold init--gc-cons-threshold
@@ -40,6 +41,18 @@
 (add-hook 'after-init-hook
           #'(lambda ()
               (setq file-name-handler-alist init--file-name-handler-alist)))
+
+(defun init--defer-garbage-collection-h ()
+  (setq gc-cons-threshold most-positive-fixnum))
+
+(defun init--restore-garbage-collection-h ()
+  ;; Defer it so that commands launched immediately after will enjoy the
+  ;; benefits.
+  (run-at-time
+   1 nil (lambda () (setq gc-cons-threshold init--gc-cons-threshold))))
+
+(add-hook 'minibuffer-setup-hook #'init--defer-garbage-collection-h)
+(add-hook 'minibuffer-exit-hook #'init--restore-garbage-collection-h)
 
 (require 'cl-lib)
 (require 'cl-macs)
