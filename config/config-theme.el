@@ -71,20 +71,13 @@
 (use-package challenger-deep-theme :straight t :defer t)
 (use-package rebecca-theme         :straight t :defer t)
 (use-package nord-theme            :straight t :defer t)
+(use-package modus-themes          :straight t :defer t)
 (use-package kaolin-themes
   :straight t
   :defer t
   :custom
   (kaolin-themes-comments-style 'bright)
   (kaolin-themes-distinct-company-scrollbar t))
-
-(use-package customize-theme
-  :disabled t
-  :load-path "./lib"
-  :config
-  (setq
-   customize-theme-alist
-   nil   ))
 
 (provide 'config-theme)
 ;;; config-theme.el ends here
