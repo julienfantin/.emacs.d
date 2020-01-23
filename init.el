@@ -72,7 +72,7 @@
   (load-file (expand-file-name "lib/use-config/use-config.el" user-emacs-directory)))
 
 (require 'use-config)
-(require 'private)
+(require 'private nil t)
 
 (require 'no-littering nil t)
 
