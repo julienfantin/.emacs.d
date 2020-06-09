@@ -23,7 +23,7 @@
 ;;
 
 ;;; Code:
-(require 'use-config)
+(require 'use-package)
 
 (use-package go-mode
   :ensure-system-package go

@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(require 'use-config)
+(require 'use-package)
 
 (add-to-list 'exec-path "~/bin")
 (setq default-truncate-lines t)
@@ -84,22 +84,9 @@
   :straight t
   :init (after-init #'global-flycheck-mode))
 
-(use-package ivy-posframe
-  :straight t
-  :custom
-  (ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
-  (ivy-posframe-height 12)
-  (ivy-posframe-min-height 1)
-  (ivy-posframe-border-width 20)
-  :init
-  (defun config-wip-set-ivy-posframe-width (&rest _)
-    (setq ivy-posframe-width (- (frame-total-cols) 20)))
-  (add-hook
-   'window-configuration-change-hook
-   'config-wip-set-ivy-posframe-width)
-  (ivy-posframe-mode 1))
-
 (server-start)
+
+(use-package hercules :straight t)
 
 (provide 'config-wip)
 ;;; config-wip.el ends here

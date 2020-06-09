@@ -23,20 +23,20 @@
 ;;
 
 ;;; Code:
-(require 'use-config)
+(require 'use-package)
 
-(use-config config-ansible :disabled t)
-(use-config config-cl :disabled t)
-(use-config config-clojure)
-(use-config config-clojurescript :disabled t)
-(use-config config-emacs-lisp)
-(use-config config-js)
-(use-config config-nix :disabled t)
-(use-config config-ocaml :disabled t)
-(use-config config-python)
-(use-config config-sql :disabled t)
-(use-config config-web)
-(use-config config-yaml)
+(use-package config-ansible :load-path "./lang" :disabled t)
+(use-package config-cl :load-path "./lang" :disabled t)
+(use-package config-clojure :load-path "./lang")
+(use-package config-clojurescript :load-path "./lang" :disabled t)
+(use-package config-emacs-lisp :load-path "./lang")
+(use-package config-js :load-path "./lang")
+(use-package config-nix :load-path "./lang" :disabled t)
+(use-package config-ocaml :load-path "./lang" :disabled t)
+(use-package config-python :load-path "./lang")
+(use-package config-sql :load-path "./lang" :disabled t)
+(use-package config-web :load-path "./lang")
+(use-package config-yaml :load-path "./lang")
 
 (provide 'config-langs)
 ;;; config-langs.el ends here

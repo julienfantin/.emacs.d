@@ -25,7 +25,7 @@
 ;;
 
 ;;; Code:
-(require 'use-config)
+(require 'use-package)
 
 (use-package lfe-mode
   :straight t

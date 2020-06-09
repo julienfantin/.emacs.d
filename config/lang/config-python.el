@@ -23,7 +23,7 @@
 ;;
 
 ;;; Code:
-(require 'use-config)
+(require 'use-package)
 
 (defvar config-python-lsp-frontend nil)
 (defvar config-python-lsp-backend nil)

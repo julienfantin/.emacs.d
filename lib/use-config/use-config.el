@@ -146,7 +146,7 @@ loading the pacakges."
   (let ((default-directory use-config-load-path))
     (normal-top-level-add-subdirs-to-load-path)))
 
-(use-config-update-path)
+;; (use-config-update-path)
 
 ;; ** Font-lock
 

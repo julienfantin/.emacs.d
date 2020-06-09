@@ -23,7 +23,7 @@
 ;;
 
 ;;; Code:
-(require 'use-config)
+(require 'use-package)
 
 (use-package js2-mode
   :straight t

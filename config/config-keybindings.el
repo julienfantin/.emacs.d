@@ -35,7 +35,7 @@
 ;;
 
 ;;; Code:
-(require 'use-config)
+(require 'use-package)
 (require 'cl-lib)
 
 

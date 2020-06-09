@@ -27,7 +27,7 @@
 ;; TODO: Robust way to sync with `opam switch` commands?
 
 ;;; Code:
-(require 'use-config)
+(require 'use-package)
 (require 'subr-x)
 
 

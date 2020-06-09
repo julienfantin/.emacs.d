@@ -23,7 +23,7 @@
 ;;
 
 ;;; Code:
-(require 'use-config)
+(require 'use-package)
 (require 'config-ocaml)
 
 (defun shell-cmd (cmd)

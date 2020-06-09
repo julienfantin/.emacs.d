@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;
 ;;; Code:
-(require 'use-config)
+(require 'use-package)
 
 
 ;; * Buffer colors

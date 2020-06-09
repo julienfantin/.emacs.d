@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016  Julien Fantin
 
-;; Author: Julien Fantin(require 'use-config) <julienfantin@gmail.com>
+;; Author: Julien Fantin <julienfantin@gmail.com>
 ;; Keywords: vc
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 ;;
 
 ;;; Code:
-(require 'use-config)
+(require 'use-package)
 
 
 ;; * Built-ins

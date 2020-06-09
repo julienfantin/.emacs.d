@@ -56,9 +56,6 @@
 
 (require 'cl-lib)
 (require 'cl-macs)
-;; (require 'package)
-
-;; (setq use-package-verbose t)
 
 
 ;; * Config options
@@ -82,10 +79,10 @@
   ;; Setup elpa
   (load-file (expand-file-name "config/config-straight.el" user-emacs-directory))
   ;; Manually load use-config, it also provide some useful helpers
-  (load-file (expand-file-name "lib/use-config/use-config.el" user-emacs-directory)))
+  (load-file (expand-file-name "lib/use-config/use-config.el" user-emacs-directory))
+  )
 
-(require 'use-config)
-(require 'private nil t)
+(require 'use-package)
 
 (require 'no-littering nil t)
 
@@ -97,64 +94,58 @@
 
 ;; * Configs
 
-;; Load order notes:
-;; - Demand use-config and config-path
-;; - Load keybindings last
-
-
-
-
-(use-config config-theme)
-(use-config config-path)
-(use-config config-browser :disabled t)
-(use-config config-buffers)
-(use-config config-completion)
-(use-config config-debug)
-(use-config config-defaults)
-(use-config config-doc :disabled t)
-(use-config config-editing)
-(use-config config-elpa)
-(use-config config-files)
-(use-config config-font-lock)
-(use-config config-frame :if window-system)
-(use-config config-git)
-(use-config config-gui)
-(use-config config-helm :if (equal 'helm config-completion-system))
-(use-config config-help)
-(use-config config-indentation)
-(use-config config-irc :disabled t)
-(use-config config-ivy :if (equal 'ivy config-completion-system))
-(use-config config-layouts)
-(use-config config-marks)
-(use-config config-modeline :disabled t)
-(use-config config-org :disabled t)
-(use-config config-outlines :disabled t)
-(use-config config-parsers :disabled t)
-(use-config config-persistence)
-(use-config config-prog-mode)
-(use-config config-project)
-(use-config config-prose)
-(use-config config-scratch)
-(use-config config-search)
-(use-config config-sexp)
-(use-config config-shell)
-(use-config config-windows)
+(use-package private :load-path "./lib/")
+(use-package config-theme :load-path "./config")
+(use-package config-path :load-path "./config")
+(use-package config-browser :load-path "./config" :disabled t)
+(use-package config-buffers :load-path "./config")
+(use-package config-completion :load-path "./config")
+(use-package config-debug :load-path "./config")
+(use-package config-defaults :load-path "./config")
+(use-package config-doc :load-path "./config" :disabled t)
+(use-package config-editing :load-path "./config")
+(use-package config-elpa :load-path "./config")
+(use-package config-files :load-path "./config")
+(use-package config-font-lock :load-path "./config")
+(use-package config-frame :load-path "./config" :if window-system)
+(use-package config-git :load-path "./config")
+(use-package config-gui :load-path "./config")
+(use-package config-helm :load-path "./config" :if (equal 'helm config-completion-system))
+(use-package config-help :load-path "./config")
+(use-package config-indentation :load-path "./config")
+(use-package config-irc :load-path "./config" :disabled t)
+(use-package config-ivy :load-path "./config" :if (equal 'ivy config-completion-system))
+(use-package config-layouts :load-path "./config")
+(use-package config-marks :load-path "./config")
+(use-package config-modeline :load-path "./config" :disabled t)
+(use-package config-org :load-path "./config" :disabled t)
+(use-package config-outlines :load-path "./config" :disabled t)
+(use-package config-parsers :load-path "./config" :disabled t)
+(use-package config-persistence :load-path "./config")
+(use-package config-prog-mode :load-path "./config")
+(use-package config-project :load-path "./config")
+(use-package config-prose :load-path "./config")
+(use-package config-scratch :load-path "./config")
+(use-package config-search :load-path "./config")
+(use-package config-sexp :load-path "./config")
+(use-package config-shell :load-path "./config")
+(use-package config-windows :load-path "./config")
 
 ;; ** Langs
 
-(use-config config-langs)
+(use-package config-langs :load-path "./config")
 
 ;; ** Tools
 
-(use-config config-docker :disabled t :defer 2)
+(use-package config-docker :load-path "./config" :disabled t :defer 2)
 
 ;; ** Keybindings
 
-(use-config config-keybindings)
+(use-package config-keybindings :load-path "./config")
 
 ;; ** WIP
 
-(use-config config-wip)
+(use-package config-wip :load-path "./config")
 
 (provide 'init)
 ;;; init.el ends here

@@ -28,8 +28,6 @@
 (require 'tls)
 (require 'gnutls)
 
-(package-initialize)
-
 
 ;; * Package archives
 
@@ -73,11 +71,14 @@
 ;; * Use-package
 
 (defvar use-package-always-defer t)
+
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package)
   (package-install 'bind-key))
+
 (eval-when-compile (require 'use-package))
+
 (require 'bind-key)
 
 ;; * System packages

@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016  Julien Fantin
 
-;; Author: Julien Fantin(require 'use-config) <julienfantin@gmail.com>
+;; Author: Julien Fantin <julienfantin@gmail.com>
 ;; Keywords: convenience, internal
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 ;;
 
 ;;; Code:
-(require 'use-config)
+(require 'use-package)
 
 
 ;; * Packages
@@ -40,19 +40,29 @@
   (ivy-fixed-height-minibuffer t)
   (ivy-initial-inputs-alist nil)
   (ivy-re-builders-alist '((counsel-rg . ivy--regex)))
-  (ivy-use-virtual-buffers t)
-  :config
-  (after 'magit
-    (setq magit-completing-read-function 'ivy-completing-read))
-  (after 'projectile
-    (setq projectile-completion-system 'ivy)))
+  (ivy-use-virtual-buffers t))
+
+(use-package projectile
+  :after ivy
+  :custom
+  (projectile-completion-system 'ivy))
+
+(use-package magit
+  :after ivy
+  :custom
+  (magit-completing-read-function 'ivy-completing-read))
 
 (use-package counsel
   :straight t
   :init (after-init #'counsel-mode)
   :custom
   (counsel-rg-base-command "rg -S -M 200 --no-heading --line-number --color never %%s .")
-  (counsel-find-file-at-point t))
+  (counsel-find-file-at-point t)
+  :config
+  (progn
+    (defun -counsel-todos  ()
+      (interactive)
+      (counsel-rg "TODO|FIXME|HACK|XXX" (projectile-project-root) nil "TODOs:"))))
 
 (use-package counsel-projectile
   :straight t
@@ -61,28 +71,6 @@
   :custom
   (counsel-projectile-remove-current-project t)
   (counsel-projectile-remove-current-buffer t))
-
-(use-package ivy-prescient
-  :straight t
-  :after ivy
-  :init (after-init #'ivy-prescient-mode))
-
-(use-package ivy-rich
-  :straight t
-  :after ivy
-  :init (after-init #'ivy-rich-mode))
-
-;; * Commands
-
-(after 'counsel
-  (defun -counsel-todos  ()
-    (interactive)
-    (counsel-rg "TODO|FIXME|HACK|XXX" (projectile-project-root) nil "TODOs:"))
-
-  (defun -counsel-git-grep-project-history ()
-    (interactive)
-    (let ((default-directory (projectile-project-root)))
-      (counsel-git-grep (concat "git log -p -S%s --no-pager --no-color -- " default-directory)))))
 
 (provide 'config-ivy)
 ;;; config-ivy.el ends here

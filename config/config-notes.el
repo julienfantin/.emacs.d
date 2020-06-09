@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(require 'use-config)
+(require 'use-package)
 
 
 ;; * Paths
