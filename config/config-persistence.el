@@ -35,7 +35,7 @@
   (savehist-autosave-interval 60))
 
 (use-package saveplace
-  :init (setq-default save-place t))
+  :init (after-init #'save-place-mode))
 
 (provide 'config-persistence)
 ;;; config-persistence.el ends here

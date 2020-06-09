@@ -64,12 +64,11 @@
 
 (use-package company-ansible
   :straight t
-  :after ansible
+  :after (ansible company-yasnippet compdef)
   :init
-  (after config-completion
-    (config-completion-add-backends
-     'yaml-mode
-     (config-completion-backend-with-yasnippet #'company-ansible))))
+  (compdef
+   :modes #'yaml-mode
+   :company (company-ansible :with company-yasnippet)))
 
 (provide 'config-ansible)
 ;;; config-ansible.el ends here

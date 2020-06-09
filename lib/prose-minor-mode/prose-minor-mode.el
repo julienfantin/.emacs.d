@@ -9,14 +9,6 @@
 
 ;; * Customs
 
-(defcustom prose-minor-mode-major-modes
-  '((text-mode . text-mode)
-    (org . org-mode)
-    (markdown-mode . markdown-mode))
-  "Alist of filename to major mode."
-  :type 'alist
-  :group 'prose)
-
 (defcustom prose-minor-mode-line-spacing 0.25
   "Line spacing."
   :type 'float
@@ -137,23 +129,16 @@
     (prose-minor-mode-toggle-spell-check)))
 
 
-;; * Global minor mode
+;; * Integrations
 
-(defun prose-minor-mode-make-hook (mode)
-  "Return a hook symbol for 'MODE'."
-  (intern (format "%s-hook" (symbol-name mode))))
+(use-package text-mode
+  :hook ((text-mode . prose-minor-mode)))
 
-(define-minor-mode prose-global-mode
-  "Global minor mode for prose"
-  :lighter nil
-  :keymap nil
-  (dolist (binding prose-minor-mode-major-modes)
-    (let ((file (car binding))
-          (hook (prose-minor-mode-make-hook (cdr binding))))
-      (after file
-        (if prose-minor-mode
-            (add-hook hook #'prose-minor-mode)
-          (remove-hook hook #'prose-minor-mode))))))
+(use-package org
+  :hook ((org-mode . prose-minor-mode)))
+
+(use-package markdown-mode
+  :hook ((markdown-mode . prose-minor-mode)))
 
 (provide 'prose-minor-mode)
 ;;; prose-minor-mode.el ends here

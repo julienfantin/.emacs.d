@@ -47,21 +47,24 @@
     ;; special will treat outlines as part of the normal
     (when (bound-and-true-p lispy-outline)
       (set (make-local-variable 'lispy-outline) (outshine-calc-outline-regexp))))
-  (defun config-outline-lispy-compat ()
-    (when outline-minor-mode
-      (outline-minor-mode -1)
-      (outline-minor-mode 1)))
   (defun -swiper-outlines ()
     (interactive)
     (swiper (outshine-calc-outline-regexp)))
-  :config
-  (after 'lispy
-    (add-hook 'lispy-mode-hook 'config-outline-lispy-compat))
   :custom
   (outshine-fontify-whole-heading-line t)
   (outline-cycle-emulate-tab t))
 
 (use-package outline-magic :straight t)
+
+(use-package lispy
+  :after outline-minor-mode
+  :config
+  (defun config-outline-lispy-compat ()
+    (when outline-minor-mode
+      (outline-minor-mode -1)
+      (outline-minor-mode 1)))
+  :hook
+  ((lispy-mode . config-outline-lispy-compat)))
 
 (provide 'config-outlines)
 ;;; config-outlines.el ends here

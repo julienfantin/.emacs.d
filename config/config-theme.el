@@ -71,7 +71,8 @@
 (use-package challenger-deep-theme :straight t :defer t)
 (use-package rebecca-theme         :straight t :defer t)
 (use-package nord-theme            :straight t :defer t)
-(use-package modus-themes          :straight t :defer t)
+(use-package modus-vivendi-theme   :straight t :defer t)
+(use-package modus-operandi-theme  :straight t :defer t)
 (use-package kaolin-themes
   :straight t
   :defer t

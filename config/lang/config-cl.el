@@ -25,16 +25,18 @@
 ;;; Code:
 
 (require 'use-package)
-(require 'config-completion)
+
 
 (use-package slime :straight t)
 
 (use-package slime-company
   :straight t
-  :init
-  (after 'slime
-    (slime-setup '(slime-company))
-    (config-completion-add-backends 'slime-mode 'slime-company)))
+  :config
+  (slime-setup '(slime-company)))
+
+(use-package compdef
+  :config
+  (compdef :modes #'slime-mode :company (slime-company)))
 
 (provide 'config-cl)
 ;;; config-cl.el ends here

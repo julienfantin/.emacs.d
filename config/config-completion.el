@@ -112,6 +112,8 @@
   :custom
   (company-elisp-detect-function-context nil))
 
+(use-package compdef :straight t)
+
 ;; this frontend properly renders propertized text, variable pitch font and
 ;; doesn't have to it within the parent-frame
 (use-package company-box

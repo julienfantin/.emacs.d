@@ -85,30 +85,9 @@
   :custom
   (elpy-get-info-from-shell t))
 
-
-;; breaks on save if not installed
-;; (use-package isortify
-;;   :disabled t
-;;   :straight t
-;;   :hook (python-mode . isortify-mode))
-
 (use-package py-autopep8
   :straight t
   :hook (python-mode . py-autopep8-enable-on-save))
-
-(use-package importmagic
-  :disabled t
-  :straight t
-  :hook (python-mode . importmagic-mode)
-  :config
-  (after isortify
-    (defun config-python--after-importmagic (&rest _)
-      (let ((python-shell-interpreter "python")
-            (python-shell-interpreter-args "-i"))
-        (unwind-protect
-            (isortify-buffer))))
-    (advice-add #'importmagic-fix-symbol-at-point :after #'config-python--after-importmagic)
-    (advice-add #'importmagic-fix-imports :after #'config-python--after-importmagic)))
 
 (defvar config-python-autoflake-before-save-enabled nil)
 
@@ -136,8 +115,8 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
   "Register a buffer local `before-save-hook' for `config-python-autoflake-before-save'."
   (add-hook 'before-save-hook #'config-python-autoflake-before-save nil t))
 
-(after python
-  (add-hook 'before-save-hook 'config-python-autoflake-turn-on))
+(use-package python
+  :hook ((before-save-hook . config-python-autoflake-turn-on)))
 
 (use-package pytest
   :disabled t

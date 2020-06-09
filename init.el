@@ -1,4 +1,4 @@
-;;; init.el --- Config init                          -*- lexical-binding: t; -*-
+ ;;; init.el --- Config init                          -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2016  Julien Fantin
 
@@ -25,34 +25,6 @@
 ;;; Code:
 
 ;; Initialization
-(defvar init--gc-cons-threshold 16777216) ; 16mb
-(defvar init--gc-cons-percentage 0.1)
-
-(setq gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 0.6)
-
-(add-hook 'after-init-hook
-          #'(lambda ()
-              (setq gc-cons-threshold init--gc-cons-threshold
-                    gc-cons-percentage init--gc-cons-percentage)))
-
-(defvar init--file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
-(add-hook 'after-init-hook
-          #'(lambda ()
-              (setq file-name-handler-alist init--file-name-handler-alist)))
-
-(defun init--defer-garbage-collection-h ()
-  (setq gc-cons-threshold most-positive-fixnum))
-
-(defun init--restore-garbage-collection-h ()
-  ;; Defer it so that commands launched immediately after will enjoy the
-  ;; benefits.
-  (run-at-time
-   1 nil (lambda () (setq gc-cons-threshold init--gc-cons-threshold))))
-
-(add-hook 'minibuffer-setup-hook #'init--defer-garbage-collection-h)
-(add-hook 'minibuffer-exit-hook #'init--restore-garbage-collection-h)
 
 (require 'cl-lib)
 (require 'cl-macs)
@@ -64,6 +36,18 @@
 
 
 ;; * Bootstrap
+;; ** Config helpers
+
+(defmacro comment (&rest body) "Ignore 'BODY'." nil)
+
+(defun after-init (&rest syms)
+  "When called during init, add 'SYMS' to 'after-init-hook' otherwise call 'SYMS'."
+  (when-let (sym (car syms))
+    (if after-init-time
+        (funcall sym)
+      (add-hook 'after-init-hook sym))
+    (apply 'after-init (cdr syms))))
+
 ;; ** Path
 
 (setq user-emacs-directory (expand-file-name "~/.emacs.d/"))
@@ -77,10 +61,7 @@
   ;; Setup various paths before we do anything, use-config depends on this
   (load-file (expand-file-name "config/config-path.el" user-emacs-directory))
   ;; Setup elpa
-  (load-file (expand-file-name "config/config-straight.el" user-emacs-directory))
-  ;; Manually load use-config, it also provide some useful helpers
-  (load-file (expand-file-name "lib/use-config/use-config.el" user-emacs-directory))
-  )
+  (load-file (expand-file-name "config/config-straight.el" user-emacs-directory)))
 
 (require 'use-package)
 
@@ -120,7 +101,7 @@
 (use-package config-modeline :load-path "./config" :disabled t)
 (use-package config-org :load-path "./config" :disabled t)
 (use-package config-outlines :load-path "./config" :disabled t)
-(use-package config-parsers :load-path "./config" :disabled t)
+(use-package config-parsers :load-path "./config")
 (use-package config-persistence :load-path "./config")
 (use-package config-prog-mode :load-path "./config")
 (use-package config-project :load-path "./config")

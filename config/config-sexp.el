@@ -60,17 +60,23 @@
 ;; * Pulse eval
 
 (use-package pulse-eval
+  :load-path "./lib"
   :after lisp-minor-mode
   :hook (lisp-minor-mode . pulse-eval-mode)
   :custom
   (pulse-eval-iterations 1)
-  (pulse-eval-delay .13))
+  (pulse-eval-delay .13)
+  :config
+  (add-to-list
+   'pulse-eval-advices-alist
+   (cons 'lispy-mode '((lispy-eval . pulse-eval-highlight-forward-sexp-advice)))))
 
 
 ;; * Paredit
 
 (use-package paredit
   :straight t
+  :after lispy-mnemonic
   :commands paredit-mode
   :functions
   (paredit-wrap-round paredit-wrap-square paredit-wrap-curly)
@@ -85,65 +91,63 @@
    paredit-wrap-curly
    paredit-kill
    paredit-splice-sexp)
-  :init
+  :config
   (progn
-    (after 'lispy
-      (defun paredit-wrap-curly-lispy ()
-        "Workaround inconsistent point position after 'lispy-wrap-braces'."
-        (interactive)
-        (paredit-wrap-curly)
-        (lispy-space 1))
-      (defun paredit-wrap-round-from-behind ()
-        (interactive)
-        (forward-sexp -1)
-        (paredit-wrap-round)
-        (lispy-space 1))
-      (defun paredit-wrap-square-from-behind ()
-        (interactive)
-        (forward-sexp -1)
-        (paredit-wrap-square)
-        (lispy-space 1))
-      (defun paredit-wrap-curly-from-behind ()
-        (interactive)
-        (forward-sexp -1)
-        (paredit-wrap-curly)
-        (lispy-space 1))
-      (let ((map lispy-mode-map))
-        (bind-keys
-         :map map
-         ;; lispy's sometimes don't work when inside a sexp
-         ([remap lispy-forward-slurp-sexp]  . paredit-forward-slurp-sexp)
-         ([remap lispy-forward-barf-sexp]   . paredit-forward-barf-sexp)
-         ([remap lispy-backward-slurp-sexp] . paredit-backward-slurp-sexp)
-         ([remap lispy-backward-barf-sexp]  . paredit-backward-barf-sexp)
-         ;; lispy's can leave unbalanced strings
-         ([remap lispy-kill]                . paredit-kill)
-         ;; lispy's doesn't work contextually in strings
-         ([remap lispy-splice]              . paredit-splice-sexp))))
-
-    (after 'lispy-mnemonic
+    (defun paredit-wrap-curly-lispy ()
+      "Workaround inconsistent point position after 'lispy-wrap-braces'."
+      (interactive)
+      (paredit-wrap-curly)
+      (lispy-space 1))
+    (defun paredit-wrap-round-from-behind ()
+      (interactive)
+      (forward-sexp -1)
+      (paredit-wrap-round)
+      (lispy-space 1))
+    (defun paredit-wrap-square-from-behind ()
+      (interactive)
+      (forward-sexp -1)
+      (paredit-wrap-square)
+      (lispy-space 1))
+    (defun paredit-wrap-curly-from-behind ()
+      (interactive)
+      (forward-sexp -1)
+      (paredit-wrap-curly)
+      (lispy-space 1))
+    (let ((map lispy-mode-map))
       (bind-keys
-       :map lispy-mnemonic-mode-map-special
-       ("M-{" . paredit-wrap-curly-lispy)
-       ("M-)" . paredit-wrap-round-from-behind)
-       ("M-]" . paredit-wrap-square-from-behind)
-       ("M-}" . paredit-wrap-curly-from-behind))
-      (dolist (map (list lispy-mnemonic-mode-map
-                         lispy-mnemonic-mode-map-base
-                         lispy-mnemonic-mode-map-special))
-        (bind-keys
-         :map map
-         ;; Delete trailing parens
-         ("C-<backspace>"                   . backward-delete-char)
-         ;; lispy's sometimes don't work when inside a sexp
-         ([remap lispy-forward-slurp-sexp]  . paredit-forward-slurp-sexp)
-         ([remap lispy-forward-barf-sexp]   . paredit-forward-barf-sexp)
-         ([remap lispy-backward-slurp-sexp] . paredit-backward-slurp-sexp)
-         ([remap lispy-backward-barf-sexp]  . paredit-backward-barf-sexp)
-         ;; lispy's can leave unbalanced strings
-         ([remap lispy-kill]                . paredit-kill)
-         ;; lispy's doesn't work contextually in strings
-         ([remap lispy-splice]              . paredit-splice-sexp))))))
+       :map map
+       ;; lispy's sometimes don't work when inside a sexp
+       ([remap lispy-forward-slurp-sexp]  . paredit-forward-slurp-sexp)
+       ([remap lispy-forward-barf-sexp]   . paredit-forward-barf-sexp)
+       ([remap lispy-backward-slurp-sexp] . paredit-backward-slurp-sexp)
+       ([remap lispy-backward-barf-sexp]  . paredit-backward-barf-sexp)
+       ;; lispy's can leave unbalanced strings
+       ([remap lispy-kill]                . paredit-kill)
+       ;; lispy's doesn't work contextually in strings
+       ([remap lispy-splice]              . paredit-splice-sexp)))
+
+    (bind-keys
+     :map lispy-mnemonic-mode-map-special
+     ("M-{" . paredit-wrap-curly-lispy)
+     ("M-)" . paredit-wrap-round-from-behind)
+     ("M-]" . paredit-wrap-square-from-behind)
+     ("M-}" . paredit-wrap-curly-from-behind))
+    (dolist (map (list lispy-mnemonic-mode-map
+                       lispy-mnemonic-mode-map-base
+                       lispy-mnemonic-mode-map-special))
+      (bind-keys
+       :map map
+       ;; Delete trailing parens
+       ("C-<backspace>"                   . backward-delete-char)
+       ;; lispy's sometimes don't work when inside a sexp
+       ([remap lispy-forward-slurp-sexp]  . paredit-forward-slurp-sexp)
+       ([remap lispy-forward-barf-sexp]   . paredit-forward-barf-sexp)
+       ([remap lispy-backward-slurp-sexp] . paredit-backward-slurp-sexp)
+       ([remap lispy-backward-barf-sexp]  . paredit-backward-barf-sexp)
+       ;; lispy's can leave unbalanced strings
+       ([remap lispy-kill]                . paredit-kill)
+       ;; lispy's doesn't work contextually in strings
+       ([remap lispy-splice]              . paredit-splice-sexp)))))
 
 
 ;; * Lispy
@@ -152,13 +156,7 @@
   :straight t
   :config
   (progn
-    (after 'outline-magic
-      (define-key lispy-mode-map [remap lispy-outline-left]  'outline-promote)
-      (define-key lispy-mode-map [remap lispy-outline-right] 'outline-demote))
-    (after 'pulse-eval
-      (add-to-list
-       'pulse-eval-advices-alist
-       (cons 'lispy-mode '((lispy-eval . pulse-eval-highlight-forward-sexp-advice))))))
+    )
   :custom
   (lispy-no-permanent-semantic t)
   (lispy-close-quotes-at-end-p t)
@@ -172,15 +170,17 @@
   (lispy-safe-delete t)
   (lispy-safe-paste t))
 
+(use-package outline-magic
+  :straight t
+  :after lispy
+  :config
+  (define-key lispy-mode-map [remap lispy-outline-left]  'outline-promote)
+  (define-key lispy-mode-map [remap lispy-outline-right] 'outline-demote))
+
 (use-package lispy-mnemonic
   :commands lispy-mnemonic-mode
   :after lisp-minor-mode
-  :hook (lisp-minor-mode . lispy-mnemonic-mode)
-  :config
-  (after 'outline-magic
-    ;; lispy's outline promotion is hardwired to it's comment convention
-    (define-key lispy-mnemonic-mode-map [remap lispy-outline-left] 'outline-promote)
-    (define-key lispy-mnemonic-mode-map [remap lispy-outline-right] 'outline-demote)))
+  :hook ((lisp-minor-mode . lispy-mnemonic-mode)))
 
 (provide 'config-sexp)
 ;;; config-sexp.el ends here

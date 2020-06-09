@@ -35,11 +35,16 @@
         ("C-c C-k" . -eval-buffer)
         ("C-c C-p" . pp-eval-last-sexp)))
 
-(after (simple paredit)
-  (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
+(use-package simple
+  :config
+  (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode))
+
+(use-package paredit
+  :config
   (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
 
-(after 'flycheck
+(use-package flycheck
+  :config
   (add-to-list 'flycheck-disabled-checkers 'emacs-lisp-checkdoc))
 
 

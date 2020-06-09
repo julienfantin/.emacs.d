@@ -32,9 +32,7 @@
 (use-package flycheck
   :straight t
   :init (after-init #'global-flycheck-mode)
-  :commands (flycheck-mode flycheck-list-errors -counsel-flycheck)
-  :bind (:map flycheck-mode-map
-              ("C-c !" . -counsel-flycheck))
+  :commands (flycheck-mode flycheck-list-errors)
   :defines
   (flycheck-error-list-buffer
    flycheck-display-errors-function)
@@ -55,53 +53,68 @@
     (defun config-parsers-flycheck-select-window ()
       (select-window (get-buffer-window flycheck-error-list-buffer)))
     (advice-add #'flycheck-list-errors :after #'config-parsers-flycheck-select-window)
-    ;; Conditionally disabled error messages
+    ;; Conditionally disabled err messages
     (defvar config-parsers-flycheck-display-errors-function #'flycheck-display-error-messages)
     (defun config-parsers-flycheck-turn-messages-off (&optional _)
       (setq flycheck-display-errors-function nil))
     (defun config-parsers-flycheck-turn-messages-on (&optional _)
       (setq
        flycheck-display-errors-function config-parsers-flycheck-display-errors-function)
-      (flycheck-buffer))
-    (defun config-parsers-flycheck-edebug-toggle ()
-      (if (bound-and-true-p edebug-mode)
-          (config-parsers-flycheck-turn-messages-off)
-        (config-parsers-flycheck-turn-messages-on)))
-    ;; Edebug prints to the echo area as well
-    (after 'edebug
-      (add-hook 'edebug-mode-hook #'config-parsers-flycheck-edebug-toggle))
-    ;; Let company display documentation in the modeline
-    (after 'company
-      (add-hook 'company-completion-started-hook #'config-parsers-flycheck-turn-messages-off)
-      (add-hook 'company-completion-finished-hook #'config-parsers-flycheck-turn-messages-on)
-      (add-hook 'company-completion-cancelled-hook #'config-parsers-flycheck-turn-messages-on))
-    (after 'counsel
-      ;; https://github.com/nathankot/dotemacs/blob/ef76773c69cac36c04935edcfa631052bd2c679d/init.el#L566
-      (defvar -counsel-flycheck-history nil
-        "History for `-counsel-flycheck'")
-      (defun -counsel-flycheck ()
-        (interactive)
-        (if (not (bound-and-true-p flycheck-mode))
-            (message "Flycheck mode is not available or enabled")
-          (ivy-read "Flycheck: "
-                    (let ((source-buffer (current-buffer)))
-                      (with-current-buffer (or (get-buffer flycheck-error-list-buffer)
-                                               (progn
-                                                 (with-current-buffer
-                                                     (get-buffer-create flycheck-error-list-buffer)
-                                                   (flycheck-error-list-mode)
-                                                   (current-buffer))))
-                        (flycheck-error-list-set-source source-buffer)
-                        (flycheck-error-list-reset-filter)
-                        (revert-buffer t t t)
-                        (split-string (buffer-string) "\n" t " *")))
-                    :action (lambda (s &rest _)
-                              (-when-let* ( (error (get-text-property 0 'tabulated-list-id s))
-                                            (pos (flycheck-error-pos error)) )
-                                (goto-char (flycheck-error-pos error))))
-                    :history '-counsel-flycheck-history)))))
+      (flycheck-buffer)))
   :custom
   (flycheck-emacs-lisp-load-path 'inherit))
+
+(use-package flycheck-posframe
+  :straight t
+  :custom
+  (flycheck-posframe-border-width 20)
+  :hook ((flycheck-mode . flycheck-posframe-mode)))
+
+(use-package company
+  ;; Let company display documentation in the modeline
+  :hook (((company-completion-started  . config-parsers-flycheck-turn-messages-off)
+          (company-completion-finished  . config-parsers-flycheck-turn-messages-on)
+          (company-completion-cancelled  . config-parsers-flycheck-turn-messages-on))))
+
+(use-package counsel
+  :after flycheck
+  :bind (("C-c l" . -counsel-flycheck))
+  :preface
+  (defvar -counsel-flycheck-history nil
+    "History for `-counsel-flycheck'")
+  :config
+  ;; https://github.com/nathankot/dotemacs/blob/ef76773c69cac36c04935edcfa631052bd2c679d/init.el#L566
+  (defun -counsel-flycheck ()
+    (interactive)
+    (if (not (bound-and-true-p flycheck-mode))
+        (message "Flycheck mode is not available or enabled")
+      (ivy-read "Flycheck: "
+                (let ((source-buffer (current-buffer)))
+                  (with-current-buffer (or (get-buffer flycheck-error-list-buffer)
+                                           (progn
+                                             (with-current-buffer
+                                                 (get-buffer-create flycheck-error-list-buffer)
+                                               (flycheck-error-list-mode)
+                                               (current-buffer))))
+                    (flycheck-error-list-set-source source-buffer)
+                    (flycheck-error-list-reset-filter)
+                    (revert-buffer t t t)
+                    (split-string (buffer-string) "\n" t " *")))
+                :action (lambda (_s &rest _)
+                          (-when-let* ((err (get-text-property 0 'tabulated-list-id s))
+                                       (pos (flycheck-error-pos err)) )
+                            (goto-char (flycheck-error-pos err))))
+                :history '-counsel-flycheck-history))))
+
+(use-package edebug
+  :after flycheck
+  :config
+  (defun config-parsers-flycheck-edebug-toggle ()
+    "Turn off flycheck while edebug is on since they conflict over the echo area."
+    (if (bound-and-true-p edebug-mode)
+        (config-parsers-flycheck-turn-messages-off)
+      (config-parsers-flycheck-turn-messages-on)))
+  :hook ((edebug-mode . config-parsers-flycheck-edebug-toggle)))
 
 (provide 'config-parsers)
 ;;; config-parsers.el ends here

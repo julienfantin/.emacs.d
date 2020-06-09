@@ -29,65 +29,38 @@
 ;; * Built-ins
 
 (use-package sql
-  :config
-  (progn
-    (after 'aggressive-indent
-      (add-hook 'sql-mode-hook #'aggressive-indent-mode))
-    (after 'paredit
-      (add-hook 'sql-mode-hook #'paredit-mode))
-    (setq sql-product 'postgres
-          sql-send-terminator t)))
+  :custom
+  (sql-product 'postgres)
+  (sql-send-terminator t))
+
+(use-package paredit
+  :after sql
+  :hook ((sql-mode . paredit-mode)))
+
+(use-package aggressive-indent
+  :after sql
+  :hook ((sql-mode . aggressive-indent-mode)))
 
 
 ;; * Indentation
 
 (use-package sql-indent
   :straight t
-  :init
-  (progn
-    (after 'sql  (require 'sql-indent))
-    (after 'edbi (require 'sql-indent)))
-  :config
-  (setq sql-indent-offset 2
-        sql-indent-first-column-regexp
-        (concat "\\(^\\s-*"
-                (regexp-opt '("with" "window" "inner" "left" "outer" "right"
-                              "select" "update" "insert" "delete"
-                              "union" "intersect"
-                              "from" "where" "into" "group" "having" "order"
-                              "set"
-                              "create" "drop" "truncate"
-                              "begin" "end" "lock" "commit"
-                              "alter" "add" "returning"
-                              "copy" "set" "--" "\\^L") t)
-                "\\(\\b\\|\\s-\\)\\)\\|\\(^```$\\)")))
-
-
-;; * EDBI
-
-;; Install:
-;; sudo cpan RPC::EPC::Service DBI DBD::Pg
-;; perl -MCPAN -e'install DBD::Pg'
-;; Connect: dbi:Pg:dbname=mydb
-
-(use-package edbi
-  :straight t
-  :config
-  (add-hook 'edbi:sql-mode-hook #'(lambda () (run-hooks 'sql-mode-hook))))
-
-(use-package edbi-minor-mode
-  :straight t
-  :init
-  (after 'sql
-    (add-hook 'sql-mode-hook #'edbi-minor-mode)))
-
-(use-package company-edbi
-  :straight t
-  :commands (company-edbi)
-  :init
-  (after (sql company config-completion)
-    (add-hook 'sql-mode-hook #'company-mode)
-    (add-to-list 'config-completion-backends-alist #'company-edbi)))
+  :after sql
+  :custom
+  (sql-indent-offset 2)
+  (sql-indent-first-column-regexp
+   (concat "\\(^\\s-*"
+           (regexp-opt '("with" "window" "inner" "left" "outer" "right"
+                         "select" "update" "insert" "delete"
+                         "union" "intersect"
+                         "from" "where" "into" "group" "having" "order"
+                         "set"
+                         "create" "drop" "truncate"
+                         "begin" "end" "lock" "commit"
+                         "alter" "add" "returning"
+                         "copy" "set" "--" "\\^L") t)
+           "\\(\\b\\|\\s-\\)\\)\\|\\(^```$\\)")))
 
 (provide 'config-sql)
 ;;; config-sql.el ends here

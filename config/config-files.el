@@ -71,11 +71,13 @@
   :straight t
   :demand t
   :config
-  (progn
-    (setq auto-save-file-name-transforms
-	  `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
-    (after 'recentf
-      (add-to-list 'recentf-exclude no-littering-var-directory))))
+  (setq auto-save-file-name-transforms
+   `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+
+(use-package recentf
+  :after no-littering
+  :config
+  (add-to-list 'recentf-exclude no-littering-var-directory))
 
 (use-package vlf-setup :ensure vlf)
 

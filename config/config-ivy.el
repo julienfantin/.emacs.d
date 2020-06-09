@@ -42,11 +42,6 @@
   (ivy-re-builders-alist '((counsel-rg . ivy--regex)))
   (ivy-use-virtual-buffers t))
 
-(use-package projectile
-  :after ivy
-  :custom
-  (projectile-completion-system 'ivy))
-
 (use-package magit
   :after ivy
   :custom

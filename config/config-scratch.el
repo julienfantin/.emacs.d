@@ -33,7 +33,7 @@
   "Initialize the *scratch* buffer."
   (when-let (buffer (get-buffer "*scratch*"))
     (with-current-buffer buffer
-      (after 'elisp-mode
+      (when (require 'elisp-mode nil t)
         (emacs-lisp-mode)))))
 
 (use-package persistent-scratch

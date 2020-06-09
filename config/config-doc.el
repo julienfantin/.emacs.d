@@ -46,14 +46,16 @@
   :hook (prog-mode . eldoc-mode)
   :custom
   (eldoc-echo-area-use-multiline-p t)
-  (eldoc-idle-delay .5)
+  (eldoc-idle-delay .5))
+
+(use-package paredit
+  :after eldoc
   :config
-  (after 'paredit
-    (eldoc-add-command
-     'paredit-backward
-     'paredit-forward
-     'paredit-backward-delete
-     'paredit-close-round)))
+  (eldoc-add-command
+   'paredit-backward
+   'paredit-forward
+   'paredit-backward-delete
+   'paredit-close-round))
 
 (use-package know-your-http-well :straight t)
 

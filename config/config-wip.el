@@ -31,12 +31,14 @@
 
 ;; * Packages fixes
 
-(after 'cider-debug
+(use-package cider-debug
+  :after eldoc-mode
+  :preface
   (defun -cider-debug-no-eldoc ()
     (if (bound-and-true-p cider--debug-mode)
         (eldoc-mode -1)
       (eldoc-mode 1)))
-  (add-hook 'cider--debug-mode-hook '-cider-debug-no-eldoc))
+  :hook ((cider--debug-mode . -cider-debug-no-eldoc)))
 
 ;; * UI tweaks
 ;; ** Show paren expression transparency hook
@@ -70,19 +72,6 @@
 
 (setq-default line-spacing 5)
 
-(use-package doom-modeline
-  :straight t
-  :init (after-init #'doom-modeline-mode))
-
-(use-package flycheck-posframe
-  :straight t
-  :custom
-  (flycheck-posframe-border-width 20)
-  :hook ((flycheck-mode . flycheck-posframe-mode)))
-
-(use-package flycheck
-  :straight t
-  :init (after-init #'global-flycheck-mode))
 
 (server-start)
 

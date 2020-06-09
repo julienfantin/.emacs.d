@@ -64,12 +64,6 @@
         ("C-c C-z" . cider-switch-to-repl-buffer))
   :hook
   ((cider-mode cider-repl-mode) . eldoc-mode)
-  :config
-  (after (lispy-mnemonic cider-interaction)
-    (defun config-clojure--set-lispy-pp-eval-function ()
-      (setq-local lispy-pp-eval-sexp-function #'(lambda (&optional _) (cider-pprint-eval-last-sexp))))
-    (add-hook 'cider-mode-hook #'config-clojure--set-lispy-pp-eval-function)
-    (add-hook 'cider-repl-mode-hook #'config-clojure--set-lispy-pp-eval-function))
   :custom
   (cider-preferred-build-tool 'clojure-cli)
   (cider-dynamic-indentation nil)
@@ -110,6 +104,14 @@
 
 (use-package cider-debug
   :custom (cider-debug-display-locals t))
+
+(use-package lispy-mnemonic
+  :after cider-interaction
+  :config
+  (defun config-clojure--set-lispy-pp-eval-function ()
+    (setq-local lispy-pp-eval-sexp-function #'(lambda (&optional _) (cider-pprint-eval-last-sexp))))
+  :hook ((cider-mode . config-clojure--set-lispy-pp-eval-function)
+         (cider-repl-mode . config-clojure--set-lispy-pp-eval-function)))
 
 
 ;; * clj-refactor

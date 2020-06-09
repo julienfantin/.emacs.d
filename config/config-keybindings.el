@@ -421,8 +421,6 @@ hyper when it's used as a modifier."
 
 ;; ** Remappings
 
-(after 'persp-mode (config-keybindings-unbind-keymap persp-key-map))
-
 (bind-keys
  ("C-z"                           . nil)
  ("C-x C-z"                       . nil)
@@ -462,13 +460,12 @@ hyper when it's used as a modifier."
  "C-v" 'find-variable
  "C-l" 'find-library)
 
-(after 'org
-  (bind-keys
-   :map org-mode-map
-   ("C-M-g"          . worf-goto)
-   ("C-M-<return>"   . org-insert-subheading)
-   ("C-M-S-<return>" . org-insert-todo-subheading)
-   ("C-M-u"          . org-up-heading-safe)))
+(use-package org
+  :bind
+  ((:map org-mode-map
+         ("C-M-<return>"   . org-insert-subheading)
+         ("C-M-S-<return>" . org-insert-todo-subheading)
+         ("C-M-u"          . org-up-heading-safe))))
 
 
 ;; * Keymaps
