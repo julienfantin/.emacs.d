@@ -127,7 +127,6 @@
   ;; Search doesn't scroll to focus the current selection
   (company-search-filtering t))
 
-
 (use-package company-prescient
   :disabled t
   :straight t

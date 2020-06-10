@@ -15,9 +15,9 @@
   :straight t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package page-break-lines
+(use-package form-feed
   :straight t
-  :hook (prog-mode . page-break-lines-mode))
+  :hook (prog-mode . form-feed-mode))
 
 (use-package hl-todo
   :straight t
