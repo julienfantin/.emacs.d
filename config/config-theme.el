@@ -71,8 +71,21 @@
 (use-package challenger-deep-theme :straight t :defer t)
 (use-package rebecca-theme         :straight t :defer t)
 (use-package nord-theme            :straight t :defer t)
-(use-package modus-vivendi-theme   :straight t :defer t)
-(use-package modus-operandi-theme  :straight t :defer t)
+
+(use-package modus-operandi-theme
+  :straight t
+  :defer t
+  :custom
+  (modus-operandi-theme-slanted-constructs t)
+  (modus-operandi-theme-bold-constructs t))
+
+(use-package modus-vivendi-theme
+  :straight t
+  :defer t
+  :custom
+  (modus-vivendi-theme-slanted-constructs t)
+  (modus-vivendi-theme-bold-constructs t))
+
 (use-package kaolin-themes
   :straight t
   :defer t
