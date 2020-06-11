@@ -77,6 +77,7 @@
           (company-completion-cancelled  . config-parsers-flycheck-turn-messages-on))))
 
 (use-package counsel
+  :if (equal 'ivy config-completion-system)
   :after flycheck
   :bind (("C-c l" . -counsel-flycheck))
   :preface

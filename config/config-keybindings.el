@@ -136,12 +136,13 @@ hyper when it's used as a modifier."
 
 ;; ** (a) App
 
-(general-define-key
- :prefix "C-c"
- :infix "a"
- "f"     '(counsel-faces :which-key "faces")
- "t"     '(counsel-load-theme :which-key "theme")
- "p"     '(counsel-package :which-key "package"))
+(when (equal 'ivy config-completion-system)
+  (general-define-key
+   :prefix "C-c"
+   :infix "a"
+   "f"     '(counsel-faces :which-key "faces")
+   "t"     '(counsel-load-theme :which-key "theme")
+   "p"     '(counsel-package :which-key "package")))
 
 ;; ** (b) Buffers
 
@@ -205,14 +206,19 @@ hyper when it's used as a modifier."
 (general-define-key
  :prefix "C-c"
  :infix "f"
- "C-c f" '(counsel-find-file :which-key "find-file")
- "f"     '(counsel-find-file :which-key "find-file")
  "h"     '(helm-hunks :which-key "hunks")
- "e"     '(-counsel-flycheck :which-key "flycheck")
- "r"     '(counsel-rg :which-key "ripgrep")
- "g"     '(counsel-git-grep :which-key "git-grep")
- "p"     '(projectile-find-file :which-key "(projectile) find-file")
- "t"     '(-counsel-todos :which-key "todos"))
+ "p"     '(projectile-find-file :which-key "(projectile) find-file"))
+
+(when (equal 'ivy config-completion-system)
+  (general-define-key
+   :prefix "C-c"
+   :infix "f"
+   "C-c f" '(counsel-find-file :which-key "find-file")
+   "f"     '(counsel-find-file :which-key "find-file")
+   "e"     '(-counsel-flycheck :which-key "flycheck")
+   "r"     '(counsel-rg :which-key "ripgrep")
+   "g"     '(counsel-git-grep :which-key "git-grep")
+   "t"     '(-counsel-todos :which-key "todos")))
 
 ;; ** (v) Version control
 
@@ -352,62 +358,13 @@ hyper when it's used as a modifier."
  "9" '(aw-switch-to-window-9 :which-key "window-9")
  "p" '(projectile-command-map :which-key "projectile"))
 
-;; ** (g) Goto
-
-(defvar hydra-goto-pre-pos nil)
-
-(defun hydra-goto-init ()
-  (setq hydra-goto-pre-pos (point)))
-
-(defun hydra-goto-reset ()
-  (interactive)
-  (goto-char hydra-goto-pre-pos))
-
-(defhydra hydra-goto
-  (:color blue :body-pre (hydra-goto-init))
-  ;; Positions
-  ("C-g" hydra-goto-reset :exit t)
-  ("M-g" goto-line "line")
-  ("g" avy-goto-line "avy-line")
-  ("/" link-hint-open-link "link")
-  ("i" counsel-imenu "imenu")
-  ("I" ivy-imenu-anywhere "imenu-anywhere")
-  ("e" -counsel-flycheck "flycheck")
-  ;; Pages
-  ("p" ivy-pages "pages")
-  ("[" backward-page "back-page" :exit nil)
-  ("]" forward-page "forw-page" :exit nil))
-
 ;; ** (d) Documentation
 
-(general-define-key
- :prefix "C-c"
- :infix "d"
- "SPC" 'counsel-dash)
-
-;; ** (o) Outlines
-
-(defhydra hydra-outline
-  (:body-pre (outline-minor-mode 1) :color pink)
-  "Outline"
-  ;; Outshine
-  ("C-c o" -swiper-outlines "swiper")
-  ("o" -swiper-outlines "swiper")
-  ("TAB" outline-cycle)
-
-  ("^" outshine-sort-entries "sort entries")
-  ("C-j" outshine-insert-heading "insert" :exit t)
-  ("C-M-j" -insert-sub-heading "insert>" :exit t)
-  ("i" outshine-imenu "imenu")
-  (":" outshine-set-tags-command "tags")
-  ("t" outshine-todo "todo")
-  ;; Move
-  ("u" outline-up-heading "up")
-  ("n" outline-next-visible-heading "next")
-  ("p" outline-previous-visible-heading "prev")
-  ("f" outline-forward-same-level "forward-same")
-  ("b" outline-backward-same-level "backward-same")
-  ("q" nil))
+(when (equal 'ivy config-completion-system)
+  (general-define-key
+   :prefix "C-c"
+   :infix "d"
+   "SPC" 'counsel-dash))
 
 
 ;; * Keybindings
@@ -431,7 +388,6 @@ hyper when it's used as a modifier."
 ;; ** Overrides
 
 (bind-keys
- ("M-g"   . hydra-goto/body)
  ("C-x o" . ace-window)
  ("C-w"   . -backward-kill-word-or-region)
  ("C-x 1" . zygospore-toggle-delete-other-windows))
@@ -439,10 +395,11 @@ hyper when it's used as a modifier."
 
 ;; * Global map
 
-(general-define-key
- :keymaps 'global
- "M-Q" '-unfill-paragraph
- "C-x C-r" 'ivy-recentf)
+(when (equal 'ivy config-completion-system)
+  (general-define-key
+   :keymaps 'global
+   "M-Q" '-unfill-paragraph
+   "C-x C-r" 'ivy-recentf))
 
 
 ;; * Local maps
@@ -478,9 +435,7 @@ hyper when it's used as a modifier."
   "C-c d" "doc"
   "C-c e" "editing"
   "C-c f" "find"
-  "C-c g" "goto"
   "C-c n" "notes"
-  "C-c o" "outlines"
   "C-c t" "toggles"
   "C-c v" "vc "
   "C-c w" "windows")
@@ -488,15 +443,9 @@ hyper when it's used as a modifier."
 (general-define-key
  :prefix "C-c"
  :keymaps 'global
- "r" 'ivy-resume
- "g" '(hydra-goto/body :which-key "goto")
  "i" '(counsel-imenu :which-key "imenu")
- "I" '(ivy-imenu-anywhere :which-key "imenu anywhere")
  "j" '(avy-goto-char-timer :which-key "avy-char")
  "k" '(kill-this-buffer :which-key "kill-this-buffer")
- "o" '(hydra-outline/body :which-key "hydra-outline")
- "s" '(swiper-all :which-key "swiper-all")
- "S" '(-swiper-at-point :which-key "-swiper-at-point")
  "w" '(hydra-windows/body :which-key "hydra-windows"))
 
 (provide 'config-keybindings)
