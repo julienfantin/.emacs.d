@@ -103,7 +103,8 @@ hyper when it's used as a modifier."
   :custom
   (which-key-sort-order 'which-key-prefix-then-key-order)
   (which-key-side-window-max-width 0.4)
-  (which-key-idle-delay 0.4))
+  (which-key-idle-delay 0.4)
+  (which-key-show-transient-maps t))
 
 (use-package keyfreq
   :straight t
