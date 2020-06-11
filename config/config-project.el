@@ -49,7 +49,6 @@
   :init (after-init 'projectile-global-mode)
   :commands projectile-golbal-mode
   :functions (projectile-load-known-projects)
-  :hook (projectile-idle-timer . projectile-invalidate-cache)
   :config
   (progn
     (add-to-list 'projectile-globally-ignored-files ".DS_Store")
@@ -57,9 +56,9 @@
     (advice-add #'projectile-replace :before #'projectile-save-project-buffers)
     (projectile-load-known-projects))
   :custom
+  (projectile-completion-system 'default)
   (projectile-mode-line nil)
   (projectile-enable-caching nil)
-  (projectile-use-git-grep t)
   (projectile-create-missing-test-files t))
 
 (provide 'config-project)
