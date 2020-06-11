@@ -49,7 +49,25 @@
 ;; ** Mini-buffer
 
 (setq history-length most-positive-fixnum)
-(setq enable-recursive-minibuffers t)
+
+(use-package minibuffer
+  :init
+  (progn
+    (after-init #'minibuffer-depth-indicate-mode)
+    (after-init #'minibuffer-electric-default-mode))
+  :custom
+  (enable-recursive-minibuffers t)
+  (completion-styles '(partial-completion substring initials flex))
+  (completion-category-overrides
+   '((file (styles initials basic))
+     (buffer (styles initials basic))
+     (info-menu (styles basic))))
+  (read-answer-short t)
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t)
+  (resize-mini-windows t))
+
+;; ** Icomplete
 
 
 ;; * Prescient

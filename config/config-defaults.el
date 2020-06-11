@@ -46,7 +46,5 @@
 
 (setq-default cursor-in-non-selected-windows nil)
 
-(fset 'yes-or-no-p 'y-or-n-p)
-
 (provide 'config-defaults)
 ;;; config-defaults.el ends here
