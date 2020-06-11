@@ -29,6 +29,7 @@
 ;; * Built-ins
 
 (use-package vc
+  :defer t
   :custom
   ;; Don't refresh remote files
   (vc-handled-backends '(Git))
@@ -37,6 +38,7 @@
                                 tramp-file-name-regexp)))
 
 (use-package ediff
+  :defer t
   :custom
   ;; Remove noisy highlights
   (ediff-highlight-all-diffs nil)
@@ -50,12 +52,13 @@
 
 ;; * Packages
 
-(use-package git-timemachine :straight t)
+(use-package git-timemachine :straight t :defer t)
 
-(use-package git-link :straight t)
+(use-package git-link :straight t :defer t)
 
 (use-package magit
   :straight t
+  :defer t
   :custom
   (magit-save-repository-buffers 'dontask)
   (magit-display-buffer-function
@@ -63,6 +66,7 @@
      (display-buffer-same-window buffer nil))))
 
 (use-package magit-wip
+  :disabled t
   :after magit
   :init (after-init #'magit-wip-mode))
 
@@ -77,9 +81,10 @@
   :after (magit no-littering)
   :config (magithub-feature-autoinject t))
 
-(use-package gited :straight t)
+(use-package gited :straight t :defer t)
 
 (use-package helm-hunks
+  :disabled t
   :straight t
   :custom (helm-hunks-preview-diffs t))
 

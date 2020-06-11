@@ -26,10 +26,12 @@
 (require 'use-package)
 
 (use-package prog-mode
+  :defer t
   :hook ((prog-mode . auto-fill-mode)
          (prog-mode . display-line-numbers-mode)))
 
 (use-package conf-mode
+  :defer t
   :preface (defun config-prog-run-hooks () (run-hooks 'prog-mode-hook))
   :after prog-mode
   :config (add-hook 'conf-mode-hook #'config-prog-run-hooks))
