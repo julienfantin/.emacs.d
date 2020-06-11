@@ -27,6 +27,12 @@
 (eval-when-compile
   (require 'cl-lib))
 
+
+;; * Packages
+
+(use-package hl-line+
+  :straight t
+  :init (after-init #'toggle-hl-line-when-idle))
 
 
 ;; * Commands
