@@ -75,11 +75,9 @@
   :custom
   (git-commit-summary-max-length 72))
 
-(use-package magithub
-  :disabled t
+(use-package forge
   :straight t
-  :after (magit no-littering)
-  :config (magithub-feature-autoinject t))
+  :after magit)
 
 (use-package gited :straight t :defer t)
 
