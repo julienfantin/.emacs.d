@@ -55,10 +55,10 @@
   :after lisp
   :config (lisp-extra-font-lock-global-mode 1))
 
-(use-package elisp-slime-nav
+(use-package elisp-def
   :straight t
-  :commands (turn-on-elisp-slime-nav-mode)
-  :hook (emacs-lisp-mode . turn-on-elisp-slime-nav-mode))
+  :hook ((emacs-lisp-mode . elisp-def-mode)
+         (ielm-mode . elisp-def-mode)))
 
 (use-package nameless
   :straight t
