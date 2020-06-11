@@ -25,6 +25,7 @@
 ;;; Code:
 (require 'use-package)
 
+(setq scroll-preserve-screen-position t)
 
 ;; * Navigation
 
@@ -36,6 +37,13 @@
         aw-scope 'frame))
 
 (use-package windmove)
+
+
+;; * Ui
+
+(use-package hl-line+
+  :straight t
+  :init (after-init #'toggle-hl-line-when-idle))
 
 
 ;; * Undo and redo
