@@ -25,20 +25,23 @@
 ;;; Code:
 (require 'use-package)
 
-
+
 ;; * Built-ins
 
-(setq window-resize-pixelwise t)
+(use-package emacs
+  :custom
+  (window-resize-pixelwise t))
 
 (use-package simple
-  :config
+  :init
   (line-number-mode -1))
 
-(use-package hl-line
-  :hook ((magit-mode dired-mode) . hl-line-mode)
-  :custom
-  (global-hl-line-sticky-flag nil)
-  (hl-line-sticky-flag nil))
+
+;; * Packages
+
+(use-package hl-line+
+  :straight t
+  :hook (after-init . toggle-hl-line-when-idle))
 
 (provide 'config-gui)
 ;;; config-gui.el ends here

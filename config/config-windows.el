@@ -39,13 +39,6 @@
 (use-package windmove)
 
 
-;; * Ui
-
-(use-package hl-line+
-  :straight t
-  :init (after-init #'toggle-hl-line-when-idle))
-
-
 ;; * Undo and redo
 
 (use-package winner
@@ -68,37 +61,6 @@
   :straight t
   :commands (windresize-left windresize-right windresize-up windresize-down)
   :custom (windresize-default-increment 5))
-
-
-;; * Buffer display rules
-
-(use-package shackle
-  :disabled t
-  :straight t
-  :init (after-init #'shackle-mode)
-  :custom
-  (shackle-default-size 0.3)
-  (shackle-inhibit-window-quit-on-same-windows t)
-  (shackle-default-alignment 'right)
-  (shackle-default-rule '(:select t))
-  (shackle-rules
-   '(("*Pp Eval Output*"  t)
-     ("*cider-error*")
-     ("*cider-result*")
-     ("*helm*")
-     (".+popup.+"  :regexp t :align below)
-     (apropos-mode)
-     (cider-test-report-mode)
-     (cider-stacktrace-mode)
-     (cider-repl-mode)
-     ("\*cider-repl.+" :regexp t)
-     (flycheck-error-list-mode)
-     ;; (magit-status-mode)
-     ;; (magit-commit)
-     (compilation-mode)
-     (help-mode)
-     (ivy-occur-mode)
-     (ivy-occur-grep-mode))))
 
 
 ;; * Commands
