@@ -65,11 +65,6 @@
    (lambda (buffer)
      (display-buffer-same-window buffer nil))))
 
-(use-package magit-wip
-  :disabled t
-  :after magit
-  :init (after-init #'magit-wip-mode))
-
 (use-package git-commit
   :after magit
   :custom
@@ -81,10 +76,10 @@
 
 (use-package gited :straight t :defer t)
 
-(use-package helm-hunks
-  :disabled t
+(use-package dired-git-info
   :straight t
-  :custom (helm-hunks-preview-diffs t))
+  :after dired
+  :hook (dired-after-readin . dired-git-info-auto-enable))
 
 (provide 'config-git)
 ;;; config-git.el ends here
