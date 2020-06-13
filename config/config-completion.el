@@ -29,15 +29,16 @@
 
 ;; * Defaults
 
-(setq-default tab-always-indent 'complete)
-(setq-default completion-styles '(partial-completion substring basic))
+(use-package emacs
+  :custom
+  (tab-always-indent 'complete)
+  (history-length most-positive-fixnum))
 
 
 ;; * Built-ins
 ;; ** Abbrev
 
 (use-package abbrev
-  :disabled t
   :after no-littering
   :config
   (progn
@@ -48,42 +49,42 @@
 
 ;; ** Mini-buffer
 
-(setq history-length most-positive-fixnum)
-
 (use-package minibuffer
-  :init
-  (progn
-    (after-init #'minibuffer-depth-indicate-mode)
-    (after-init #'minibuffer-electric-default-mode))
+  :hook ((after-init . minibuffer-depth-indicate-mode))
+  :config (defalias 'yes-or-no-p 'y-or-n-p)
   :custom
   (enable-recursive-minibuffers t)
-  (completion-styles '(partial-completion substring initials flex))
   (completion-category-overrides
    '((file (styles initials basic))
      (buffer (styles initials basic))
      (info-menu (styles basic))))
   (read-answer-short t)
   (read-buffer-completion-ignore-case t)
-  (read-file-name-completion-ignore-case t)
-  (resize-mini-windows t))
+  (read-file-name-completion-ignore-case t))
 
 ;; ** Icomplete
 
 
-;; * Prescient
+;; * M-x
 
-(use-package prescient
-  :disabled t
+(use-package amx
   :straight t
-  :after no-littering
-  :config (prescient-persist-mode 1))
+  :init (after-init #'amx-mode))
+
+
+;; * Completion styles
+
+(use-package orderless
+  :straight t
+  :custom
+  (completion-styles '(orderless)))
 
 
 ;; * Company
 
 (use-package company
   :straight t
-  :init (after-init #'global-company-mode)
+  :hook (prog-mode . company-mode)
   :bind ((:map company-mode-map
                ("TAB" . company-indent-or-complete-common))
          (:map company-active-map
@@ -98,58 +99,48 @@
   (company-global-modes
    '(not text-mode message-mode git-commit-mode org-mode magit-status-mode))
   (company-backends
-   '((company-files                     ; files & directory
-      company-capf
-      company-yasnippet
-      company-elisp
-      )
-     (company-elisp)
-     (company-abbrev company-dabbrev)
-     )
-   ;; '((company-capf company-files)
-   ;;   (company-elisp)
-   ;;   (company-keywords))
-   )
+   '((company-capf :with company-yasnippet)
+     company-files
+     company-dabbrev-code
+     company-dabbrev
+     company-keywords))
   (company-idle-delay 0.1)
   (company-minimum-prefix-length 2)
   (company-require-match nil)
-  (company-search-regexp-function 'company-search-words-regexp)
+  (company-search-regexp-function 'company-search-words-in-any-order-regexp)
   (company-show-numbers t)
   (company-tooltip-align-annotations t)
   (company-tooltip-limit 10)
   (company-tooltip-minimum 10)
   (company-tooltip-minimum-width 50))
 
+(use-package company-quickhelp
+  :straight t
+  :hook (company-mode . company-quickhelp-local-mode))
+
+(use-package company-posframe
+  :straight t
+  ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=41422
+  :disabled t
+  :hook (company-mode . company-posframe-mode))
+
 (use-package company-dabbrev
+  :after company
   :custom
   (company-dabbrev-downcase nil)
   (company-dabbrev-ignore-case nil)
   (company-dabbrev-minimum-length 4))
 
-(use-package company-elisp
-  :custom
-  (company-elisp-detect-function-context nil))
-
-(use-package compdef :straight t)
-
-;; this frontend properly renders propertized text, variable pitch font and
-;; doesn't have to it within the parent-frame
-(use-package company-box
-  :disabled t
+(use-package compdef
   :straight t
-  :after company
-  :hook (company-mode . company-box-mode)
-  :custom
-  ;; Icons are huge!?
-  (company-box-enable-icon t)
-  ;; Search doesn't scroll to focus the current selection
-  (company-search-filtering t))
+  :after company)
 
 (use-package company-prescient
-  :disabled t
   :straight t
-  :after company
-  :init (after-init #'company-prescient-mode))
+  :after (company no-littering)
+  :hook (company-mode . company-prescient-mode)
+  :config
+  (prescient-persist-mode 1))
 
 (provide 'config-completion)
 ;;; config-completion.el ends here
