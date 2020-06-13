@@ -101,9 +101,7 @@ hyper when it's used as a modifier."
   :straight t
   :hook (after-init . which-key-mode)
   :custom
-  (which-key-sort-order 'which-key-prefix-then-key-order)
-  (which-key-side-window-max-width 0.4)
-  (which-key-idle-delay 0.4)
+  (which-key-sort-order 'which-key-key-order-alpha)
   (which-key-show-transient-maps t))
 
 (use-package keyfreq
@@ -114,7 +112,6 @@ hyper when it's used as a modifier."
   :custom
   (keyfreq-excluded-commands
    '(self-insert-command
-     outshine-self-insert-command
      org-self-insert-command
      abort-recursive-edit
      forward-char
@@ -246,7 +243,6 @@ hyper when it's used as a modifier."
  "d" '(toggle-debug-on-error :which-key "debug")
  "s" '(flyspell-mode :which-key "spell")
  "p" '(flyspell-prog-mode :which-key "spell-prog")
- "h" '(hl-line-mode :which-key "hl-line")
  "r" '(read-only-mode :which-key "read-only")
  "t" '(toggle-truncate-lines :which-key "truncate")
  "v" '(visual-line-mode :which-key "visual-line"))
