@@ -87,7 +87,6 @@
          (internal-border-width   . ,config-frame-border-width))))))
 
 (use-package frame
-  ;; :init (after-init #'window-divider-mode)
   :config
   (progn
     (scroll-bar-mode -1)

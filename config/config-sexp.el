@@ -64,7 +64,10 @@
   :hook (lisp-minor-mode . pulse-eval-mode)
   :custom
   (pulse-eval-iterations 1)
-  (pulse-eval-delay .13)
+  (pulse-eval-delay .2))
+
+(use-package pulse-eval
+  :after (pulse-eval lispy)
   :config
   (add-to-list
    'pulse-eval-advices-alist

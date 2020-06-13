@@ -49,8 +49,13 @@ With a prefix argument P, isearch for the symbol at point."
 
 (use-package imenu-anywhere :straight t)
 
+(use-package flimenu
+  :straight t
+  :hook (imenu-mode . flimenu-mode))
+
 (use-package swiper
   :straight t
+  :if (eq config-completion-system 'ivy)
   :commands (-swiper-at-point)
   :bind
   ((:map swiper-map

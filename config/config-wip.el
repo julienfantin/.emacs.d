@@ -38,7 +38,7 @@
     (if (bound-and-true-p cider--debug-mode)
         (eldoc-mode -1)
       (eldoc-mode 1)))
-  :hook ((cider--debug-mode . -cider-debug-no-eldoc)))
+  :hook (cider--debug-mode . -cider-debug-no-eldoc))
 
 ;; * UI tweaks
 ;; ** Show paren expression transparency hook
@@ -65,13 +65,9 @@
 
 (defvar start-file "~/org/todo.org")
 (defun open-start-file () (find-file start-file))
-(after-init #'open-start-file)
-
-(setq cider-invert-insert-eval-p t)                        ;; 1
-(setq cider-switch-to-repl-after-insert-p nil)             ;; 2
+(add-hook 'after-init-hook #'open-start-file)
 
 (setq-default line-spacing 5)
-
 
 (server-start)
 

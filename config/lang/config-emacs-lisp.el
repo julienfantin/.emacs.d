@@ -26,7 +26,6 @@
 (require 'use-package)
 (require 'map)
 
-
 ;; * Builtins
 
 (use-package elisp-mode
@@ -40,10 +39,12 @@
   (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode))
 
 (use-package paredit
+  :after paredit
   :config
   (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
 
 (use-package flycheck
+  :after flycheck
   :config
   (add-to-list 'flycheck-disabled-checkers 'emacs-lisp-checkdoc))
 
