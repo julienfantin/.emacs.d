@@ -67,19 +67,21 @@ With a prefix argument P, isearch for the symbol at point."
   :straight t
   :custom
   (avy-style 'at-full)
-  (avy-background t)
   (avy-all-windows t)
   (avy-timeout-seconds 0.28)
   :config
   ;; Use C-' in isearch to bring up avy
   (avy-setup-default))
 
-(use-package wgrep :straight t)
-
 (use-package deadgrep
-  :disabled t
+  :ensure-system-package (rg . "ripgrep")
   :straight t
-  :ensure-system-package (rg . "ripgrep"))
+  :bind (("C-c r" . deadgrep)
+         :map deadgrep-mode-map
+         ("w" . deadgrep-edit-mode)
+         :map deadgrep-edit-mode-map
+         ("C-c C-c" . deadgrep-mode)
+         ("C-x C-s" . deadgrep-mode)))
 
 
 ;; * Commands
