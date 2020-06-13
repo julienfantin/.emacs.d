@@ -77,14 +77,19 @@
   :defer t
   :custom
   (modus-operandi-theme-slanted-constructs t)
-  (modus-operandi-theme-bold-constructs t))
+  (modus-operandi-theme-bold-constructs t)
+  (modus-operandi-theme-scale-headings t)
+  (modus-operandi-theme-intense-standard-completions t))
 
 (use-package modus-vivendi-theme
   :straight t
   :defer t
   :custom
   (modus-vivendi-theme-slanted-constructs t)
-  (modus-vivendi-theme-bold-constructs t))
+  (modus-vivendi-theme-bold-constructs t)
+  (modus-vivendi-theme-scale-headings t)
+  (modus-vivendi-theme-intense-standard-completions t))
+
 
 (use-package kaolin-themes
   :straight t
