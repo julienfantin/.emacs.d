@@ -38,14 +38,12 @@
 
 (use-package persistent-scratch
   :straight t
-  :init
-  (progn
-    (after-init #'persistent-scratch-setup-default)
-    (after-init #'config-scratch-init)))
+  :hook ((after-init . persistent-scratch-setup-default)
+         (after-init . config-scratch-init)))
 
 (use-package unkillable-scratch
   :straight t
-  :init (after-init #'unkillable-scratch))
+  :hook (after-init . unkillable-scratch))
 
 (provide 'config-scratch)
 ;;; config-scratch.el ends here

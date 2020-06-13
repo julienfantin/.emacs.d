@@ -99,7 +99,7 @@ hyper when it's used as a modifier."
 
 (use-package which-key
   :straight t
-  :init (after-init #'which-key-mode)
+  :hook (after-init . which-key-mode)
   :custom
   (which-key-sort-order 'which-key-prefix-then-key-order)
   (which-key-side-window-max-width 0.4)
@@ -109,10 +109,8 @@ hyper when it's used as a modifier."
 (use-package keyfreq
   :straight t
   :after no-littering
-  :init
-  (progn
-    (after-init #'keyfreq-mode)
-    (after-init #'keyfreq-autosave-mode))
+  :hook ((after-init . keyfreq-mode)
+         (after-init . keyfreq-autosave-mode))
   :custom
   (keyfreq-excluded-commands
    '(self-insert-command

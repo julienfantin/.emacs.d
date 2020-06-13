@@ -89,7 +89,7 @@
                 (hook (config-doc--mode-hook mode)))
            (add-hook hook 'config-doc--enable-docsets)))
        config-doc-default-docsets)))
-  :init (after-init #'config-doc--init)
+  :hook (after-init . config-doc--init)
   :custom (counsel-dash-browser-func 'eww-browse-url))
 
 (provide 'config-doc)

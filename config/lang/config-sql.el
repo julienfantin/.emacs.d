@@ -35,11 +35,11 @@
 
 (use-package paredit
   :after sql
-  :hook ((sql-mode . paredit-mode)))
+  :hook (sql-mode . paredit-mode))
 
 (use-package aggressive-indent
   :after sql
-  :hook ((sql-mode . aggressive-indent-mode)))
+  :hook (sql-mode . aggressive-indent-mode))
 
 
 ;; * Indentation

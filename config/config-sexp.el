@@ -47,14 +47,13 @@
   :custom
   (show-paren-style 'expression)
   (show-paren-priority 1000)
-  (show-paren-delay 0.05))
+  (show-paren-delay 0))
 
 
 ;; * Lisp minor-mode
 
 (use-package lisp-minor-mode
-  :commands (lisp-minor-mode lisp-global-minor-mode)
-  :init (after-init #'lisp-global-minor-mode))
+  :hook (after-init . lisp-global-minor-mode))
 
 
 ;; * Pulse eval

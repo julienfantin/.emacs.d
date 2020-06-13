@@ -28,7 +28,7 @@
 ;; * Debug on error
 
 (toggle-debug-on-error)
-(after-init #'toggle-debug-on-error)
+(add-hook 'after-init-hook #'toggle-debug-on-error)
 
 
 ;; * Find bugs in config files

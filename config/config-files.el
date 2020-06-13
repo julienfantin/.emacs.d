@@ -16,14 +16,14 @@
 ;; * Builtins
 
 (use-package recentf
-  :init (after-init #'recentf-mode)
+  :hook (after-init . recentf-mode)
   :after no-littering
   :custom
   (recentf-max-saved-items 1000)
   (recentf-max-menu-items 200))
 
 (use-package autorevert
-  :init (after-init #'global-auto-revert-mode)
+  :hook (after-init . global-auto-revert-mode)
   :custom (auto-revert-check-vc-info nil))
 
 (use-package simple
@@ -34,7 +34,7 @@
 
 (use-package dired
   :hook (dired-mode . dired-hide-details-mode)
-  :bind ("C-x C-j" . dired-jump)
+  :bind (("C-x C-j" . dired-jump))
   :custom
   (dired-auto-revert-buffer t)
   (dired-recursive-copies 'always)
@@ -44,9 +44,8 @@
   :disabled t
   :straight t
   :after dired
-  :hook
-  (dired-initial-position . dired-k)
-  (dired-after-readin     . dired-k-no-revert)
+  :hook ((dired-initial-position . dired-k)
+         (dired-after-readin     . dired-k-no-revert))
   :custom
   (dired-k-style nil)
   (dired-listing-switches "-alh")
@@ -83,12 +82,11 @@
 
 (use-package super-save
   :straight t
-  :init (after-init #'super-save-mode)
+  :hook (after-init . super-save-mode)
   :config
-  (progn
-    (setq-default save-silently t)
-    (add-to-list 'super-save-triggers 'eyebrowse-switch-to-window-config)
-    (add-to-list 'super-save-triggers 'persp-switch)))
+  (setq-default save-silently t)
+  (add-to-list 'super-save-triggers 'eyebrowse-switch-to-window-config)
+  (add-to-list 'super-save-triggers 'persp-switch))
 
 ;; ** Dired extensions
 
@@ -96,10 +94,9 @@
   :disabled t
   :straight t
   :after dired
-  :bind
-  (:map dired-mode-map
-        (("n" . dired-hacks-next-file)
-         ("p" . dired-hacks-previous-file))))
+  :bind (:map dired-mode-map
+              (("n" . dired-hacks-next-file)
+               ("p" . dired-hacks-previous-file))))
 
 (use-package dired-narrow
   :disabled t
@@ -113,7 +110,7 @@
   :custom
   (dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
-(use-package sudo-edit :straight t)
+(use-package sudo-edit :straight t :defer t)
 
 
 ;; * Commands

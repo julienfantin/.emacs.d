@@ -32,21 +32,20 @@
   :disabled t
   :ensure-system-package direnv
   :straight t
-  :init (after-init #'direnv-mode))
+  :hook (after-init . direnv-mode))
 
 ;; * Editorconfig
 
 (use-package editorconfig
   :straight t
-  :commands (editorconfig-mode)
-  :init (after-init 'editorconfig-mode))
+  :hook (after-init . editorconfig-mode))
 
 ;; * Projectile
 
 (use-package projectile
   :straight t
   :after no-littering
-  :init (after-init 'projectile-global-mode)
+  :hook (after-init . projectile-global-mode)
   :commands projectile-golbal-mode
   :functions (projectile-load-known-projects)
   :config

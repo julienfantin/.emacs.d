@@ -48,7 +48,8 @@
 
 ;; * Undo and redo
 
-(use-package winner :init (after-init #'winner-mode))
+(use-package winner
+  :hook (after-init . winner-mode))
 
 
 ;; * Focus

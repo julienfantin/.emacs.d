@@ -37,7 +37,7 @@
   :config (add-hook 'conf-mode-hook #'config-prog-run-hooks))
 
 (use-package autoinsert
-  :init (after-init #'auto-insert-mode))
+  :hook (after-init . auto-insert-mode))
 
 (use-package highlight-symbol
   :straight t

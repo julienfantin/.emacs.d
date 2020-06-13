@@ -30,7 +30,8 @@
 
 (setq-default fill-column 80)
 
-(use-package delsel :init (delete-selection-mode 1))
+(use-package delsel
+  :init (delete-selection-mode 1))
 
 (use-package newcomment
   :config

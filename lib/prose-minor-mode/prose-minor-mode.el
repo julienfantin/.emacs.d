@@ -132,13 +132,13 @@
 ;; * Integrations
 
 (use-package text-mode
-  :hook ((text-mode . prose-minor-mode)))
+  :hook (text-mode . prose-minor-mode))
 
 (use-package org
-  :hook ((org-mode . prose-minor-mode)))
+  :hook (org-mode . prose-minor-mode))
 
 (use-package markdown-mode
-  :hook ((markdown-mode . prose-minor-mode)))
+  :hook (markdown-mode . prose-minor-mode))
 
 (provide 'prose-minor-mode)
 ;;; prose-minor-mode.el ends here

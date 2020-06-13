@@ -29,13 +29,13 @@
 (use-package savehist
   :disabled t
   :after no-littering
-  :init (after-init #'savehist-mode)
+  :hook (after-init . savehist-mode)
   :custom
   (savehist-additional-variables '(search-ring regexp-search-ring))
   (savehist-autosave-interval 60))
 
 (use-package saveplace
-  :init (after-init #'save-place-mode))
+  :hook (after-init . toggle-save-place-globally))
 
 (provide 'config-persistence)
 ;;; config-persistence.el ends here

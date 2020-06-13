@@ -32,7 +32,7 @@
 
 (use-package eyebrowse
   :straight t
-  :init (after-init #'eyebrowse-mode)
+  :hook (after-init . eyebrowse-mode)
   :custom
   (eyebrowse-switch-back-and-forth t)
   (eyebrowse-mode-line-style nil))

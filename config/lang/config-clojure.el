@@ -57,13 +57,10 @@
 
 (use-package cider
   :straight t
-  ;; :pin melpa-stable
-  :bind
-  (:map clojure-mode-map
-        ("C-c C-t" . cider-test-jump)
-        ("C-c C-z" . cider-switch-to-repl-buffer))
-  :hook
-  ((cider-mode cider-repl-mode) . eldoc-mode)
+  :bind (:map clojure-mode-map
+              ("C-c C-t" . cider-test-jump)
+              ("C-c C-z" . cider-switch-to-repl-buffer))
+  :hook ((cider-mode cider-repl-mode) . eldoc-mode)
   :custom
   (cider-preferred-build-tool 'clojure-cli)
   (cider-dynamic-indentation nil)
@@ -119,7 +116,7 @@
 (use-package clj-refactor
   :straight t
   :after clojure-mode
-  :hook ((clojure-mode . clj-refactor-mode))
+  :hook (clojure-mode . clj-refactor-mode)
   :config
   (cljr-add-keybindings-with-prefix "C-c .")
   :custom
@@ -157,17 +154,7 @@
   :straight t
   :ensure-system-package (clj-kondo . borkdude/brew/clj-kondo)
   :after clojure-mode
-  :hook ((clojure-mode . flycheck-mode)
-         (clojurec-mode . flycheck-mode)
-         (clojurescript-mode . flycheck-mode))
   :init (require 'flycheck-clj-kondo nil t))
-
-(use-package flycheck-joker
-  :disabled t
-  :straight t
-  :ensure-system-package (joker . candid82/brew/joker)
-  :after (flycheck clojure-mode)
-  :init (require 'flycheck-joker nil t))
 
 
 ;; * Smart Jump

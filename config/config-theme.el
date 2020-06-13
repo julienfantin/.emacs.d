@@ -45,12 +45,12 @@
 
 (use-package custom
   :commands load-theme
-  :init
-  (progn
-    (setq custom-theme-directory
-          (expand-file-name "themes/" user-emacs-directory))
-    (config-path-add-to-load-path custom-theme-directory)
-    (after-init #'config-theme-load-default-theme)))
+  :hook (after-init . config-theme-load-default-theme)
+  :config
+  (config-path-add-to-load-path custom-theme-directory)
+  :custom
+  (custom-safe-themes t)
+  (custom-theme-directory (expand-file-name "themes/" user-emacs-directory)))
 
 
 ;; * Themes
@@ -58,7 +58,7 @@
 (use-package theme-sync
   :disabled t
   :commands theme-sync-mode
-  :init (after-init #'theme-sync-mode))
+  :hook (after-init . theme-sync-mode))
 
 (use-package duotone-theme :load-path "../themes/duotone")
 (use-package duotone-reload :disabled t :demand t)

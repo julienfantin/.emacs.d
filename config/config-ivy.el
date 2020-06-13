@@ -33,7 +33,7 @@
   (uniquify-buffer-name-style 'forward))
 
 (use-package ivy
-  :init (after-init #'ivy-mode)
+  :hook ((after-init . ivy-mode))
   :commands (ivy-set-actions)
   :custom
   (ivy-extra-directories nil)
@@ -49,7 +49,7 @@
 
 (use-package counsel
   :straight t
-  :init (after-init #'counsel-mode)
+  :hook ((after-init . counsel-mode))
   :custom
   (counsel-rg-base-command "rg -S -M 200 --no-heading --line-number --color never %%s .")
   (counsel-find-file-at-point t)
@@ -62,7 +62,7 @@
 (use-package counsel-projectile
   :straight t
   :after (counsel projectile)
-  :init (after-init #'counsel-projectile-mode)
+  :hook ((after-init . counsel-projectile-mode))
   :custom
   (counsel-projectile-remove-current-project t)
   (counsel-projectile-remove-current-buffer t))
