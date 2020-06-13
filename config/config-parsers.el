@@ -31,22 +31,8 @@
 
 (use-package flycheck
   :straight t
-  :init (after-init #'global-flycheck-mode)
-  :commands (flycheck-mode flycheck-list-errors)
-  :defines
-  (flycheck-error-list-buffer
-   flycheck-display-errors-function)
-  :functions
-  (flycheck-buffer
-   flycheck-list-errors
-   flycheck-display-error-messages
-   flycheck-error-list-mode
-   flycheck-error-pos
-   flycheck-error-list-set-source
-   flycheck-error-list-reset-filter
-   config-parsers-flycheck-select-window
-   config-parsers-flycheck-turn-messages-on
-   config-parsers-flycheck-turn-messages-off)
+  :hook ((after-init . global-flycheck-mode)
+         (flycheck-mode . flycheck-set-indication-mode))
   :config
   (progn
     ;; Advices
@@ -58,19 +44,20 @@
     (defun config-parsers-flycheck-turn-messages-off (&optional _)
       (setq flycheck-display-errors-function nil))
     (defun config-parsers-flycheck-turn-messages-on (&optional _)
-      (setq
-       flycheck-display-errors-function config-parsers-flycheck-display-errors-function)
+      (setq flycheck-display-errors-function config-parsers-flycheck-display-errors-function)
       (flycheck-buffer)))
   :custom
-  (flycheck-emacs-lisp-load-path 'inherit))
+  (flycheck-emacs-lisp-load-path 'inherit)
+  (flycheck-indication-mode 'left-fringe))
 
 (use-package flycheck-posframe
   :straight t
+  :hook (flycheck-mode . flycheck-posframe-mode)
   :custom
-  (flycheck-posframe-border-width 20)
-  :hook ((flycheck-mode . flycheck-posframe-mode)))
+  (flycheck-posframe-border-width 20))
 
 (use-package company
+  :disabled t
   ;; Let company display documentation in the modeline
   :hook (((company-completion-started  . config-parsers-flycheck-turn-messages-off)
           (company-completion-finished  . config-parsers-flycheck-turn-messages-on)
