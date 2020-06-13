@@ -49,5 +49,12 @@
   (highlight-symbol-idle-delay 0.25)
   (highlight-symbol-on-navigation-p t))
 
+(use-package emr
+  :straight t
+  :after prog-mode
+  :bind ((:map prog-mode-map
+               ("C-M-RET" . emr-show-refactor-menu)))
+  :init (emr-initialize))
+
 (provide 'config-prog-mode)
 ;;; config-prog-mode.el ends here
