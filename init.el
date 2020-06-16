@@ -96,7 +96,6 @@
 (use-package config-indentation :load-path "./config")
 (use-package config-irc :load-path "./config" :disabled t)
 (use-package config-ivy :load-path "./config" :if (equal 'ivy config-completion-system))
-(use-package config-layouts :load-path "./config")
 (use-package config-marks :load-path "./config")
 (use-package config-modeline :load-path "./config" :disabled t)
 (use-package config-org :load-path "./config" :disabled t)

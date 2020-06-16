@@ -141,17 +141,6 @@ hyper when it's used as a modifier."
 
 ;; ** (b) Buffers
 
-(defhydra hydra-buffers (:color red)
-  "Buffers"
-  ("TAB"   -switch-to-last-buffer "last")
-  ("b"     switch-to-buffer "switch")
-  ("h"     bury-buffer "hide")
-  ("k"     kill-current-buffer "kill")
-  ("K"     kill-buffer-and-window "kill (window)")
-  ("n"     next-buffer "next")
-  ("p"     previous-buffer "prev")
-  ("r"     revert-buffer "revert"))
-
 (hydra-set-property 'hydra-buffers :verbosity 1)
 
 (general-define-key
@@ -159,12 +148,9 @@ hyper when it's used as a modifier."
  :infix "b"
  "C-c b" '(-switch-to-last-buffer :which-key "last")
  "TAB"   '(-switch-to-last-buffer :which-key "last")
- "K"     '(hydra-buffers/kill-buffer-and-window :which-key "kill (window)")
- "b"     '(ivy-switch-buffer :which-key "buffers")
- "h"     '(hydra-buffers/bury-buffer :which-key "bury")
- "k"     '(hydra-buffers/kill-current-buffer :which-key "kill")
- "n"     '(hydra-buffers/next-buffer :which-key "next")
- "p"     '(hydra-buffers/previous-buffer :which-key "prev")
+ "k"     '(kill-current-buffer :which-key "kill")
+ "n"     '(next-buffer :which-key "next")
+ "p"     '(previous-buffer :which-key "prev")
  "r"     '(revert-buffer :which-key "revert")
  "t"     '(-temp-buffer :which-key "temp"))
 
@@ -266,92 +252,6 @@ hyper when it's used as a modifier."
  "t" 'term
  "a" 'ansi-term)
 
-;; ** (w) Windows
-
-(defun config-keybindings-ace-switch ()
-  "Switch the current window with ace window and restart the hydra."
-  (interactive)
-  (ace-window 4)
-  (add-hook 'ace-window-end-once-hook 'hydra-windows/body))
-
-(defun config-keybindings-ace-delete ()
-  "Delete a window with ace window and restart the hydra."
-  (interactive)
-  (ace-window 4)
-  (add-hook 'ace-window-end-once-hook 'hydra-windows/body))
-
-(defun config-keybindings-init-window-modes ()
-  (require 'ace-window nil t)
-  (when (not (featurep 'windresize))
-    (windresize)
-    (windresize-cancel-and-quit)))
-
-(defhydra hydra-eyebrowse (:color red :hint nil)
-  "Eyebrowse"
-  ("<tab>" eyebrowse-last-window-config "last")
-  ("1" eyebrowse-switch-to-window-config-1)
-  ("2" eyebrowse-switch-to-window-config-2)
-  ("3" eyebrowse-switch-to-window-config-3)
-  ("4" eyebrowse-switch-to-window-config-4)
-  ("5" eyebrowse-switch-to-window-config-5)
-  ("6" eyebrowse-switch-to-window-config-6)
-  ("7" eyebrowse-switch-to-window-config-7)
-  ("8" eyebrowse-switch-to-window-config-8)
-  ("9" eyebrowse-switch-to-window-config-9)
-  ("w" eyebrowse-switch-to-window-config "switch")
-  ("r" eyebrowse-rename-window-config "rename")
-  ("c" eyebrowse-new-workspace "new")
-  ("n" eyebrowse-next-window-config "next")
-  ("p" eyebrowse-prev-window-config "prev")
-  ("k" eyebrowse-close-window-config "kill"))
-
-(defhydra hydra-windows
-  (:color red :hint nil :pre (config-keybindings-init-window-modes))
-  ("<tab>" -switch-to-last-window "last" :exit t)
-  ("C-c w" -switch-to-last-window "last" :exit t)
-  ("w"   hydra-eyebrowse/body :exit t)
-  ("p"   windmove-up)
-  ("n"   windmove-down)
-  ("f"   windmove-right)
-  ("b"   windmove-left)
-  ("P"   windresize-up)
-  ("N"   windresize-down)
-  ("F"   windresize-right)
-  ("B"   windresize-left)
-  ("M-p" buf-move-up)
-  ("M-n" buf-move-down)
-  ("M-f" buf-move-right)
-  ("M-b" buf-move-left)
-  ("/"   -window-split-toggle "split")
-  ("o"   ace-window "ace")
-  ("k"   config-keybindings-ace-delete "ace delete")
-  ("s"   config-keybindings-ace-switch "ace switch")
-  ("u"   winner-undo "undo")
-  ("r"   winner-redo "redo")
-  ("q"   ignore :exit t))
-
-(dolist (n (number-sequence 1 10))
-  (eval
-   `(defun ,(intern (format "aw-switch-to-window-%s" n)) ()
-      (interactive)
-      ,(format "Switch to window at index %s" n)
-      (when-let (window (nth (- ,n 1) (aw-window-list)))
-        (aw-switch-to-window window)))))
-
-(general-define-key
- :prefix "C-c"
- "TAB" '(-switch-to-last-window :which-key "window-last")
- "1" '(aw-switch-to-window-1 :which-key "window-1")
- "2" '(aw-switch-to-window-2 :which-key "window-2")
- "3" '(aw-switch-to-window-3 :which-key "window-3")
- "4" '(aw-switch-to-window-4 :which-key "window-4")
- "5" '(aw-switch-to-window-5 :which-key "window-5")
- "6" '(aw-switch-to-window-6 :which-key "window-6")
- "7" '(aw-switch-to-window-7 :which-key "window-7")
- "8" '(aw-switch-to-window-8 :which-key "window-8")
- "9" '(aw-switch-to-window-9 :which-key "window-9")
- "p" '(projectile-command-map :which-key "projectile"))
-
 ;; ** (d) Documentation
 
 (when (equal 'ivy config-completion-system)
@@ -362,14 +262,6 @@ hyper when it's used as a modifier."
 
 
 ;; * Keybindings
-;; ** Helpers
-
-(defun config-keybindings-unbind-keymap (keymap)
-  "Unbind all keys in 'KEYMAP'."
-  (map-keymap
-   (lambda (key f)
-     (define-key keymap (vector key) nil))
-   keymap))
 
 ;; ** Remappings
 
@@ -383,8 +275,7 @@ hyper when it's used as a modifier."
 
 (bind-keys
  ("C-x o" . ace-window)
- ("C-w"   . -backward-kill-word-or-region)
- ("C-x 1" . zygospore-toggle-delete-other-windows))
+ ("C-w"   . -backward-kill-word-or-region))
 
 
 ;; * Global map
@@ -392,8 +283,7 @@ hyper when it's used as a modifier."
 (when (equal 'ivy config-completion-system)
   (general-define-key
    :keymaps 'global
-   "M-Q" '-unfill-paragraph
-   "C-x C-r" 'ivy-recentf))
+   "M-Q" '-unfill-paragraph))
 
 
 ;; * Local maps
@@ -431,16 +321,14 @@ hyper when it's used as a modifier."
   "C-c f" "find"
   "C-c n" "notes"
   "C-c t" "toggles"
-  "C-c v" "vc "
-  "C-c w" "windows")
+  "C-c v" "vc ")
 
 (general-define-key
  :prefix "C-c"
  :keymaps 'global
- "i" '(counsel-imenu :which-key "imenu")
+ "i" '(imenu :which-key "imenu")
  "j" '(avy-goto-char-timer :which-key "avy-char")
- "k" '(kill-this-buffer :which-key "kill-this-buffer")
- "w" '(hydra-windows/body :which-key "hydra-windows"))
+ "k" '(kill-this-buffer :which-key "kill-this-buffer"))
 
 (provide 'config-keybindings)
 ;;; config-keybindings.el ends here
