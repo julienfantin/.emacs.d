@@ -26,12 +26,20 @@
 (require 'use-package)
 (require 'config-path)
 
-;; * Defaults
+
+;; * Builtins
 
-(setq-default fill-column 80)
+(use-package emacs
+  :custom
+  (fill-column 80))
 
 (use-package delsel
   :init (delete-selection-mode 1))
+
+(use-package simple
+  :custom
+  (kill-ring-max most-positive-fixnum)
+  (kill-do-not-save-duplicates t))
 
 (use-package newcomment
   :config
@@ -41,38 +49,40 @@
 ;; * Packages
 
 (use-package multiple-cursors :straight t :after no-littering)
+(use-package multiple-cursors
+  :straight t
+  :after no-littering
+  :config
+  (add-hook
+   'multiple-cursors-mode-hook
+   (defun config-editing-multiple-cursors-box ()
+     "Bar cursors look weird, so force it to box while enabled."
+     (if multiple-cursors-mode
+         (setq cursor-type 'box)
+       (setq cursor-type 'bar)))))
+
+(use-package phi-search
+  :straight t
+  :after multiple-cursors
+  :config
+  (add-hook
+   'multiple-cursors-mode-hook
+   (defun config-editing-multiple-cursors-phi-search ()
+     "Remap isearch to phi-search while multiple-cursors is enabled."
+     (if multiple-cursors-mode
+         (progn
+           (local-set-key [remap isearch-forward] 'phi-search)
+           (local-set-key [remap isearch-backward] 'phi-search-backward))
+       (progn
+         (local-set-key [remap isearch-forward] nil)
+         (local-set-key [remap isearch-backward] nil))))))
 
 (use-package iedit
   :straight t
   :bind (:map isearch-mode-map
               ("C-c e i" . iedit-mode-from-isearch)))
 
-(use-package smart-hungry-delete
-  :straight t
-  :bind
-  ;; TODO doesn't play well with lispy, could write an advice when at paren...
-  ;; (:map prog-mode-map
-  ;;       ("<backspace>" . smart-hungry-delete-backward-char)
-  ;;       ("C-d"         . smart-hungry-delete-forward-char))
-  :hook
-  (;; (prog-mode     . smart-hungry-delete-default-prog-mode-hook)
-   (c-mode-common . smart-hungry-delete-default-c-mode-common-hook)
-   (python-mode   . smart-hungry-delete-default-c-mode-common-hook)
-   (text-mode     . smart-hungry-delete-default-text-mode-hook)))
 
-(use-package easy-kill
-  :disabled t
-  :straight t
-  :bind
-  ([remap kill-ring-save] . #'easy-kill)
-  ([remap mark-sexp] . #'easy-mark))
-
-
-;; * Builtins
-
-(use-package simple
-  :custom
-  (kill-ring-max most-positive-fixnum))
 
 
 ;; * Commands

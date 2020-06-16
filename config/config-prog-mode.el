@@ -56,5 +56,12 @@
                ("C-M-RET" . emr-show-refactor-menu)))
   :init (emr-initialize))
 
+(use-package compdef
+  :after compdef
+  :config
+  (compdef
+   :modes 'prog-mode
+   :company '((company-capf company-files company-keywords company-dabbrev-code :with company-yasnippet))))
+
 (provide 'config-prog-mode)
 ;;; config-prog-mode.el ends here

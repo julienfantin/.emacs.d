@@ -27,15 +27,13 @@
 (require 'map)
 
 
-;; * Defaults
+;; * Built-ins
 
 (use-package emacs
   :custom
   (tab-always-indent 'complete)
   (history-length most-positive-fixnum))
 
-
-;; * Built-ins
 ;; ** Abbrev
 
 (use-package abbrev
@@ -50,7 +48,7 @@
 ;; ** Mini-buffer
 
 (use-package minibuffer
-  :hook ((after-init . minibuffer-depth-indicate-mode))
+  :hook (after-init . minibuffer-depth-indicate-mode)
   :config (defalias 'yes-or-no-p 'y-or-n-p)
   :custom
   (enable-recursive-minibuffers t)
@@ -60,19 +58,119 @@
      (info-menu (styles basic))))
   (read-answer-short t)
   (read-buffer-completion-ignore-case t)
-  (read-file-name-completion-ignore-case t))
+  (read-file-name-completion-ignore-case t)
+  (completion-ignore-case t))
 
 ;; ** Icomplete
 
+(use-package icomplete
+  :if (equal config-completion-system 'icomplete)
+  :hook (after-init . icomplete-mode)
+  :bind (:map icomplete-minibuffer-map
+              ("C-n" . icomplete-forward-completions)
+              ("<right>" . icomplete-forward-completions)
+              ("<down>" . icomplete-forward-completions)
+              ("C-p" . icomplete-backward-completions)
+              ("<left>" . icomplete-backward-completions)
+              ("<up>" . icomplete-backward-completions))
+  :config
+  (add-hook
+   'icomplete-minibuffer-setup-hook
+   (defun config-completion--icomplete-activate-fido-map ()
+     "Enable the fido keymap in icomplete without forcing local
+settings like hiding common prefix etc."
+     (when (and icomplete-mode (icomplete-simple-completing-p))
+       (use-local-map (make-composed-keymap icomplete-fido-mode-map
+                                            (current-local-map))))))
+  :custom
+  (icomplete-hide-common-prefix t)
+  (icomplete-delay-completions-threshold 0)
+  (icomplete-compute-delay 0)
+  (icomplete-max-delay-chars 0)
+  (icomplete-prospects-height 1)
+  (icomplete-show-matches-on-no-input t)
+  (icomplete-tidy-shadowed-file-names t))
+
 
-;; * M-x
+;; * Mini-buffer completion packages
+
+(use-package icomplete-vertical
+  :if (equal config-completion-system 'icomplete)
+  :straight t
+  :after (minibuffer icomplete)
+  :bind (("C-M-y" . -icomplete-yank-kill-ring)
+         :map icomplete-minibuffer-map
+         ("C-v" . icomplete-vertical-toggle))
+  :config
+  (defun -icomplete-yank-kill-ring ()
+    "Insert the selected `kill-ring' item directly at point.
+When region is active, `delete-region'.
+Sorting of the `kill-ring' is disabled.  Items appear as they
+normally would when calling `yank' followed by `yank-pop'."
+    (interactive)
+    (let ((kills                        ; do not sort items
+           (lambda (string pred action)
+             (if (eq action 'metadata)
+                 '(metadata (display-sort-function . identity)
+                            (cycle-sort-function . identity))
+               (complete-with-action
+                action kill-ring string pred)))))
+      (icomplete-vertical-do
+       (:separator 'dotted-line :height (/ (frame-height) 4))
+       (when (use-region-p)
+         (delete-region (region-beginning) (region-end)))
+       (insert
+        (completing-read "Yank from kill ring: " kills nil t)))))
+  :custom
+  (icomplete-vertical-prospects-height 10))
+
+(use-package embark
+  :if (equal config-completion-system 'icomplete)
+  :straight (embark :type git :host github :repo "oantolin/embark")
+  :bind
+  (:map minibuffer-local-map
+        (">" . embark-become))
+  (:map minibuffer-local-completion-map
+        (":" . embark-act-noexit)
+        (";" . embark-act)
+        ("C-o" . embark-occur)
+        ("M-e" . embark-export)
+        ("M-q" . embark-occur-toggle-view))
+  (:map completion-list-mode-map
+        (";" . embark-act))
+  (:map embark-occur-mode-map
+        ("a")
+        (";" . embark-act)
+        ("'" . avy-embark-occur-choose)
+        ("\"" . avy-embark-occur-act))
+  :config
+  (defun embark-insert-exit ()
+    "Like `embark-insert' but exits current recursive minibuffer."
+    (interactive)
+    (with-minibuffer-selected-window (insert (embark-target)))
+    (abort-recursive-edit))
+
+  (defun embark-insert-exit-all ()
+    "Like `embark-insert' but exits all recursive minibuffers."
+    (interactive)
+    (with-minibuffer-selected-window (insert (embark-target)))
+    (top-level)))
+
+(use-package which-key
+  :after (which-key embark)
+  :config
+  (push
+   '(("^[0-9-]\\|kp-[0-9]\\|kp-subtract\\|C-u$" . nil) . ignore)
+   which-key-replacement-alist))
+
+(use-package completing-history
+  :if (equal config-completion-system 'icomplete)
+  :straight (completing-history :type git :host github :repo "oantolin/completing-history")
+  :hook (after-init . completing-history-setup-keybinding))
 
 (use-package amx
   :straight t
-  :init (after-init #'amx-mode))
-
-
-;; * Completion styles
+  :hook (after-init . amx-mode))
 
 (use-package orderless
   :straight t
@@ -96,14 +194,11 @@
                ("C-n" . company-select-next)
                ("C-p" . company-select-previous)))
   :custom
-  (company-global-modes
-   '(not text-mode message-mode git-commit-mode org-mode magit-status-mode))
   (company-backends
    '((company-capf :with company-yasnippet)
      company-files
-     company-dabbrev-code
-     company-dabbrev
-     company-keywords))
+     (company-dabbrev-code company-keywords)
+     company-dabbrev))
   (company-idle-delay 0.1)
   (company-minimum-prefix-length 2)
   (company-require-match nil)

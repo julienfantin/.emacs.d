@@ -46,14 +46,15 @@
    ((deactivate-mark pulse-eval-after-pulse) . config-sexp-show-paren-turn-on))
   :custom
   (show-paren-style 'expression)
-  (show-paren-priority 1000)
   (show-paren-delay 0))
 
 
 ;; * Lisp minor-mode
 
 (use-package lisp-minor-mode
-  :hook (after-init . lisp-global-minor-mode))
+  :hook (after-init . lisp-global-minor-mode)
+  :custom
+  (lisp-minor-mode-prettify nil))
 
 
 ;; * Pulse eval

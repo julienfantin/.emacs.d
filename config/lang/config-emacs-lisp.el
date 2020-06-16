@@ -35,13 +35,13 @@
         ("C-c C-p" . pp-eval-last-sexp)))
 
 (use-package simple
-  :config
-  (add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode))
+  :after eldoc
+  :hook
+  (eval-expression-minibuffer-setup . eldoc-mode))
 
-(use-package paredit
+(use-package simple
   :after paredit
-  :config
-  (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
+  :hook (eval-expression-minibuffer-setup . paredit-mode))
 
 (use-package flycheck
   :after flycheck
@@ -95,6 +95,18 @@ an older version is loaded."
   :straight t
   :after helpful
   :init (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
+
+(use-package company-elisp
+  :after (company elisp-mode)
+  :custom
+  (company-elisp-detect-function-context nil))
+
+(use-package compdef
+  :after (company elisp-mode)
+  :config
+  (compdef
+   :modes #'emacs-lisp-mode
+   :company '(company-elisp)))
 
 
 ;; * Commands
