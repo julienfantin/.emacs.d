@@ -51,22 +51,7 @@ With a prefix argument P, isearch for the symbol at point."
 
 (use-package flimenu
   :straight t
-  :hook (imenu-mode . flimenu-mode))
-
-(use-package swiper
-  :straight t
-  :if (eq config-completion-system 'ivy)
-  :commands (-swiper-at-point)
-  :bind
-  ((:map swiper-map
-         ("C-r" . ivy-previous-line-or-history)))
-  :custom
-  ;; Always recentre when leaving Swiper
-  (swiper-action-recenter t)
-  ;; Jump to the beginning of match when leaving Swiper
-  (swiper-goto-start-of-match t)
-  ;; C-k C-g to go back to where the research started
-  (swiper-stay-on-quit t))
+  :init (flimenu-global-mode))
 
 (use-package avy
   :straight t
@@ -87,15 +72,6 @@ With a prefix argument P, isearch for the symbol at point."
          :map deadgrep-edit-mode-map
          ("C-c C-c" . deadgrep-mode)
          ("C-x C-s" . deadgrep-mode)))
-
-
-;; * Commands
-
-;;;###autoload
-(defun -swiper-at-point (_arg)
-  "Swiper with 'thing-at-point'."
-  (interactive "P")
-  (swiper (when _arg (thing-at-point 'symbol))))
 
 (provide 'config-search)
 ;;; config-search.el ends here

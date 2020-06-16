@@ -47,9 +47,6 @@
     ;; special will treat outlines as part of the normal
     (when (bound-and-true-p lispy-outline)
       (set (make-local-variable 'lispy-outline) (outshine-calc-outline-regexp))))
-  (defun -swiper-outlines ()
-    (interactive)
-    (swiper (outshine-calc-outline-regexp)))
   :custom
   (outshine-fontify-whole-heading-line t)
   (outline-cycle-emulate-tab t))

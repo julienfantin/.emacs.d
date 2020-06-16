@@ -30,6 +30,8 @@
 
 ;; (setq ispell-library-directory (expand-file-name "etc/dictionaries/" user-emacs-directory))
 
+(use-package olivetti :straight t)
+
 
 ;; * Spell-checking
 

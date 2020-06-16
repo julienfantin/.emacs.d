@@ -37,6 +37,7 @@
 ;; * Editorconfig
 
 (use-package editorconfig
+  :disabled t
   :straight t
   :hook (after-init . editorconfig-mode))
 
@@ -45,6 +46,7 @@
 (use-package projectile
   :straight t
   :after no-littering
+  :bind ("C-c p" . projectile-command-map)
   :hook (after-init . projectile-global-mode)
   :commands projectile-golbal-mode
   :functions (projectile-load-known-projects)

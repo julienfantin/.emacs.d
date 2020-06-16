@@ -70,7 +70,7 @@
               (e (progn (end-of-defun) (line-number-at-pos))))
           (and b e (<= config-indentation-aggressive-indent-max-lines (- e b)))))))
   :commands aggressive-indent-mode
-  :hook (after-init . global-aggressive-indent-mode)
+  :hook (prog-mode . aggressive-indent-mode)
   :config
   (progn
     ;; Skip large forms

@@ -31,7 +31,8 @@
   (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)
    ("C-h k" . helpful-key)
-   ("C-h ," . helpful-at-point)))
+   ("C-h ." . helpful-at-point))
+  :hook ((helpful-mode . visual-line-mode)))
 
 (provide 'config-help)
 ;;; config-help.el ends here

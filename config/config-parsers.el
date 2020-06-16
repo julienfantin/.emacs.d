@@ -31,7 +31,7 @@
 
 (use-package flycheck
   :straight t
-  :hook ((after-init . global-flycheck-mode)
+  :hook ((prog-mode . flycheck-mode)
          (flycheck-mode . flycheck-set-indication-mode))
   :config
   (progn

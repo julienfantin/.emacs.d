@@ -87,7 +87,7 @@
 
 (use-package helm-mode
   :after helm
-  :init (after-init #'helm-mode)
+  :hook (after-init . helm-mode)
   :custom
   (helm-input-idle-delay 0.01)
   (helm-ff-transformer-show-only-basename t)

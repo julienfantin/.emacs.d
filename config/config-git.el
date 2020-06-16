@@ -29,13 +29,15 @@
 ;; * Built-ins
 
 (use-package vc
-  :defer t
   :custom
   ;; Don't refresh remote files
   (vc-handled-backends '(Git))
-  (vc-ignore-dir-regexp (format "\\(%s\\)\\|\\(%s\\)"
-                                vc-ignore-dir-regexp
-                                tramp-file-name-regexp)))
+  (vc-ignore-dir-regexp
+   (format "\\(%s\\)\\|\\(%s\\)" vc-ignore-dir-regexp tramp-file-name-regexp)))
+
+(use-package vc-hooks
+  :custom
+  (vc-follow-symlinks t))
 
 (use-package ediff
   :defer t
