@@ -155,7 +155,7 @@ hyper when it's used as a modifier."
  "c" '(-cleanup :which-key "cleanup")
  "o" '(outorg-edit-as-org :which-key "outorg")
  "r" '(align-regexp)
- "i" '(iedit-mode :which-key "iedit"))
+ "i" '(-iedit-ensure-function :which-key "iedit"))
 
 ;;  ** (f) Find
 

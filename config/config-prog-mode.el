@@ -39,21 +39,92 @@
 (use-package autoinsert
   :hook (after-init . auto-insert-mode))
 
-(use-package highlight-symbol
+(use-package iedit
   :straight t
-  :hook
-  ((highlight-symbol-mode . highlight-symbol-nav-mode)
-   (prog-mode . highlight-symbol-mode))
+  :bind
+  (("M-i" . -iedit-ensure-function)
+   ("M-n" . -iedit-next-occurrence)
+   ("M-p" . -iedit-prev-occurrence)
+   :map iedit-mode-occurrence-keymap
+   ("M-n" . iedit-next-occurrence)
+   ("M-p" . iedit-prev-occurrence)
+   ("C-g" . -iedit-quit)
+   :map isearch-mode-map
+   ("C-c e i" . iedit-mode-from-isearch))
   :custom
-  (highlight-symbol-highlight-single-occurrence nil)
-  (highlight-symbol-idle-delay 0.25)
-  (highlight-symbol-on-navigation-p t))
+  (iedit-toggle-key-default nil)
+  ;; Messes with undo if turned on...
+  (iedit-auto-buffering nil)
+  :config
+  (defvar --iedit-occurrence-timer nil)
+
+  (defun --iedit-occurrence-stop-timer ()
+    (when --iedit-occurrence-timer
+      (setq-local
+       --iedit-occurrence-timer
+       (cancel-timer --iedit-occurrence-timer))))
+
+  (defun -iedit-quit ()
+    (interactive)
+    (--iedit-occurrence-stop-timer)
+    (iedit-quit))
+
+  (defun --iedit-at-occurrence-p ()
+    (or (get-char-property (point) 'iedit-occurrence-overlay-name)
+        ;; Check 1 char to the left when moving at end of occurrence
+        (get-char-property (- (point) 1) 'iedit-occurrence-overlay-name)))
+
+  (defun --iedit-occurrence-exit ()
+    (condition-case nil
+        (unless (--iedit-at-occurrence-p)
+          (-iedit-quit))
+      (error (--iedit-occurrence-stop-timer))))
+
+  (defun --iedit-occurrence-start-timer ()
+    (unless --iedit-occurrence-timer
+      (setq-local
+       --iedit-occurrence-timer
+       (run-with-timer 0 0.25 #'--iedit-occurrence-exit))))
+
+  (defun -iedit-ensure (&optional arg)
+    (interactive "P")
+    (unless iedit-mode
+      (when (and lispy-mode (lispy-left-p))
+        (forward-char 1))
+      (if arg
+          (iedit-mode 0)
+        (iedit-mode))
+      (--iedit-occurrence-start-timer)))
+
+  (defun -iedit-next-occurrence (&optional arg)
+    (interactive "P")
+    (progn
+      (-iedit-ensure arg)
+      (iedit-next-occurrence)))
+
+  (defun -iedit-prev-occurrence (&optional arg)
+    (interactive "P")
+    (progn
+      (-iedit-ensure arg)
+      (iedit-prev-occurrence)))
+
+  (defun -iedit-ensure-function (&optional arg)
+    (interactive "P")
+    (if iedit-mode
+        (-iedit-quit)
+      (-iedit-ensure (not arg)))))
+
+(use-package iedit
+  :after (iedit lispy)
+  :config
+  (define-key lispy-mode-map [remap lispy-iedit] #'-iedit-ensure-function)
+  (define-key lispy-mode-map-lispy [remap lispy-iedit] #'-iedit-ensure-function))
 
 (use-package emr
   :straight t
   :after prog-mode
   :bind ((:map prog-mode-map
-               ("C-M-RET" . emr-show-refactor-menu)))
+               ("C-M-<return>" . emr-show-refactor-menu)))
   :init (emr-initialize))
 
 (use-package compdef

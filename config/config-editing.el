@@ -48,11 +48,6 @@
 
 ;; * Packages
 
-(use-package iedit
-  :straight t
-  :bind (:map isearch-mode-map
-              ("C-c e i" . iedit-mode-from-isearch)))
-
 (use-package goto-chg
   :straight t
   :bind (("C-c e l" . goto-last-change)))

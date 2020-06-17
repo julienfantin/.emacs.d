@@ -109,6 +109,7 @@
   (lispy-avy-style-char 'at-full)
   (lispy-avy-style-paren 'at-full)
   (lispy-avy-style-symbol 'at-full)
+  (lispy-safe-actions-no-pull-delimiters-into-comments t)
   (lispy-safe-copy t)
   (lispy-safe-delete t)
   (lispy-safe-paste t)

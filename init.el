@@ -40,14 +40,6 @@
 
 (defmacro comment (&rest body) "Ignore 'BODY'." nil)
 
-(defun after-init (&rest syms)
-  "When called during init, add 'SYMS' to 'after-init-hook' otherwise call 'SYMS'."
-  (when-let (sym (car syms))
-    (if after-init-time
-        (funcall sym)
-      (add-hook 'after-init-hook sym))
-    (apply 'after-init (cdr syms))))
-
 ;; ** Path
 
 (setq user-emacs-directory (expand-file-name "~/.emacs.d/"))
