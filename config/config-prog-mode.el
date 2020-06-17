@@ -134,5 +134,21 @@
    :modes 'prog-mode
    :company '((company-capf company-files company-keywords company-dabbrev-code :with company-yasnippet))))
 
+
+;; * Smart Jump
+
+(use-package smart-jump
+  :straight t
+  :after (cider)
+  :config
+  ;; TODO register elisp-def...
+  (smart-jump-setup-default-registers))
+
+(use-package smart-jump
+  :after (smart-jump lispy)
+  :bind
+  (:map lispy-mode-map
+        ([remap lispy-goto] . smart-jump-go)))
+
 (provide 'config-prog-mode)
 ;;; config-prog-mode.el ends here

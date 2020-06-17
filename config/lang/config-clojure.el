@@ -151,27 +151,10 @@
 ;; * Flycheck
 
 (use-package flycheck-clj-kondo
-  :straight t
   :ensure-system-package (clj-kondo . borkdude/brew/clj-kondo)
+  :straight t
   :after clojure-mode
   :init (require 'flycheck-clj-kondo nil t))
-
-
-;; * Smart Jump
-
-(use-package smart-jump
-  :disabled t
-  :straight t
-  :after (cider)
-  :config
-  (smart-jump-register
-   :modes '(clojure-mode cider-mode cider-repl-mode)
-   :jump-fn 'cider-find-var
-   :pop-fn 'cider-pop-back
-   :refs-fn 'cljr-find-usages
-   :should-jump 'cider-connected-p
-   :heuristic 'point
-   :async 500))
 
 (provide 'config-clojure)
 ;;; config-clojure.el ends here
