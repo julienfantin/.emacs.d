@@ -150,5 +150,9 @@
   (:map lispy-mode-map
         ([remap lispy-goto] . smart-jump-go)))
 
+(use-package poporg
+  :straight t
+  :bind (("C-c e o" . poporg-dwim)))
+
 (provide 'config-prog-mode)
 ;;; config-prog-mode.el ends here

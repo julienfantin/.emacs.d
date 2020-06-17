@@ -37,17 +37,6 @@
 
 
 
-;;;; Packages fixes
-
-(use-package cider-debug
-  :after eldoc-mode
-  :preface
-  (defun -cider-debug-no-eldoc ()
-    (if (bound-and-true-p cider--debug-mode)
-        (eldoc-mode -1)
-      (eldoc-mode 1)))
-  :hook (cider--debug-mode . -cider-debug-no-eldoc))
-
 ;; * UI tweaks
 ;; ** Show paren expression transparency hook
 
@@ -65,7 +54,8 @@
     ;; (set-face-attribute 'show-paren-match nil)
     ))
 
-(advice-add #'load-theme :after #'fix-show-parent-match)
+(comment
+ (advice-add #'load-theme :after #'fix-show-parent-match))
 
 
 
@@ -144,7 +134,14 @@
   :straight t)
 
 (use-package pdf-tools
-  :straight t)
+  :straight t
+  :hook (pdf-view-mode .  cua-mode)
+  :custom
+  (pdf-view-display-size 'fit-page)
+  (pdf-annot-activate-created-annotations t)
+  (pdf-view-resize-factor 1.1)
+  :config
+  (pdf-tools-install))
 
 (use-package nov
   :straight t)
