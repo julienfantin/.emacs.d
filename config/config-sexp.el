@@ -78,112 +78,53 @@
 ;; * Paredit
 
 (use-package paredit
+  :disabled t
   :straight t
-  :after lispy-mnemonic
-  :commands paredit-mode
-  :functions
-  (paredit-wrap-round paredit-wrap-square paredit-wrap-curly)
-  :commands
-  (paredit-raise-sexp
-   paredit-backward-barf-sexp
-   paredit-forward-barf-sexp
-   paredit-forward-slurp-sexp
-   paredit-bacward-slurp-sexp
-   paredit-wrap-round
-   paredit-wrap-square
-   paredit-wrap-curly
-   paredit-kill
-   paredit-splice-sexp)
-  :config
-  (progn
-    (defun paredit-wrap-curly-lispy ()
-      "Workaround inconsistent point position after 'lispy-wrap-braces'."
-      (interactive)
-      (paredit-wrap-curly)
-      (lispy-space 1))
-    (defun paredit-wrap-round-from-behind ()
-      (interactive)
-      (forward-sexp -1)
-      (paredit-wrap-round)
-      (lispy-space 1))
-    (defun paredit-wrap-square-from-behind ()
-      (interactive)
-      (forward-sexp -1)
-      (paredit-wrap-square)
-      (lispy-space 1))
-    (defun paredit-wrap-curly-from-behind ()
-      (interactive)
-      (forward-sexp -1)
-      (paredit-wrap-curly)
-      (lispy-space 1))
-    (let ((map lispy-mode-map))
-      (bind-keys
-       :map map
-       ;; lispy's sometimes don't work when inside a sexp
-       ([remap lispy-forward-slurp-sexp]  . paredit-forward-slurp-sexp)
-       ([remap lispy-forward-barf-sexp]   . paredit-forward-barf-sexp)
-       ([remap lispy-backward-slurp-sexp] . paredit-backward-slurp-sexp)
-       ([remap lispy-backward-barf-sexp]  . paredit-backward-barf-sexp)
-       ;; lispy's can leave unbalanced strings
-       ([remap lispy-kill]                . paredit-kill)
-       ;; lispy's doesn't work contextually in strings
-       ([remap lispy-splice]              . paredit-splice-sexp)))
-
-    (bind-keys
-     :map lispy-mnemonic-mode-map-special
-     ("M-{" . paredit-wrap-curly-lispy)
-     ("M-)" . paredit-wrap-round-from-behind)
-     ("M-]" . paredit-wrap-square-from-behind)
-     ("M-}" . paredit-wrap-curly-from-behind))
-    (dolist (map (list lispy-mnemonic-mode-map
-                       lispy-mnemonic-mode-map-base
-                       lispy-mnemonic-mode-map-special))
-      (bind-keys
-       :map map
-       ;; Delete trailing parens
-       ("C-<backspace>"                   . backward-delete-char)
-       ;; lispy's sometimes don't work when inside a sexp
-       ([remap lispy-forward-slurp-sexp]  . paredit-forward-slurp-sexp)
-       ([remap lispy-forward-barf-sexp]   . paredit-forward-barf-sexp)
-       ([remap lispy-backward-slurp-sexp] . paredit-backward-slurp-sexp)
-       ([remap lispy-backward-barf-sexp]  . paredit-backward-barf-sexp)
-       ;; lispy's can leave unbalanced strings
-       ([remap lispy-kill]                . paredit-kill)
-       ;; lispy's doesn't work contextually in strings
-       ([remap lispy-splice]              . paredit-splice-sexp)))))
-
-
-;; * Lispy
+  :after (lisp-minor-mode)
+  :hook (lisp-minor-mode . paredit-mode))
 
 (use-package lispy
   :straight t
-  :config
-  (progn
-    )
+  :after (lisp-minor-mode)
+  :hook (lisp-minor-mode . lispy-mode)
+  :bind
+  (;; Some of the commands in the paredit map are not right
+   :map lispy-mode-map-paredit
+   ("C-M-f" . forward-sexp)
+   ("C-M-b" . backward-sexp)
+   :map lispy-mode-map
+   ;; Tweak the lispy map from hjkl to a keyboard arrows shape
+   ("h" . nil)
+   ("i" . special-lispy-up)
+   ("k" . special-lispy-down)
+   ("j" . special-lispy-left)
+   ("l" . special-lispy-right))
   :custom
   (lispy-no-permanent-semantic t)
   (lispy-close-quotes-at-end-p t)
   (lispy-eval-display-style 'overlay)
   (lispy-visit-method 'projectile)
   (lispy-compat '(edebug cider))
+  ;; Get the hints off of the symbols!
   (lispy-avy-style-char 'at-full)
   (lispy-avy-style-paren 'at-full)
   (lispy-avy-style-symbol 'at-full)
   (lispy-safe-copy t)
   (lispy-safe-delete t)
-  (lispy-safe-paste t))
-
-(use-package outline-magic
-  :straight t
-  :after lispy
+  (lispy-safe-paste t)
   :config
-  (define-key lispy-mode-map [remap lispy-outline-left]  'outline-promote)
-  (define-key lispy-mode-map [remap lispy-outline-right] 'outline-demote))
+  ;; Enable the paredit map
+  (lispy-set-key-theme '(special c-digit lispy paredit))
+  ;; without this, lispy's special wrapping of "/" for lispy-splice, overrides
+  ;; cljr-slash so that / just self-inserts
+  ;; TODO make that a local change?
+  (lispy-define-key lispy-mode-map "/" 'lispy-splice :inserter 'cljr-slash)
+  (defun lispy-mini-buffer ()
+    (when (eq this-command 'eval-expression)
+      (lispy-mode 1)))
+  (add-hook 'minibuffer-setup-hook 'lispy-mini-buffer))
 
-(use-package lispy-mnemonic
-  :commands lispy-mnemonic-mode
-  :after lisp-minor-mode
-  :hook ((lisp-minor-mode . lispy-mnemonic-mode)))
+
 
 (provide 'config-sexp)
 ;;; config-sexp.el ends here
