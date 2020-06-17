@@ -67,7 +67,7 @@
 
 ;; * Configs
 
-(use-package private :load-path "./lib/")
+(use-package private :load-path "./lib/" :if (file-exists-p "./lib/private.el"))
 (use-package config-theme :load-path "./config")
 (use-package config-path :load-path "./config")
 (use-package config-browser :load-path "./config" :disabled t)
