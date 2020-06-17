@@ -25,22 +25,6 @@
 ;;; Code:
 (require 'use-package)
 
-(defcustom config-doc-default-docsets
-  '((lisp-mode          . (("Common_Lisp" "Common Lisp")))
-    (clojure-mode       . ("Clojure" ("Java_SE8" "Java")))
-    (clojurescript-mode . ("Clojure" "JavaScript" "HTML" "CSS"))
-    (clojurec-mode      . ("Clojure"))
-    (sql-mode           . ("PostgreSQL"))
-    (tuareg-mode        . ("OCaml"))
-    (python-mode        . (("Python_3" "Python 3"))))
-  "Alist of mode-hook to list of docsets.
-
-  Docsets are either a string or a list where the car is the name
-  of the docset to install, and the cadr is the name of the
-  docset to use."
-  :group 'config-doc
-  :type 'alist)
-
 (use-package eldoc
   :straight t
   :hook (prog-mode . eldoc-mode)
@@ -49,7 +33,7 @@
   (eldoc-idle-delay .5))
 
 (use-package paredit
-  :after eldoc
+  :after (paredit eldoc)
   :config
   (eldoc-add-command
    'paredit-backward
@@ -58,39 +42,6 @@
    'paredit-close-round))
 
 (use-package know-your-http-well :straight t)
-
-(defvar config-completion-system)       ; silence warning
-
-(use-package counsel-dash
-  :disabled t
-  :if (eq config-completion-system 'ivy)
-  :straight t
-  :after config-completion
-  :functions (config-doc-set-docsets)
-  :commands (counsel-dash-install-docset)
-  :preface
-  (progn
-    (defun config-doc--mode-hook (mode)
-      (intern (concat (symbol-name mode) "-hook")))
-    (defun config-doc--docset-install-name (docset)
-      (if (listp docset) (car docset) docset))
-    (defun config-doc--docset-enable-name (docset)
-      (if (listp docset) (cadr docset) docset))
-    (defun config-doc--enable-docsets ()
-      (when-let ((docsets (cdr (assoc major-mode config-doc-default-docsets))))
-        (mapc 'helm-dash-ensure-docset-installed
-              (mapcar 'config-doc--docset-install-name docsets))
-        (setq counsel-dash-docsets
-              (mapcar #'config-doc--docset-enable-name docsets))))
-    (defun config-doc--init ()
-      (mapc
-       (lambda (cell)
-         (let* ((mode (car cell))
-                (hook (config-doc--mode-hook mode)))
-           (add-hook hook 'config-doc--enable-docsets)))
-       config-doc-default-docsets)))
-  :hook (after-init . config-doc--init)
-  :custom (counsel-dash-browser-func 'eww-browse-url))
 
 (provide 'config-doc)
 ;;; config-doc.el ends here
