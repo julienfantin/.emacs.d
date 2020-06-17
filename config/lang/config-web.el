@@ -48,8 +48,7 @@
   :mode (("\\.html?\\'" . web-mode)
          ("\\.css?\\'"  . web-mode))
   :hook
-  ((web-mode . aggressive-indent-mode)
-   (web-mode . paredit-mode))
+  ((web-mode . aggressive-indent-mode))
   :custom
   (web-mode-markup-indent-offset config-web-default-indent)
   (web-mode-css-indent-offset config-web-default-indent)

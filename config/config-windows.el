@@ -80,11 +80,15 @@
 
 (use-package windresize
   :straight t
+  :commands
+  (windresize-up windresize-left windresize-down windresize-right)
   :bind (("M-s-I" . windresize-up)
          ("M-s-J" . windresize-left)
          ("M-s-K" . windresize-down)
          ("M-s-L" . windresize-right))
-  :custom (windresize-default-increment 10))
+  :custom
+  (windresize-increment 10)
+  (windresize-default-increment 10))
 
 
 ;; * Window configurations
@@ -110,6 +114,11 @@
       (side . top)
       (slot . 2))
      ;; bottom side window
+     ("\\*\\(Flycheck errors\\).*"
+      (display-buffer-in-side-window)
+      (window-width . 0.168)
+      (side . bottom)
+      (slot . -1))
      ("\\*\\(Output\\|Register Preview\\).*"
       (display-buffer-in-side-window)
       (window-width . 0.168)

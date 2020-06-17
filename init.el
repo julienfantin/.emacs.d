@@ -91,7 +91,6 @@
 (use-package config-frame :load-path "./config" :if window-system)
 (use-package config-git :load-path "./config")
 (use-package config-gui :load-path "./config")
-(use-package config-helm :load-path "./config")
 (use-package config-help :load-path "./config")
 (use-package config-indentation :load-path "./config")
 (use-package config-irc :load-path "./config" :disabled t)

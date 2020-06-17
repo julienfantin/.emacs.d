@@ -65,7 +65,7 @@
 
 (use-package icomplete
   :if (equal config-completion-system 'icomplete)
-  :hook (after-init . icomplete-mode)
+  :hook (after-init . fido-mode)
   :bind (:map icomplete-minibuffer-map
               ("C-n" . icomplete-forward-completions)
               ("<right>" . icomplete-forward-completions)
@@ -73,15 +73,6 @@
               ("C-p" . icomplete-backward-completions)
               ("<left>" . icomplete-backward-completions)
               ("<up>" . icomplete-backward-completions))
-  :config
-  (add-hook
-   'icomplete-minibuffer-setup-hook
-   (defun config-completion--icomplete-activate-fido-map ()
-     "Enable the fido keymap in icomplete without forcing local
-settings like hiding common prefix etc."
-     (when (and icomplete-mode (icomplete-simple-completing-p))
-       (use-local-map (make-composed-keymap icomplete-fido-mode-map
-                                            (current-local-map))))))
   :custom
   (icomplete-hide-common-prefix t)
   (icomplete-delay-completions-threshold 0)
@@ -142,23 +133,12 @@ normally would when calling `yank' followed by `yank-pop'."
         ("a")
         (";" . embark-act)
         ("'" . avy-embark-occur-choose)
-        ("\"" . avy-embark-occur-act))
-  :config
-  (defun embark-insert-exit ()
-    "Like `embark-insert' but exits current recursive minibuffer."
-    (interactive)
-    (with-minibuffer-selected-window (insert (embark-target)))
-    (abort-recursive-edit))
-
-  (defun embark-insert-exit-all ()
-    "Like `embark-insert' but exits all recursive minibuffers."
-    (interactive)
-    (with-minibuffer-selected-window (insert (embark-target)))
-    (top-level)))
+        ("\"" . avy-embark-occur-act)))
 
 (use-package which-key
   :after (which-key embark)
   :config
+  ;; Ignore numeric prefixes
   (push
    '(("^[0-9-]\\|kp-[0-9]\\|kp-subtract\\|C-u$" . nil) . ignore)
    which-key-replacement-alist))

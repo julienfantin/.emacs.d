@@ -34,11 +34,11 @@
   (sql-send-terminator t))
 
 (use-package paredit
-  :after sql
+  :after (sql paredit)
   :hook (sql-mode . paredit-mode))
 
 (use-package aggressive-indent
-  :after sql
+  :after (sql aggressive-indent)
   :hook (sql-mode . aggressive-indent-mode))
 
 

@@ -90,8 +90,8 @@
 (use-package no-littering
   :straight t
   :demand t
-  :custom
-  (auto-save-file-name-transforms
+  :config
+  (setq auto-save-file-name-transforms
    `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
 (use-package vlf-setup

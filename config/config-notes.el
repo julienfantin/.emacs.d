@@ -51,10 +51,6 @@
   (org-ref-default-bibliography (list config-notes-bib-file))
   (org-ref-pdf-directory config-notes-pdf-directory))
 
-(use-package helm-bibtex
-  :if (eq config-completion-system 'helm)
-  :ensure t)
-
 (use-package ivy-bibtex
   :if (eq config-completion-system 'ivy)
   :ensure t

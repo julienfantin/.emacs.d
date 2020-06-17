@@ -25,6 +25,7 @@
 ;;; Code:
 (require 'use-package)
 
+
 ;; * Packages
 
 (use-package doom-modeline
@@ -32,6 +33,9 @@
   :hook (after-init . doom-modeline-mode)
   :custom
   (doom-modeline-icon t) ;; NOTE eval (all-the-icons-install-fonts)
+  (doom-modeline-irc nil)
+  (doom-modeline-modal-icon nil)
+  (doom-modeline-persp-icon nil)
   (doom-modeline-bar-width 32)
   (doom-modeline-height 32)
   (doom-modeline-buffer-file-name-style 'relative-to-project))

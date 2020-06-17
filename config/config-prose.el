@@ -28,8 +28,6 @@
 (defvar config-prose-dicts-dir
   (expand-file-name "etc/dictionaries/" user-emacs-directory))
 
-;; (setq ispell-library-directory (expand-file-name "etc/dictionaries/" user-emacs-directory))
-
 (use-package olivetti :straight t)
 
 
@@ -37,9 +35,9 @@
 
 (use-package ispell
   :ensure-system-package (hunspell)
+  :defer 5
   :config
   (progn
-    (require 'dash)
     (setenv "DICPATH" config-prose-dicts-dir)
     (cond
      ((executable-find "hunspell")
@@ -54,18 +52,19 @@
   :custom (ispell-silently-savep t))
 
 (use-package flyspell
+  :defer t
   :custom
   (flyspell-abbrev-p t)
   (flyspell-issue-welcome-flag nil)
   (flyspell-issue-message-flag nil))
 
 (use-package flyspell-lazy
-  :disabled t
   :straight t
   :after flyspell
   :hook (flyspell-mode . flyspell-lazy-load))
 
 (use-package flyspell-correct-ivy
+  :disabled t
   :straight t
   :after flyspell
   :init (require 'flyspell-correct-ivy nil t)
@@ -79,6 +78,7 @@
 (use-package visual-fill-column :straight t)
 
 (use-package prose-minor-mode
+  :defer 5
   :hook ((org-mode         . prose-minor-mode)
          (markdown-mode    . prose-minor-mode)
          (prose-minor-mode . visual-line-mode)

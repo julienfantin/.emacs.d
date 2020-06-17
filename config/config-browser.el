@@ -26,9 +26,7 @@
 (require 'use-package)
 (require 'config-path)
 
-
 ;; * URL handling
-
 
 (use-package browse-url
   :custom

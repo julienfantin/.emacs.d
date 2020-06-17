@@ -119,13 +119,6 @@ hyper when it's used as a modifier."
      previous-line
      next-line)))
 
-(use-package hydra
-  :straight  t
-  :config
-  (use-package lv
-    :custom
-    (lv-use-separator t)))
-
 
 ;; * Keymaps
 
@@ -141,8 +134,6 @@ hyper when it's used as a modifier."
 
 ;; ** (b) Buffers
 
-(hydra-set-property 'hydra-buffers :verbosity 1)
-
 (general-define-key
  :prefix "C-c"
  :infix "b"
@@ -156,26 +147,10 @@ hyper when it's used as a modifier."
 
 ;; ** (e) Editing
 
-(defvar hydra-multiple-cursors-lispy-p nil)
-
-(defhydra hydra-multiple-cursors (:color red :hint nil)
-  ("m"   mc/mark-all-like-this-dwim :exit t)
-  ("i"   mc/insert-numbers)
-  ("n"   mc/mark-next-like-this "next")
-  ("N"   mc/unmark-next-like-this "-next")
-  ("s"   mc/skip-to-next-like-this "skip next")
-  ("p"   mc/mark-previous-like-this "-prev")
-  ("P"   mc/unmark-previous-like-this "prev")
-  ("x"   mc/mark-more-like-this-extended "more")
-  ("h"   mc-hide-unmatched-lines-mode "hide")
-  ("C-g" mc/keyboard-quit "quit" :exit t))
-
 (general-define-key
  :prefix "C-c"
  :infix "e"
- "C-c e" '(hydra-multiple-cursors/body :which-key "mc")
  "s" '(sort-lines :which-key "sort")
- "m" '(hydra-multiple-cursors/body :which-key "mc")
  "a" '(align-current :which-key "align")
  "c" '(-cleanup :which-key "cleanup")
  "o" '(outorg-edit-as-org :which-key "outorg")
@@ -183,12 +158,6 @@ hyper when it's used as a modifier."
  "i" '(iedit-mode :which-key "iedit"))
 
 ;;  ** (f) Find
-
-(general-define-key
- :prefix "C-c"
- :infix "f"
- "h"     '(helm-hunks :which-key "hunks")
- "p"     '(projectile-find-file :which-key "(projectile) find-file"))
 
 (when (equal 'ivy config-completion-system)
   (general-define-key
@@ -232,33 +201,6 @@ hyper when it's used as a modifier."
  "r" '(read-only-mode :which-key "read-only")
  "t" '(toggle-truncate-lines :which-key "truncate")
  "v" '(visual-line-mode :which-key "visual-line"))
-
-;; ** (n) Notes
-
-(general-define-key
- :prefix "C-c"
- :infix "n"
- "c" '(org-capture :which-key "capture")
- "j" '(org-journal-new-entry :which-key "journal"))
-
-;; ** (t) Term
-
-(general-define-key
- :prefix "C-c"
- :infix "&"
- "C-c &" 'eshell
- "e" 'eshell
- "s" 'shell
- "t" 'term
- "a" 'ansi-term)
-
-;; ** (d) Documentation
-
-(when (equal 'ivy config-completion-system)
-  (general-define-key
-   :prefix "C-c"
-   :infix "d"
-   "SPC" 'counsel-dash))
 
 
 ;; * Keybindings
