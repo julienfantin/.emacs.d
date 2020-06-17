@@ -48,41 +48,14 @@
 
 ;; * Packages
 
-(use-package multiple-cursors :straight t :after no-littering)
-(use-package multiple-cursors
-  :straight t
-  :after no-littering
-  :config
-  (add-hook
-   'multiple-cursors-mode-hook
-   (defun config-editing-multiple-cursors-box ()
-     "Bar cursors look weird, so force it to box while enabled."
-     (if multiple-cursors-mode
-         (setq cursor-type 'box)
-       (setq cursor-type 'bar)))))
-
-(use-package phi-search
-  :straight t
-  :after multiple-cursors
-  :config
-  (add-hook
-   'multiple-cursors-mode-hook
-   (defun config-editing-multiple-cursors-phi-search ()
-     "Remap isearch to phi-search while multiple-cursors is enabled."
-     (if multiple-cursors-mode
-         (progn
-           (local-set-key [remap isearch-forward] 'phi-search)
-           (local-set-key [remap isearch-backward] 'phi-search-backward))
-       (progn
-         (local-set-key [remap isearch-forward] nil)
-         (local-set-key [remap isearch-backward] nil))))))
-
 (use-package iedit
   :straight t
   :bind (:map isearch-mode-map
               ("C-c e i" . iedit-mode-from-isearch)))
 
-
+(use-package goto-chg
+  :straight t
+  :bind (("C-c e l" . goto-last-change)))
 
 
 ;; * Commands
