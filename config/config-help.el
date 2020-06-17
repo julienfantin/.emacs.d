@@ -34,5 +34,10 @@
    ("C-h ." . helpful-at-point))
   :hook ((helpful-mode . visual-line-mode)))
 
+(use-package link-hint
+  :straight t
+  :bind
+  ("C-c o" . link-hint-open-link))
+
 (provide 'config-help)
 ;;; config-help.el ends here
