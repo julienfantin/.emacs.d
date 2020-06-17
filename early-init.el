@@ -77,5 +77,18 @@
 ;; Do not resize the frame at this early stage.
 (setq frame-inhibit-implied-resize t)
 
+
+;; * System
+
+;; Emacs-plus defines a hook to react to system appearance changes, it's called
+;; too early in the init process so we record the appearance here
+
+(defvar -ns-system-appearance nil)
+
+(when (boundp 'ns-system-appearance-change-functions)
+  (add-hook 'ns-system-appearance-change-functions
+            (lambda (appearance)
+              (setq -ns-system-appearance appearance)) ))
+
 (provide 'early-init)
 ;;; early-init.el ends here

@@ -29,19 +29,25 @@
 
 ;; * Customs
 
-(defcustom config-theme-default 'duotone
+(defcustom config-theme-light 'modus-operandi
   "Default theme."
   :type 'symbol
   :group 'config-theme)
 
-(defun config-theme-load-default-theme ()
-  "Load the default theme."
-  (when config-theme-default
-    (load-theme config-theme-default t)))
+(defcustom config-theme-dark 'modus-vivendi
+  "Default theme."
+  :type 'symbol
+  :group 'config-theme)
 
+(defun config-theme-load-default-theme (&optional appearance)
+  "Load the default theme for the given APPEARANCE."
+  (pcase (or appearance
+             (when (boundp '-ns-system-appearance) -ns-system-appearance))
+    ('dark (load-theme config-theme-dark t))
+    (_ (load-theme config-theme-light t))))
 
 
-;; * Built-inss
+;; * Built-ins
 
 (use-package custom
   :commands load-theme
@@ -50,7 +56,16 @@
   (config-path-add-to-load-path custom-theme-directory)
   :custom
   (custom-safe-themes t)
-  (custom-theme-directory (expand-file-name "themes/" user-emacs-directory)))
+  (custom-theme-directory (expand-file-name "themes/" user-emacs-directory))
+  :config
+  ;; Patch from emacs-plus
+  (when (boundp 'ns-system-appearance-change-functions)
+    (add-hook 'ns-system-appearance-change-functions
+              #'(lambda (appearance)
+                  (mapc #'disable-theme custom-enabled-themes)
+                  (pcase appearance
+                    ('light (load-theme config-theme-light t))
+                    ('dark (load-theme config-theme-dark t)))))))
 
 
 ;; * Themes
@@ -78,8 +93,20 @@
   :custom
   (modus-operandi-theme-slanted-constructs t)
   (modus-operandi-theme-bold-constructs t)
+  (modus-operandi-theme-visible-fringes nil)
+  (modus-operandi-theme-3d-modeline t)
+  (modus-operandi-theme-subtle-diffs t)
+  (modus-operandi-theme-intense-standard-completions t)
+  (modus-operandi-theme-distinct-org-blocks t)
+  (modus-operandi-theme-proportional-fonts t)
+  (modus-operandi-theme-rainbow-headings nil)
+  (modus-operandi-theme-section-headings nil)
   (modus-operandi-theme-scale-headings t)
-  (modus-operandi-theme-intense-standard-completions t))
+  (modus-operandi-theme-scale-1 1.05)
+  (modus-operandi-theme-scale-2 1.1)
+  (modus-operandi-theme-scale-3 1.15)
+  (modus-operandi-theme-scale-4 1.2)
+  (modus-operandi-theme-scale-5 1.3))
 
 (use-package modus-vivendi-theme
   :straight t
@@ -87,8 +114,20 @@
   :custom
   (modus-vivendi-theme-slanted-constructs t)
   (modus-vivendi-theme-bold-constructs t)
+  (modus-vivendi-theme-visible-fringes nil)
+  (modus-vivendi-theme-3d-modeline t)
+  (modus-vivendi-theme-subtle-diffs t)
+  (modus-vivendi-theme-intense-standard-completions t)
+  (modus-vivendi-theme-distinct-org-blocks t)
+  (modus-vivendi-theme-proportional-fonts t)
+  (modus-vivendi-theme-rainbow-headings nil)
+  (modus-vivendi-theme-section-headings nil)
   (modus-vivendi-theme-scale-headings t)
-  (modus-vivendi-theme-intense-standard-completions t))
+  (modus-vivendi-theme-scale-1 1.05)
+  (modus-vivendi-theme-scale-2 1.1)
+  (modus-vivendi-theme-scale-3 1.15)
+  (modus-vivendi-theme-scale-4 1.2)
+  (modus-vivendi-theme-scale-5 1.3))
 
 
 (use-package kaolin-themes
