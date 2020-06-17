@@ -47,7 +47,11 @@ With a prefix argument P, isearch for the symbol at point."
 
 ;; * Packages
 
-(use-package imenu-anywhere :straight t)
+(use-package imenu-anywhere
+  :straight t
+  :bind
+  ("C-c i" . imenu-anywhere)
+  ("C-c I" . imenu))
 
 (use-package flimenu
   :straight t

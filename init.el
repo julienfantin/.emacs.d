@@ -32,7 +32,7 @@
 
 ;; * Config options
 
-(defvar config-completion-system 'ivy)
+(defvar config-completion-system 'icomplete)
 
 
 ;; * Bootstrap
@@ -97,7 +97,7 @@
 (use-package config-irc :load-path "./config" :disabled t)
 (use-package config-ivy :load-path "./config" :if (equal 'ivy config-completion-system))
 (use-package config-marks :load-path "./config")
-(use-package config-modeline :load-path "./config" :disabled t)
+(use-package config-modeline :load-path "./config")
 (use-package config-org :load-path "./config" :disabled t)
 (use-package config-outlines :load-path "./config" :disabled t)
 (use-package config-parsers :load-path "./config")

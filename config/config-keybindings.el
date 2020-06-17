@@ -326,7 +326,6 @@ hyper when it's used as a modifier."
 (general-define-key
  :prefix "C-c"
  :keymaps 'global
- "i" '(imenu :which-key "imenu")
  "j" '(avy-goto-char-timer :which-key "avy-char")
  "k" '(kill-this-buffer :which-key "kill-this-buffer"))
 

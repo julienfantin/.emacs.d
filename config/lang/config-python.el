@@ -197,11 +197,14 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 
 (use-package company-lsp
   :straight t
-  :after (lsp-mode company)
-  :hook (lsp-mode . config-python--enable-company-lsp)
-  :preface
-  (defun config-python--enable-company-lsp ()
-    (setq-local company-backends '(company-lsp))))
+  :after (lsp-mode company))
+
+(use-package compdef
+  :after (company-lsp compdef)
+  :config
+  (compdef
+   :modes #'lsp-mode
+   :company '(company-lsp)))
 
 
 ;; * Debug adapter protocol
