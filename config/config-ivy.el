@@ -33,6 +33,7 @@
   (uniquify-buffer-name-style 'forward))
 
 (use-package ivy
+  :if (eq config-completion-system 'ivy)
   :hook ((after-init . ivy-mode))
   :commands (ivy-set-actions)
   :custom
@@ -43,11 +44,13 @@
   (ivy-use-virtual-buffers t))
 
 (use-package magit
+  :if (eq config-completion-system 'ivy)
   :after ivy
   :custom
   (magit-completing-read-function 'ivy-completing-read))
 
 (use-package counsel
+  :if (eq config-completion-system 'ivy)
   :straight t
   :hook ((after-init . counsel-mode))
   :custom
@@ -60,6 +63,7 @@
       (counsel-rg "TODO|FIXME|HACK|XXX" (projectile-project-root) nil "TODOs:"))))
 
 (use-package counsel-projectile
+  :if (eq config-completion-system 'ivy)
   :straight t
   :after (counsel projectile)
   :hook ((after-init . counsel-projectile-mode))
