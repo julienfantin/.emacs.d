@@ -20,11 +20,32 @@
   :after no-littering
   :custom
   (recentf-max-saved-items 1000)
-  (recentf-max-menu-items 200))
+  (recentf-max-menu-items 200)
+  :config
+  (add-to-list 'recentf-exclude no-littering-var-directory))
 
+;; From https://github.com/The-BigDaddy/.emacs.d
 (use-package autorevert
-  :hook (after-init . global-auto-revert-mode)
-  :custom (auto-revert-check-vc-info nil))
+  :hook ((focus-in . -auto-revert-buffers)
+         (after-save . -auto-revert-buffers))
+  :custom
+  (auto-revert-verbose t)
+  (auto-revert-use-notify nil)
+  (auto-revert-stop-on-user-input nil)
+  :config
+  ;; Instead of using `auto-revert-mode' or `global-auto-revert-mode', we employ
+  ;; lazy auto reverting on `focus-in-hook'.
+  ;;
+  ;; This is because autorevert abuses the heck out of inotify handles which can
+  ;; grind Emacs to a halt if you do expensive IO (outside of Emacs) on the
+  ;; files you have open (like compression). We only really need revert changes
+  ;; when we switch to a buffer or when we focus the Emacs frame.
+  (defun -auto-revert-buffers (&optional buffer-list)
+    (dolist (buf (cl-loop for buf in (or buffer-list (buffer-list))
+                          when (get-buffer-window buf)
+                          collect buf))
+      (with-current-buffer buf
+        (auto-revert-handler)))))
 
 (use-package simple
   :custom
@@ -69,24 +90,19 @@
 (use-package no-littering
   :straight t
   :demand t
-  :config
-  (setq auto-save-file-name-transforms
+  :custom
+  (auto-save-file-name-transforms
    `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
-(use-package recentf
-  :after no-littering
-  :config
-  (add-to-list 'recentf-exclude no-littering-var-directory))
-
-(use-package vlf-setup :ensure vlf)
+(use-package vlf-setup
+  :defer 5
+  :straight vlf)
 
 (use-package super-save
   :straight t
   :hook (after-init . super-save-mode)
   :config
-  (setq-default save-silently t)
-  (add-to-list 'super-save-triggers 'eyebrowse-switch-to-window-config)
-  (add-to-list 'super-save-triggers 'persp-switch))
+  (setq-default save-silently t))
 
 ;; ** Dired extensions
 
