@@ -26,10 +26,18 @@
 
 (require 'use-package)
 
+
+;; * Defaults
+
 (add-to-list 'exec-path "~/bin")
+
 (setq default-truncate-lines t)
 
-;; * Packages fixes
+(setq-default default-text-properties '(line-spacing 5 line-height 1.25))
+
+
+
+;;;; Packages fixes
 
 (use-package cider-debug
   :after eldoc-mode
@@ -59,19 +67,100 @@
 
 (advice-add #'load-theme :after #'fix-show-parent-match)
 
+
+
 ;; * Keybindings
 
 (global-set-key (kbd "C-x =") 'balance-windows-area)
 
-(defvar start-file "~/org/todo.org")
+
+;; * Start file
+
+(defvar start-file "~/.emacs.d/todos.org")
 (defun open-start-file () (find-file start-file))
 (add-hook 'after-init-hook #'open-start-file)
-
-(setq-default line-spacing 5)
 
 (server-start)
 
 (use-package hercules :straight t)
+
+
+;; * Org-roam
+
+(use-package org-roam
+  ;; TODO company completion
+  :straight t
+  :hook
+  (after-init . org-roam-mode)
+  :custom
+  (org-roam-directory "~/org-roam")
+  ;; https://github.com/org-roam/org-roam/issues/674
+  (org-roam-index-file "~/org-roam/org-roam.db")
+  :bind
+  (:map org-roam-mode-map
+        (("C-c n l" . org-roam)
+         ("C-c n b" . org-roam-switch-to-buffer)
+         ("C-c n f" . org-roam-find-file)
+         ("C-c n g" . org-roam-show-graph))
+        :map org-mode-map
+        (("C-c n i" . org-roam-insert)))
+  :config
+  (add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode))
+
+(use-package company-org-roam
+  :straight t
+  :after (org-roam compdef)
+  :hook (org-mode . company-mode)
+  :init
+  (compdef
+   :modes #'org-mode
+   :company '(company-org-roam company-yasnippet company-dabbrev company-capf)
+   :capf #'pcomplete-completions-at-point))
+
+(use-package org-journal
+  :straight t
+  :after org-roam
+  :bind
+  ("C-c n j" . org-journal-new-entry)
+  :custom
+  (org-journal-dir org-roam-directory)
+  (org-journal-date-prefix "#+title: ")
+  (org-journal-file-format "%Y-%m-%d.org")
+  (org-journal-date-format "%A, %d %B %Y")
+  (org-journal-enable-agenda-integration t))
+
+(use-package deft
+  :straight t
+  :after (org-roam)
+  :bind
+  ("C-c n d" . deft)
+  :custom
+  (deft-recursive t)
+  (deft-use-filter-string-for-filename t)
+  (deft-default-extension "org")
+  (deft-directory org-roam-directory))
+
+(use-package org-noter
+  :straight t)
+
+(use-package pdf-tools
+  :straight t)
+
+(use-package nov
+  :straight t)
+
+(use-package org
+  :custom
+  (org-link-frame-setup
+   '((vm . vm-visit-folder-other-frame)
+     (vm-imap . vm-visit-imap-folder-other-frame)
+     (gnus . org-gnus-no-new-news)
+     ;; was find-file-other-window
+     (file . find-file)
+     (wl . wl-other-frame))))
+
+(use-package explain-pause-mode
+  :straight (explain-pause-mode :type git :host github :repo "lastquestion/explain-pause-mode"))
 
 (provide 'config-wip)
 ;;; config-wip.el ends here
