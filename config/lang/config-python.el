@@ -25,39 +25,35 @@
 ;;; Code:
 (require 'use-package)
 
-(defvar config-python-lsp-frontend nil)
-(defvar config-python-lsp-backend nil)
+(defvar config-python-lsp-frontend 'lsp-mode)
+(defvar config-python-lsp-backend 'ms-python)
 
 
 ;; * Python
 
 (use-package python
-  :hook (python-mode . subword-mode)
-  :preface
-  (defvar config-python-interpreters
-    '(("ipython" "-i --simple-prompt")
-      ("python3" "-i")
-      ("python"))
-    "List of '(\"interpreter\" \"args\")")
-  (defun config-python-set-interpreter ()
-    "Configure `python-shell-interpreter' according to `config-python-interpreters'."
-    (if-let ((cell (cl-find-if
-                    (lambda (cell)
-                      (executable-find (car cell)))
-                    config-python-interpreters)))
-        (setq python-shell-interpreter (car cell)
-              python-shell-interpreter-args (cadr cell))
-      (error "Interpreter not found")))
-  :config
-  (add-hook 'python-mode-hook #'config-python-set-interpreter)
-  (add-hook 'python-mode-hook (lambda () (set-fill-column 120))))
+  :hook (python-mode . subword-mode))
 
 (use-package pyvenv
+  :disabled t
   ;; Set `pyvenv-workon' to the absolute path for the current venv in a .dir-locals.el
   :straight t
-  :hook (python-mode . pyvenv-mode)
-  :config
-  (add-hook 'pyvenv-post-create-hooks #'config-python-set-interpreter))
+  :hook (python-mode . pyvenv-mode))
+
+(use-package auto-virtualenv
+  :disabled t
+  :ensure t
+  :defer t
+  :init
+  ;; add .python-version file to project root, then add path of virtualenv eg:~/Envs/venv36/
+  (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
+  ;; Activate on changing buffers
+  (add-hook 'window-configuration-change-hook 'auto-virtualenv-set-virtualenv)
+  ;; Activate on focus in
+  (add-hook 'focus-in-hook 'auto-virtualenv-set-virtualenv)
+  ;; (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)
+  )
+
 
 (use-package python-docstring
   :straight t
@@ -67,10 +63,10 @@
         ([remap fill-paragraph] . python-docstring-fill)))
 
 
-;; * Environment
+;; * Elpy
 
 (use-package flycheck
-  :disabled t
+  :if (null config-python-lsp-backend)
   :after elpy
   :hook (elpy-mode . flycheck-mode)
   :config
@@ -79,13 +75,17 @@
 ;; pip install elpy rope jedi autopep8 yapf flake8 isort importmagic epc autoflake
 
 (use-package elpy
-  :disabled t
+  :if (null config-python-lsp-backend)
   :straight t
   :hook (python-mode . elpy-enable)
   :custom
   (elpy-get-info-from-shell t))
 
+
+;; * Environment
+
 (use-package py-autopep8
+  :disabled t
   :straight t
   :hook (python-mode . py-autopep8-enable-on-save))
 
@@ -116,6 +116,7 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
   (add-hook 'before-save-hook #'config-python-autoflake-before-save nil t))
 
 (use-package python
+  :disabled t
   :hook ((before-save-hook . config-python-autoflake-turn-on)))
 
 (use-package pytest
@@ -170,41 +171,49 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 
 ;; ** lsp-mode
 
-(use-package ms-python
-  :if (and (eq config-python-lsp-frontend 'lsp-mode)
-           (eq config-python-lsp-backend 'ms-python))
+(use-package lsp-mode
+  :if (eq config-python-lsp-frontend 'lsp-mode)
+  :straight t)
+
+(use-package lsp-python-ms
+  :if (and (eq config-python-lsp-frontend 'lsp-mode) (eq config-python-lsp-backend 'ms-python))
   :straight t
-  :init (require 'ms-python)
-  :config (add-hook 'python-mode-hook 'lsp t)
+  :demand t
+  :hook (python-mode . lsp)
+  :init
+  (remhash 'pyls lsp-clients)
   :custom
-  (ms-python-server-install-dir (no-littering-expand-etc-file-name "ms-python/server/"))
-  (ms-python-dotnet-install-dir (no-littering-expand-etc-file-name "ms-python/dotnet/")))
+  (lsp-python-ms-nupkg-channel "daily"))
 
 (use-package lsp-ui
   :if (eq config-python-lsp-frontend 'lsp-mode)
-  :after lsp
+  :after lsp-mode
   :hook (lsp-mode . lsp-ui-mode)
   :custom
-  (lsp-ui-sideline-ignore-duplicate t)
-  (lsp-ui-doc-header nil)
-  (lsp-ui-sideline-enable nil)
-  (lsp-ui-peek-always-show t))
+  (lsp-ui-doc-use-webkit (featurep 'xwidget-internal))
+  (lsp-ui-doc-enable t)
+  (lsp-ui-peek-enable t)
+  (lsp-ui-sideline-enable t)
+  (lsp-ui-imenu-enable t)
+  (lsp-ui-flycheck-enable t)
+  (lsp-ui-sideline-toggle-symbols-info t)
+  (lsp-ui-doc-include-signature t))
 
 (use-package lsp-imenu
-  :disabled t
   :if (eq config-python-lsp-frontend 'lsp-mode)
   :hook (lsp-after-open . lsp-enable-imenu))
 
 (use-package company-lsp
+  :if (eq config-python-lsp-frontend 'lsp-mode)
   :straight t
-  :after (lsp-mode company))
-
-(use-package compdef
-  :after (company-lsp compdef)
+  :after (lsp-mode compdef)
   :config
   (compdef
-   :modes #'lsp-mode
-   :company '(company-lsp)))
+   :modes #'python-mode
+   :company #'company-lsp))
+
+(use-package lsp-treemacs
+  :straight t)
 
 
 ;; * Debug adapter protocol
@@ -213,8 +222,9 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
   :if (eq config-python-lsp-frontend 'lsp-mode)
   :straight t
   :hook ((lsp-mode . dap-mode)
-         (lsp-mode . dap-ui-mode))
-  :config (require 'dap-python))
+         (dap-mode . dap-ui-mode)
+         (python-mode . (lambda () (require 'dap-python))))
+  :demand t)
 
 ;;; config-python.el ends here
 (provide 'config-python)
