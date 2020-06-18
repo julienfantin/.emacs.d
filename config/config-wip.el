@@ -33,7 +33,7 @@
 
 (setq default-truncate-lines t)
 
-(setq-default default-text-properties '(line-spacing 5 line-height 1.25))
+(setq-default default-text-properties '(line-spacing 2 line-height 1.25))
 
 
 

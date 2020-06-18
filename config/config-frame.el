@@ -41,7 +41,7 @@
 (defvar config-frame-fonts
   '("-*-SF UI Text-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1"))
 
-(defvar config-frame-default-font-height 140)
+(defvar config-frame-default-font-height 110)
 
 
 ;; * Fonts
