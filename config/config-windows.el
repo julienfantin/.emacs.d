@@ -25,6 +25,10 @@
 ;;; Code:
 (require 'use-package)
 
+(defvar Φ (/ 1 1.618033988749895))
+
+(defvar -Φ (- 1 Φ))
+
 (use-package emacs
   :custom
   (scroll-preserve-screen-position t)
@@ -107,44 +111,38 @@
 (use-package window
   :custom
   (display-buffer-alist
-   '(;; top side window
-     ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
-      (display-buffer-in-side-window)
-      (window-height . 0.168)
-      (side . top)
-      (slot . 2))
-     ;; bottom side window
+   `(;; bottom side window
      ("\\*\\(Flycheck errors\\).*"
       (display-buffer-in-side-window)
-      (window-width . 0.168)
+      (window-height . ,-Φ)
       (side . bottom)
-      (slot . -1))
-     ("\\*\\(Output\\|Register Preview\\).*"
+      (slot . 0))
+     ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
       (display-buffer-in-side-window)
-      (window-width . 0.168)
+      (window-height . ,-Φ)
       (side . bottom)
       (slot . -1))
      (".*\\*\\(Completions\\|Embark Live Occur\\).*"
       (display-buffer-in-side-window)
-      (window-height . 0.168)
+      (window-height . ,-Φ)
       (side . bottom)
-      (slot . 0)
+      (slot . -2)
       (window-parameters . ((no-other-window . t))))
+     ;; top side window
      ("^\\(\\*e?shell\\|vterm\\).*"
       (display-buffer-in-side-window)
-      (window-height . 0.168)
-      (side . bottom)
-      (slot . 1))
+      (window-height . ,-Φ)
+      (side . top)
+      (slot . 0))
      ;; Right side window
      ("\\*Help.*"
       (display-buffer-in-side-window)
-      (window-width . 0.323)
+      (window-width . ,-Φ)
       (side . right)
-      (slot . 0)
-      (select . nil))
+      (slot . 0))
      ("\\*Custom.*"
       (display-buffer-in-side-window)
-      (window-width . 0.323)
+      (window-width . ,-Φ)
       (side . right)
       (slot . 1))))
   :hook ((help-mode . visual-line-mode)
