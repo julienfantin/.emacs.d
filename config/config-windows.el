@@ -40,10 +40,28 @@
 
 (use-package ace-window
   :straight t
-  :commands (aw-window-list)
-  :config
-  (setq aw-keys '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0)
-        aw-scope 'frame))
+  :preface
+  (dolist (n (number-sequence 1 10))
+    (eval
+     `(defun ,(intern (format "aw-switch-to-window-%s" n)) ()
+        (interactive)
+        ,(format "Switch to window at index %s" n)
+        (when-let (window (nth (- ,n 1) (aw-window-list)))
+          (aw-switch-to-window window)))))
+  :bind
+  (("C-c 1" . aw-switch-to-window-1)
+   ("C-c 2" . aw-switch-to-window-2)
+   ("C-c 3" . aw-switch-to-window-3)
+   ("C-c 4" . aw-switch-to-window-4)
+   ("C-c 5" . aw-switch-to-window-5)
+   ("C-c 6" . aw-switch-to-window-6)
+   ("C-c 7" . aw-switch-to-window-7)
+   ("C-c 8" . aw-switch-to-window-8)
+   ("C-c 9" . aw-switch-to-window-9)
+   ("C-c 0" . aw-switch-to-window-0))
+  :custom
+  (aw-keys '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0))
+  (aw-scope 'frame))
 
 (use-package windmove
   :bind (("s-h" . nil)
@@ -154,8 +172,7 @@
          ("s-3" . split-window-right)
          ("s-0" . delete-window)
          ("s-1" . delete-other-windows)
-         ("s-5" . delete-frame)
-         ("C-x +" . balance-windows-area)
+         ("s-\\" . balance-windows-area)
          ("s-q" . window-toggle-side-windows)))
 
 
