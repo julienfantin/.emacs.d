@@ -119,7 +119,7 @@
 
 (use-package org-journal
   :straight t
-  :after org-roam
+  :after (org org-roam)
   :bind
   ("C-c n j" . org-journal-new-entry)
   :custom
@@ -161,6 +161,13 @@
 
 (use-package explain-pause-mode
   :straight (explain-pause-mode :type git :host github :repo "lastquestion/explain-pause-mode"))
+
+(use-package restart-emacs :straight t :demand t)
+
+;; Prose
+
+(use-package freeze-it :straight t)
+
 
 (provide 'config-wip)
 ;;; config-wip.el ends here
