@@ -26,6 +26,7 @@
 (require 'use-package)
 
 
+
 ;; * Comint
 
 (use-package comint
@@ -65,9 +66,6 @@
               ("M-r" . counsel-esh-history))
   :custom (eshell-hist-ignoredups t))
 
-
-;; * Packages
-
 (use-package eshell-z
   :straight t
   :after eshell
@@ -80,6 +78,14 @@
   :custom
   (eshell-highlight-prompt t)
   (eshell-prompt-function #'epe-theme-lambda))
+
+
+;; * Vterm
+
+(use-package vterm
+  :straight t
+  :custom
+  (vterm-always-compile-module t))
 
 (provide 'config-shell)
 ;;; config-shell.el ends here
