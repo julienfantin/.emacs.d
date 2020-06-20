@@ -67,15 +67,6 @@
 
 (global-set-key (kbd "C-x =") 'balance-windows-area)
 
-
-;; * Start file
-
-(defvar start-file "~/.emacs.d/todos.org")
-(defun open-start-file () (find-file start-file))
-(add-hook 'after-init-hook #'open-start-file)
-
-(server-start)
-
 (use-package hercules :straight t)
 
 
