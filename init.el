@@ -100,6 +100,7 @@
 (use-package config-search :load-path "./config")
 (use-package config-sexp :load-path "./config")
 (use-package config-shell :load-path "./config")
+(use-package config-term :load-path "./config")
 (use-package config-windows :load-path "./config")
 
 ;; ** Langs
