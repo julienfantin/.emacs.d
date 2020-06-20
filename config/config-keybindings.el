@@ -153,7 +153,6 @@ hyper when it's used as a modifier."
  "s" '(sort-lines :which-key "sort")
  "a" '(align-current :which-key "align")
  "c" '(-cleanup :which-key "cleanup")
- "o" '(outorg-edit-as-org :which-key "outorg")
  "r" '(align-regexp)
  "i" '(-iedit-ensure-function :which-key "iedit"))
 

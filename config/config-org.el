@@ -84,13 +84,5 @@
 (use-package org-capture
   :custom (org-reverse-note-order t))
 
-
-;; * Packages
-
-(use-package org-journal
-  :straight t
-  :custom
-  (org-journal-dir (expand-file-name "journal" config-org-user-directory)))
-
 (provide 'config-org)
 ;;; config-org.el ends here
