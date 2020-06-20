@@ -213,7 +213,9 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
    :company #'company-lsp))
 
 (use-package lsp-treemacs
-  :straight t)
+  :if (eq config-python-lsp-frontend 'lsp-mode)
+  :straight t
+  :after lsp-mode)
 
 
 ;; * Debug adapter protocol
