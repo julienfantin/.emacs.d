@@ -32,7 +32,7 @@
 
 ;; * Config options
 
-(defvar config-completion-system 'icomplete)
+(defvar config-completion-system 'ivy)
 
 
 ;; * Bootstrap
