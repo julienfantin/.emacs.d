@@ -33,21 +33,14 @@
 
 (setq default-truncate-lines t)
 
-(setq-default default-text-properties '(line-spacing 2 line-height 1.25))
-
+(use-package emacs
+  :preface
+  (defun -set-line-spacing ()
+    (setq-local default-text-properties '(line-spacing 0.25 line-height 1.25)))
+  :hook (((text-mode . -set-line-spacing)
+          (prog-mode . -set-line-spacing))))
 
 
-;;;; Packages fixes
-
-(use-package cider-debug
-  :after eldoc-mode
-  :preface
-  (defun -cider-debug-no-eldoc ()
-    (if (bound-and-true-p cider--debug-mode)
-        (eldoc-mode -1)
-      (eldoc-mode 1)))
-  :hook (cider--debug-mode . -cider-debug-no-eldoc))
-
 ;; * UI tweaks
 ;; ** Show paren expression transparency hook
 
@@ -65,22 +58,14 @@
     ;; (set-face-attribute 'show-paren-match nil)
     ))
 
-(advice-add #'load-theme :after #'fix-show-parent-match)
+(comment
+ (advice-add #'load-theme :after #'fix-show-parent-match))
 
 
 
 ;; * Keybindings
 
 (global-set-key (kbd "C-x =") 'balance-windows-area)
-
-
-;; * Start file
-
-(defvar start-file "~/.emacs.d/todos.org")
-(defun open-start-file () (find-file start-file))
-(add-hook 'after-init-hook #'open-start-file)
-
-(server-start)
 
 (use-package hercules :straight t)
 
@@ -140,10 +125,28 @@
   (deft-default-extension "org")
   (deft-directory org-roam-directory))
 
-(use-package org-noter
-  :straight t)
+
+;; * Document annotation workflow
 
 (use-package pdf-tools
+  ;; Documents are still super blurry even after switching to the hi-dpi
+  ;; imagemagick backend, docview actually looks better, but it's all pretty
+  ;; terrible compared to preview.app :(
+  :disabled t
+  :straight t
+  :hook (pdf-view-mode .  cua-mode)
+  :custom
+  (pdf-view-use-scaling t)
+  (pdf-view-use-imagemagick t)
+  (pdf-view-display-size 'fit-width)
+  (pdf-annot-activate-created-annotations t)
+  :init
+  (pdf-tools-install))
+
+(use-package org-noter
+  ;; Couldn't get a working session to start from inside a document. Combined
+  ;; with the poor rendering and the code complexity that one seems like a
+  ;; non-starter...
   :straight t)
 
 (use-package nov
@@ -167,6 +170,14 @@
 ;; Prose
 
 (use-package freeze-it :straight t)
+
+
+(use-package side-notes
+  :straight t
+  :custom
+  (side-notes-file "notes.org")
+  (side-notes-secondary-file "todos.org")
+  :bind ("C-c n t" . side-notes-toggle-notes))
 
 
 (provide 'config-wip)

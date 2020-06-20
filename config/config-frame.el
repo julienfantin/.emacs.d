@@ -38,10 +38,10 @@
     "-*-Iosevka-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
     "-*-SF Mono-normal-normal-ultracondensed-*-*-*-*-*-m-0-iso10646-1"))
 
-(defvar config-frame-fonts
+(defvar config-frame-variable-fonts
   '("-*-SF UI Text-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1"))
 
-(defvar config-frame-default-font-height 110)
+(defvar config-frame-default-font-height 120)
 
 
 ;; * Fonts
@@ -53,20 +53,19 @@
 (defun config-frame-mono-font ()
   (cl-find-if #'font-exists-p config-frame-mono-fonts))
 
-(defun config-frame-font ()
-  (cl-find-if #'font-exists-p config-frame-fonts))
+(defun config-frame-variable-font ()
+  (cl-find-if #'font-exists-p config-frame-variable-fonts))
 
 (when-let ((font (config-frame-mono-font)))
   (set-face-attribute 'default nil :font font :height config-frame-default-font-height))
 
-(when-let ((font (config-frame-font)))
+(when-let ((font (config-frame-variable-font)))
   (set-face-attribute 'variable-pitch nil :font font))
 
 (setq-default line-spacing 3)
 
 
 ;; * Frame
-
 
 (defun config-frame-frame-alist ()
   "Compute the default and initial frame alist."
@@ -113,40 +112,11 @@
   ;; Enable standard retina font rendering
   (setq ns-use-thin-smoothing t))
 
-
-;; * Commands
-
-;;;###autoload
-(defun -text-scale-increase ()
-  "Increase height of default face."
-  (interactive)
-  (let ((height (face-attribute 'default :height)))
-    (set-face-attribute 'default nil :height (+ height 10))))
-
-(global-set-key [remap text-scale-increase] #'-text-scale-increase)
-
-;;;###autoload
-(defun -text-scale-decrease ()
-  "Decrease height of default face."
-  (interactive)
-  (let ((height (face-attribute 'default :height)))
-    (set-face-attribute 'default nil :height (- height 10))))
-
-(global-set-key [remap text-scale-decrease] #'-text-scale-decrease)
-
-;;;###autoload
-(defun -transparency-increase ()
-  "Increase frame transparence."
-  (interactive)
-  (let ((alpha (or (car (frame-parameter (selected-frame) 'alpha)) 100)))
-    (set-frame-parameter (selected-frame) 'alpha (list  (- alpha 5)  (- alpha 5)))))
-
-;;;###autoload
-(defun -transparency-decrease ()
-  "Decrease frame trnasparency."
-  (interactive)
-  (let ((alpha (or (car (frame-parameter (selected-frame) 'alpha)) 100)))
-    (set-frame-parameter (selected-frame) 'alpha (list  (+ alpha 5)  (+ alpha 5)))))
+(use-package default-text-scale
+  :straight t
+  :bind (("s-=" . default-text-scale-increase)
+         ("s--" . default-text-scale-decrease)
+         ("s-0" . default-text-scale-reset)))
 
 (provide 'config-frame)
 ;;; config-frame.el ends here

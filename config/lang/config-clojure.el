@@ -39,9 +39,7 @@
     ;; test.check
     (add-to-list 'clojure-align-binding-forms "gen/let")
     ;; reagent
-    (add-to-list 'clojure-align-binding-forms "with-let")
-    (define-key clojure-mode-map [remap forward-sexp] #'clojure-forward-logical-sexp)
-    (define-key clojure-mode-map [remap backward-sexp] #'clojure-backward-logical-sexp))
+    (add-to-list 'clojure-align-binding-forms "with-let"))
   :custom
   (clojure-indent-style 'always-indent)
   (clojure-align-forms-automatically t)
@@ -102,14 +100,6 @@
 (use-package cider-debug
   :custom (cider-debug-display-locals t))
 
-(use-package lispy-mnemonic
-  :after cider-interaction
-  :config
-  (defun config-clojure--set-lispy-pp-eval-function ()
-    (setq-local lispy-pp-eval-sexp-function #'(lambda (&optional _) (cider-pprint-eval-last-sexp))))
-  :hook ((cider-mode . config-clojure--set-lispy-pp-eval-function)
-         (cider-repl-mode . config-clojure--set-lispy-pp-eval-function)))
-
 
 ;; * clj-refactor
 
@@ -151,27 +141,10 @@
 ;; * Flycheck
 
 (use-package flycheck-clj-kondo
-  :straight t
   :ensure-system-package (clj-kondo . borkdude/brew/clj-kondo)
+  :straight t
   :after clojure-mode
   :init (require 'flycheck-clj-kondo nil t))
-
-
-;; * Smart Jump
-
-(use-package smart-jump
-  :disabled t
-  :straight t
-  :after (cider)
-  :config
-  (smart-jump-register
-   :modes '(clojure-mode cider-mode cider-repl-mode)
-   :jump-fn 'cider-find-var
-   :pop-fn 'cider-pop-back
-   :refs-fn 'cljr-find-usages
-   :should-jump 'cider-connected-p
-   :heuristic 'point
-   :async 500))
 
 (provide 'config-clojure)
 ;;; config-clojure.el ends here
