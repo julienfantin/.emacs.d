@@ -33,8 +33,12 @@
 
 (setq default-truncate-lines t)
 
-(setq-default default-text-properties '(line-spacing 2 line-height 1.25))
-
+(use-package emacs
+  :preface
+  (defun -set-line-spacing ()
+    (setq-local default-text-properties '(line-spacing 0.25 line-height 1.25)))
+  :hook (((text-mode . -set-line-spacing)
+          (prog-mode . -set-line-spacing))))
 
 
 ;; * UI tweaks
