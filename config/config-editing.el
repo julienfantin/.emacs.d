@@ -52,6 +52,10 @@
   :straight t
   :bind (("C-c e l" . goto-last-change)))
 
+(use-package expand-region
+  :straight t
+  :bind ("C-c u" . er/expand-region))
+
 
 ;; * Commands
 
