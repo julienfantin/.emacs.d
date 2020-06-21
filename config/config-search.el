@@ -68,7 +68,7 @@ With a prefix argument P, isearch for the symbol at point."
   (avy-setup-default))
 
 (use-package deadgrep
-  :ensure-system-package (rg . "ripgrep")
+  :ensure-system-package (rg . ripgrep)
   :straight t
   :bind (("C-c r" . deadgrep)
          :map deadgrep-mode-map
