@@ -20,19 +20,8 @@
 
 ;;; Commentary:
 
-;; * TODO more maps
-;; mark map (pop marks etc)
-;; eval map
-;; search map
-;; spell-check map
-;; * TODO config-bind macro
-;; like bind-keys, but:
-;; - allow inline hydra defs
-;; - allow selectively mapping hydra keys to the parent map
-;; - provide names to single keys and hook into which key display var
-;; - see next point
-;; * TODO look into binding C-c `*` C-c `*` to a "default" map command
-;;
+;; Note on macOS C-M-d is clobbered at the system level:
+;; defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 70 '<dict><key>enabled</key><false/></dict>'
 
 ;;; Code:
 (require 'use-package)
