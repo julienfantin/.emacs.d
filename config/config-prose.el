@@ -28,27 +28,25 @@
 (defvar config-prose-dicts-dir
   (expand-file-name "etc/dictionaries/" user-emacs-directory))
 
-(use-package olivetti :straight t)
+(defvar config-prose-visual-fill-column 120)
 
 
 ;; * Spell-checking
 
 (use-package ispell
   :ensure-system-package (hunspell)
-  :defer 5
   :config
-  (progn
-    (setenv "DICPATH" config-prose-dicts-dir)
-    (cond
-     ((executable-find "hunspell")
-      (setq ispell-program-name "hunspell")
-      (setq ispell-extra-args '("-d en_US,fr-classique")))
-     ((executable-find "aspell")
-      (setq ispell-program-name "aspell")
-      (setq ispell-extra-args '("--sug-mode=ultra"
-                                "--lang=en_US"
-                                "--add-filter=url"
-                                "--add-filter=email")))))
+  (setenv "DICPATH" config-prose-dicts-dir)
+  (cond
+   ((executable-find "hunspell")
+    (setq ispell-program-name "hunspell")
+    (setq ispell-extra-args '("-d en_US,fr-classique")))
+   ((executable-find "aspell")
+    (setq ispell-program-name "aspell")
+    (setq ispell-extra-args '("--sug-mode=ultra"
+                              "--lang=en_US"
+                              "--add-filter=url"
+                              "--add-filter=email"))))
   :custom (ispell-silently-savep t))
 
 (use-package flyspell
@@ -60,44 +58,55 @@
 
 (use-package flyspell-lazy
   :straight t
-  :after flyspell
-  :hook (flyspell-mode . flyspell-lazy-load))
+  :hook (flyspell-mode . flyspell-lazy-mode)
+  :config
+  (defadvice flyspell-small-region (around flyspell-small-region-no-sit-for activate)
+    (flyspell-lazy--with-mocked-function 'sit-for t
+      ad-do-it)))
 
 (use-package flyspell-correct-ivy
-  :disabled t
+  :if (eq config-completion-system 'ivy)
   :straight t
   :after flyspell
-  :init (require 'flyspell-correct-ivy nil t)
   :bind
   (:map flyspell-mode-map
-        ("C-c $" . 'flyspell-correct-previous-word-generic)))
+        ("C-c x" . flyspell-auto-correct-word)
+        ("C-c c" . flyspell-correct-wrapper))
+  :custom
+  (flyspell-correct-interface #'flyspell-correct-ivy))
 
 
 ;; * Prose minor mode
 
-(use-package visual-fill-column :straight t)
-
 (use-package prose-minor-mode
-  :defer 5
   :hook ((org-mode         . prose-minor-mode)
          (markdown-mode    . prose-minor-mode)
          (prose-minor-mode . visual-line-mode)
-         (prose-minor-mode . visual-fill-column-mode)
          (prose-minor-mode . flyspell-mode)))
 
 
 ;; * Wrapping
 
 (use-package adaptive-wrap
+  :disabled t
   :straight t
   :commands adaptive-wrap-prefix-mode
   :after prose-minor-mode
   :hook (prose-minor-mode . adaptive-wrap-prefix-mode))
 
+(use-package visual-fill-column
+  :straight t
+  :if config-prose-visual-fill-column
+  :hook (prose-minor-mode . visual-fill-column-mode)
+  :custom
+  (visual-fill-column-width config-prose-visual-fill-column)
+  (visual-fill-column-center-text t))
+
 
 ;; * Linters
 
 (use-package writegood-mode
+  :disabled t
   :straight t
   :after prose-minor-mode
   :hook (prose-minor-mode . writegood-mode))
