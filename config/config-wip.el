@@ -72,58 +72,6 @@
 
 ;; * Org-roam
 
-(use-package org-roam
-  ;; TODO company completion
-  :straight t
-  :hook
-  (after-init . org-roam-mode)
-  :custom
-  (org-roam-directory "~/org-roam")
-  ;; https://github.com/org-roam/org-roam/issues/674
-  (org-roam-index-file "~/org-roam/org-roam.db")
-  :bind
-  (:map org-roam-mode-map
-        (("C-c n l" . org-roam)
-         ("C-c n b" . org-roam-switch-to-buffer)
-         ("C-c n f" . org-roam-find-file)
-         ("C-c n g" . org-roam-show-graph))
-        :map org-mode-map
-        (("C-c n i" . org-roam-insert)))
-  :config
-  (add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode))
-
-(use-package company-org-roam
-  :straight t
-  :after (org-roam compdef)
-  :hook (org-mode . company-mode)
-  :init
-  (compdef
-   :modes #'org-mode
-   :company '(company-org-roam company-yasnippet company-dabbrev company-capf)
-   :capf #'pcomplete-completions-at-point))
-
-(use-package org-journal
-  :straight t
-  :after (org org-roam)
-  :bind
-  ("C-c n j" . org-journal-new-entry)
-  :custom
-  (org-journal-dir org-roam-directory)
-  (org-journal-date-prefix "#+title: ")
-  (org-journal-file-format "%Y-%m-%d.org")
-  (org-journal-date-format "%A, %d %B %Y")
-  (org-journal-enable-agenda-integration t))
-
-(use-package deft
-  :straight t
-  :after (org-roam)
-  :bind
-  ("C-c n d" . deft)
-  :custom
-  (deft-recursive t)
-  (deft-use-filter-string-for-filename t)
-  (deft-default-extension "org")
-  (deft-directory org-roam-directory))
 
 
 ;; * Document annotation workflow
