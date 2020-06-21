@@ -56,5 +56,13 @@ When called with 'ARG' always create a new temp buffer."
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) t)))
 
+(defun -save-before-kill ()
+  "Save current file-visiting buffer."
+  (when buffer-file-name
+    (save-buffer)))
+
+;; Always save before killing
+(advice-add #'kill-this-buffer :before #'-save-before-kill)
+
 (provide 'config-buffers)
 ;;; config-buffers.el ends here
