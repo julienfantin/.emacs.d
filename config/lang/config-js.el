@@ -24,29 +24,38 @@
 
 ;;; Code:
 (require 'use-package)
+(require 'config-lsp)
 
-(use-package js2-mode
+(defvar config-js-use-lsp t)
+
+
+;; * Major modes
+
+(use-package js3-mode
   :straight t
-  :mode (("\\.js$" . js2-mode)))
+  :mode (("\\.js$" . js3-mode)))
+
+(use-package typescript-mode
+  :ensure-system-package (tsc . typescript)
+  :straight t
+  :mode ("\\.tsx\\'"))
+
+
+;; * Packages
 
 (use-package indium
-  :disabled t
+  :if (not config-js-use-lsp)
   :straight t
-  :after js2-mode
-  :hook (js2-mode . indium-interaction-mode)
+  :after js3-mode
+  :hook (js3-mode . indium-interaction-mode)
   :custom
   (indium-debugger-mode 1)
   (indium-nodejs-inspect-brk t)
   (indium-script-enable-sourcemaps t))
 
-(use-package typescript-mode
-  :straight t
-  :mode ("\\.tsx\\'")
-  :ensure-system-package (tsc . typescript))
-
 (use-package tide
+  :if (not config-js-use-lsp)
   :straight t
-  :disabled t
   :after typescript-mode
   :hook
   ((typescript-mode . tide-setup)
@@ -54,16 +63,16 @@
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled)))
 
-;; (use-package lsp-javascript
-;;   :straight lsp-javascript-typescript
-;;   :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver"))
+
+;; * LSP
 
 (use-package lsp-typescript
-  :after typescript-mode
-  :hook (typescript-mode . lsp-javascript-typescript-enable)
+  :if (and config-js-use-lsp (eq config-lsp-frontend 'lsp-mode))
+  :ensure-system-package (node)
+  :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver")
   :straight lsp-javascript-typescript
-  :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver"))
-
+  :after typescript-mode
+  :hook (typescript-mode . lsp-javascript-typescript-enable))
 
 (provide 'config-js)
 ;;; config-js.el ends here

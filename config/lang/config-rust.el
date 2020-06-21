@@ -23,9 +23,16 @@
 ;; cargo install rustfmt racer
 
 ;;; Code:
-
+(require 'use-package)
+(require 'config-lsp)
 
 (use-package rustic
+  ;; This will download and install the toolchain but the PATH won't be updated
+  ;; and the compiler won't in the exec-path until it's updated or Emacs is
+  ;; restarted. Additionally if this form is evaluated twice in the first
+  ;; session it will try to re-install the toolchain.
+  :ensure-system-package (rustup-init)
+  :ensure-system-package (rustc . "rustup-init")
   :straight t
   :custom
   (rustic-lsp-server 'rust-analyzer))
@@ -54,6 +61,8 @@
 ;; rustup component add rls rust-analysis rust-src
 
 (use-package lsp-mode
+  :ensure-system-package (rust-analyzer)
+  :if (eq config-lsp-frontend 'lsp-mode)
   :straight t
   :after rustic
   :hook (rustic-mode . lsp)

@@ -24,8 +24,8 @@
 
 ;;; Code:
 (require 'use-package)
+(require 'config-lsp)
 
-(defvar config-python-lsp-frontend 'lsp-mode)
 (defvar config-python-lsp-backend 'ms-python)
 
 
@@ -39,21 +39,6 @@
   ;; Set `pyvenv-workon' to the absolute path for the current venv in a .dir-locals.el
   :straight t
   :hook (python-mode . pyvenv-mode))
-
-(use-package auto-virtualenv
-  :disabled t
-  :ensure t
-  :defer t
-  :init
-  ;; add .python-version file to project root, then add path of virtualenv eg:~/Envs/venv36/
-  (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
-  ;; Activate on changing buffers
-  (add-hook 'window-configuration-change-hook 'auto-virtualenv-set-virtualenv)
-  ;; Activate on focus in
-  (add-hook 'focus-in-hook 'auto-virtualenv-set-virtualenv)
-  ;; (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)
-  )
-
 
 (use-package python-docstring
   :straight t
@@ -128,20 +113,20 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
           pytest-project-root-test (lambda (dirname) (equal dirname "/code/lastmile")))))
 
 (use-package python-pytest
-    :straight t
-    :config
-    (defun python-pytest--project-root ()
-      "/code/lastmile")
-    :custom
-    (python-pytest-executable "onepytest"))
+  :straight t
+  :config
+  (defun python-pytest--project-root ()
+    "/code/lastmile")
+  :custom
+  (python-pytest-executable "onepytest"))
 
 
 ;; * Editing
 
 (use-package indent-tools
-    :straight t
-    :hook (python-mode . indent-tools-minor-mode)
-    :bind (:map python-mode-map ("C-c SPC" . indent-tools-hydra/body)))
+  :straight t
+  :hook (python-mode . indent-tools-minor-mode)
+  :bind (:map python-mode-map ("C-c SPC" . indent-tools-hydra/body)))
 
 (use-package smartparens-python
   :straight smartparens
@@ -161,22 +146,18 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
   (add-to-list 'flycheck-enabled-checkers 'flycheck-flake8)
   (add-to-list 'flycheck-disabled-checkers 'python-pylint))
 
-;; ** Eglot
+;; ** eglot
 
 (use-package eglot
-  :if (eq config-python-lsp-frontend 'eglot)
+  :if (eq config-lsp-frontend 'eglot)
   :straight t
   :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
   :hook ((python-mode . eglot-ensure)))
 
 ;; ** lsp-mode
 
-(use-package lsp-mode
-  :if (eq config-python-lsp-frontend 'lsp-mode)
-  :straight t)
-
 (use-package lsp-python-ms
-  :if (and (eq config-python-lsp-frontend 'lsp-mode) (eq config-python-lsp-backend 'ms-python))
+  :if (eq config-python-lsp-backend 'ms-python)
   :straight t
   :demand t
   :hook (python-mode . lsp)
@@ -185,48 +166,5 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
   :custom
   (lsp-python-ms-nupkg-channel "daily"))
 
-(use-package lsp-ui
-  :if (eq config-python-lsp-frontend 'lsp-mode)
-  :after lsp-mode
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-doc-use-webkit (featurep 'xwidget-internal))
-  (lsp-ui-doc-enable t)
-  (lsp-ui-peek-enable t)
-  (lsp-ui-sideline-enable t)
-  (lsp-ui-imenu-enable t)
-  (lsp-ui-flycheck-enable t)
-  (lsp-ui-sideline-toggle-symbols-info t)
-  (lsp-ui-doc-include-signature t))
-
-(use-package lsp-imenu
-  :if (eq config-python-lsp-frontend 'lsp-mode)
-  :hook (lsp-after-open . lsp-enable-imenu))
-
-(use-package company-lsp
-  :if (eq config-python-lsp-frontend 'lsp-mode)
-  :straight t
-  :after (lsp-mode compdef)
-  :config
-  (compdef
-   :modes #'python-mode
-   :company #'company-lsp))
-
-(use-package lsp-treemacs
-  :if (eq config-python-lsp-frontend 'lsp-mode)
-  :straight t
-  :after lsp-mode)
-
-
-;; * Debug adapter protocol
-
-(use-package dap-mode
-  :if (eq config-python-lsp-frontend 'lsp-mode)
-  :straight t
-  :hook ((lsp-mode . dap-mode)
-         (dap-mode . dap-ui-mode)
-         (python-mode . (lambda () (require 'dap-python))))
-  :demand t)
-
-;;; config-python.el ends here
 (provide 'config-python)
+;;; config-python.el ends here

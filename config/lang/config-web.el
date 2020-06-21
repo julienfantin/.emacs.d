@@ -43,25 +43,20 @@
   :straight t
   :mode "\\.json?\\'")
 
-(use-package web-mode
-  :straight t
-  :mode (("\\.html?\\'" . web-mode)
-         ("\\.css?\\'"  . web-mode))
-  :hook
-  ((web-mode . aggressive-indent-mode))
-  :custom
-  (web-mode-markup-indent-offset config-web-default-indent)
-  (web-mode-css-indent-offset config-web-default-indent)
-  (web-mode-code-indent-offset config-web-default-indent)
-  (web-mode-enable-auto-pairing t)
-  (web-mode-enable-css-colorization t)
-  (web-mode-enable-current-element-highlight t)
-  (web-mode-enable-current-column-highlight t))
+(use-package mhtml-mode
+  :ensure-system-package (node)
+  :ensure-system-package
+  (vscode-html-languageserver-bin . "npm install -g vscode-html-languageserver-bin")
+  :after lsp-mode
+  :mode "\\.html\\'"
+  :hook (mhtml-mode . lsp))
 
-(use-package company-web
-  :straight t
-  :after (web-mode config-completion)
-  :config (config-completion-add-backends 'web-mode 'company-css 'company-web-html))
+(use-package css-mode
+  :ensure-system-package (node)
+  :ensure-system-package
+  (vscode-css-languageserver-bin . "npm install -g vscode-css-languageserver-bin")
+  :after lsp-mode
+  :hook (css-mode . lsp))
 
 (provide 'config-web)
 ;;; config-web.el ends here
