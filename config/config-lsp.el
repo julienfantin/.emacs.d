@@ -41,7 +41,7 @@
   :if (eq config-lsp-frontend 'lsp-mode)
   :straight t)
 
-(use-package lsp-ui
+(use-package lsp-ui-mode
   :if (eq config-lsp-frontend 'lsp-mode)
   :after lsp-mode
   :hook (lsp-mode . lsp-ui-mode)
@@ -80,8 +80,7 @@
   :if (eq config-lsp-frontend 'lsp-mode)
   :straight t
   :hook ((lsp-mode . dap-mode)
-         (dap-mode . dap-ui-mode))
-  :demand t)
+         (dap-mode . dap-ui-mode)))
 
 (provide 'config-lsp)
 ;;; config-lsp.el ends here

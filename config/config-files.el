@@ -95,7 +95,6 @@
    `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
 (use-package vlf-setup
-  :defer 5
   :straight vlf)
 
 (use-package super-save
@@ -126,7 +125,7 @@
   :custom
   (dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
-(use-package sudo-edit :straight t :defer t)
+(use-package sudo-edit :straight t)
 
 
 ;; * Commands

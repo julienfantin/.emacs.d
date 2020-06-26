@@ -50,7 +50,6 @@
   :custom (ispell-silently-savep t))
 
 (use-package flyspell
-  :defer t
   :custom
   (flyspell-abbrev-p t)
   (flyspell-issue-welcome-flag nil)

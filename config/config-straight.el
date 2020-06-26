@@ -43,6 +43,7 @@
 
 (straight-use-package 'use-package)
 
+(setq use-package-always-defer t)
 (setq use-package-enable-imenu-support t)
 (require 'use-package)
 (require 'bind-key)
@@ -51,6 +52,7 @@
 
 (use-package system-packages
   :straight t
+  :demand t
   :custom
   (system-packages-use-sudo nil)
   (system-packages-package-manager 'brew))

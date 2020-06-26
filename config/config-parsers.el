@@ -24,7 +24,7 @@
 
 ;;; Code:
 (require 'use-package)
-
+(require 'config-completion)
 
 
 ;; * Flycheck

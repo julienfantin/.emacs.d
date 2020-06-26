@@ -31,10 +31,12 @@
 
 (use-package slime-company
   :straight t
+  :after slime
   :config
   (slime-setup '(slime-company)))
 
 (use-package compdef
+  :after slime-company
   :config
   (compdef :modes #'slime-mode :company (slime-company)))
 

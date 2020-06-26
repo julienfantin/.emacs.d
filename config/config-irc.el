@@ -26,8 +26,6 @@
 (require 'use-package)
 
 
-(use-package private :demand t)
-
 (use-package erc
   :commands erc
   :custom

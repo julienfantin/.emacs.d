@@ -40,7 +40,6 @@
   (vc-follow-symlinks t))
 
 (use-package ediff
-  :defer t
   :custom
   ;; Remove noisy highlights
   (ediff-highlight-all-diffs nil)
@@ -54,13 +53,12 @@
 
 ;; * Packages
 
-(use-package git-timemachine :straight t :defer t)
+(use-package git-timemachine :straight t)
 
-(use-package git-link :straight t :defer t)
+(use-package git-link :straight t)
 
 (use-package magit
   :straight t
-  :defer t
   :custom
   (magit-save-repository-buffers 'dontask)
   (magit-display-buffer-function
@@ -76,7 +74,7 @@
   :straight t
   :after magit)
 
-(use-package gited :straight t :defer t)
+(use-package gited :straight t)
 
 (use-package dired-git-info
   :straight t

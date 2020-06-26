@@ -31,15 +31,6 @@
 
 (add-to-list 'exec-path "~/bin")
 
-(setq default-truncate-lines t)
-
-(use-package emacs
-  :preface
-  (defun -set-line-spacing ()
-    (setq-local default-text-properties '(line-spacing 0.25 line-height 1.25)))
-  :hook (((text-mode . -set-line-spacing)
-          (prog-mode . -set-line-spacing))))
-
 
 ;; * UI tweaks
 ;; ** Show paren expression transparency hook
@@ -60,7 +51,6 @@
 
 (comment
  (advice-add #'load-theme :after #'fix-show-parent-match))
-
 
 
 ;; * Keybindings
@@ -113,20 +103,24 @@
 (use-package explain-pause-mode
   :straight (explain-pause-mode :type git :host github :repo "lastquestion/explain-pause-mode"))
 
-(use-package restart-emacs :straight t :demand t)
+(use-package restart-emacs :straight t)
 
 ;; Prose
 
 (use-package freeze-it :straight t)
 
-
-(use-package side-notes
+(use-package spell-fu
+  :disabled t                           ;; too many false positives
+  :ensure-system-package aspell
   :straight t
-  :custom
-  (side-notes-file "notes.org")
-  (side-notes-secondary-file "todos.org")
-  :bind ("C-c n t" . side-notes-toggle-notes))
+  :hook (after-init . global-spell-fu-mode))
 
+(use-package gcmh
+  :straight t
+  :init (gcmh-mode 1))
+
+(use-package literate-calc-mode
+  :straight t)
 
 (provide 'config-wip)
 ;;; config-wip.el ends here

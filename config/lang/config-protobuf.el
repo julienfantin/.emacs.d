@@ -33,6 +33,7 @@
 (use-package protobuf-mode
   :straight t
   :mode "\\.proto\\'"
+  :after cc-styles
   :preface
   (defun config-protobuf-add-style ()
     (c-add-style "protobuf" config-protobuf-style t))

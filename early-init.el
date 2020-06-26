@@ -24,8 +24,20 @@
 
 ;;; Code:
 
+(require 'cl-lib)
+(require 'cl-macs)
+
 
 ;; * Performance
+
+;; Use a hook so the message doesn't get clobbered by other messages.
+(add-hook
+ 'emacs-startup-hook
+ (lambda ()
+   (message
+    "Emacs startup in %s with %d garbage collections."
+    (format "%.2f seconds" (float-time (time-subtract after-init-time before-init-time))) gcs-done)))
+
 ;; ** Init GC
 
 (defvar early-init--gc-cons-threshold 16777216) ; 16mb
@@ -89,6 +101,31 @@
   (add-hook 'ns-system-appearance-change-functions
             (lambda (appearance)
               (setq -ns-system-appearance appearance)) ))
+
+
+;; * Path
+
+(setq user-emacs-directory (expand-file-name "~/.emacs.d/"))
+
+(defun -reload-init ()
+  "Reload the init file."
+  (interactive)
+  (load-file (expand-file-name "init.el" user-emacs-directory)))
+
+
+;; * Early loads
+
+(eval-and-compile
+  ;; Setup various paths before we do anything, rest of init depends on this...
+  (load-file (expand-file-name "config/config-path.el" user-emacs-directory))
+  ;; Bootstrap straight and package management
+  (load-file (expand-file-name "config/config-straight.el" user-emacs-directory)))
+
+;; Setup our env path here, some configs might need this to be set
+(use-package exec-path-from-shell
+  :straight t
+  :demand t
+  :init (exec-path-from-shell-initialize))
 
 (provide 'early-init)
 ;;; early-init.el ends here

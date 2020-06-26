@@ -53,8 +53,8 @@
 
 (use-package lisp-extra-font-lock
   :straight t
-  :after lisp
-  :config (lisp-extra-font-lock-global-mode 1))
+  :hook ((lisp-mode . lisp-extra-font-lock-mode)
+         (emacs-lisp-mode . lisp-extra-font-lock-mode)))
 
 (use-package elisp-def
   :straight t
@@ -74,6 +74,7 @@
   (nameless-prefix "/"))
 
 (use-package auto-compile
+  :disabled t
   :straight t
   :commands auto-compile-on-save-mode
   :hook (emacs-lisp-mode . auto-compile-on-save-mode)
@@ -103,7 +104,7 @@ an older version is loaded."
 
 (use-package compdef
   :after (company elisp-mode)
-  :config
+  :init
   (compdef
    :modes #'emacs-lisp-mode
    :company '(company-elisp)))
@@ -113,6 +114,7 @@ an older version is loaded."
 
 (defun -eval-buffer (arg)
   "Execute the current buffer as Lisp code.
+
 Top-level forms are evaluated with `eval-defun' so that `defvar'
 and `defcustom' forms reset their default values."
   (interactive "P")

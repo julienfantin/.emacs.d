@@ -70,7 +70,6 @@
 
 ;; * Use-package
 
-(defvar use-package-always-defer t)
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)

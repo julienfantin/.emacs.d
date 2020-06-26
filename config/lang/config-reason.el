@@ -27,7 +27,6 @@
 (require 'config-ocaml)
 
 (defun shell-cmd (cmd)
-
   (car (ignore-errors (apply 'process-lines (split-string cmd)))))
 
 (use-package reason-mode
@@ -40,7 +39,6 @@
          (reason-mode . merlin-mode)))
 
 (use-package refmt
-  :defer t
   :preface
   (define-minor-mode refmt-mode
     "Refmt minor-mode"
