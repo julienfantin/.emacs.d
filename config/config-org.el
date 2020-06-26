@@ -32,14 +32,11 @@
 
 (defvar config-org-user-directory "~/org/")
 
-(defvar conf-org-babel-languages
-  '(emacs-lisp ocaml clojure shell))
-
 
 ;; * Org-mode
 
 (use-package org
-  :straight t
+  :straight (:type built-in)
   :custom
   (org-ellipsis " … ")
   (org-catch-invisible-edits 'show-and-error)
@@ -47,16 +44,21 @@
   (org-src-window-setup 'current-window)
   (org-hide-leading-stars t)
   (org-hide-emphasis-markers t)
-  (org-fontify-whole-heading-line t)
   (org-fontify-quote-and-verse-blocks t)
+  (org-fontify-whole-block-delimiter-line)
   (org-pretty-entities t)
-  (org-fontify-done-headline t)
   (org-use-speed-commands t)
   (org-speed-commands-user
-   '(("N" . org-shiftmetadown)
-     ("P" . org-shiftmetaup)
-     ("F" . org-shiftmetaright)
-     ("B" . org-shiftmetaleft)))
+   '(("Outline Navigation")
+     ("k" . (org-speed-move-safe 'org-next-visible-heading))
+     ("i" . (org-speed-move-safe 'org-previous-visible-heading))
+     ("l" . (org-speed-move-safe 'org-forward-heading-same-level))
+     ("j" . (org-speed-move-safe 'org-backward-heading-same-level))
+     ("Outline Structure Editing")
+     ("I" . org-metaup)
+     ("K" . org-metadown)
+     ("L" . org-metaright)
+     ("J" . org-metaleft)))
   (org-special-ctrl-a/e t))
 
 (use-package org-bullets
@@ -65,7 +67,7 @@
   :custom
   ;; Use headings fontification to differentiate levels. This is only usable
   ;; with a theme that sets up different font sizes!
-  (org-bullets-bullet-list '(" ")))
+  (org-bullets-bullet-list '("·")))
 
 (use-package org-pretty-table
   :straight (org-pretty-table :type git :host github :repo "Fuco1/org-pretty-table")
@@ -74,17 +76,32 @@
 
 ;; * Babel
 
-(use-package ob
-  :after org
-  :config
-  ;; Load languages from 'conf-org-babel-languages'.
-  (thread-last conf-org-babel-languages
-    (cl-mapcar (lambda (mode) `(,mode . t)))
-    (org-babel-do-load-languages 'org-babel-load-languages)))
+;; https://blog.d46.us/advanced-emacs-startup/
 
 (use-package ob-core
   :after ob
   :custom (org-confirm-babel-evaluate nil))
+
+(use-package ob-emacs-lisp
+  :commands (org-babel-execute:emacs-lisp))
+
+(use-package ob-python
+  :commands (org-babel-execute:python))
+
+(use-package ob-ocaml
+  :commands (org-babel-execute:ocaml))
+
+(use-package ob-clojure
+  :commands
+  (org-babel-execute:clojure
+   org-babel-execute:clojurescript))
+
+(use-package ob-shell
+  :commands
+  (org-babel-execute:sh
+   org-babel-expand-body:sh
+   org-babel-execute:bash
+   org-babel-expand-body:bash))
 
 
 ;; * Roam
@@ -106,7 +123,7 @@
 
 (use-package company-org-roam
   :straight t
-  :after (org-roam compdef)
+  :after (org-mode org-roam compdef)
   :hook (org-mode . company-mode)
   :init
   (compdef
