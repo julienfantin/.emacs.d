@@ -40,6 +40,7 @@
 
 (use-package ace-window
   :straight t
+  :commands (aw-window-list aw-switch-to-window)
   :preface
   (dolist (n (number-sequence 1 10))
     (eval
