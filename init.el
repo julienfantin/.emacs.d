@@ -24,100 +24,71 @@
 
 ;;; Code:
 
-;; Initialization
+
+;; * Bootstrap
 
-(require 'cl-lib)
-(require 'cl-macs)
+(defmacro comment (&rest body) "Ignore 'BODY'." nil)
 
-
+
 ;; * Config options
 
 (defvar config-completion-system 'ivy)
 
 
-;; * Bootstrap
-;; ** Config helpers
-
-(defmacro comment (&rest body) "Ignore 'BODY'." nil)
-
-;; ** Path
-
-(setq user-emacs-directory (expand-file-name "~/.emacs.d/"))
-
-(defun -reload-init ()
-  "Reload the init file."
-  (interactive)
-  (load-file (expand-file-name "init.el" user-emacs-directory)))
-
-(eval-and-compile
-  ;; Setup various paths before we do anything, use-config depends on this
-  (load-file (expand-file-name "config/config-path.el" user-emacs-directory))
-  ;; Setup elpa
-  (load-file (expand-file-name "config/config-straight.el" user-emacs-directory)))
-
-(require 'use-package)
-
-(require 'no-littering nil t)
-
-;; Setup our env path here, some configs might need this to be set
-(use-package exec-path-from-shell
-  :straight t
-  :init (exec-path-from-shell-initialize))
-
-
 ;; * Configs
 
-(use-package private :load-path "./lib/" :if (file-exists-p "./lib/private.el"))
-(use-package config-theme :load-path "./config")
-(use-package config-path :load-path "./config")
-(use-package config-browser :load-path "./config" :disabled t)
-(use-package config-buffers :load-path "./config")
-(use-package config-completion :load-path "./config")
-(use-package config-debug :load-path "./config")
-(use-package config-defaults :load-path "./config")
-(use-package config-doc :load-path "./config")
-(use-package config-editing :load-path "./config")
-(use-package config-elpa :load-path "./config")
-(use-package config-files :load-path "./config")
-(use-package config-font-lock :load-path "./config")
-(use-package config-frame :load-path "./config" :if window-system)
-(use-package config-git :load-path "./config")
-(use-package config-gui :load-path "./config")
-(use-package config-help :load-path "./config")
-(use-package config-indentation :load-path "./config")
-(use-package config-irc :load-path "./config" :disabled t)
-(use-package config-ivy :load-path "./config")
-(use-package config-marks :load-path "./config")
-(use-package config-modeline :load-path "./config")
-(use-package config-org :load-path "./config" :disabled t)
-(use-package config-outlines :load-path "./config" :disabled t)
-(use-package config-parsers :load-path "./config")
-(use-package config-persistence :load-path "./config")
-(use-package config-prog-mode :load-path "./config")
-(use-package config-project :load-path "./config")
-(use-package config-prose :load-path "./config")
-(use-package config-scratch :load-path "./config")
-(use-package config-search :load-path "./config")
-(use-package config-sexp :load-path "./config")
-(use-package config-shell :load-path "./config")
-(use-package config-term :load-path "./config")
-(use-package config-windows :load-path "./config")
-
+(use-package private :demand t :load-path "./lib/" :if (file-exists-p "./lib/private.el"))
+(use-package config-path :demand t :load-path "./config")
+(use-package config-theme :demand t :load-path "./config")
+;; Load org early to avoid shadow path issues
+(use-package config-org :demand t :load-path "./config")
+(use-package config-browser :demand t :load-path "./config" :disabled t)
+(use-package config-buffers :demand t :load-path "./config")
+(use-package config-completion :demand t :load-path "./config")
+(use-package config-debug :demand t :load-path "./config")
+(use-package config-defaults :demand t :load-path "./config")
+(use-package config-doc :demand t :load-path "./config")
+(use-package config-editing :demand t :load-path "./config")
+(use-package config-elpa :demand t :load-path "./config")
+(use-package config-files :demand t :load-path "./config")
+(use-package config-font-lock :demand t :load-path "./config")
+(use-package config-frame :demand t :load-path "./config" :if window-system)
+(use-package config-git :demand t :load-path "./config")
+(use-package config-gui :demand t :load-path "./config")
+(use-package config-help :demand t :load-path "./config")
+(use-package config-indentation :demand t :load-path "./config")
+(use-package config-irc :demand t :load-path "./config" :disabled t)
+(use-package config-ivy :demand t :load-path "./config")
+(use-package config-marks :demand t :load-path "./config")
+(use-package config-modeline :demand t :load-path "./config")
+(use-package config-outlines :demand t :load-path "./config" :disabled t)
+(use-package config-parsers :demand t :load-path "./config")
+(use-package config-persistence :demand t :load-path "./config")
+(use-package config-prog-mode :demand t :load-path "./config")
+(use-package config-project :demand t :load-path "./config")
+(use-package config-prose :demand t :load-path "./config")
+(use-package config-scratch :demand t :load-path "./config")
+(use-package config-search :demand t :load-path "./config")
+(use-package config-sexp :demand t :load-path "./config")
+(use-package config-shell :demand t :load-path "./config")
+(use-package config-term :demand t :load-path "./config")
+(use-package config-windows :demand t :load-path "./config")
 ;; ** Langs
 
-(use-package config-langs :load-path "./config")
+(use-package config-lsp :demand t :load-path "./config")
+(use-package config-langs :demand t :load-path "./config")
 
 ;; ** Tools
 
-(use-package config-docker :load-path "./config" :disabled t :defer 2)
+(use-package config-docker :demand t :load-path "./config" :disabled t)
 
 ;; ** Keybindings
 
-(use-package config-keybindings :load-path "./config")
+(use-package config-keybindings :demand t :load-path "./config")
 
 ;; ** WIP
 
-(use-package config-wip :load-path "./config")
+(use-package config-wip :demand t :load-path "./config")
 
 (provide 'init)
 ;;; init.el ends here
