@@ -27,21 +27,16 @@
 
 ;; * Customs
 
-(defvar config-frame-border-width 15)
+(defvar config-frame-border-width 18)
 
 (defvar config-frame-mono-fonts
-  '("-*-Fira Code-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-Menlo-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-Source Code Pro-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-IBM Plex Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-Iosevka-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"
-    "-*-SF Mono-normal-normal-ultracondensed-*-*-*-*-*-m-0-iso10646-1"))
+  '("DejaVu Sans Mono" "Menlo" "Fira Code" "SF Mono" "IBM Plex Mono" "Source Code Pro"))
 
 (defvar config-frame-variable-fonts
-  '("-*-SF UI Text-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1"))
+  '("DejaVu Sans" "ETBembo"))
 
-(defvar config-frame-default-font-height 120)
+(defvar config-frame-default-mono-font-height 120)
+(defvar config-frame-default-variable-font-height 130)
 
 
 ;; * Fonts
@@ -57,55 +52,51 @@
   (cl-find-if #'font-exists-p config-frame-variable-fonts))
 
 (when-let ((font (config-frame-mono-font)))
-  (set-face-attribute 'default nil :font font :height config-frame-default-font-height))
+  (set-face-attribute 'default nil :font font :height config-frame-default-mono-font-height))
 
 (when-let ((font (config-frame-variable-font)))
-  (set-face-attribute 'variable-pitch nil :font font))
+  (set-face-attribute 'variable-pitch nil :font font :height config-frame-default-variable-font-height))
 
-(setq-default line-spacing 3)
+
+;; * Builtins
+
+(use-package emacs
+  :custom
+  (default-text-properties '(line-spacing 0.25 line-height 1.25))
+  (default-truncate-lines t)
+  (cursor-type '(bar . 1))
+  (x-underline-at-descent-line t))
 
 
 ;; * Frame
 
-(defun config-frame-frame-alist ()
-  "Compute the default and initial frame alist."
-  (append
-   (when window-system
-     (let* ((width (if (> (nth 2 (frame-monitor-geometry)) 1920) 240 120))
-            (height (nth 3 (frame-monitor-geometry)))
-            (margin (/ (- (nth 2 (frame-monitor-geometry)) (* width (frame-char-width))) 2)))
-       `((width                   . ,width)
-         (height                  . ,height)
-         (left                    . ,margin)
-         (top                     . 0)
-         (menu-bar-lines          . nil)
-         (tool-bar-lines          . nil)
-         (vertical-scroll-bars    . nil)
-         (scroll-bars             . nil)
-         (ns-transparent-titlebar . t)
-         (internal-border-width   . ,config-frame-border-width))))))
+(defvar config-frame-frame-alist
+  `((fullscreen              . maximized)
+    (menu-bar-lines          . nil)
+    (tool-bar-lines          . nil)
+    (vertical-scroll-bars    . nil)
+    (scroll-bars             . nil)
+    (ns-transparent-titlebar . t)
+    (internal-border-width   . ,config-frame-border-width))
+  "The default and initial frame alist.")
 
 (use-package frame
-  :config
-  (progn
-    (scroll-bar-mode -1)
-    (tool-bar-mode -1)
-    (pixel-scroll-mode -1))
   :custom
-  (cursor-type 'bar)
-  (default-frame-alist (config-frame-frame-alist))
-  (initial-frame-alist (config-frame-frame-alist))
+  (default-frame-alist config-frame-frame-alist)
+  (initial-frame-alist config-frame-frame-alist)
   (frame-resize-pixelwise t)
-  ;; The window dividers give some nice padding to the layout but look ugly in
-  ;; themes where the face is different from the default background
-  (window-divider-default-places t)
-  (window-divider-default-right-width config-frame-border-width)
-  (window-divider-default-bottom-width 10))
+  (window-divider-default-places 'right-only)
+  (window-divider-default-right-width 1)
+  :config
+  (modify-frame-parameters (selected-frame) config-frame-frame-alist)
+  (set-face-attribute 'window-divider nil :foreground (face-background 'mode-line))
+  (set-face-attribute 'window-divider-first-pixel nil :foreground (face-background 'default))
+  (set-face-attribute 'window-divider-last-pixel nil :foreground (face-background 'default)))
 
 (use-package mwheel
   :custom
-  ;; Use the trackpade to scroll the buffer horizontally
   (mouse-wheel-flip-direction t)
+  ;; Use the trackpad to scroll the buffer horizontally
   (mouse-wheel-tilt-scroll t))
 
 (when (eq 'darwin system-type)
