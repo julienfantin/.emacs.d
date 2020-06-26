@@ -78,18 +78,17 @@
 (use-package duotone-theme :load-path "../themes/duotone")
 (use-package duotone-reload :disabled t :demand t)
 
-(use-package doom-themes           :straight t :defer t)
-(use-package dracula-theme         :straight t :defer t)
-(use-package darktooth-theme       :straight t :defer t)
-(use-package zerodark-theme        :straight t :defer t)
-(use-package gruvbox-theme         :straight t :defer t)
-(use-package challenger-deep-theme :straight t :defer t)
-(use-package rebecca-theme         :straight t :defer t)
-(use-package nord-theme            :straight t :defer t)
+(use-package doom-themes           :straight t)
+(use-package dracula-theme         :straight t)
+(use-package darktooth-theme       :straight t)
+(use-package zerodark-theme        :straight t)
+(use-package gruvbox-theme         :straight t)
+;;(use-package challenger-deep-theme :straight t)
+(use-package rebecca-theme         :straight t)
+(use-package nord-theme            :straight t)
 
 (use-package modus-operandi-theme
   :straight t
-  :defer t
   :custom
   (modus-operandi-theme-slanted-constructs t)
   (modus-operandi-theme-bold-constructs t)
@@ -110,7 +109,6 @@
 
 (use-package modus-vivendi-theme
   :straight t
-  :defer t
   :custom
   (modus-vivendi-theme-slanted-constructs t)
   (modus-vivendi-theme-bold-constructs t)
@@ -132,7 +130,6 @@
 
 (use-package kaolin-themes
   :straight t
-  :defer t
   :custom
   (kaolin-themes-comments-style 'bright)
   (kaolin-themes-distinct-company-scrollbar t))
