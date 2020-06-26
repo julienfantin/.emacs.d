@@ -36,9 +36,8 @@
   (doom-modeline-irc nil)
   (doom-modeline-modal-icon nil)
   (doom-modeline-persp-icon nil)
-  (doom-modeline-bar-width 32)
-  (doom-modeline-height 32)
-  (doom-modeline-buffer-file-name-style 'relative-to-project))
+  (doom-modeline-bar-width 36)
+  (doom-modeline-height 24))
 
 (provide 'config-modeline)
 ;;; config-modeline.el ends here
