@@ -116,8 +116,8 @@
 ;; * Window configurations
 
 (use-package tab-bar
-  :init
-  (tab-bar-history-mode 1)
+  :hook
+  (after-init . tab-bar-history-mode)
   :bind
   ("C-x t n" . tab-bar-switch-to-next-tab)
   ("C-x t p" . tab-bar-switch-to-prev-tab)
@@ -126,7 +126,7 @@
 
 ;; * Buffer display rules
 
-(use-package window
+(use-package emacs
   :custom
   (display-buffer-alist
    `(;; bottom side window
@@ -174,6 +174,28 @@
          ("s-1" . delete-other-windows)
          ("s-\\" . balance-windows-area)
          ("s-q" . window-toggle-side-windows)))
+
+
+;; * Margins
+
+;;*
+(use-package emacs
+  :hook
+  ((window-setup . -set-margins)
+   (window-state-change . -set-margins)
+   (window-configuration-change . -set-margins))
+  :preface
+  (defvar config-windows-margin-width 4)
+  :config
+  (defun -set-margins (&optional _)
+    (walk-windows
+     (lambda (window)
+       (with-current-buffer (window-buffer window)
+         (when (or (not (equal config-windows-margin-width left-margin-width))
+                   (not (equal config-windows-margin-width right-margin-width)))
+           (setq left-margin-width config-windows-margin-width)
+           (setq right-margin-width config-windows-margin-width)
+           (set-window-buffer window (current-buffer))))))))
 
 
 ;; * Commands
