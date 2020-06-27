@@ -232,13 +232,6 @@ hyper when it's used as a modifier."
  "C-v" 'find-variable
  "C-l" 'find-library)
 
-(use-package org
-  :bind
-  ((:map org-mode-map
-         ("C-M-<return>"   . org-insert-subheading)
-         ("C-M-S-<return>" . org-insert-todo-subheading)
-         ("C-M-u"          . org-up-heading-safe))))
-
 
 ;; * Keymaps
 

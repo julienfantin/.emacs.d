@@ -37,6 +37,15 @@
 
 (use-package org
   :straight (:type built-in)
+  :bind
+  ((:map org-mode-map
+         ("C-M-<return>"   . org-insert-subheading)
+         ("C-M-S-<return>" . org-insert-todo-subheading)
+         ;; Paredit-like movements
+         ("C-M-u"          . org-up-element)
+         ("C-M-d"          . org-down-element)
+         ("C-M-f"          . org-forward-element)
+         ("C-M-b"          . org-backward-element)))
   :custom
   (org-ellipsis " … ")
   (org-catch-invisible-edits 'show-and-error)
@@ -50,16 +59,15 @@
   (org-use-speed-commands t)
   (org-speed-commands-user
    '(("Outline Navigation")
-     ("k" . (org-speed-move-safe 'org-next-visible-heading))
-     ("i" . (org-speed-move-safe 'org-previous-visible-heading))
-     ("l" . (org-speed-move-safe 'org-forward-heading-same-level))
-     ("j" . (org-speed-move-safe 'org-backward-heading-same-level))
+     ("k" . (org-speed-move-safe 'org-forward-element))
+     ("i" . (org-speed-move-safe 'org-backward-element))
+     ("l" . (org-speed-move-safe 'org-down-element))
+     ("j" . (org-speed-move-safe 'org-up-element))
      ("Outline Structure Editing")
      ("I" . org-metaup)
      ("K" . org-metadown)
      ("L" . org-metaright)
-     ("J" . org-metaleft)))
-  (org-special-ctrl-a/e t))
+     ("J" . org-metaleft))))
 
 (use-package org-bullets
   :straight t
