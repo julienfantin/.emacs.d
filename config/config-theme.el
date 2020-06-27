@@ -96,7 +96,8 @@
   (modus-operandi-theme-3d-modeline t)
   (modus-operandi-theme-subtle-diffs t)
   (modus-operandi-theme-intense-standard-completions t)
-  (modus-operandi-theme-distinct-org-blocks t)
+  ;; Native font-locking is broken with a block background
+  (modus-operandi-theme-distinct-org-blocks nil)
   (modus-operandi-theme-proportional-fonts t)
   (modus-operandi-theme-rainbow-headings nil)
   (modus-operandi-theme-section-headings nil)
@@ -116,7 +117,8 @@
   (modus-vivendi-theme-3d-modeline t)
   (modus-vivendi-theme-subtle-diffs t)
   (modus-vivendi-theme-intense-standard-completions t)
-  (modus-vivendi-theme-distinct-org-blocks t)
+  ;; Native font-locking is broken with a block background
+  (modus-vivendi-theme-distinct-org-blocks nil)
   (modus-vivendi-theme-proportional-fonts t)
   (modus-vivendi-theme-rainbow-headings nil)
   (modus-vivendi-theme-section-headings nil)
