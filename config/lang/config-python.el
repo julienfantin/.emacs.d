@@ -161,7 +161,7 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
   :straight t
   :demand t
   :hook (python-mode . lsp)
-  :init
+  :config
   (remhash 'pyls lsp-clients)
   :custom
   (lsp-python-ms-nupkg-channel "daily"))
