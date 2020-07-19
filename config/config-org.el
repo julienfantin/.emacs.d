@@ -69,6 +69,17 @@
      ("L" . org-metaright)
      ("J" . org-metaleft))))
 
+(use-package org-footnote
+  :custom
+  (org-footnote-auto-adjust t)
+  (org-footnote-fill-after-inline-note-extraction t))
+
+(use-package org-refile
+  :custom
+  (org-refile-targets
+   '((nil :maxlevel . 3)
+     (org-agenda-files :maxlevel . 3))))
+
 (use-package org-bullets
   :straight t
   :hook (org-mode . org-bullets-mode)
