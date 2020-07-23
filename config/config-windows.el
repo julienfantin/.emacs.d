@@ -79,7 +79,11 @@
          ("C-x s-i" . windmove-delete-up)
          ("C-x s-j" . windmove-delete-left)
          ("C-x s-k" . windmove-delete-down)
-         ("C-x s-l" . windmove-delete-right)))
+         ("C-x s-l" . windmove-delete-right)
+         ("s-I" . windmove-swap-states-up)
+         ("s-J" . windmove-swap-states-left)
+         ("s-K" . windmove-swap-states-down)
+         ("s-L" . windmove-swap-states-right)))
 
 (use-package winner
   :hook (after-init . winner-mode)
@@ -93,13 +97,6 @@
   :straight t
   :bind
   ("C-x 1" . zygospore-toggle-delete-other-windows))
-
-(use-package buffer-move
-  :straight t
-  :bind (("s-I" . buf-move-up)
-         ("s-J" . buf-move-left)
-         ("s-K" . buf-move-down)
-         ("s-L" . buf-move-right)))
 
 (use-package windresize
   :straight t
