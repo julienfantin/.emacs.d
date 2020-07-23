@@ -80,13 +80,17 @@
    '((nil :maxlevel . 3)
      (org-agenda-files :maxlevel . 3))))
 
-(use-package org-bullets
+(use-package org-superstar
   :straight t
-  :hook (org-mode . org-bullets-mode)
+  :after org
+  :hook (org-mode . org-superstar-mode)
   :custom
-  ;; Use headings fontification to differentiate levels. This is only usable
-  ;; with a theme that sets up different font sizes!
-  (org-bullets-bullet-list '("·")))
+  (org-superstar-remove-leading-stars t)
+  (org-superstar-headline-bullets-list '(" ")) ;; '("🞛" "◉" "○" "▷")
+  (org-superstar-item-bullet-alist
+   '((?+ . ?•)
+     (?* . ?➤)
+     (?- . ?–))))
 
 (use-package org-pretty-table
   :straight (org-pretty-table :type git :host github :repo "Fuco1/org-pretty-table")
