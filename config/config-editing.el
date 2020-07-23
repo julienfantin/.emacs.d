@@ -50,7 +50,7 @@
 
 (use-package goto-chg
   :straight t
-  :bind (("C-c e l" . goto-last-change)))
+  :bind (("C-z" . goto-last-change)))
 
 (use-package expand-region
   :straight t
