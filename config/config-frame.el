@@ -52,7 +52,8 @@
   (cl-find-if #'font-exists-p config-frame-variable-fonts))
 
 (when-let ((font (config-frame-mono-font)))
-  (set-face-attribute 'default nil :font font :height config-frame-default-mono-font-height))
+  (dolist (face '(default fixed-pitch))
+    (set-face-attribute face nil :font font :height config-frame-default-mono-font-height)))
 
 (when-let ((font (config-frame-variable-font)))
   (set-face-attribute 'variable-pitch nil :font font :height config-frame-default-variable-font-height))
