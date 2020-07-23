@@ -52,9 +52,7 @@
 
 (use-package flycheck-posframe
   :straight t
-  :hook (flycheck-mode . flycheck-posframe-mode)
-  :custom
-  (flycheck-posframe-border-width 20))
+  :hook (flycheck-mode . flycheck-posframe-mode))
 
 (use-package company
   :disabled t
