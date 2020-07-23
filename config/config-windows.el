@@ -25,9 +25,7 @@
 ;;; Code:
 (require 'use-package)
 
-(defvar Φ (/ 1 1.618033988749895))
-
-(defvar -Φ (- 1 Φ))
+(defvar Φ (- 1 (/ 1 1.618033988749895)))
 
 (use-package emacs
   :custom
@@ -40,6 +38,7 @@
 
 (use-package ace-window
   :straight t
+  :hook (after-init . ace-window-display-mode)
   :commands (aw-window-list aw-switch-to-window)
   :preface
   (dolist (n (number-sequence 1 10))
@@ -130,35 +129,35 @@
    `(;; bottom side window
      ("\\*\\(Flycheck errors\\).*"
       (display-buffer-in-side-window)
-      (window-height . ,-Φ)
+      (window-height . ,(* Φ 0.5))
       (side . bottom)
       (slot . 0))
      ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
       (display-buffer-in-side-window)
-      (window-height . ,-Φ)
+      (window-height . ,Φ)
       (side . bottom)
       (slot . -1))
      (".*\\*\\(Completions\\|Embark Live Occur\\).*"
       (display-buffer-in-side-window)
-      (window-height . ,-Φ)
+      (window-height . ,Φ)
       (side . bottom)
       (slot . -2)
       (window-parameters . ((no-other-window . t))))
      ;; top side window
      ("^\\(\\*e?shell\\|vterm\\).*"
       (display-buffer-in-side-window)
-      (window-height . ,-Φ)
+      (window-height . ,Φ)
       (side . top)
       (slot . 0))
      ;; Right side window
-     ("\\*Help.*"
+     ("^\\(\\*Help.*\\|\\*cider.*\\)"
       (display-buffer-in-side-window)
-      (window-width . ,-Φ)
+      (window-width . ,Φ)
       (side . right)
       (slot . 0))
      ("\\*Custom.*"
       (display-buffer-in-side-window)
-      (window-width . ,-Φ)
+      (window-width . ,Φ)
       (side . right)
       (slot . 1))))
   :hook ((help-mode . visual-line-mode)
