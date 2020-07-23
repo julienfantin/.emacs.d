@@ -125,12 +125,6 @@
                ("C-M-<return>" . emr-show-refactor-menu)))
   :init (emr-initialize))
 
-(use-package compdef
-  :after compdef
-  :config
-  (compdef
-   :modes 'prog-mode
-   :company '((company-capf company-files company-keywords company-dabbrev-code :with company-yasnippet))))
 
 
 ;; * Smart Jump

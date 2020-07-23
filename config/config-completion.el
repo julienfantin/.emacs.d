@@ -206,16 +206,20 @@ normally would when calling `yank' followed by `yank-pop'."
   (company-dabbrev-ignore-case nil)
   (company-dabbrev-minimum-length 4))
 
-(use-package compdef
-  :straight t
-  :after company)
-
 (use-package company-prescient
   :straight t
   :after (company no-littering)
   :hook (company-mode . company-prescient-mode)
   :config
   (prescient-persist-mode 1))
+
+(use-package compdef
+  :straight t
+  :after company
+  :config
+  (compdef
+   :modes 'prog-mode
+   :company '((company-capf company-files company-keywords company-dabbrev-code :with company-yasnippet))))
 
 (provide 'config-completion)
 ;;; config-completion.el ends here
