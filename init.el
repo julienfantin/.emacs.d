@@ -27,7 +27,7 @@
 
 ;; * Bootstrap
 
-(defmacro comment (&rest body) "Ignore 'BODY'." nil)
+(defmacro comment (&rest _body) "Ignore 'BODY'." nil)
 
 
 ;; * Config options
