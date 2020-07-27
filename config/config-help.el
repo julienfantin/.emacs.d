@@ -23,7 +23,10 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
+
+;;; Third-party
 
 (use-package helpful
   :straight t

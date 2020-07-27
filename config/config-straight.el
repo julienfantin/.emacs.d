@@ -28,6 +28,7 @@
   (add-to-list 'gnutls-trustfiles "/usr/local/etc/libressl/cert.pem"))
 
 (defvar bootstrap-version)
+
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
       (bootstrap-version 5))
@@ -40,7 +41,6 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-
 (straight-use-package 'use-package)
 
 (setq use-package-always-defer t)
@@ -48,7 +48,7 @@
 (require 'use-package)
 (require 'bind-key)
 
-;; * System packages
+;;; System packages
 
 (use-package system-packages
   :straight t

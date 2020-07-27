@@ -23,15 +23,17 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
-
-;; * Built-ins
+;;; Built-ins
 
 (use-package sql
   :custom
   (sql-product 'postgres)
   (sql-send-terminator t))
+
+;;; Third-party
 
 (use-package paredit
   :after (sql paredit)
@@ -40,9 +42,6 @@
 (use-package aggressive-indent
   :after (sql aggressive-indent)
   :hook (sql-mode . aggressive-indent-mode))
-
-
-;; * Indentation
 
 (use-package sql-indent
   :straight t

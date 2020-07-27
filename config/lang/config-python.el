@@ -23,16 +23,20 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (require 'config-lsp)
 
+;;; Config
+
 (defvar config-python-lsp-backend 'ms-python)
 
-
-;; * Python
+;;; Built-ins
 
 (use-package python
   :hook (python-mode . subword-mode))
+
+;;; Third-party
 
 (use-package pyvenv
   :disabled t
@@ -46,9 +50,6 @@
   :bind
   (:map python-mode-map
         ([remap fill-paragraph] . python-docstring-fill)))
-
-
-;; * Elpy
 
 (use-package flycheck
   :if (null config-python-lsp-backend)
@@ -65,9 +66,6 @@
   :hook (python-mode . elpy-enable)
   :custom
   (elpy-get-info-from-shell t))
-
-
-;; * Environment
 
 (use-package py-autopep8
   :disabled t
@@ -120,9 +118,6 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
   :custom
   (python-pytest-executable "onepytest"))
 
-
-;; * Editing
-
 (use-package indent-tools
   :straight t
   :hook (python-mode . indent-tools-minor-mode)
@@ -136,8 +131,7 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
   :config
   (add-to-list 'markdown-code-lang-modes '("python" . python-mode)))
 
-
-;; * Language server protocol
+;;; Language server protocol
 
 ;; Disable default flycheck checkers
 (use-package flycheck
@@ -146,18 +140,18 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
   (add-to-list 'flycheck-enabled-checkers 'flycheck-flake8)
   (add-to-list 'flycheck-disabled-checkers 'python-pylint))
 
-;; ** eglot
+;;;; eglot
 
 (use-package eglot
-  :if (eq config-lsp-frontend 'eglot)
+  :if (equal config-lsp-frontend 'eglot)
   :straight t
   :ensure-system-package (pyls . "pip install 'python-language-server[all]' pyls-isort")
   :hook ((python-mode . eglot-ensure)))
 
-;; ** lsp-mode
+;;;; lsp-mode
 
 (use-package lsp-python-ms
-  :if (eq config-python-lsp-backend 'ms-python)
+  :if (equal config-python-lsp-backend 'ms-python)
   :straight t
   :demand t
   :hook (python-mode . lsp)

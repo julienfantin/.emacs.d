@@ -25,13 +25,14 @@
 ;;; Code:
 (require 'use-package)
 
+;;; Config
+
 (defvar config-prose-dicts-dir
   (expand-file-name "etc/dictionaries/" user-emacs-directory))
 
 (defvar config-prose-visual-fill-column 120)
 
-
-;; * Spell-checking
+;;; Built-ins
 
 (use-package ispell
   :ensure-system-package (hunspell)
@@ -55,6 +56,8 @@
   (flyspell-issue-welcome-flag nil)
   (flyspell-issue-message-flag nil))
 
+;;; Third-party
+
 (use-package flyspell-lazy
   :straight t
   :hook (flyspell-mode . flyspell-lazy-mode)
@@ -64,7 +67,7 @@
       ad-do-it)))
 
 (use-package flyspell-correct-ivy
-  :if (eq config-completion-system 'ivy)
+  :if (equal config-completion-system 'ivy)
   :straight t
   :after flyspell
   :bind
@@ -74,17 +77,11 @@
   :custom
   (flyspell-correct-interface #'flyspell-correct-ivy))
 
-
-;; * Prose minor mode
-
 (use-package prose-minor-mode
   :hook ((org-mode         . prose-minor-mode)
          (markdown-mode    . prose-minor-mode)
          (prose-minor-mode . visual-line-mode)
          (prose-minor-mode . flyspell-mode)))
-
-
-;; * Wrapping
 
 (use-package adaptive-wrap
   :disabled t
@@ -101,17 +98,11 @@
   (visual-fill-column-width config-prose-visual-fill-column)
   (visual-fill-column-center-text t))
 
-
-;; * Linters
-
 (use-package writegood-mode
   :disabled t
   :straight t
   :after prose-minor-mode
   :hook (prose-minor-mode . writegood-mode))
-
-
-;; * Major modes
 
 (use-package markdown-mode
   :straight t

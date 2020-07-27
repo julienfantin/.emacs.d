@@ -23,9 +23,10 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
-;; * Customs
+;;; Config
 
 (defvar config-frame-border-width 18)
 
@@ -36,40 +37,8 @@
   '("DejaVu Sans" "ETBembo"))
 
 (defvar config-frame-default-mono-font-height 120)
+
 (defvar config-frame-default-variable-font-height 130)
-
-
-;; * Fonts
-
-(defun font-exists-p (font)
-  "Existing 'FONT' predicate."
-  (if (null (x-list-fonts font)) nil t))
-
-(defun config-frame-mono-font ()
-  (cl-find-if #'font-exists-p config-frame-mono-fonts))
-
-(defun config-frame-variable-font ()
-  (cl-find-if #'font-exists-p config-frame-variable-fonts))
-
-(when-let ((font (config-frame-mono-font)))
-  (dolist (face '(default fixed-pitch))
-    (set-face-attribute face nil :font font :height config-frame-default-mono-font-height)))
-
-(when-let ((font (config-frame-variable-font)))
-  (set-face-attribute 'variable-pitch nil :font font :height config-frame-default-variable-font-height))
-
-
-;; * Builtins
-
-(use-package emacs
-  :custom
-  (default-text-properties '(line-spacing 0.25 line-height 1.25))
-  (default-truncate-lines t)
-  (cursor-type '(bar . 1))
-  (x-underline-at-descent-line t))
-
-
-;; * Frame
 
 (defvar config-frame-frame-alist
   `((fullscreen              . maximized)
@@ -80,6 +49,33 @@
     (ns-transparent-titlebar . t)
     (internal-border-width   . ,config-frame-border-width))
   "The default and initial frame alist.")
+
+(defun config-frame-font-exists-p (font)
+  "Existing 'FONT' predicate."
+  (if (null (x-list-fonts font)) nil t))
+
+(defun config-frame-mono-font ()
+  (cl-find-if #'config-frame-font-exists-p config-frame-mono-fonts))
+
+(defun config-frame-variable-font ()
+  (cl-find-if #'config-frame-font-exists-p config-frame-variable-fonts))
+
+(when-let ((font (config-frame-mono-font)))
+  (dolist (face '(default fixed-pitch))
+    (set-face-attribute face nil :font font :height config-frame-default-mono-font-height)))
+
+(when-let ((font (config-frame-variable-font)))
+  (set-face-attribute 'variable-pitch nil :font font :height config-frame-default-variable-font-height))
+
+;;; Built-ins
+
+(use-package emacs
+  :custom
+  (default-text-properties '(line-spacing 0.25 line-height 1.25))
+  (default-truncate-lines t)
+  (cursor-type '(bar . 1))
+  (x-underline-at-descent-line t))
+
 
 (use-package frame
   :custom
@@ -99,10 +95,6 @@
   (mouse-wheel-flip-direction t)
   ;; Use the trackpad to scroll the buffer horizontally
   (mouse-wheel-tilt-scroll t))
-
-(when (eq 'darwin system-type)
-  ;; Enable standard retina font rendering
-  (setq ns-use-thin-smoothing t))
 
 (use-package default-text-scale
   :straight t

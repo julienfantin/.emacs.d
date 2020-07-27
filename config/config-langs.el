@@ -23,12 +23,12 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
 (use-package config-ansible :demand t)
 (use-package config-cl :demand t)
 (use-package config-clojure :demand t)
-(use-package config-clojurescript :demand t)
 (use-package config-emacs-lisp :demand t)
 (use-package config-js :demand t)
 (use-package config-ocaml :demand t)

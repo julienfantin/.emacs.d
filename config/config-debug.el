@@ -25,21 +25,14 @@
 ;;; Code:
 (require 'use-package)
 
-;; * Debug on error
+;;; Built-ins
 
 (toggle-debug-on-error)
 (add-hook 'after-init-hook #'toggle-debug-on-error)
 
-
-;; * Find bugs in config files
+;;; Third-party
 
 (use-package bug-hunter :straight t)
-
-
-;; * Profiling
-
-;; (ignore-errors
-;;   (profiler-start 'cpu+mem))
 
 (provide 'config-debug)
 ;;; config-debug.el ends here

@@ -23,39 +23,51 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
-
-;; * Builtins
+;;; Built-ins
 
 (use-package isearch
-  :commands (isearch-forward-symbol-at-point isearch-forward)
-  :preface
-  (defun config-search-isearch-symbol-with-prefix (p)
-    "Like isearch, unless prefix argument is provided.
-With a prefix argument P, isearch for the symbol at point."
-    (interactive "P")
-    (let ((current-prefix-arg nil))
-      (call-interactively
-       (if p #'isearch-forward-symbol-at-point
-         #'isearch-forward))))
   :custom
   (isearch-allow-scroll t)
   (lazy-highlight-initial-delay 0)
   (isearch-invisible 'open))
 
-
-;; * Packages
+(use-package imenu
+  :bind ("C-c i" . imenu)
+  :custom
+  (imenu-auto-rescan t)
+  (imenu-max-item-length 100))
+
+;;; Third-party
+
+(use-package anzu
+  :straight t
+  :hook (after-init . global-anzu-mode)
+  :bind
+  (([remap query-replace] . anzu-query-replace)
+   ([remap query-replace-regexp] . anzu-query-replace-regexp)
+   ([remap isearch-query-replace] . anzu-isearch-query-replace)
+   ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp)))
 
 (use-package imenu-anywhere
   :straight t
-  :bind
-  ("C-c i" . imenu-anywhere)
-  ("C-c I" . imenu))
+  :bind ("C-c I" . imenu-anywhere))
 
 (use-package flimenu
   :straight t
+  :after imenu
   :init (flimenu-global-mode))
+
+(use-package imenu-list
+  :straight t
+  :bind ("C-c M-i" . imenu-list-smart-toggle)
+  :hook (imenu-list-major-mode . toggle-truncate-lines)
+  :custom
+  (imenu-list-focus-after-activation t)
+  (imenu-list-auto-resize t)
+  (imenu-list-mode-line-format nil))
 
 (use-package avy
   :straight t

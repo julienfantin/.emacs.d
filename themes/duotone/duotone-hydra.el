@@ -6,7 +6,7 @@
 (require 'duotone-palette)
 (require 'hydra)
 
-;; * State
+;;; State
 
 (defvar duotone-hydra-current-palette nil)
 (defvar duotone-hydra-current-palette-slots '())
@@ -17,7 +17,7 @@
     (s . (0.0 1.0))
     (l . (0.0 1.0))))
 
-;; * Updates
+;;; Updates
 
 (defun duotone-hydra-palette-chromas ()
   "Return all chromas for the current palette."
@@ -42,7 +42,7 @@
     (load-theme 'duotone nil)))
 
 
-;; * Commands
+;;; Commands
 
 (defun duotone-hydra-inc (&optional n)
   (interactive "p")
@@ -79,7 +79,7 @@
   (setq duotone-default-palette duotone-hydra-current-palette))
 
 
-;; * Hydra
+;;; Hydra
 
 (defun duotone-hydra-chroma-slot-status (slot)
   (format "%s" (if (member slot duotone-hydra-current-chroma-slots) "*ON*" "")))

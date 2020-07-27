@@ -2,14 +2,15 @@
 ;;; Commentary:
 ;;
 ;;; Code:
+
 (require 'use-package)
 
 
-;; * Buffer colors
+;;; Third-party
 
 (use-package rainbow-mode
   :straight t
-  :hook (help-mode info-mode emacs-lisp-mode ccs-mode web-mode))
+  :hook ((help-mode info-mode emacs-lisp-mode ccs-mode web-mode) . rainbow-mode))
 
 (use-package rainbow-delimiters
   :straight t

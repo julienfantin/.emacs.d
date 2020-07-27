@@ -26,6 +26,7 @@
 
 (require 'use-package)
 
+;;; Third-party
 
 (use-package slime :straight t)
 

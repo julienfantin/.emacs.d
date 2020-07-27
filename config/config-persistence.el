@@ -23,8 +23,11 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (require 'config-path)
+
+;;; Built-ins
 
 (use-package savehist
   :disabled t

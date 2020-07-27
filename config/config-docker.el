@@ -23,20 +23,19 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (require 'config-yaml)
 
-(use-package dockerfile-mode
-  :straight t)
+;;; Third-party
 
-(use-package docker
-  :straight t )
+(use-package dockerfile-mode :straight t)
 
-(use-package docker-compose-mode
-  :straight t)
+(use-package docker :straight t )
 
-(use-package docker-tramp
-  :straight t)
+(use-package docker-compose-mode :straight t)
+
+(use-package docker-tramp :straight t)
 
 (provide 'config-docker)
 ;;; config-docker.el ends here

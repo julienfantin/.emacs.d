@@ -23,28 +23,19 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
-;; * Misc
-;; ** Initial state
+(use-package startup
+  :custom
+  (initial-scratch-message "")
+  (inhibit-startup-message t))
 
-(setq initial-scratch-message ""
-      inhibit-startup-message t)
-
-(setq ring-bell-function 'ignore)
-
-;; ** Files encoding
-
-(prefer-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(setq default-process-coding-system '(utf-8 . utf-8))
-(setq-default buffer-file-coding-system 'utf-8)
-
-;; ** Windows handling
-
-(setq-default cursor-in-non-selected-windows nil)
+(use-package emacs
+  :custom
+  (ring-bell-function 'ignore)
+  (default-process-coding-system '(utf-8 . utf-8))
+  (buffer-file-coding-system 'utf-8))
 
 (provide 'config-defaults)
 ;;; config-defaults.el ends here

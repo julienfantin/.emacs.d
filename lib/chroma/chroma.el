@@ -18,8 +18,8 @@
 (require 'color)
 
 
-;; * Object system
-;; ** Abstract type & Generic methods
+;;; Object system
+;;;; Abstract type & Generic methods
 
 (defclass chroma () ((:abstract t)))
 
@@ -35,7 +35,7 @@
 
 (cl-defgeneric chroma-clone (c))
 
-;; ** Color types and constructors
+;;;; Color types and constructors
 
 (defun chroma--norm (r x)
   "Divide by 'R' unless 'X' is a float."
@@ -57,13 +57,13 @@
     (list
      (chroma--munge-slots keys integer-ratios (car slots)))))
 
-;; *** Hexadecimal
+;;;;; Hexadecimal
 
 (defclass chroma-hex (chroma)
   ((hex :initarg :hex :type string))
   (:documentation "Hex chroma object"))
 
-;; *** RGB
+;;;;; RGB
 
 (defclass chroma-rgb (chroma)
   ((r :initarg :r :type float :initform 0.0)
@@ -77,7 +77,7 @@
     (chroma--munge-slots '(:r :g :b) (make-list 3 255.0))
     (cl-call-next-method c)))
 
-;; *** HSL
+;;;;; HSL
 
 (defclass chroma-hsl (chroma)
   ((h :initarg :h :type float :initform 0.0)
@@ -99,7 +99,7 @@
   (with-slots (r g b) c
     (make-instance 'chroma-rgb :r r :g g :b b)))
 
-;; *** Cielab
+;;;;; Cielab
 
 (defclass chroma-cielab (chroma)
   ((l :initarg :l :type float :initform 0.0)
@@ -107,14 +107,14 @@
    (b :initarg :b :type float :initform 0.0))
   (:documentation "Cielab chroma object"))
 
-;; ** To Conversions
+;;;; To Conversions
 
 (defun fpct (f)
   (if (and (floatp f) (< f 1.0))
       (* f 100.0)
     f))
 
-;; *** Hexadecimal
+;;;;; Hexadecimal
 
 (cl-defmethod chroma-to-hex ((c chroma-hex))
   c)
@@ -127,7 +127,7 @@
   (with-slots (r g b) (chroma-to-rgb c)
     (chroma-hex :hex (color-rgb-to-hex r g b))))
 
-;; *** RGB
+;;;;; RGB
 
 (cl-defmethod chroma-to-rgb ((c chroma-rgb)) c)
 
@@ -141,7 +141,7 @@
     (seq-let (r g b) (color-hsl-to-rgb h s l)
       (chroma-rgb :r r :g g :b b))))
 
-;; *** HSL
+;;;;; HSL
 
 (cl-defmethod chroma-to-hsl ((c chroma-hsl)) c)
 
@@ -155,7 +155,7 @@
     (seq-let (h s l) (color-rgb-to-hsl r g b)
       (chroma-hsl :h h :s s :l l))))
 
-;; *** Cielab
+;;;;; Cielab
 
 (cl-defmethod chroma-to-cielab ((c chroma-rgb))
   (with-slots (r g b) c
@@ -165,7 +165,7 @@
 (cl-defmethod chroma-to-cielab ((c chroma-hex))
   (chroma-to-cielab (chroma-to-rgb c)))
 
-;; *** String
+;;;;; String
 
 (cl-defmethod chroma-to-string ((c t)) c)
 
@@ -184,7 +184,7 @@
   (with-slots (l a b) c
     (apply #'color-rgb-to-hex (color-lab-to-srgb l a b))))
 
-;; *** List
+;;;;; List
 
 (cl-defmethod chroma-to-list ((c chroma-rgb))
   (with-slots (r g b) c (list r g b)))
@@ -196,7 +196,7 @@
   (with-slots (l a b) c (list l a b)))
 
 
-;; * Functions
+;;; Functions
 
 (defun chroma-lighten (c pct)
   (with-slots (h s l) (chroma-to-hsl c)
@@ -234,7 +234,7 @@
     (chroma-to-list (chroma-to-rgb to)))))
 
 
-;; * Color theory
+;;; Color theory
 
 (defun chroma--iterate (c n fn &rest args)
   (let ((value c))
@@ -248,17 +248,17 @@
       (setq value (apply fn value args))
       (setq acc (cons value acc)))))
 
-;; ** Tints (addition of white)
+;;;; Tints (addition of white)
 
 (defun chroma-tints (c n pct)
   (chroma--iterate* c n #'chroma-lighten pct))
 
-;; ** Shades (addition of black)
+;;;; Shades (addition of black)
 
 (defun chroma-shades (c n pct)
   (chroma--iterate* c n #'chroma-darken pct))
 
-;; ** Complements
+;;;; Complements
 
 (defun chroma-complement (c)
   (thread-last c
@@ -266,10 +266,10 @@
     (mapcar (apply-partially #'- 1.0))
     (chroma-rgb)))
 
-;; ** Distance
+;;;; Distance
 
 (cl-defmethod chroma-distance ((c1 chroma-cielab) (c2 chroma-cielab))
-             (color-cie-de2000 (chroma-to-list c1) (chroma-to-list c2)))
+  (color-cie-de2000 (chroma-to-list c1) (chroma-to-list c2)))
 
 (cl-defmethod chroma-distance ((c1 t) (c2 t))
   (color-cie-de2000
@@ -285,7 +285,7 @@
 (defun chroma-closest (chromas chroma)
   (car (sort chromas (chroma-comparator chroma))))
 
-;; ** Fade
+;;;; Fade
 
 (defun chroma-fade (c pct)
   (if (< (chroma-distance c (chroma-hex :hex "#000"))
@@ -294,7 +294,7 @@
     (chroma-darken c (fpct pct))))
 
 
-;; * Seq helpers
+;;; Seq helpers
 
 (defvar chroma-phi (/ (+ 1.0 (sqrt 5)) 2.0))
 

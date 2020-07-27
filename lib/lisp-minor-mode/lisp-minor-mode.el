@@ -7,7 +7,7 @@
 (require 'org)
 
 
-;; * Customs
+;;; Customs
 
 (defvar lisp-minor-mode-modes-list
   '((elisp-mode        . emacs-lisp-mode)
@@ -56,7 +56,7 @@
   :group 'lisp-minor-mode)
 
 
-;; * Helpers
+;;; Helpers
 
 (defun lisp-minor-mode-symbol-to-mode-hook (symbol)
   "Make a hook from 'SYMBOL'."
@@ -95,7 +95,7 @@
     (lisp-minor-mode)))
 
 
-;; * Prettify
+;;; Prettify
 
 (defun lisp-minor-mode-prettify-turn-on ()
   "Turn on 'prettify-symbols-mode' for Lisp."
@@ -117,7 +117,7 @@
       (delete binding prettify-symbols-alist))))
 
 
-;; * Setup
+;;; Setup
 
 (defun lisp-global-minor-mode-install-hooks ()
   "Install 'lisp-minor-mode' hooks for Lisp modes in 'lisp-minor-mode-modes-list'."
@@ -140,8 +140,8 @@
         (remove-hook hook #'lisp-minor-mode)))))
 
 
-;; * Minor modes
-;; ** Global
+;;; Minor modes
+;;;; Global
 
 ;;;###autoload
 (define-minor-mode lisp-global-minor-mode
@@ -153,7 +153,7 @@
       (lisp-global-minor-mode-install-hooks)
     (lisp-global-minor-mode-remove-hooks)))
 
-;; ** Local
+;;;; Local
 
 (defvar lisp-minor-mode-map (make-sparse-keymap))
 

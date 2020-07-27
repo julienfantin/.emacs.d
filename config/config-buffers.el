@@ -23,12 +23,12 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (eval-when-compile
   (require 'cl-lib))
 
-
-;; * Commands
+;;; Commands
 
 (defun --temp-buffers ()
   "Return a list of temp buffers."
@@ -61,7 +61,8 @@ When called with 'ARG' always create a new temp buffer."
   (when buffer-file-name
     (save-buffer)))
 
-;; Always save before killing
+;;; Advices
+
 (advice-add #'kill-this-buffer :before #'-save-before-kill)
 
 (provide 'config-buffers)

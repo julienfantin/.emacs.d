@@ -23,17 +23,19 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
-
-;; * Packages
+;;; Built-ins
 
 (use-package uniquify
   :custom
   (uniquify-buffer-name-style 'forward))
 
+;;; Third-party
+
 (use-package ivy
-  :if (eq config-completion-system 'ivy)
+  :if (equal config-completion-system 'ivy)
   :hook ((after-init . ivy-mode))
   :commands (ivy-set-actions)
   :custom
@@ -47,14 +49,19 @@
   (delete '(t . ivy-format-function-default) ivy-format-functions-alist)
   (add-to-list 'ivy-format-functions-alist '(t . ivy-format-function-line)))
 
+(use-package wgrep
+  :if (equal config-completion-system 'ivy)
+  :after (ivy)
+  :straight t)
+
 (use-package magit
-  :if (eq config-completion-system 'ivy)
+  :if (equal config-completion-system 'ivy)
   :after ivy
   :custom
   (magit-completing-read-function 'ivy-completing-read))
 
 (use-package counsel
-  :if (eq config-completion-system 'ivy)
+  :if (equal config-completion-system 'ivy)
   :straight t
   :hook ((after-init . counsel-mode))
   :custom
@@ -65,15 +72,6 @@
     (defun -counsel-todos  ()
       (interactive)
       (counsel-rg "TODO|FIXME|HACK|XXX" (projectile-project-root) nil "TODOs:"))))
-
-(use-package counsel-projectile
-  :if (eq config-completion-system 'ivy)
-  :straight t
-  :after (counsel projectile)
-  :hook ((after-init . counsel-projectile-mode))
-  :custom
-  (counsel-projectile-remove-current-project t)
-  (counsel-projectile-remove-current-buffer t))
 
 (provide 'config-ivy)
 ;;; config-ivy.el ends here

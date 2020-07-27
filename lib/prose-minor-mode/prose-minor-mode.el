@@ -7,7 +7,7 @@
 (require 'flyspell)
 
 
-;; * Customs
+;;; Customs
 
 (defcustom prose-minor-mode-line-spacing 0.25
   "Line spacing."
@@ -63,7 +63,7 @@
 (defvar prose-minor-mode)
 
 
-;; * Spell checking predicates
+;;; Spell checking predicates
 
 (declare-function markdown-code-block-at-point "markdown-mode.el")
 (declare-function org-in-src-block-p "org.el")
@@ -81,7 +81,7 @@
   (not (org-in-src-block-p)))
 
 
-;; * Functions
+;;; Functions
 
 (defun prose-minor-mode-toggle-line-spacing ()
   "Toggle 'line-spacing' when enabled."
@@ -115,7 +115,7 @@
       (funcall prose-minor-mode-spell-check-function 1))))
 
 
-;; * Minor mode
+;;; Minor mode
 
 (defvar prose-minor-mode-map (make-sparse-keymap))
 
@@ -129,7 +129,7 @@
     (prose-minor-mode-toggle-spell-check)))
 
 
-;; * Integrations
+;;; Integrations
 
 (use-package text-mode
   :hook (text-mode . prose-minor-mode))

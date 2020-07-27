@@ -23,10 +23,11 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
 
-;; * Built-ins
+;;; Built-ins
 
 (use-package vc
   :custom
@@ -50,12 +51,7 @@
   ;; Counter-intuitve naming here, but windows should be side-by-side...
   (ediff-split-window-function 'split-window-horizontally))
 
-
-;; * Packages
-
-(use-package git-timemachine :straight t)
-
-(use-package git-link :straight t)
+;;; Third-party
 
 (use-package magit
   :straight t
@@ -65,21 +61,25 @@
    (lambda (buffer)
      (display-buffer-same-window buffer nil))))
 
-(use-package git-commit
-  :after magit
-  :custom
-  (git-commit-summary-max-length 72))
-
 (use-package forge
   :straight t
   :after magit)
-
-(use-package gited :straight t)
 
 (use-package dired-git-info
   :straight t
   :after dired
   :hook (dired-after-readin . dired-git-info-auto-enable))
+
+(use-package git-commit
+  :after magit
+  :custom
+  (git-commit-summary-max-length 72))
+
+(use-package git-timemachine :straight t)
+
+(use-package gited :straight t)
+
+(use-package git-link :straight t)
 
 (provide 'config-git)
 ;;; config-git.el ends here

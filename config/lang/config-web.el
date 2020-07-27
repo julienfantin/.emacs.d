@@ -23,27 +23,17 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
+;;; Customs
 
-;; * Customs
+(defvar config-web-use-lsp t)
 
-(defvar config-web-default-indent 2)
-
-
-;; * Built-ins
-
-(use-package js
-  :custom (js-indent-level config-web-default-indent))
-
-
-;; * Packages
-
-(use-package json-mode
-  :straight t
-  :mode "\\.json?\\'")
+;;; Built-ins
 
 (use-package mhtml-mode
+  :if config-web-use-lsp
   :ensure-system-package (node)
   :ensure-system-package
   (vscode-html-languageserver-bin . "npm install -g vscode-html-languageserver-bin")
@@ -52,11 +42,16 @@
   :hook (mhtml-mode . lsp))
 
 (use-package css-mode
+  :if config-web-use-lsp
   :ensure-system-package (node)
   :ensure-system-package
   (vscode-css-languageserver-bin . "npm install -g vscode-css-languageserver-bin")
   :after lsp-mode
   :hook (css-mode . lsp))
+
+(use-package json-mode
+  :straight t
+  :mode "\\.json?\\'")
 
 (provide 'config-web)
 ;;; config-web.el ends here

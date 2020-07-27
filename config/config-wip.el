@@ -26,14 +26,12 @@
 
 (require 'use-package)
 
-
-;; * Defaults
+;;; Defaults
 
 (add-to-list 'exec-path "~/bin")
 
-
-;; * UI tweaks
-;; ** Show paren expression transparency hook
+;;; UI tweaks
+;;;; Show paren expression transparency hook
 
 (defun fix-show-parent-match (theme &optional _no-confirm no-enable)
   (unless (or no-enable (equal 'duotone theme))
@@ -52,19 +50,13 @@
 (comment
  (advice-add #'load-theme :after #'fix-show-parent-match))
 
-
-;; * Keybindings
+;;; Keybindings
 
 (global-set-key (kbd "C-x =") 'balance-windows-area)
 
 (use-package hercules :straight t)
 
-
-;; * Org-roam
-
-
-
-;; * Document annotation workflow
+;;; Document annotation workflow
 
 (use-package pdf-tools
   ;; Documents are still super blurry even after switching to the hi-dpi
@@ -100,10 +92,16 @@
      (file . find-file)
      (wl . wl-other-frame))))
 
+;;; Performance
+
 (use-package explain-pause-mode
   :straight (explain-pause-mode :type git :host github :repo "lastquestion/explain-pause-mode"))
 
 (use-package restart-emacs :straight t)
+
+(use-package gcmh
+  :straight t
+  :init (gcmh-mode 1))
 
 ;; Prose
 
@@ -115,11 +113,28 @@
   :straight t
   :hook (after-init . global-spell-fu-mode))
 
-(use-package gcmh
-  :straight t
-  :init (gcmh-mode 1))
+;; Utils
 
 (use-package literate-calc-mode
+  :straight t)
+
+;; Clojure auto-indent
+
+(use-package cljstyle-mode
+  :disabled t
+  :ensure-system-package (cljstyle . "brew cask install cljstyle")
+  :straight (cljstyle-mode :type git :host github :repo "jstokes/cljstyle-mode")
+  :hook (clojure-mode-hook . cljstyle-mode))
+
+(use-package apheleia
+  :straight (apheleia :host github :repo "raxod502/apheleia")
+  :ensure-system-package (cljstyle . "brew cask install cljstyle")
+  :hook ((after-init . apheleia-global-mode))
+  :config
+  (add-to-list 'apheleia-formatters '(cljstyle . ("cljstyle" "pipe") ))
+  (add-to-list 'apheleia-mode-alist '(clojure-mode . cljstyle)))
+
+(use-package flymake-kondor
   :straight t)
 
 (provide 'config-wip)

@@ -24,18 +24,15 @@
 
 ;;; Code:
 
-
-;; * Bootstrap
+;;; Bootstrap
 
 (defmacro comment (&rest _body) "Ignore 'BODY'." nil)
 
-
-;; * Config options
+;;; Config options
 
 (defvar config-completion-system 'ivy)
 
-
-;; * Configs
+;;; Configs
 
 (use-package private :demand t :load-path "./lib/" :if (file-exists-p "./lib/private.el"))
 (use-package config-theme :demand t :load-path "./config")
@@ -70,23 +67,22 @@
 (use-package config-search :demand t :load-path "./config")
 (use-package config-sexp :demand t :load-path "./config")
 (use-package config-shell :demand t :load-path "./config")
-(use-package config-term :demand t :load-path "./config")
 (use-package config-windows :demand t :load-path "./config")
 
-;; ** Langs
+;;;; Langs
 
 (use-package config-lsp :demand t :load-path "./config")
 (use-package config-langs :demand t :load-path "./config")
 
-;; ** Tools
+;;;; Tools
 
 (use-package config-docker :demand t :load-path "./config" :disabled t)
 
-;; ** Keybindings
+;;;; Keybindings
 
 (use-package config-keybindings :demand t :load-path "./config")
 
-;; ** WIP
+;;;; WIP
 
 (use-package config-wip :demand t :load-path "./config")
 

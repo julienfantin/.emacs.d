@@ -23,17 +23,18 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
-
-;; * Customs
+;;; Config
 
 (defvar config-indentation-aggressive-indent-max-lines 100)
 
-
-;; * Spaces over tabs
+;;; Built-ins
 
-(setq-default indent-tabs-mode nil)
+(use-package emacs
+  :custom
+  (indent-tabs-mode nil))
 
 (use-package makefile
   :preface
@@ -42,21 +43,18 @@
     (set (make-local-variable 'tab-width) 4))
   :hook (makefile-mode . config-indentation-makefile))
 
-
-;; * Whitespace cleanup
+(use-package prog-mode
+  :preface
+  (defun config-indentation-show-trailing-whitespace ()
+    "Enable 'SHOW-TRAILING-WHITESPACE' in current buffer."
+    (setq-local show-trailing-whitespace t))
+  :hook (prog-mode . config-indentation-show-trailing-whitespace))
 
-(defun config-indentation-show-trailing-whitespace ()
-  "Enable 'SHOW-TRAILING-WHITESPACE' in current buffer."
-  (setq-local show-trailing-whitespace t))
-
-(add-hook 'prog-mode-hook #'config-indentation-show-trailing-whitespace)
+;;; Third-party
 
 (use-package ws-butler
   :straight t
   :hook ((prog-mode . ws-butler-mode)))
-
-
-;; * Indentation
 
 (use-package aggressive-indent
   :straight t

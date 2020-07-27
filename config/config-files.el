@@ -2,18 +2,17 @@
 ;;; Commentary:
 ;;
 ;;; Code:
+
 (require 'use-package)
 (require 'config-path)
 
+;;; Builtins
 
-;; * Defaults
-
-(setq-default delete-by-moving-to-trash t)
-(setq-default default-major-mode 'text-mode)
-(setq-default large-file-warning-threshold 1000000)
-
-
-;; * Builtins
+(use-package emacs
+  :custom
+  (delete-by-moving-to-trash t)
+  (default-major-mode 'text-mode)
+  (large-file-warning-threshold 1000000))
 
 (use-package recentf
   :hook (after-init . recentf-mode)
@@ -61,16 +60,10 @@
   (dired-recursive-copies 'always)
   (dired-recursive-deletes ' always))
 
-(use-package dired-k
-  :disabled t
-  :straight t
+(use-package dired-x
   :after dired
-  :hook ((dired-initial-position . dired-k)
-         (dired-after-readin     . dired-k-no-revert))
   :custom
-  (dired-k-style nil)
-  (dired-listing-switches "-alh")
-  (dired-k-human-readable t))
+  (dired-omit-files "^\\.\\|^#.#$\\|.~$"))
 
 (use-package files
   :preface
@@ -84,15 +77,14 @@
   ((before-save . config-files--create-buffer-file-parent-directories)
    (after-save  . executable-make-buffer-file-executable-if-script-p)))
 
-
-;; * Packages
+;;; Third-party
 
 (use-package no-littering
   :straight t
   :demand t
   :config
   (setq auto-save-file-name-transforms
-   `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+        `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
 (use-package vlf-setup
   :straight vlf)
@@ -103,7 +95,18 @@
   :config
   (setq-default save-silently t))
 
-;; ** Dired extensions
+(use-package sudo-edit :straight t)
+
+(use-package dired-k
+  :disabled t
+  :straight t
+  :after dired
+  :hook ((dired-initial-position . dired-k)
+         (dired-after-readin     . dired-k-no-revert))
+  :custom
+  (dired-k-style nil)
+  (dired-listing-switches "-alh")
+  (dired-k-human-readable t))
 
 (use-package dired-hacks-utils
   :disabled t
@@ -120,15 +123,7 @@
   :bind (:map dired-mode-map
               ("/" . dired-narrow-fuzzy)))
 
-(use-package dired-x
-  :after dired
-  :custom
-  (dired-omit-files "^\\.\\|^#.#$\\|.~$"))
-
-(use-package sudo-edit :straight t)
-
-
-;; * Commands
+;;; Commands
 
 ;; https://emacs.stackexchange.com/questions/24459/revert-all-open-buffers-and-ignore-errors
 (defun -revert-all-file-buffers ()

@@ -1,7 +1,7 @@
 (require 'theme-helpers)
 
 
-;; * Expansion
+;;; Expansion
 
 (assert (null (expand-theme-faces nil)))
 

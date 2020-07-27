@@ -23,10 +23,11 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (require 'config-path)
 
-;; * URL handling
+;;; Built-ins
 
 (use-package browse-url
   :custom

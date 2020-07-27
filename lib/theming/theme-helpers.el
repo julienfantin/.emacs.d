@@ -21,7 +21,7 @@
 (require 'loadhist)
 
 
-;; * Faces
+;;; Faces
 
 (defun theme-faces--match (faces &rest regexps)
   "Return a list of faces symbol matching any one of 'REGEXPS'.
@@ -66,8 +66,8 @@ Elements of REGEXPS can also be a list of '(\"match-pattern\"
   (apply 'theme-faces--match-all (face-list) regexps))
 
 
-;; * Theme definition shorthands
-;; ** Face specs
+;;; Theme definition shorthands
+;;;; Face specs
 
 (defun theme-expand-faces (bindings)
   "TODO integrate class from color palette?"
@@ -106,7 +106,7 @@ Elements of REGEXPS can also be a list of '(\"match-pattern\"
     (:<   . :inherit)
     (:w   . :weight)))
 
-;; ** Colors
+;;;; Colors
 
 (defun theme-expand-color (kw value)
   "Return a list of keyword, 'chroma'.
@@ -125,7 +125,7 @@ If 'KW' is a shorthand, it will be expanded according to
           bindings))
 
 
-;; * API
+;;; API
 
 ;;;###autoload
 (defun theme-custom-set-faces (theme bindings)

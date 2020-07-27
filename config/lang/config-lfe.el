@@ -25,7 +25,10 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
+
+;;; Third-party
 
 (use-package lfe-mode
   :straight t

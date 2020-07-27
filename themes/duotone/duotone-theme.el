@@ -12,7 +12,7 @@
 (require 'duotone-presets)
 
 
-;; * Customs
+;;; Customs
 
 (defcustom duotone-background-comments nil
   "Blend the background of comments."
@@ -36,7 +36,7 @@
   :type 'symbol)
 
 
-;; * Commands
+;;; Commands
 
 (defun duotone--set-palette (palette)
   "(Re)-enable duotone with `PALETTE'."
@@ -55,7 +55,7 @@ Remap all faces when called with a prefix argument."
      (duotone--set-palette (symbol-value (intern selection ))))))
 
 
-;; * Hierarchical faces mapping
+;;; Hierarchical faces mapping
 
 (defun duotone-hierarchical-face-index (face)
   "Return a zero-based index for the first digit found in 'FACE''s name."
@@ -74,11 +74,11 @@ Remap all faces when called with a prefix argument."
      faces)))
 
 
-;; * Theme definition
+;;; Theme definition
 
 (deftheme duotone "Duotone theme")
 
-;; ** Custom set faces
+;;;; Custom set faces
 
 (defun duotone-theme-apply ()
   "Apply the current `duotone-default-palette'."

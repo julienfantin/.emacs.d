@@ -42,7 +42,7 @@
 
 ;; TODO list:
 
-;; * Handle overlaid faces
+;;; Handle overlaid faces
 ;;   - Add an alist of (face-fg . face-bg) for faces that overlay
 ;;   - Do a topological sort that will sync bg faces first
 ;;   - Use the background face's background in the visibility check
@@ -58,7 +58,7 @@
 (require 'loadhist)
 
 
-;; * Customs
+;;; Customs
 
 (defvar theme-sync-load-history t
   "Automatically sync faces when files are loaded.")
@@ -78,7 +78,7 @@
   "Like `shr-color-visible-luminance-min' default was 40.")
 
 
-;; * Internal state
+;;; Internal state
 
 (defvar theme-sync--original-faces nil)
 
@@ -101,7 +101,7 @@ nil."
             (apply #'set-face-attribute face nil props)))))
 
 
-;; * Faces helpers
+;;; Faces helpers
 
 (defun theme-sync--theme-face-p (spec)
   "Return t if `SPEC' is a theme-face spec."
@@ -113,7 +113,7 @@ nil."
     (unless (equal 'unspecified value) value)))
 
 
-;; * Colors
+;;; Colors
 
 (defun theme-sync--color-to-cielab (color)
   "Return the cielab representation of `COLOR'."
@@ -239,7 +239,7 @@ visible over `BG-CIELAB."
       (theme-sync--quantize-face face palette default-bg-cielab))))
 
 
-;; * Loadhist integration
+;;; Loadhist integration
 
 (defun theme-sync--face-symbol (elt)
   "Retur `ELT' if it's a face symbol."
@@ -271,7 +271,7 @@ This relies on `loadhist.el' so `FILE' needs to be loaded."
     (setq theme-sync--debounce-timer (run-with-idle-timer 1 nil #'theme-sync--files-sync))))
 
 
-;; * Load theme advice
+;;; Load theme advice
 
 (defun theme-sync--advice-sync ()
   (theme-sync--sync-faces (face-list)))
@@ -287,7 +287,7 @@ This relies on `loadhist.el' so `FILE' needs to be loaded."
   (theme-sync--restore-all-faces))
 
 
-;; * Minor mode
+;;; Minor mode
 
 (defun theme-sync-mode--enable ()
   "Internal, use `theme-sync-mode' instead."

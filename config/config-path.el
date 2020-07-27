@@ -24,18 +24,12 @@
 
 ;;; Code:
 
-
-;; * Files and directories
-;; ** .emacs.d
+;;; Paths
 
 ;;;###autoload
 (defun user-file (name)
   "Return a file with `NAME' in `user-emacs-directory'."
   (expand-file-name name user-emacs-directory))
-
-(setq custom-file (user-file "custom.el"))
-
-;; ** var
 
 (defcustom user-var-directory
   (expand-file-name "var/" user-emacs-directory)
@@ -59,24 +53,17 @@
       (make-directory dir 'parents))
     dir))
 
-;; ** lib
-
 (defcustom user-lib-directory
   (expand-file-name "lib/" user-emacs-directory)
   "User libraries directory."
   :type 'directory
   :group 'config-path)
 
-;; ** config
-
 (defcustom user-config-directory
   (expand-file-name "config/" user-emacs-directory)
   "User libraries directory."
   :type 'directory
   :group 'config-path)
-
-
-;; * Load path
 
 (defcustom config-path-system-type-site-lisp
   (alist-get
@@ -100,9 +87,6 @@
   (config-path-add-to-load-path user-config-directory)
   (dolist (path config-path-system-type-site-lisp)
     (config-path-add-to-load-path path)))
-
-
-;; * Entrypoint
 
 ;;;###autoload
 (config-path-update-load-path)

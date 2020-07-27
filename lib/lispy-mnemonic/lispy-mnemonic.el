@@ -163,14 +163,14 @@
 (require 'hydra)
 
 
-;; * Customs
+;;; Customs
 
 (defvar lispy-pp-eval-sexp-function #'pp-eval-last-sexp)
 
 
-;; * Helpers
+;;; Helpers
 
-;; ** Pprint
+;;;; Pprint
 
 (defun lispy-pp-eval-sexp (&optional arg)
   "Move forward and call 'lispy-pp-eval-sexp-function' with 'ARG'.
@@ -180,7 +180,7 @@ This command preserves the point position."
     (lispy-forward 1)
     (funcall-interactively lispy-pp-eval-sexp-function arg)))
 
-;; ** Delete blank lines
+;;;; Delete blank lines
 
 (defun lispy-delete-blank-lines (&optional arg)
   "Ugly hack to delete lines above defun."
@@ -191,7 +191,7 @@ This command preserves the point position."
     (delete-blank-lines)
     (forward-line 1)))
 
-;; ** Eldoc
+;;;; Eldoc
 ;; Disable eldoc while hydras execute
 
 (defvar lispy-mnemonic--eldoc-toggle nil)
@@ -217,7 +217,7 @@ This command preserves the point position."
     (funcall cmd 1)))
 
 
-;; * Navigation commands
+;;; Navigation commands
 
 (defvar lispy-mnemonic-f #'lispy-flow)
 (defvar lispy-mnemonic-b #'lispy-backward)
@@ -227,7 +227,7 @@ This command preserves the point position."
 (defvar lispy-mnemonic-d #'lispy-right)
 
 
-;; * Hydra
+;;; Hydra
 
 (defhydra hydra-lispy-ace (:color blue :body-pre (lispy-mnemonic--eldoc-turn-off) :before-exit (lispy-mnemonic--eldoc-turn-on))
   "Lispy ace"
@@ -335,7 +335,7 @@ This command preserves the point position."
   ("u" lispy-unbind-variable "unbind variable"))
 
 
-;; * Key Bindings
+;;; Key Bindings
 
 (defvar lispy-mnemonic-mode-map (make-sparse-keymap)
   "Keymap for `lispy-mnemonic-mode'.")

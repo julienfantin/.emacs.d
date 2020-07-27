@@ -23,10 +23,10 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
-
-;; * Built-ins
+;;; Built-ins
 
 (use-package paren
   :preface
@@ -48,16 +48,13 @@
   (show-paren-style 'expression)
   (show-paren-delay 0))
 
-
-;; * Lisp minor-mode
+;;; Third-party
 
 (use-package lisp-minor-mode
+  :load-path "./lib"
   :hook (after-init . lisp-global-minor-mode)
   :custom
   (lisp-minor-mode-prettify nil))
-
-
-;; * Pulse eval
 
 (use-package pulse-eval
   :load-path "./lib"
@@ -73,9 +70,6 @@
   (add-to-list
    'pulse-eval-advices-alist
    (cons 'lispy-mode '((lispy-eval . pulse-eval-highlight-forward-sexp-advice)))))
-
-
-;; * Paredit
 
 (use-package paredit
   :disabled t
@@ -124,8 +118,6 @@
     (when (eq this-command 'eval-expression)
       (lispy-mode 1)))
   (add-hook 'minibuffer-setup-hook 'lispy-mini-buffer))
-
-
 
 (provide 'config-sexp)
 ;;; config-sexp.el ends here

@@ -23,17 +23,13 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
-
-
-;; * Comint
+;;; Built-ins
 
 (use-package comint
   :custom (comint-prompt-read-only t))
-
-
-;; * Eshell
 
 (use-package esh-mode
   :custom
@@ -66,6 +62,8 @@
               ("M-r" . counsel-esh-history))
   :custom (eshell-hist-ignoredups t))
 
+;;; Third-party
+
 (use-package eshell-z
   :straight t
   :after eshell
@@ -78,9 +76,6 @@
   :custom
   (eshell-highlight-prompt t)
   (eshell-prompt-function #'epe-theme-lambda))
-
-
-;; * Vterm
 
 (use-package vterm
   :straight t

@@ -62,7 +62,7 @@
 
 (use-package lsp-mode
   :ensure-system-package (rust-analyzer)
-  :if (eq config-lsp-frontend 'lsp-mode)
+  :if (equal config-lsp-frontend 'lsp-mode)
   :straight t
   :after rustic
   :hook (rustic-mode . lsp)

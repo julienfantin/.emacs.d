@@ -25,11 +25,12 @@
 ;;; Code:
 (require 'use-package)
 
+;;; Third-party
+
 (use-package yaml-mode
   :straight t
   :mode (("\\.yml?\\'"  . yaml-mode)
          ("\\.yaml?\\'" . yaml-mode)))
-
 
 (provide 'config-yaml)
 ;;; config-yaml.el ends here

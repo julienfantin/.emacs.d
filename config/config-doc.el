@@ -23,7 +23,10 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
+
+;;; Built-ins
 
 (use-package eldoc
   :straight t
@@ -31,6 +34,10 @@
   :custom
   (eldoc-echo-area-use-multiline-p t)
   (eldoc-idle-delay .5))
+
+;;; Third-party
+
+(use-package know-your-http-well :straight t)
 
 (use-package paredit
   :after (paredit eldoc)
@@ -40,8 +47,6 @@
    'paredit-forward
    'paredit-backward-delete
    'paredit-close-round))
-
-(use-package know-your-http-well :straight t)
 
 (provide 'config-doc)
 ;;; config-doc.el ends here

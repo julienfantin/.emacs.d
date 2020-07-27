@@ -26,10 +26,13 @@
 (require 'use-package)
 (require 'config-path)
 
+;;; Config
 
 (defvar persistent-scratch-save-file (user-var-file ".persistent-scratch"))
 
-(defun config-scratch-init ()
+;;; Third-party
+
+(defun config-scratch-get-buffer ()
   "Initialize the *scratch* buffer."
   (when-let (buffer (get-buffer "*scratch*"))
     (with-current-buffer buffer
@@ -39,7 +42,7 @@
 (use-package persistent-scratch
   :straight t
   :hook ((after-init . persistent-scratch-setup-default)
-         (after-init . config-scratch-init)))
+         (after-init . config-scratch-get-buffer)))
 
 (use-package unkillable-scratch
   :straight t

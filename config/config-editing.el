@@ -23,11 +23,11 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (require 'config-path)
 
-
-;; * Builtins
+;;; Built-ins
 
 (use-package emacs
   :custom
@@ -45,8 +45,7 @@
   :config
   (setq-default comment-auto-fill-only-comments t))
 
-
-;; * Packages
+;;; Third-party
 
 (use-package goto-chg
   :straight t
@@ -56,8 +55,7 @@
   :straight t
   :bind ("C-c u" . er/expand-region))
 
-
-;; * Commands
+;;; Commands
 
 ;;;###autoload
 (defun -backward-kill-word-or-region ()

@@ -26,14 +26,13 @@
 (require 'use-package)
 
 
-;; * Built-ins
+;;; Built-ins
 
 (use-package outline
   :hook ((prog-mode . outline-minor-mode)
          (text-mode . outline-minor-mode)))
 
-
-;; * Packages
+;;; Third-party
 
 (use-package outshine
   :straight t

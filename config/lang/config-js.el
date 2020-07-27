@@ -23,13 +23,15 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (require 'config-lsp)
 
+;;; Config
+
 (defvar config-js-use-lsp t)
 
-
-;; * Major modes
+;;; Third-party
 
 (use-package js3-mode
   :straight t
@@ -39,19 +41,6 @@
   :ensure-system-package (tsc . typescript)
   :straight t
   :mode ("\\.tsx\\'"))
-
-
-;; * Packages
-
-(use-package indium
-  :if (not config-js-use-lsp)
-  :straight t
-  :after js3-mode
-  :hook (js3-mode . indium-interaction-mode)
-  :custom
-  (indium-debugger-mode 1)
-  (indium-nodejs-inspect-brk t)
-  (indium-script-enable-sourcemaps t))
 
 (use-package tide
   :if (not config-js-use-lsp)
@@ -63,11 +52,8 @@
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled)))
 
-
-;; * LSP
-
 (use-package lsp-typescript
-  :if (and config-js-use-lsp (eq config-lsp-frontend 'lsp-mode))
+  :if (and config-js-use-lsp (equal config-lsp-frontend 'lsp-mode))
   :ensure-system-package (node)
   :ensure-system-package (javascript-typescript-stdio . "npm i -g javascript-typescript-langserver")
   :straight lsp-javascript-typescript

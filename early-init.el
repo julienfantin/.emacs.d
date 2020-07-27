@@ -27,8 +27,7 @@
 (require 'cl-lib)
 (require 'cl-macs)
 
-
-;; * Performance
+;;; Performance
 
 ;; Use a hook so the message doesn't get clobbered by other messages.
 (add-hook
@@ -38,7 +37,7 @@
     "Emacs startup in %s with %d garbage collections."
     (format "%.2f seconds" (float-time (time-subtract after-init-time before-init-time))) gcs-done)))
 
-;; ** Init GC
+;;;; Init GC
 
 (defvar early-init--gc-cons-threshold 16777216) ; 16mb
 (defvar early-init--gc-cons-percentage 0.1)
@@ -52,7 +51,7 @@
      (setq gc-cons-threshold early-init--gc-cons-threshold
            gc-cons-percentage early-init--gc-cons-percentage)))
 
-;; ** Defer minibuffer GC
+;;;; Defer minibuffer GC
 
 (defun early-init--defer-garbage-collection-h ()
   (setq gc-cons-threshold most-positive-fixnum))
@@ -66,7 +65,7 @@
 (add-hook 'minibuffer-setup-hook #'early-init--defer-garbage-collection-h)
 (add-hook 'minibuffer-exit-hook #'early-init--restore-garbage-collection-h)
 
-;; ** Init file handlers
+;;;; Init file handlers
 
 (defvar early-init--file-name-handler-alist file-name-handler-alist)
 
@@ -77,8 +76,7 @@
  #'(lambda ()
      (setq file-name-handler-alist early-init--file-name-handler-alist)))
 
-
-;; * Config
+;;; Config
 
 ;; Straight setup recommendation
 (setq package-enable-at-startup nil)
@@ -89,8 +87,7 @@
 ;; Do not resize the frame at this early stage.
 (setq frame-inhibit-implied-resize t)
 
-
-;; * System
+;;; System
 
 ;; Emacs-plus defines a hook to react to system appearance changes, it's called
 ;; too early in the init process so we record the appearance here
@@ -102,8 +99,7 @@
             (lambda (appearance)
               (setq -ns-system-appearance appearance)) ))
 
-
-;; * Path
+;;; Path
 
 (setq user-emacs-directory (expand-file-name "~/.emacs.d/"))
 
@@ -112,8 +108,8 @@
   (interactive)
   (load-file (expand-file-name "init.el" user-emacs-directory)))
 
-
-;; * Early loads
+
+;;; Early loads
 
 (eval-and-compile
   ;; Setup various paths before we do anything, rest of init depends on this...

@@ -23,31 +23,30 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (require 'config-path)
 
-
-;; * Mark ring
-
-(defconst config-marks-max-pop-duplicate-count 10)
-
-(defun config-marks-pop-duplicate-marks-advice (pop-to-mark-command &rest args)
-  "Around advice for 'POP-TO-MARK-COMMAND'.
-Pops the mark up to 'config-marks-max-pop-duplicate-count' when
-the point doesn't move before calling 'POP-TO-MARK-COMMAND' with 'ARGS'."
-  (let ((p (point)))
-    (dotimes (_i config-marks-max-pop-duplicate-count)
-      (when (= p (point))
-        (apply pop-to-mark-command args)))))
+;;; Built-ins
 
 (use-package simple
+  :preface
+  (defconst config-marks-max-pop-duplicate-count 10)
+  (defun config-marks-pop-duplicate-marks-advice (pop-to-mark-command &rest args)
+    "Around advice for 'POP-TO-MARK-COMMAND'.
+Pops the mark up to 'config-marks-max-pop-duplicate-count' when
+the point doesn't move before calling 'POP-TO-MARK-COMMAND' with 'ARGS'."
+    (let ((p (point)))
+      (dotimes (_i config-marks-max-pop-duplicate-count)
+        (when (= p (point))
+          (apply pop-to-mark-command args)))))
+  :custom
+  (mark-ring-max 128)
+  (global-mark-ring-max 128)
   :config
-  (progn
-    (setq mark-ring-max 128 global-mark-ring-max 128)
-    (advice-add #'pop-to-mark-command :around #'config-marks-pop-duplicate-marks-advice)))
+  (advice-add #'pop-to-mark-command :around #'config-marks-pop-duplicate-marks-advice))
 
-
-;; * Commands
+;;; Commands
 
 ;;;###autoload
 (defun -push-mark-no-activate ()
@@ -57,7 +56,6 @@ Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled" (in
   (message "Pushed mark to ring"))
 
 ;;;###autoload
-
 (defun -jump-to-mark ()
   "Jump to the local mark, respecting the `mark-ring' order.
 This is the same as using \\[set-mark-command] with the prefix

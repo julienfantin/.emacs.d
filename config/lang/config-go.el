@@ -23,13 +23,18 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
+(require 'config-lsp)
+
+;;; Third-party
 
 (use-package go-mode
   :ensure-system-package go
   :straight t)
 
 (use-package eglot
+  :if (equal config-lsp-frontend 'eglot)
   :straight t
   :ensure-system-package (go-langserver . "go get -u github.com/sourcegraph/go-langserver")
   :after go-mode
@@ -37,6 +42,7 @@
   (add-to-list 'eglot-server-programs '(go-mode . ("go-langserver"))))
 
 (use-package lsp-go
+  :if (equal config-lsp-frontend 'lsp-mode)
   :straight t
   :ensure-system-package (go-langserver . "go get -u github.com/sourcegraph/go-langserver")
   :after go-mode)

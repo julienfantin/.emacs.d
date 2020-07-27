@@ -23,6 +23,7 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
 ;;; Third-party

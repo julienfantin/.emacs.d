@@ -27,22 +27,21 @@
 (defvar config-lsp-frontend 'lsp-mode)
 
 
-
-;; * Eglot
+;;; Third-party
+;;;; Eglot
 
 (use-package eglot
-  :if (eq config-lsp-frontend 'eglot)
+  :if (equal config-lsp-frontend 'eglot)
   :straight t)
 
-
-;; * LSP mode
+;;;; LSP mode
 
 (use-package lsp-mode
-  :if (eq config-lsp-frontend 'lsp-mode)
+  :if (equal config-lsp-frontend 'lsp-mode)
   :straight t)
 
 (use-package lsp-ui-mode
-  :if (eq config-lsp-frontend 'lsp-mode)
+  :if (equal config-lsp-frontend 'lsp-mode)
   :after lsp-mode
   :hook (lsp-mode . lsp-ui-mode)
   :custom
@@ -56,11 +55,11 @@
   (lsp-ui-doc-include-signature t))
 
 (use-package lsp-imenu
-  :if (eq config-lsp-frontend 'lsp-mode)
+  :if (equal config-lsp-frontend 'lsp-mode)
   :hook (lsp-after-open . lsp-enable-imenu))
 
 (use-package company-lsp
-  :if (eq config-lsp-frontend 'lsp-mode)
+  :if (equal config-lsp-frontend 'lsp-mode)
   :straight t
   :after (lsp-mode compdef)
   :config
@@ -69,15 +68,14 @@
    :company #'company-lsp))
 
 (use-package lsp-treemacs
-  :if (eq config-lsp-frontend 'lsp-mode)
+  :if (equal config-lsp-frontend 'lsp-mode)
   :straight t
   :after lsp-mode)
 
-
-;; * Debug adapter protocol
+;;;; Debug adapter protocol
 
 (use-package dap-mode
-  :if (eq config-lsp-frontend 'lsp-mode)
+  :if (equal config-lsp-frontend 'lsp-mode)
   :straight t
   :hook ((lsp-mode . dap-mode)
          (dap-mode . dap-ui-mode)))

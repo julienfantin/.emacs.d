@@ -27,52 +27,42 @@
 ;; TODO: Robust way to sync with `opam switch` commands?
 
 ;;; Code:
+
 (require 'use-package)
 (require 'subr-x)
 
+;;; Third-party
 
-;; * Opam config
-
-(defun config-ocaml-opam-load-path ()
-  "Add the site-lisp for the current opam switch to the `load-path'."
-  (when-let
-      ((opam-switch (string-trim (shell-command-to-string "opam config var prefix")))
-       (opam-site-lisp (expand-file-name "share/emacs/site-lisp" opam-switch)))
-    (add-to-list 'load-path opam-site-lisp)))
+(use-package tuareg
+  :straight t
+  :after (opam)
+  :mode (("\\.ml[ily]?$" . tuareg-mode)
+         ("\\.topml$" . tuareg-mode))
+  :bind (:map tuareg-mode-map
+              ;; ("C-M-f" . smie-forward-sexp-command)
+              ;; ("C-M-b" . smie-backward-sexp-command)
+              ("C-c C-k" . tuareg-eval-buffer)
+              ("C-c C-z" . utop)))
 
 (use-package opam
-  :straight t
   :ensure-system-package opam
+  :straight t
+  :after tuareg
+  :preface
+  (defun config-ocaml-add-opam-site-lisp-to-load-path ()
+    "Add the site-lisp for the current opam switch to the `load-path'."
+    (when-let
+        ((opam-switch (string-trim (shell-command-to-string "opam config var prefix")))
+         (opam-site-lisp (expand-file-name "share/emacs/site-lisp" opam-switch)))
+      (add-to-list 'load-path opam-site-lisp)))
   :init
-  (progn
-    (config-ocaml-opam-load-path)
-    (opam-init)))
-
-
-;; * Ocaml tooling
-
-(use-package merlin
-  :ensure-system-package (ocamlmerlin . "opam install merlin")
-  :after (opam tuareg)
-  :hook (tuareg-mode . merlin-mode)
-  :bind
-  (:map merlin-mode-map
-        ("M-."        . merlin-locate)
-        ("M-,"        . merlin-pop-stack)
-        ("M-?"        . merlin-occurrences)
-        ("C-c C-j"    . merlin-jump)
-        ("C-c i"      . merlin-locate-ident)
-        ("C-c C-d"    . merlin-document)
-        ("C-c <up>"   . merlin-type-enclosing-go-up)
-        ("C-c <down>" . merlin-type-enclosing-go-down))
-
-  :custom
-  (merlin-completion-with-doc t))
+  (config-ocaml-add-opam-site-lisp-to-load-path)
+  (opam-init))
 
 (use-package utop
   :straight t
   :ensure-system-package (utop . "opam install utop")
-  :after (opam)
+  :after (tuareg opam)
   :hook (tuareg-mode . utop-minor-mode)
   :commands utop-minor-mode
   :custom
@@ -98,23 +88,9 @@
 
 (use-package ocp-indent
   :ensure-system-package (ocp-indent . "opam install ocp-indent")
-  :after (tuareg)
+  :after (tuareg opam)
   :commands (ocp-indent-caml-mode-setup)
   :hook (tuareg-mode . ocp-indent-caml-mode-setup))
-
-
-;; * Ocaml modes
-
-(use-package tuareg
-  :straight t
-  :after (opam)
-  :mode (("\\.ml[ily]?$" . tuareg-mode)
-         ("\\.topml$" . tuareg-mode))
-  :bind (:map tuareg-mode-map
-              ;; ("C-M-f" . smie-forward-sexp-command)
-              ;; ("C-M-b" . smie-backward-sexp-command)
-              ("C-c C-k" . tuareg-eval-buffer)
-              ("C-c C-z" . utop)))
 
 (use-package merlin-company
   :after (merlin company))

@@ -25,103 +25,36 @@
 ;;; Code:
 (require 'use-package)
 
+;;; Config
+
 (defvar Φ (- 1 (/ 1 1.618033988749895)))
+
+;;; Built-ins
 
 (use-package emacs
   :custom
   (scroll-preserve-screen-position t)
   ;; Required for compatibility with windmove display actions
-  (switch-to-buffer-obey-display-actions t))
+  (switch-to-buffer-obey-display-actions t)
+  (cursor-in-non-selected-windows nil))
 
-
-;; * Windows management
-
-(use-package ace-window
-  :straight t
-  :hook (after-init . ace-window-display-mode)
-  :commands (aw-window-list aw-switch-to-window)
-  :preface
-  (dolist (n (number-sequence 1 10))
-    (eval
-     `(defun ,(intern (format "aw-switch-to-window-%s" n)) ()
-        (interactive)
-        ,(format "Switch to window at index %s" n)
-        (when-let (window (nth (- ,n 1) (aw-window-list)))
-          (aw-switch-to-window window)))))
-  :bind
-  (("C-c 1" . aw-switch-to-window-1)
-   ("C-c 2" . aw-switch-to-window-2)
-   ("C-c 3" . aw-switch-to-window-3)
-   ("C-c 4" . aw-switch-to-window-4)
-   ("C-c 5" . aw-switch-to-window-5)
-   ("C-c 6" . aw-switch-to-window-6)
-   ("C-c 7" . aw-switch-to-window-7)
-   ("C-c 8" . aw-switch-to-window-8)
-   ("C-c 9" . aw-switch-to-window-9)
-   ("C-c 0" . aw-switch-to-window-0))
-  :custom
-  (aw-keys '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0))
-  (aw-scope 'frame))
-
-(use-package windmove
-  :bind (("s-h" . nil)
-         ("s-i" . windmove-up)
-         ("s-j" . windmove-left)
-         ("s-k" . windmove-down)
-         ("s-l" . windmove-right)
-         ("M-s-j" . windmove-display-left)
-         ("M-s-l" . windmove-display-right)
-         ("M-s-i" . windmove-display-up)
-         ("M-s-k" . windmove-display-down)
-         ("M-s-f" . windmove-display-new-frame)
-         ("M-s-t" . windmove-display-new-tab)
-         ("C-x s-i" . windmove-delete-up)
-         ("C-x s-j" . windmove-delete-left)
-         ("C-x s-k" . windmove-delete-down)
-         ("C-x s-l" . windmove-delete-right)
-         ("s-I" . windmove-swap-states-up)
-         ("s-J" . windmove-swap-states-left)
-         ("s-K" . windmove-swap-states-down)
-         ("s-L" . windmove-swap-states-right)))
-
-(use-package winner
-  :hook (after-init . winner-mode)
-  :bind
-  (("s-U" . winner-undo)
-   ("s-R" . winner-redo))
-  :custom
-  (winner-dont-bind-my-keys t))
-
-(use-package zygospore
-  :straight t
-  :bind
-  ("C-x 1" . zygospore-toggle-delete-other-windows))
-
-(use-package windresize
-  :straight t
-  :commands
-  (windresize-up windresize-left windresize-down windresize-right)
-  :bind (("M-s-I" . windresize-up)
-         ("M-s-J" . windresize-left)
-         ("M-s-K" . windresize-down)
-         ("M-s-L" . windresize-right))
-  :custom
-  (windresize-increment 10)
-  (windresize-default-increment 10))
-
-
-;; * Window configurations
-
-(use-package tab-bar
+(use-package emacs
   :hook
-  (after-init . tab-bar-history-mode)
-  :bind
-  ("C-x t n" . tab-bar-switch-to-next-tab)
-  ("C-x t p" . tab-bar-switch-to-prev-tab)
-  ("C-x t <tab>" . tab-bar-switch-to-recent-tab))
-
-
-;; * Buffer display rules
+  ((window-setup . -set-margins)
+   (window-state-change . -set-margins)
+   (window-configuration-change . -set-margins))
+  :preface
+  (defvar config-windows-margin-width 4)
+  :config
+  (defun -set-margins (&optional _)
+    (walk-windows
+     (lambda (window)
+       (with-current-buffer (window-buffer window)
+         (when (or (not (equal config-windows-margin-width left-margin-width))
+                   (not (equal config-windows-margin-width right-margin-width)))
+           (setq left-margin-width config-windows-margin-width)
+           (setq right-margin-width config-windows-margin-width)
+           (set-window-buffer window (current-buffer))))))))
 
 (use-package emacs
   :custom
@@ -172,30 +105,90 @@
          ("s-\\" . balance-windows-area)
          ("s-q" . window-toggle-side-windows)))
 
-
-;; * Margins
-
-;;*
-(use-package emacs
+(use-package tab-bar
   :hook
-  ((window-setup . -set-margins)
-   (window-state-change . -set-margins)
-   (window-configuration-change . -set-margins))
-  :preface
-  (defvar config-windows-margin-width 4)
-  :config
-  (defun -set-margins (&optional _)
-    (walk-windows
-     (lambda (window)
-       (with-current-buffer (window-buffer window)
-         (when (or (not (equal config-windows-margin-width left-margin-width))
-                   (not (equal config-windows-margin-width right-margin-width)))
-           (setq left-margin-width config-windows-margin-width)
-           (setq right-margin-width config-windows-margin-width)
-           (set-window-buffer window (current-buffer))))))))
+  (after-init . tab-bar-history-mode)
+  :bind
+  ("C-x t n" . tab-bar-switch-to-next-tab)
+  ("C-x t p" . tab-bar-switch-to-prev-tab)
+  ("C-x t <tab>" . tab-bar-switch-to-recent-tab))
 
-
-;; * Commands
+(use-package windmove
+  :bind (("s-h" . nil)
+         ("s-i" . windmove-up)
+         ("s-j" . windmove-left)
+         ("s-k" . windmove-down)
+         ("s-l" . windmove-right)
+         ("M-s-j" . windmove-display-left)
+         ("M-s-l" . windmove-display-right)
+         ("M-s-i" . windmove-display-up)
+         ("M-s-k" . windmove-display-down)
+         ("M-s-f" . windmove-display-new-frame)
+         ("M-s-t" . windmove-display-new-tab)
+         ("C-x s-i" . windmove-delete-up)
+         ("C-x s-j" . windmove-delete-left)
+         ("C-x s-k" . windmove-delete-down)
+         ("C-x s-l" . windmove-delete-right)
+         ("s-I" . windmove-swap-states-up)
+         ("s-J" . windmove-swap-states-left)
+         ("s-K" . windmove-swap-states-down)
+         ("s-L" . windmove-swap-states-right)))
+
+(use-package winner
+  :hook (after-init . winner-mode)
+  :bind
+  (("s-U" . winner-undo)
+   ("s-R" . winner-redo))
+  :custom
+  (winner-dont-bind-my-keys t))
+
+;;; Third-party
+
+(use-package windresize
+  :straight t
+  :commands
+  (windresize-up windresize-left windresize-down windresize-right)
+  :bind (("M-s-I" . windresize-up)
+         ("M-s-J" . windresize-left)
+         ("M-s-K" . windresize-down)
+         ("M-s-L" . windresize-right))
+  :custom
+  (windresize-increment 10)
+  (windresize-default-increment 10))
+
+(use-package ace-window
+  :straight t
+  :hook (after-init . ace-window-display-mode)
+  :commands (aw-window-list aw-switch-to-window)
+  :preface
+  (dolist (n (number-sequence 1 10))
+    (eval
+     `(defun ,(intern (format "aw-switch-to-window-%s" n)) ()
+        (interactive)
+        ,(format "Switch to window at index %s" n)
+        (when-let (window (nth (- ,n 1) (aw-window-list)))
+          (aw-switch-to-window window)))))
+  :bind
+  (("C-c 1" . aw-switch-to-window-1)
+   ("C-c 2" . aw-switch-to-window-2)
+   ("C-c 3" . aw-switch-to-window-3)
+   ("C-c 4" . aw-switch-to-window-4)
+   ("C-c 5" . aw-switch-to-window-5)
+   ("C-c 6" . aw-switch-to-window-6)
+   ("C-c 7" . aw-switch-to-window-7)
+   ("C-c 8" . aw-switch-to-window-8)
+   ("C-c 9" . aw-switch-to-window-9)
+   ("C-c 0" . aw-switch-to-window-0))
+  :custom
+  (aw-keys '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0))
+  (aw-scope 'frame))
+
+(use-package zygospore
+  :straight t
+  :bind
+  ("C-x 1" . zygospore-toggle-delete-other-windows))
+
+;;; Commands
 
 ;;;###autoload
 (defun -switch-to-last-window ()

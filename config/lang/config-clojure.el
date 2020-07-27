@@ -23,10 +23,16 @@
 ;;
 
 ;;; Code:
-(require 'use-package)
-(require 'config-clojurescript)
 
-;; * clojure-mode
+(require 'use-package)
+
+;;; Third-party
+
+(defvar config-clojure-align-binding-forms
+  '(
+    "gen/let"                           ; test.check
+    "with-let"                          ; reagent
+    ))
 
 (use-package clojure-mode
   :straight t
@@ -35,13 +41,9 @@
    (lein . leiningen))
   :mode "\\.repl\\'"
   :config
-  (progn
-    ;; test.check
-    (add-to-list 'clojure-align-binding-forms "gen/let")
-    ;; reagent
-    (add-to-list 'clojure-align-binding-forms "with-let"))
+  (dolist ((form config-clojure-align-binding-forms))
+    (push form clojure-align-binding-forms))
   :custom
-  (clojure-indent-style 'always-indent)
   (clojure-align-forms-automatically t)
   (clojure-toplevel-inside-comment-form t))
 
@@ -49,9 +51,6 @@
   :straight t
   :after clojure-mode
   :init (require 'clojure-mode-extra-font-locking nil t))
-
-
-;; * cider
 
 (use-package cider
   :straight t
@@ -100,9 +99,6 @@
 (use-package cider-debug
   :custom (cider-debug-display-locals t))
 
-
-;; * clj-refactor
-
 (use-package clj-refactor
   :straight t
   :after clojure-mode
@@ -129,16 +125,10 @@
      ("rf"   . "re-frame.core")))
   (cljr-warn-on-eval nil))
 
-
-;; * Sayid
-
 (use-package sayid
   :straight t
   :after cider
   :init (sayid-setup-package))
-
-
-;; * Flycheck
 
 (use-package flycheck-clj-kondo
   :ensure-system-package (clj-kondo . borkdude/brew/clj-kondo)

@@ -23,11 +23,11 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (require 'config-path)
 
-
-;; * Customs
+;;; Config
 
 (defcustom config-theme-light 'modus-operandi
   "Default theme."
@@ -46,8 +46,7 @@
     ('dark (load-theme config-theme-dark t))
     (_ (load-theme config-theme-light t))))
 
-
-;; * Built-ins
+;;; Built-ins
 
 (use-package custom
   :commands load-theme
@@ -67,23 +66,13 @@
                     ('light (load-theme config-theme-light t))
                     ('dark (load-theme config-theme-dark t)))))))
 
-
-;; * Themes
-
-(use-package theme-sync
-  :disabled t
-  :commands theme-sync-mode
-  :hook (after-init . theme-sync-mode))
-
-(use-package duotone-theme :load-path "../themes/duotone")
-(use-package duotone-reload :disabled t :demand t)
+;;; Third-party
 
 (use-package doom-themes           :straight t)
 (use-package dracula-theme         :straight t)
 (use-package darktooth-theme       :straight t)
 (use-package zerodark-theme        :straight t)
 (use-package gruvbox-theme         :straight t)
-;;(use-package challenger-deep-theme :straight t)
 (use-package rebecca-theme         :straight t)
 (use-package nord-theme            :straight t)
 
@@ -128,7 +117,6 @@
   (modus-vivendi-theme-scale-3 1.15)
   (modus-vivendi-theme-scale-4 1.2)
   (modus-vivendi-theme-scale-5 1.3))
-
 
 (use-package kaolin-themes
   :straight t

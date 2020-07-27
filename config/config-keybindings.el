@@ -27,15 +27,13 @@
 (require 'use-package)
 (require 'cl-lib)
 
-
-;; * Customs
+;;; Config
 
 (defvar config-keybdings-hyper-to-C-c t)
 (defvar config-keybdings-default-setup #'config-keybindings-macbook)
 
-
-;; * Keyboard
-;; ** Modifiers
+;;; Keyboard
+;;;; Modifiers
 
 (defun config-keybindings-space-control ()
   (bind-keys
@@ -55,7 +53,7 @@
 (when config-keybdings-default-setup
   (funcall config-keybdings-default-setup))
 
-;; ** Hyper remapping
+;;;; Hyper remapping
 
 (defvar config-keybindings-keys
   (cl-list*
@@ -79,8 +77,7 @@ hyper when it's used as a modifier."
 (when config-keybdings-hyper-to-C-c
   (config-keybindings-remap-hyper-to-C-c))
 
-
-;; * Packages
+;;; Third-party
 
 (use-package general :straight t)
 
@@ -108,10 +105,8 @@ hyper when it's used as a modifier."
      previous-line
      next-line)))
 
-
-;; * Keymaps
-
-;; ** (a) App
+;;; Keymaps
+;;;; (a) App
 
 (when (equal 'ivy config-completion-system)
   (general-define-key
@@ -121,7 +116,7 @@ hyper when it's used as a modifier."
    "t"     '(counsel-load-theme :which-key "theme")
    "p"     '(counsel-package :which-key "package")))
 
-;; ** (b) Buffers
+;;;; (b) Buffers
 
 (general-define-key
  :prefix "C-c"
@@ -134,7 +129,7 @@ hyper when it's used as a modifier."
  "r"     '(revert-buffer :which-key "revert")
  "t"     '(-temp-buffer :which-key "temp"))
 
-;; ** (e) Editing
+;;;; (e) Editing
 
 (general-define-key
  :prefix "C-c"
@@ -145,7 +140,7 @@ hyper when it's used as a modifier."
  "r" '(align-regexp)
  "i" '(-iedit-ensure-function :which-key "iedit"))
 
-;;  ** (f) Find
+;;;; (f) Find
 
 (when (equal 'ivy config-completion-system)
   (general-define-key
@@ -158,7 +153,7 @@ hyper when it's used as a modifier."
    "g"     '(counsel-git-grep :which-key "git-grep")
    "t"     '(-counsel-todos :which-key "todos")))
 
-;; ** (v) Version control
+;;;; (v) Version control
 
 (general-define-key
  :prefix "C-c"
@@ -177,7 +172,7 @@ hyper when it's used as a modifier."
  "s"     '(magit-stage-file :which-key "stage")
  "t"     '(git-timemachine :which-key "timemachine"))
 
-;; ** (t) Toggles
+;;;; (t) Toggles
 
 (general-define-key
  :prefix "C-c"
@@ -190,10 +185,8 @@ hyper when it's used as a modifier."
  "t" '(toggle-truncate-lines :which-key "truncate")
  "v" '(visual-line-mode :which-key "visual-line"))
 
-
-;; * Keybindings
-
-;; ** Remappings
+;;; Keybindings
+;;;; Remappings
 
 (bind-keys
  ("C-z"                           . nil)
@@ -201,26 +194,23 @@ hyper when it's used as a modifier."
  ([remap exchange-point-and-mark] . -exchange-point-and-mark-no-activate)
  ([remap just-one-space]          . cycle-spacing))
 
-;; ** Overrides
+;;;; Overrides
 
 (bind-keys
  ("C-x o" . ace-window)
  ("C-w"   . -backward-kill-word-or-region))
 
-
-;; * Global map
+;;; Global map
 
 (when (equal 'ivy config-completion-system)
   (general-define-key
    :keymaps 'global
    "M-Q" '-unfill-paragraph))
 
-
-;; * Local maps
+;;; Local maps
 
 (general-define-key
  :keymaps 'help-map
- ;; Add useful builtins
  "A"   'info-apropos
  "a"   'counsel-apropos
  ;; Help search
@@ -231,9 +221,6 @@ hyper when it's used as a modifier."
  "C-k" 'find-function-on-key
  "C-v" 'find-variable
  "C-l" 'find-library)
-
-
-;; * Keymaps
 
 (which-key-add-key-based-replacements
   "C-c &" "shells"

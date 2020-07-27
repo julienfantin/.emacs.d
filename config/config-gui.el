@@ -23,10 +23,10 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
-
-;; * Built-ins
+;;; Built-ins
 
 (use-package emacs
   :custom
@@ -36,8 +36,7 @@
   :init
   (line-number-mode -1))
 
-
-;; * Packages
+;;; Third-party
 
 (use-package hl-line+
   :straight t

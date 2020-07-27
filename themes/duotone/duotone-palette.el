@@ -1,7 +1,7 @@
 ;;; duotone-palette.el --- Duotone palette definition
 ;;; Commentary:
-;; * Tasks
-;; ** Add transforms
+;;; Tasks
+;;;; Add transforms
 ;; - swap palette slots
 ;;; Code:
 (require 'cl-lib)
@@ -9,7 +9,7 @@
 (require 'eieio)
 
 
-;; * Customs
+;;; Customs
 
 (defcustom duotone-palette-blend 0.9
   "Default blend value."
@@ -47,7 +47,7 @@ duotone-background-* options are enabled."
   :type 'float)
 
 
-;; * Defaults
+;;; Defaults
 
 (defvar duotone-palette-default-chroma-added    (chroma-hex :hex "#2acb34"))
 (defvar duotone-palette-default-chroma-renamed  (chroma-hex :hex "#437fdc"))
@@ -55,7 +55,7 @@ duotone-background-* options are enabled."
 (defvar duotone-palette-default-chroma-modified (chroma-hex :hex "#fbb825"))
 
 
-;; * Definition
+;;; Definition
 
 (defvar duotone-palette-colors
   '(
@@ -248,7 +248,7 @@ If 'CHROMA-OR-LIST' is a 'chroma' return it."
     (cl-call-next-method p nil)))
 
 
-;; * Transforms
+;;; Transforms
 
 (cl-defmethod duotone-palette-chromas ((p duotone-palette))
   (mapcar (lambda (accessor) (funcall accessor p)) duotone-palette-colors))

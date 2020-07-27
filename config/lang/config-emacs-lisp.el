@@ -23,10 +23,11 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (require 'map)
 
-;; * Builtins
+;;; Built-ins
 
 (use-package elisp-mode
   :bind
@@ -48,8 +49,7 @@
   :config
   (add-to-list 'flycheck-disabled-checkers 'emacs-lisp-checkdoc))
 
-
-;; * Packages
+;;; Third-party
 
 (use-package lisp-extra-font-lock
   :straight t
@@ -109,8 +109,7 @@ an older version is loaded."
    :modes #'emacs-lisp-mode
    :company '(company-elisp)))
 
-
-;; * Commands
+;;; Commands
 
 (defun -eval-buffer (arg)
   "Execute the current buffer as Lisp code.

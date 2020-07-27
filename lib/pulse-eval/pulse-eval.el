@@ -8,7 +8,7 @@
 (require 'thingatpt)
 
 
-;; * Customs
+;;; Customs
 
 (defcustom pulse-eval-overlay-priority 100
   "Priority of the pulse eval overlay."
@@ -61,7 +61,7 @@ other overlay-based modes such as flycheck."
   (overlay-put overlay 'priority pulse-eval-overlay-priority))
 
 
-;; * Pulse hooks
+;;; Pulse hooks
 
 (defvar pusle-eval-before-pulse-hook nil
   "Hook ran before pulse.")
@@ -70,7 +70,7 @@ other overlay-based modes such as flycheck."
   "Hook ran after pulse has finished iterating.")
 
 
-;; * Thingatpt helpers
+;;; Thingatpt helpers
 
 (defun pulse-eval--bounds-of-sexp ()
   (or
@@ -80,7 +80,7 @@ other overlay-based modes such as flycheck."
      (bounds-of-thing-at-point 'sexp))))
 
 
-;; * Pulse advices
+;;; Pulse advices
 
 (defun pulse-eval--highlight-advice (start end fn args)
   "Pulse between 'START' and 'END' before invoking 'FN' with 'ARGS'.
@@ -134,7 +134,7 @@ In case fn signals an error, pulse region with
     (pulse-eval--highlight-advice (window-start) (window-end) fn args)))
 
 
-;; * Internal advices
+;;; Internal advices
 
 (defun pulse-eval--major-advices ()
   "Return a list of advices for the current 'major-mode'."
@@ -179,7 +179,7 @@ In case fn signals an error, pulse region with
       (advice-remove sym fn))))
 
 
-;; * Advices registration
+;;; Advices registration
 
 (defun pulse-eval-register-advice (mode fn pulse-advice)
   "Register 'MODE' to advise 'FN' with 'PULSE-ADVICE'."
@@ -197,7 +197,7 @@ In case fn signals an error, pulse region with
       (map-put pulse-eval-advices-alist mode (remove elt lst)))))
 
 
-;; * Minor mode
+;;; Minor mode
 
 ;;;###autoload
 (define-minor-mode pulse-eval-mode

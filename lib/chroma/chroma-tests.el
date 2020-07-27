@@ -2,7 +2,7 @@
 (require 'ert)
 
 
-;; * Type constructors
+;;; Type constructors
 
 (assert (equal "#fff" (oref (chroma-hex :hex "#fff") hex)))
 
@@ -39,7 +39,7 @@
   (assert (equal fog (chroma-hsl (list n m m)))))
 
 
-;; * Methods
+;;; Methods
 
 (let* ((og "#0b730c"))
   ;; hex
@@ -61,8 +61,8 @@
       (assert (string= og (chroma-to-string (chroma-to-hex c)))))))
 
 
-;; * Function
-;; ** lighten
+;;; Function
+;;;; lighten
 
 (assert
  (string=
@@ -87,7 +87,7 @@
       (chroma-to-string hsl*)))
   "#89f38a"))
 
-;; ** Darken
+;;;; Darken
 
 (assert
  (string=
@@ -113,7 +113,7 @@
   "#0b710c"))
 
 
-;; * Color theory
+;;; Color theory
 
 (assert
  (equal

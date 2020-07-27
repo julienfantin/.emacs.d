@@ -23,18 +23,15 @@
 ;;
 
 ;;; Code:
-(require 'use-package)
-(require 'map)
 
-
-;; * Built-ins
+(require 'use-package)
+
+;;; Built-ins
 
 (use-package emacs
   :custom
   (tab-always-indent 'complete)
   (history-length most-positive-fixnum))
-
-;; ** Abbrev
 
 (use-package abbrev
   :after no-littering
@@ -44,8 +41,6 @@
     (quietly-read-abbrev-file))
   :custom
   (save-abbrevs 'silently))
-
-;; ** Mini-buffer
 
 (use-package minibuffer
   :hook (after-init . minibuffer-depth-indicate-mode)
@@ -60,8 +55,6 @@
   (read-buffer-completion-ignore-case t)
   (read-file-name-completion-ignore-case t)
   (completion-ignore-case t))
-
-;; ** Icomplete
 
 (use-package icomplete
   :if (equal config-completion-system 'icomplete)
@@ -82,8 +75,22 @@
   (icomplete-show-matches-on-no-input t)
   (icomplete-tidy-shadowed-file-names t))
 
-
-;; * Mini-buffer completion packages
+;;; Third-party
+
+(use-package which-key
+  :after (which-key embark)
+  :config
+  ;; Ignore numeric prefixes
+  (push
+   '(("^[0-9-]\\|kp-[0-9]\\|kp-subtract\\|C-u$" . nil) . ignore)
+   which-key-replacement-alist))
+
+(use-package amx
+  :disabled t                           ; see `suggest-key-bindings' in 28.1
+  :straight t
+  :hook (after-init . amx-mode))
+
+;;;; icomplete
 
 (use-package icomplete-vertical
   :if (equal config-completion-system 'icomplete)
@@ -135,30 +142,18 @@ normally would when calling `yank' followed by `yank-pop'."
         ("'" . avy-embark-occur-choose)
         ("\"" . avy-embark-occur-act)))
 
-(use-package which-key
-  :after (which-key embark)
-  :config
-  ;; Ignore numeric prefixes
-  (push
-   '(("^[0-9-]\\|kp-[0-9]\\|kp-subtract\\|C-u$" . nil) . ignore)
-   which-key-replacement-alist))
-
 (use-package completing-history
   :if (equal config-completion-system 'icomplete)
   :straight (completing-history :type git :host github :repo "oantolin/completing-history")
   :hook (after-init . completing-history-setup-keybinding))
 
-(use-package amx
-  :straight t
-  :hook (after-init . amx-mode))
-
 (use-package orderless
+  :if (equal config-completion-system 'icomplete)
   :straight t
   :custom
   (completion-styles '(orderless)))
 
-
-;; * Company
+;;;; Company
 
 (use-package company
   :straight t

@@ -23,12 +23,16 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
+;;; Config
 
 (defconst config-protobuf-style
   '((c-basic-offset . 4)
     (indent-tabs-mode . nil)))
+
+;;; Third-party
 
 (use-package protobuf-mode
   :straight t
@@ -38,7 +42,6 @@
   (defun config-protobuf-add-style ()
     (c-add-style "protobuf" config-protobuf-style t))
   :hook (protobuf-mode . config-protobuf-add-style))
-
 
 (provide 'config-protobuf)
 ;;; config-protobuf.el ends here

@@ -23,17 +23,16 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (eval-when-compile
   (require 'cl-lib))
 
-
-;; * Customs
+;;; Config
 
 (defvar config-org-user-directory "~/org/")
 
-
-;; * Org-mode
+;;; Built-ins
 
 (use-package org
   :straight (:type built-in)
@@ -80,25 +79,6 @@
    '((nil :maxlevel . 3)
      (org-agenda-files :maxlevel . 3))))
 
-(use-package org-superstar
-  :straight t
-  :after org
-  :hook (org-mode . org-superstar-mode)
-  :custom
-  (org-superstar-remove-leading-stars t)
-  (org-superstar-headline-bullets-list '(" ")) ;; '("🞛" "◉" "○" "▷")
-  (org-superstar-item-bullet-alist
-   '((?+ . ?•)
-     (?* . ?➤)
-     (?- . ?–))))
-
-(use-package org-pretty-table
-  :straight (org-pretty-table :type git :host github :repo "Fuco1/org-pretty-table")
-  :hook (org-mode . org-pretty-table-mode))
-
-
-;; * Babel
-
 ;; https://blog.d46.us/advanced-emacs-startup/
 
 (use-package ob-core
@@ -126,8 +106,23 @@
    org-babel-execute:bash
    org-babel-expand-body:bash))
 
-
-;; * Roam
+;;; Third-party
+
+(use-package org-superstar
+  :straight t
+  :after org
+  :hook (org-mode . org-superstar-mode)
+  :custom
+  (org-superstar-remove-leading-stars t)
+  (org-superstar-headline-bullets-list '(" ")) ;; '("🞛" "◉" "○" "▷")
+  (org-superstar-item-bullet-alist
+   '((?+ . ?•)
+     (?* . ?➤)
+     (?- . ?–))))
+
+(use-package org-pretty-table
+  :straight (org-pretty-table :type git :host github :repo "Fuco1/org-pretty-table")
+  :hook (org-mode . org-pretty-table-mode))
 
 (use-package org-roam
   :straight t

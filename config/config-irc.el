@@ -23,8 +23,10 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 
+;;; Built-ins
 
 (use-package erc
   :commands erc
@@ -33,6 +35,8 @@
   (erc-track-exclude-types '("JOIN" "NICK" "PART" "QUIT"))
   (erc-fill-function 'erc-fill-static)
   (erc-fill-static-center 15))
+
+;;; Third-party
 
 (use-package erc-hl-nicks
   :straight t

@@ -23,9 +23,11 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (require 'config-yaml)
 
+;;; Third-party
 
 (use-package ansible
   :straight t

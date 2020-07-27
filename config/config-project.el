@@ -23,10 +23,10 @@
 ;;
 
 ;;; Code:
-(require 'use-package)
-(require 'config-path)
 
-;; * Direnv
+(require 'use-package)
+
+;;; Third-party
 
 (use-package direnv
   :disabled t
@@ -34,14 +34,10 @@
   :straight t
   :hook (after-init . direnv-mode))
 
-;; * Editorconfig
-
 (use-package editorconfig
   :disabled t
   :straight t
   :hook (after-init . editorconfig-mode))
-
-;; * Projectile
 
 (use-package projectile
   :straight t
@@ -61,6 +57,15 @@
   (projectile-mode-line nil)
   (projectile-enable-caching nil)
   (projectile-create-missing-test-files t))
+
+(use-package counsel-projectile
+  :if (equal config-completion-system 'ivy)
+  :straight t
+  :after (counsel projectile)
+  :hook ((after-init . counsel-projectile-mode))
+  :custom
+  (counsel-projectile-remove-current-project t)
+  (counsel-projectile-remove-current-buffer t))
 
 (provide 'config-project)
 ;;; config-project.el ends here

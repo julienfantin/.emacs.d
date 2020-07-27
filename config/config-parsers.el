@@ -23,11 +23,23 @@
 ;;
 
 ;;; Code:
+
 (require 'use-package)
 (require 'config-completion)
 
-
-;; * Flycheck
+;;; Built-ins
+
+(use-package edebug
+  :after flycheck
+  :config
+  (defun config-parsers-flycheck-edebug-toggle ()
+    "Turn off flycheck while edebug is on since they conflict over the echo area."
+    (if (bound-and-true-p edebug-mode)
+        (config-parsers-flycheck-turn-messages-off)
+      (config-parsers-flycheck-turn-messages-on)))
+  :hook ((edebug-mode . config-parsers-flycheck-edebug-toggle)))
+
+;;; Third-party
 
 (use-package flycheck
   :straight t
@@ -62,7 +74,7 @@
           (company-completion-cancelled  . config-parsers-flycheck-turn-messages-on))))
 
 (use-package counsel
-  :if (equal 'ivy config-completion-system)
+  :if (equal config-completion-system 'ivy)
   :after flycheck
   :bind (("C-c l" . -counsel-flycheck))
   :preface
@@ -91,16 +103,6 @@
                                        (pos (flycheck-error-pos err)) )
                             (goto-char (flycheck-error-pos err))))
                 :history '-counsel-flycheck-history))))
-
-(use-package edebug
-  :after flycheck
-  :config
-  (defun config-parsers-flycheck-edebug-toggle ()
-    "Turn off flycheck while edebug is on since they conflict over the echo area."
-    (if (bound-and-true-p edebug-mode)
-        (config-parsers-flycheck-turn-messages-off)
-      (config-parsers-flycheck-turn-messages-on)))
-  :hook ((edebug-mode . config-parsers-flycheck-edebug-toggle)))
 
 (provide 'config-parsers)
 ;;; config-parsers.el ends here
