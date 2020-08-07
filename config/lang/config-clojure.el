@@ -41,7 +41,7 @@
    (lein . leiningen))
   :mode "\\.repl\\'"
   :config
-  (dolist ((form config-clojure-align-binding-forms))
+  (dolist (form config-clojure-align-binding-forms)
     (push form clojure-align-binding-forms))
   :custom
   (clojure-align-forms-automatically t)
