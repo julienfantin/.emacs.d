@@ -77,46 +77,10 @@
 (use-package nord-theme            :straight t)
 
 (use-package modus-operandi-theme
-  :straight t
-  :custom
-  (modus-operandi-theme-slanted-constructs t)
-  (modus-operandi-theme-bold-constructs t)
-  (modus-operandi-theme-visible-fringes nil)
-  (modus-operandi-theme-3d-modeline t)
-  (modus-operandi-theme-subtle-diffs t)
-  (modus-operandi-theme-intense-standard-completions t)
-  ;; Native font-locking is broken with a block background
-  (modus-operandi-theme-distinct-org-blocks nil)
-  (modus-operandi-theme-proportional-fonts t)
-  (modus-operandi-theme-rainbow-headings nil)
-  (modus-operandi-theme-section-headings nil)
-  (modus-operandi-theme-scale-headings t)
-  (modus-operandi-theme-scale-1 1.05)
-  (modus-operandi-theme-scale-2 1.1)
-  (modus-operandi-theme-scale-3 1.15)
-  (modus-operandi-theme-scale-4 1.2)
-  (modus-operandi-theme-scale-5 1.3))
+  :straight t)
 
 (use-package modus-vivendi-theme
-  :straight t
-  :custom
-  (modus-vivendi-theme-slanted-constructs t)
-  (modus-vivendi-theme-bold-constructs t)
-  (modus-vivendi-theme-visible-fringes nil)
-  (modus-vivendi-theme-3d-modeline t)
-  (modus-vivendi-theme-subtle-diffs t)
-  (modus-vivendi-theme-intense-standard-completions t)
-  ;; Native font-locking is broken with a block background
-  (modus-vivendi-theme-distinct-org-blocks nil)
-  (modus-vivendi-theme-proportional-fonts t)
-  (modus-vivendi-theme-rainbow-headings nil)
-  (modus-vivendi-theme-section-headings nil)
-  (modus-vivendi-theme-scale-headings t)
-  (modus-vivendi-theme-scale-1 1.05)
-  (modus-vivendi-theme-scale-2 1.1)
-  (modus-vivendi-theme-scale-3 1.15)
-  (modus-vivendi-theme-scale-4 1.2)
-  (modus-vivendi-theme-scale-5 1.3))
+  :straight t)
 
 (use-package kaolin-themes
   :straight t
