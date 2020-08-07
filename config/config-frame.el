@@ -69,13 +69,28 @@
 
 ;;; Built-ins
 
+;; Increase line-height with vertical centering.
+;;
+;; Setting both line-height and line-spacing we can work around the alignment
+;; bug, but it does not work perfectly and the last line in a buffer does not
+;; get the proper height (and/or spacing?). This is especially annoying when
+;; narrowing in the mini-buffer where the candidate line's height changes when
+;; so make sure not to enable that there.
+;;
+;; Someone wrote an emacs patch for this, but unfortunately it does not look
+;; like it's going to get merged:
+;; https://lists.gnu.org/archive/html/emacs-devel/2019-08/msg00659.html
+
 (use-package emacs
+  :preface
+  (defun config-frame-set-line-height ()
+    (setq-local default-text-properties '(line-spacing 0.25 line-height 1.25)))
+  :hook ((text-mode . config-frame-set-line-height)
+         (prog-mode .  config-frame-set-line-height))
   :custom
-  (default-text-properties '(line-spacing 0.25 line-height 1.25))
   (default-truncate-lines t)
   (cursor-type '(bar . 1))
   (x-underline-at-descent-line t))
-
 
 (use-package frame
   :custom
