@@ -103,7 +103,7 @@
   :straight t
   :init (gcmh-mode 1))
 
-;; Prose
+;;; Prose
 
 (use-package freeze-it :straight t)
 
@@ -113,12 +113,11 @@
   :straight t
   :hook (after-init . global-spell-fu-mode))
 
-;; Utils
+;;; Utils
 
-(use-package literate-calc-mode
-  :straight t)
+(use-package literate-calc-mode :straight t)
 
-;; Clojure auto-indent
+;;; Clojure auto-indent
 
 (use-package cljstyle-mode
   :disabled t
@@ -137,5 +136,146 @@
 (use-package flymake-kondor
   :straight t)
 
+;;; Outline-minor mode in code
+
+(defvar config-wip-code-outlines-backend 'tarsius)
+
+;; Outshine:
+;; - Fontification of headlines starts with the text which looks ugly,
+;; especially with nested outlines levels (there's a workaround here repurposing
+;; some functions from backline but it's not pretty)
+;; + There's a handy function to compute the ouline-regexp which is convenient
+;; to override lispy's weird defautls
+;; + Implements speed commands (though that kinda conflicts with lispy)
+
+;; Tarsius' packages:
+;; - Other than bicycle, does not help with outline-minor-mode awkward keybindings
+;; + Seems leaner overall
+
+;;;; Tarsius packages
+
+(use-package outline-minor-faces
+  :if (eq config-wip-code-outlines-backend 'tarsius)
+  :straight t
+  :after outline
+  :hook (outline-minor-mode . outline-minor-faces-add-font-lock-keywords))
+
+(use-package backline
+  :if (eq config-wip-code-outlines-backend 'tarsius)
+  :straight t
+  :after outline
+  :init (advice-add 'outline-flag-region :after 'backline-update))
+
+(use-package bicycle
+  :if (eq config-wip-code-outlines-backend 'tarsius)
+  :straight t
+  :after outline
+  :preface
+  (defun config-prog-bicycle-cycle-or-tab-local (arg)
+    (interactive "P")
+    (if (outline-on-heading-p)
+        (call-interactively #'bicycle-cycle)
+      (company-indent-or-complete-common arg)))
+  :bind (:map outline-minor-mode-map
+              ([tab] . config-prog-bicycle-cycle-or-tab-local)
+              ([S-tab] . bicycle-cycle-global)))
+
+(use-package outshine
+  :if (eq config-wip-code-outlines-backend 'outshine)
+  :straight t
+  :hook ((lispy-mode . outshine-lispy))
+  :custom
+  (outshine-use-speed-commands t)
+  (outshine-fontify-whole-heading-line t)
+  (outshine-cycle-emulate-tab t)
+  :config
+  ;; Keybindings get clobbered by lispy and company-mode, so make sure we enable
+  ;; this mode last...
+  (add-hook 'prog-mode-hook 'outshine-mode 100)
+  (defun outshine-lispy ()
+    "Lispy hard-codes a non-standard outline-regexp in its
+navigation and editing code. We fix the read path by using
+outshine to recompute a correct regexp, and we'll disable the
+lispy editing commands to replace them with the outshine editing
+commands."
+    ;; Lispy already implements this
+    (setq-local outshine-use-speed-commands nil)
+    (set (make-local-variable 'lispy-outline) (outshine-calc-outline-regexp)))
+  :config
+  ;; Adapted from https://github.com/tarsius/backline/blob/master/backline.el
+  (defun outshine-backline-update (from to _hide)
+    "When hidings, add an overlay to extend header's appearance to window edge."
+    (when outline-minor-mode
+      ;; `outline-hide-sublevels' tries to hide this range, in which case
+      ;; `outline-back-to-heading' somehow concludes that point is before
+      ;; the first heading causing it to raise an error.  Luckily we don't
+      ;; actually have to do anything for that range, so we can just skip
+      ;; ahead to the calls that hide the subtrees individually.
+      (unless (and (= from   (point-min))
+                   (= to (1- (point-max))))
+        (ignore-errors        ; Other instances of "before first heading" error.
+          (remove-overlays from
+                           (save-excursion
+                             (goto-char to)
+                             (outline-end-of-subtree)
+                             (1+ (point)))
+                           'backline-heading t)
+          (dolist (ov (overlays-in (max (1- from) (point-min))
+                                   (min (1+ to)   (point-max))))
+            (when (eq (overlay-get ov 'invisible) 'outline)
+              (let ((end (overlay-end ov)))
+                (unless (save-excursion
+                          (goto-char end)
+                          (outline-back-to-heading)
+                          ;; If we depended on `bicycle', then we could use:
+                          ;; (bicycle--code-level-p)
+                          (= (funcall outline-level)
+                             (or (bound-and-true-p outline-code-level) 1000)))
+                  (let ((o (make-overlay end
+                                         (min (1+ end) (point-max))
+                                         nil 'front-advance)))
+                    (overlay-put o 'evaporate t)
+                    (overlay-put o 'backline-heading t)
+                    (overlay-put o 'face
+                                 (save-excursion
+                                   (goto-char end)
+                                   (outline-back-to-heading)
+                                   (outshine-faces--get-face))))))))))))
+
+  (defun outshine-faces--level ()
+    (save-excursion
+      (beginning-of-line)
+      (and (looking-at outline-regexp)
+           (funcall outline-level))))
+
+  (defvar outshine-faces--top-level nil)
+
+  (defun outshine-faces--top-level ()
+    (or outshine-faces--top-level
+        (save-excursion
+          (goto-char (point-min))
+          (let ((min (or (outshine-faces--level) 1000)))
+            (while (outline-next-heading)
+              (setq min (min min (outshine-faces--level))))
+            (setq outshine-faces--top-level min)))))
+
+  (defun outshine-faces--get-face ()
+    (save-excursion
+      (goto-char (match-beginning 0))
+      (nth (% (- (outshine-faces--level)
+                 (outshine-faces--top-level))
+              (length outshine-level-faces))
+           outshine-level-faces))))
+
+(use-package outline
+  :hook (prog-mode . outline-minor-mode)
+  :preface
+  (defun config-prog-override-lispy-outline ()
+    "Lispy hard-codes non-idiomatic outline regexp for lisp modes, revert that."
+    (setq-local lispy-outline ";;;\\(;* [^ \t\n]\\|###autoload\\)\\|(")
+    (setq-local outline-regexp ";;;\\(;* [^ \t\n]\\|###autoload\\)\\|(")
+    (setq-local outline-level 'lisp-outline-level))
+  :config
+  (add-hook 'lispy-mode-hook #'config-prog-override-lispy-outline))
 (provide 'config-wip)
 ;;; config-wip.el ends here
