@@ -10,6 +10,7 @@
 
 (use-package emacs
   :custom
+  (custom-file (user-var-file "custom.el"))
   (delete-by-moving-to-trash t)
   (default-major-mode 'text-mode)
   (large-file-warning-threshold 1000000))
