@@ -47,6 +47,12 @@
   (clojure-align-forms-automatically t)
   (clojure-toplevel-inside-comment-form t))
 
+(use-package paredit
+  :hook (clojure-mode . paredit-mode))
+
+(use-package cider
+  :hook (cider-repl-mode . paredit-mode))
+
 (use-package clojure-mode-extra-font-locking
   :straight t
   :after clojure-mode
@@ -61,21 +67,20 @@
   :custom
   (cider-preferred-build-tool 'clojure-cli)
   (cider-dynamic-indentation nil)
-  ;; (cider-font-lock-dynamically '(macro core function deprecated var))
+  (cider-font-lock-dynamically '(macro core function deprecated var))
   ;; Too slow
   (cider-invert-insert-eval-p t)
   (cider-switch-to-repl-after-insert-p nil)
   (cider-eval-toplevel-inside-comment-form t)
-  (cider-pprint-fn 'zprint)
-  ;; (cider-prefer-local-resources t)
+  (cider-pprint-fn 'puget)
   (cider-prompt-for-symbol nil)
   (cider-save-file-on-load t)
   (cider-save-files-on-cider-refresh t))
 
 (use-package cider-stacktrace
   :custom
-  (cider-stacktrace-default-filters '(tooling dup java))
-  (cider-stacktrace-positive-filters '(project)))
+  (cider-stacktrace-default-filters '(clj tooling dup java))
+  (cider-stacktrace-positive-filters '(projectb)))
 
 (use-package cider-debug
   :preface
@@ -100,6 +105,7 @@
   :custom (cider-debug-display-locals t))
 
 (use-package clj-refactor
+  :disabled t
   :straight t
   :after clojure-mode
   :hook (clojure-mode . clj-refactor-mode)
@@ -126,6 +132,7 @@
   (cljr-warn-on-eval nil))
 
 (use-package sayid
+  :disabled t
   :straight t
   :after cider
   :init (sayid-setup-package))
@@ -135,6 +142,9 @@
   :straight t
   :after clojure-mode
   :init (require 'flycheck-clj-kondo nil t))
+
+(use-package clojars
+  :straight t)
 
 (provide 'config-clojure)
 ;;; config-clojure.el ends here
