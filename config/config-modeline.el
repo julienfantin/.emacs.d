@@ -67,5 +67,10 @@
 
 (use-package hide-mode-line :straight t)
 
+(use-package recursion-indicator
+  :straight t
+  :demand t
+  :hook (after-init-hook . recursion-indicator-mode))
+
 (provide 'config-modeline)
 ;;; config-modeline.el ends here
