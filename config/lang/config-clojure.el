@@ -72,7 +72,7 @@
   (cider-invert-insert-eval-p t)
   (cider-switch-to-repl-after-insert-p nil)
   (cider-eval-toplevel-inside-comment-form t)
-  (cider-pprint-fn 'puget)
+  (cider-print-fn 'puget)
   (cider-prompt-for-symbol nil)
   (cider-save-file-on-load t)
   (cider-save-files-on-cider-refresh t))
@@ -98,7 +98,6 @@
   (cider-repl-display-help-banner nil)
   (cider-repl-history-file (user-var-file "nrepl-history"))
   (cider-repl-pop-to-buffer-on-connect nil)
-  (cider-repl-use-clojure-font-lock nil)
   (cider-repl-use-pretty-printing t))
 
 (use-package cider-debug
