@@ -44,10 +44,15 @@
   (ivy-initial-inputs-alist nil)
   (ivy-re-builders-alist '((counsel-rg . ivy--regex)))
   (ivy-use-virtual-buffers t)
+  (lispy-key-theme '(special lispy paredit c-digits))
   :config
   ;; Highlight entire line for selection
   (delete '(t . ivy-format-function-default) ivy-format-functions-alist)
   (add-to-list 'ivy-format-functions-alist '(t . ivy-format-function-line)))
+
+(use-package ivy-prescient
+  :straight t
+  :hook ((ivy-mode . ivy-prescient-mode)))
 
 (use-package wgrep
   :if (equal config-completion-system 'ivy)
