@@ -88,7 +88,7 @@
   (defun -iedit-ensure (&optional arg)
     (interactive "P")
     (unless iedit-mode
-      (when (and lispy-mode (lispy-left-p))
+      (when (and (bound-and-true-p lispy-mode) (lispy-left-p))
         (forward-char 1))
       (if arg
           (iedit-mode 0)

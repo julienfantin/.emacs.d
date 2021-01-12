@@ -64,6 +64,11 @@
   (pulse-eval-iterations 1)
   (pulse-eval-delay .2))
 
+(use-package paredit
+  :straight t
+  :after (lisp-minor-mode)
+  :hook (lisp-minor-mode . paredit-mode))
+
 (use-package pulse-eval
   :after (pulse-eval lispy)
   :config
@@ -71,16 +76,10 @@
    'pulse-eval-advices-alist
    (cons 'lispy-mode '((lispy-eval . pulse-eval-highlight-forward-sexp-advice)))))
 
-(use-package paredit
-  :disabled t
-  :straight t
-  :after (lisp-minor-mode)
-  :hook (lisp-minor-mode . paredit-mode))
-
 (use-package lispy
   :straight t
   :after (lisp-minor-mode)
-  :hook (lisp-minor-mode . lispy-mode)
+  ;; :hook (lisp-minor-mode . lispy-mode)
   :bind
   (;; Some of the commands in the paredit map are not right
    :map lispy-mode-map-paredit
