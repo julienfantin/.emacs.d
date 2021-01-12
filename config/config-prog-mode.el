@@ -29,9 +29,7 @@
 
 (use-package smart-jump
   :straight t
-  :config
-  ;; TODO register elisp-def...
-  (smart-jump-setup-default-registers))
+  :hook (after-init-hook . smart-jump-setup-default-registers))
 
 (use-package smart-jump
   :after (smart-jump lispy)
@@ -122,6 +120,7 @@
          ([remap lispy-iedit] . -iedit-ensure-function))))
 
 (use-package emr
+  :disabled t
   :straight t
   :after prog-mode
   :bind ((:map prog-mode-map
