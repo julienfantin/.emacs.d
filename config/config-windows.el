@@ -85,7 +85,7 @@
      ;; Right side window
      ("^\\(\\*Help.*\\|\\*cider.*\\)"
       (display-buffer-in-side-window)
-      (window-width . ,Φ)
+      (window-width . (- 1 ,Φ))
       (side . right)
       (slot . 0))
      ("\\*Custom.*"
