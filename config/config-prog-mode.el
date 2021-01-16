@@ -64,7 +64,7 @@
   (defun -iedit-quit ()
     (interactive)
     (--iedit-occurrence-stop-timer)
-    (iedit-quit))
+    (iedit-done))
 
   (defun --iedit-at-occurrence-p ()
     (or (get-char-property (point) 'iedit-occurrence-overlay-name)
