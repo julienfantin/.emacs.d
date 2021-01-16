@@ -37,8 +37,7 @@
 (use-package clojure-mode
   :straight t
   :ensure-system-package
-  ((clj . clojure)
-   (lein . leiningen))
+  ((clj . clojure))
   :mode "\\.repl\\'"
   :config
   (dolist (form config-clojure-align-binding-forms)
