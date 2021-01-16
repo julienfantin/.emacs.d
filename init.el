@@ -53,7 +53,7 @@
 (use-package config-help :demand t :load-path "./config")
 (use-package config-indentation :demand t :load-path "./config")
 (use-package config-irc :demand t :load-path "./config" :disabled t)
-(use-package config-ivy :demand t :load-path "./config")
+(use-package config-ivy :demand t :load-path "./config" :if (equal config-completion-system 'ivy))
 (use-package config-marks :demand t :load-path "./config")
 (use-package config-modeline :demand t :load-path "./config")
 (use-package config-org :demand t :load-path "./config")

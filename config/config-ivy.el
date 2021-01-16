@@ -35,9 +35,7 @@
 ;;; Third-party
 
 (use-package ivy
-  :if (equal config-completion-system 'ivy)
   :hook ((after-init . ivy-mode))
-  :commands (ivy-set-actions)
   :custom
   (ivy-extra-directories nil)
   (ivy-fixed-height-minibuffer t)
@@ -55,18 +53,13 @@
   :hook ((ivy-mode . ivy-prescient-mode)))
 
 (use-package wgrep
-  :if (equal config-completion-system 'ivy)
-  :after (ivy)
   :straight t)
 
 (use-package magit
-  :if (equal config-completion-system 'ivy)
-  :after ivy
   :custom
   (magit-completing-read-function 'ivy-completing-read))
 
 (use-package counsel
-  :if (equal config-completion-system 'ivy)
   :straight t
   :hook ((after-init . counsel-mode))
   :custom
