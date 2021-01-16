@@ -76,10 +76,7 @@
 (use-package rebecca-theme         :straight t)
 (use-package nord-theme            :straight t)
 
-(use-package modus-operandi-theme
-  :straight t)
-
-(use-package modus-vivendi-theme
+(use-package modus-themes
   :straight t)
 
 (use-package kaolin-themes
