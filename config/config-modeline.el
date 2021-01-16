@@ -28,42 +28,13 @@
 
 ;;; Third-party
 
-(use-package keycast
-  :straight t
-  :commands (-keycast-mode)
-  :hook (after-init . -keycast-mode)
-  :custom
-  (keycast-separator-width 1)
-  ;; Don't display the command counter
-  (mode-line-keycast-format "%s%k%c")
-  :config
-  ;; Redefine the minor mode so it only updates internal state without trying to
-  ;; change the modeline format...
-  (define-minor-mode -keycast-mode
-    "Show current command and its key binding in the mode line."
-    :global t
-    (if -keycast-mode
-        (add-hook 'pre-command-hook 'keycast-mode-line-update t)
-      (remove-hook 'pre-command-hook 'keycast-mode-line-update))))
-
 (use-package doom-modeline
   :straight t
-  :after keycast
   :init (doom-modeline-mode 1)
   :custom
   (doom-modeline-icon (display-graphic-p)) ;; NOTE eval (all-the-icons-install-fonts)
   (doom-modeline-bar-width 36)
-  (doom-modeline-height 24)
-  :config
-  ;; Define a doom-modeline segment for keycast
-  (doom-modeline-def-segment keycast mode-line-keycast)
-  ;; Define a custom modeline
-  (doom-modeline-def-modeline '-modeline
-    '(bar workspace-name window-number matches buffer-info remote-host selection-info keycast)
-    '(misc-info github debug repl lsp major-mode process vcs checker))
-  ;; Bug with the default option which doesn't apply to the current buffer?
-  (doom-modeline-set-modeline '-modeline nil)
-  (doom-modeline-set-modeline '-modeline t))
+  (doom-modeline-height 24))
 
 (use-package hide-mode-line :straight t)
 
