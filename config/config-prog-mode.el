@@ -29,7 +29,7 @@
 
 (use-package smart-jump
   :straight t
-  :hook (after-init-hook . smart-jump-setup-default-registers))
+  :hook (after-init . smart-jump-setup-default-registers))
 
 (use-package smart-jump
   :after (smart-jump lispy)
