@@ -26,7 +26,7 @@
 
 (require 'use-package)
 
-(use-package config-ansible :demand t)
+(use-package config-ansible :disabled t :demand t)
 (use-package config-cl :demand t)
 (use-package config-clojure :demand t)
 (use-package config-emacs-lisp :demand t)
