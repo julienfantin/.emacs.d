@@ -36,14 +36,13 @@
 
 (use-package clojure-mode
   :straight t
-  :ensure-system-package
-  ((clj . clojure))
+  :ensure-system-package  ((clj . clojure))
   :mode "\\.repl\\'"
   :config
   (dolist (form config-clojure-align-binding-forms)
     (push form clojure-align-binding-forms))
   :custom
-  (clojure-align-forms-automatically t)
+  (clojure-align-forms-automatically nil)
   (clojure-toplevel-inside-comment-form t))
 
 (use-package paredit
@@ -103,18 +102,18 @@
   :custom (cider-debug-display-locals t))
 
 (use-package clj-refactor
-  :disabled t
   :straight t
   :after clojure-mode
   :hook (clojure-mode . clj-refactor-mode)
   :config
-  (cljr-add-keybindings-with-prefix "C-c .")
+  (cljr-add-keybindings-with-prefix "C-c r")
   :custom
   (cljr-favor-prefix-notation nil)
   (cljr-ignore-analyzer-errors t)
   (cljr-magic-requires t)
   (cljr-magic-require-namespaces
    '(("a"    . "clojure.core.async")
+     ("m"    . "missionary.core")
      ("d"    . "datomic.api")
      ("edn"  . "clojure.edn")
      ("io"   . "clojure.java.io")
@@ -125,8 +124,7 @@
      ("st"   . "clojure.spec.alpha.test")
      ("str"  . "clojure.string")
      ("walk" . "clojure.walk")
-     ("zip"  . "clojure.zip")
-     ("rf"   . "re-frame.core")))
+     ("zip"  . "clojure.zip")))
   (cljr-warn-on-eval nil))
 
 (use-package sayid
