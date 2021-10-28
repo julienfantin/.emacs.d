@@ -36,6 +36,7 @@
 
 (use-package ispell
   :ensure-system-package (hunspell)
+  :custom (ispell-silently-savep t)
   :config
   (setenv "DICPATH" config-prose-dicts-dir)
   (cond
@@ -47,8 +48,7 @@
     (setq ispell-extra-args '("--sug-mode=ultra"
                               "--lang=en_US"
                               "--add-filter=url"
-                              "--add-filter=email"))))
-  :custom (ispell-silently-savep t))
+                              "--add-filter=email")))))
 
 (use-package flyspell
   :custom

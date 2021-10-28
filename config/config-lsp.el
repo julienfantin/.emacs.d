@@ -40,9 +40,9 @@
   :if (equal config-lsp-frontend 'lsp-mode)
   :straight t)
 
-(use-package lsp-ui-mode
+(use-package lsp-ui
   :if (equal config-lsp-frontend 'lsp-mode)
-  :after lsp-mode
+  :straight t
   :hook (lsp-mode . lsp-ui-mode)
   :custom
   (lsp-ui-doc-use-webkit (featurep 'xwidget-internal))
