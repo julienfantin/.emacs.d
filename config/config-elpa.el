@@ -68,11 +68,5 @@
   (system-packages-use-sudo nil)
   (system-packages-package-manager 'brew))
 
-(use-package paradox
-  :straight t
-  :custom
-  (paradox-execute-asynchronously t)
-  (paradox-github-token t))
-
 (provide 'config-elpa)
 ;;; config-elpa.el ends here

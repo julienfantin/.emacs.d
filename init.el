@@ -23,6 +23,7 @@
 ;;
 
 ;;; Code:
+(require 'use-package)
 
 ;;; Bootstrap
 
@@ -30,61 +31,64 @@
 
 ;;; Config options
 
-(defvar config-completion-system 'ivy)
+(defvar config-completion-system 'vertico)
 
 ;;; Configs
 
 (use-package private :demand t :load-path "./lib/" :if (file-exists-p "./lib/private.el"))
-(use-package config-theme :demand t :load-path "./config")
-(use-package config-path :demand t :load-path "./config")
-(use-package config-browser :demand t :load-path "./config" :disabled t)
-(use-package config-buffers :demand t :load-path "./config")
-(use-package config-completion :demand t :load-path "./config")
-(use-package config-debug :demand t :load-path "./config")
-(use-package config-defaults :demand t :load-path "./config")
-(use-package config-doc :demand t :load-path "./config")
-(use-package config-editing :demand t :load-path "./config")
-(use-package config-elpa :demand t :load-path "./config")
-(use-package config-files :demand t :load-path "./config")
-(use-package config-font-lock :demand t :load-path "./config")
-(use-package config-frame :demand t :load-path "./config" :if window-system)
-(use-package config-git :demand t :load-path "./config")
-(use-package config-gui :demand t :load-path "./config")
-(use-package config-help :demand t :load-path "./config")
-(use-package config-indentation :demand t :load-path "./config")
-(use-package config-irc :demand t :load-path "./config" :disabled t)
-(use-package config-ivy :demand t :load-path "./config" :if (equal config-completion-system 'ivy))
-(use-package config-marks :demand t :load-path "./config")
-(use-package config-modeline :demand t :load-path "./config")
-(use-package config-org :demand t :load-path "./config")
-(use-package config-outlines :demand t :load-path "./config" :disabled t)
-(use-package config-parsers :demand t :load-path "./config")
-(use-package config-persistence :demand t :load-path "./config")
-(use-package config-prog-mode :demand t :load-path "./config")
-(use-package config-project :demand t :load-path "./config")
-(use-package config-prose :demand t :load-path "./config")
-(use-package config-scratch :demand t :load-path "./config")
-(use-package config-search :demand t :load-path "./config")
-(use-package config-sexp :demand t :load-path "./config")
-(use-package config-shell :demand t :load-path "./config")
-(use-package config-windows :demand t :load-path "./config")
+
+(require 'config-theme)
+(require 'config-path)
+(require 'config-browser)
+(require 'config-buffers)
+(require 'config-completion)
+(require 'config-debug)
+(require 'config-defaults)
+(require 'config-doc)
+(require 'config-editing)
+(require 'config-elpa)
+(require 'config-files)
+(require 'config-font-lock)
+(when window-system
+  (require 'config-frame))
+(require 'config-git)
+(require 'config-gui)
+(require 'config-help)
+(require 'config-indentation)
+;; (require 'config-irc)
+(when (equal config-completion-system 'ivy)
+  (require 'config-ivy))
+(require 'config-marks)
+(require 'config-modeline)
+(require 'config-org)
+;; (require 'config-outlines)
+(require 'config-parsers)
+(require 'config-persistence)
+(require 'config-prog-mode)
+(require 'config-project)
+(require 'config-prose)
+(require 'config-scratch)
+(require 'config-search)
+(require 'config-sexp)
+(require 'config-shell)
+(require 'config-windows)
 
 ;;;; Langs
 
-(use-package config-lsp :demand t :load-path "./config")
-(use-package config-langs :demand t :load-path "./config")
+(require 'config-lsp)
+(require 'config-langs)
 
 ;;;; Tools
 
-(use-package config-docker :demand t :load-path "./config" :disabled t)
+;; (require 'config-docker :disabled t)
 
 ;;;; Keybindings
 
-(use-package config-keybindings :demand t :load-path "./config")
+(require 'config-keybindings)
 
 ;;;; WIP
 
-(use-package config-wip :demand t :load-path "./config")
+(require 'config-wip)
 
 (provide 'init)
 ;;; init.el ends here
