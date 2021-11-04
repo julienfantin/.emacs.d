@@ -25,6 +25,7 @@
 ;;; Code:
 
 (require 'use-package)
+
 (eval-when-compile
   (require 'cl-lib))
 
@@ -109,6 +110,7 @@
 ;;; Third-party
 
 (use-package org-superstar
+  :disabled t
   :straight t
   :after org
   :hook (org-mode . org-superstar-mode)

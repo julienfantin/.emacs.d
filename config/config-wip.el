@@ -138,7 +138,8 @@
 
 ;;; Outline-minor mode in code
 
-(defvar config-wip-code-outlines-backend 'tarsius)
+;; disabled
+(defvar config-wip-code-outlines-backend nil)
 
 ;; Outshine:
 ;; - Fontification of headlines starts with the text which looks ugly,
@@ -167,6 +168,7 @@
   :init (advice-add 'outline-flag-region :after 'backline-update))
 
 (use-package bicycle
+  :disabled t
   :if (eq config-wip-code-outlines-backend 'tarsius)
   :straight t
   :after outline

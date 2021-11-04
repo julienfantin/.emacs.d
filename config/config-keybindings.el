@@ -142,16 +142,15 @@ hyper when it's used as a modifier."
 
 ;;;; (f) Find
 
-(when (equal 'ivy config-completion-system)
-  (general-define-key
-   :prefix "C-c"
-   :infix "f"
-   "C-c f" '(counsel-find-file :which-key "find-file")
-   "f"     '(counsel-find-file :which-key "find-file")
-   "e"     '(-counsel-flycheck :which-key "flycheck")
-   "r"     '(counsel-rg :which-key "ripgrep")
-   "g"     '(counsel-git-grep :which-key "git-grep")
-   "t"     '(-counsel-todos :which-key "todos")))
+(general-define-key
+ :prefix "C-c"
+ :infix "f"
+ "C-c f" 'find-file
+ "f"     'find-file
+ "r"     '(consult-ripgrep :which-key "ripgrep")
+ "g"     '(consult-git-grep :which-key "git-grep")
+ ;; "t"     '(-counsel-todos :which-key "todos")
+ )
 
 ;;;; (v) Version control
 

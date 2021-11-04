@@ -39,6 +39,7 @@
   (cursor-in-non-selected-windows nil))
 
 (use-package emacs
+  :disabled t
   :hook
   ((window-setup . -set-margins)
    (window-state-change . -set-margins)
@@ -57,6 +58,7 @@
            (set-window-buffer window (current-buffer))))))))
 
 (use-package emacs
+  :disabled t
   :custom
   (display-buffer-alist
    `(;; bottom side window

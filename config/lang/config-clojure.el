@@ -142,5 +142,31 @@
 (use-package clojars
   :straight t)
 
+(use-package lsp-mode
+  :disabled t
+  :hook ((clojure-mode . lsp)
+         (clojurec-mode . lsp)
+         (clojurescript-mode . lsp))
+  :config
+  (dolist (m '(clojure-mode
+               clojurec-mode
+               clojurescript-mode
+               clojurex-mode))
+    (add-to-list 'lsp-language-id-configuration `(,m . "clojure")))
+  :custom
+  (lsp-clojure-server-command '("bash" "-c" "clojure-lsp")))
+
+
+(defun config-clojure-cider-test-report-render-ansi-escape (_ _ _)
+  "Fixes rendering issues with matcher combinators."
+  (with-current-buffer cider-test-report-buffer
+    (read-only-mode -1)
+    (ansi-color-apply-on-region (point-min) (point-max))
+    (read-only-mode +1)))
+
+(advice-add
+ 'cider-test-render-report :after 'config-clojure-cider-test-report-render-ansi-escape)
+
+
 (provide 'config-clojure)
 ;;; config-clojure.el ends here
