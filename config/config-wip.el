@@ -121,13 +121,13 @@
 
 (use-package cljstyle-mode
   :disabled t
-  :ensure-system-package (cljstyle . "brew cask install cljstyle")
+  :ensure-system-package (cljstyle . "brew install --cask cljstyle")
   :straight (cljstyle-mode :type git :host github :repo "jstokes/cljstyle-mode")
   :hook (clojure-mode-hook . cljstyle-mode))
 
 (use-package apheleia
   :straight (apheleia :host github :repo "raxod502/apheleia")
-  :ensure-system-package (cljstyle . "brew cask install cljstyle")
+  :ensure-system-package (cljstyle . "brew install --cask cljstyle")
   :hook ((after-init . apheleia-global-mode))
   :config
   (add-to-list 'apheleia-formatters '(cljstyle . ("cljstyle" "pipe") ))
