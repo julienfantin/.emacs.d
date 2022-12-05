@@ -38,7 +38,7 @@
   :bind ("C-c i" . imenu)
   :custom
   (imenu-auto-rescan t)
-  (imenu-max-item-length 100))
+  (imenu-max-item-length 1000))
 
 ;;; Third-party
 
@@ -55,39 +55,36 @@
   :straight t
   :bind ("C-c I" . imenu-anywhere))
 
-(use-package flimenu
-  :straight t
-  :after imenu
-  :init (flimenu-global-mode))
-
-(use-package imenu-list
-  :straight t
-  :bind ("C-c M-i" . imenu-list-smart-toggle)
-  :hook (imenu-list-major-mode . toggle-truncate-lines)
-  :custom
-  (imenu-list-focus-after-activation t)
-  (imenu-list-auto-resize t)
-  (imenu-list-mode-line-format nil))
-
 (use-package avy
   :straight t
   :custom
-  (avy-style 'at-full)
-  (avy-all-windows t)
-  (avy-timeout-seconds 0.28)
+  (avy-style 'at)
+  (avy-all-windows nil)
+  (avy-timeout-seconds 0.3)
+  (avy-background t)
+  :custom-face
+  (avy-background-face ((t (:foreground unspecified :background unspecified :inherit shadow))))
   :config
   ;; Use C-' in isearch to bring up avy
-  (avy-setup-default))
-
-(use-package deadgrep
-  :ensure-system-package (rg . ripgrep)
-  :straight t
-  :bind (("C-c r" . deadgrep)
-         :map deadgrep-mode-map
-         ("w" . deadgrep-edit-mode)
-         :map deadgrep-edit-mode-map
-         ("C-c C-c" . deadgrep-mode)
-         ("C-x C-s" . deadgrep-mode)))
+  (avy-setup-default)
+  (with-eval-after-load "embark"
+    (defun avy-action-replace-sexp (pt)
+      (unwind-protect
+          (progn
+            (goto-char pt)
+            (let ((bounds (bounds-of-thing-at-point 'sexp)))
+              (puni-delete-region (car bounds) (cdr bounds)))))
+      t)
+    (defun avy-action-embark (pt)
+      (unwind-protect
+          (save-excursion
+            (goto-char pt)
+            (embark-act))
+        (select-window
+         (cdr (ring-ref avy-ring 0))))
+      t)
+    (add-to-list 'avy-dispatch-alist  '(?. . avy-action-embark))
+    (add-to-list 'avy-dispatch-alist  '(?r . avy-action-replace-sexp))))
 
 (provide 'config-search)
 ;;; config-search.el ends here

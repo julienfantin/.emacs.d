@@ -27,6 +27,18 @@
 (require 'use-package)
 (require 'config-path)
 
+;; Load/enable theme hook
+
+(defvar load-theme-hook nil
+  "Normal hook run after loading a theme.")
+
+(defun run-load-theme-hook (&rest _args)
+  "Run `load-theme-hook'."
+  (run-hooks 'load-theme-hook))
+
+(advice-add 'enable-theme :after #'run-load-theme-hook)
+(advice-add 'load-theme :after #'run-load-theme-hook)
+
 ;;; Config
 
 (defcustom config-theme-light 'modus-operandi
@@ -41,49 +53,60 @@
 
 (defun config-theme-load-default-theme (&optional appearance)
   "Load the default theme for the given APPEARANCE."
-  (pcase (or appearance
-             (when (boundp '-ns-system-appearance) -ns-system-appearance))
+  (pcase (or appearance (when (boundp '-ns-system-appearance) -ns-system-appearance))
     ('dark (load-theme config-theme-dark t))
     (_ (load-theme config-theme-light t))))
+
+(defun config-theme-inherit-default ()
+  "Do not use bold and italic for builtins and documentation."
+  (set-face-attribute 'font-lock-comment-face nil :inherit 'default)
+  (set-face-attribute 'font-lock-comment-delimiter-face nil :inherit 'default)
+  (set-face-attribute 'font-lock-doc-face nil :inherit 'default)
+  (set-face-attribute 'font-lock-builtin-face nil :inherit 'default)
+  (set-face-attribute 'font-lock-keyword-face nil :inherit 'default))
 
 ;;; Built-ins
 
 (use-package custom
   :commands load-theme
-  :hook (after-init . config-theme-load-default-theme)
-  :config
-  (config-path-add-to-load-path custom-theme-directory)
+  :hook
+  ((after-init . config-theme-load-default-theme)
+   ;; (load-theme . config-theme-inherit-default)
+   )
   :custom
   (custom-safe-themes t)
-  (custom-theme-directory (expand-file-name "themes/" user-emacs-directory))
   :config
-  ;; Patch from emacs-plus
-  (when (boundp 'ns-system-appearance-change-functions)
-    (add-hook 'ns-system-appearance-change-functions
-              #'(lambda (appearance)
-                  (mapc #'disable-theme custom-enabled-themes)
-                  (pcase appearance
-                    ('light (load-theme config-theme-light t))
-                    ('dark (load-theme config-theme-dark t)))))))
+  ;; requires a patch from emacs-plus
+  (add-hook 'ns-system-appearance-change-functions 'config-theme-load-default-theme))
 
 ;;; Third-party
 
-(use-package doom-themes           :straight t)
-(use-package dracula-theme         :straight t)
-(use-package darktooth-theme       :straight t)
-(use-package zerodark-theme        :straight t)
-(use-package gruvbox-theme         :straight t)
-(use-package rebecca-theme         :straight t)
-(use-package nord-theme            :straight t)
+(use-package fontify-face :straight t)
 
-(use-package modus-themes
-  :straight t)
-
-(use-package kaolin-themes
+(use-package ef-themes
   :straight t
   :custom
-  (kaolin-themes-comments-style 'bright)
-  (kaolin-themes-distinct-company-scrollbar t))
+  (ef-themes-mixed-fonts t))
+
+(use-package modus-themes
+  :straight t
+  :init
+  (setq
+   modus-themes-bold-constructs t
+   modus-themes-box-buttons '(flat accented underline)
+   modus-themes-deuteranopia t
+   modus-themes-diffs 'desaturated
+   modus-themes-italic-constructs t
+   modus-themes-lang-checkers '(straight-underline text-also)
+   modus-themes-links '(neutral-underline background bold)
+   modus-themes-mode-line '(accented borderless (padding . 1))
+   modus-themes-prompts '(intense bold)
+   modus-themes-region '(bg-only no-extend)
+   modus-themes-subtle-line-numbers t
+   modus-themes-mixed-fonts t
+   modus-themes-variable-pitch-ui nil))
+
+(use-package doom-themes :straight t)
 
 (provide 'config-theme)
 ;;; config-theme.el ends here

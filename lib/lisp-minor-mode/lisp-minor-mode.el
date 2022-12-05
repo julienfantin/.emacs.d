@@ -4,7 +4,6 @@
 ;;; Code:
 (require 'prog-mode)
 (require 'subword)
-(require 'org)
 
 
 ;;; Customs
@@ -23,30 +22,8 @@
     (inferior-lfe-mode . inferior-lfe))
   "Alist mapping the name of an elisp file  file to mode symbol.")
 
-(defcustom lisp-minor-mode-prettify-symbols-alist
-  '((t
-     . (("<=" . (?· (Br . Bl) ?≤))
-        (">=" . (?· (Br . Bl) ?≥))))
-    ((cider-repl-mode
-      clojure-mode
-      clojurec-mode
-      clojurescript-mode)
-     . (("->"  . (?- (Br . Bc) ?- (Br . Bc) ?>))
-        ("->>" . (?\s (Br . Bl) ?\s (Br . Bl) ?\s
-                      (Bl . Bl) ?- (Bc . Br) ?- (Bc . Bc) ?>
-                      (Bc . Bl) ?- (Br . Br) ?>))
-        ("fn"  . (?· (Br . Bl) ?λ)))))
-  "Alist of major mode (or list of minor or major modes) to alist of prettify symbol mappings."
-  :type 'alist
-  :group 'lisp-minor-mode)
-
 (defcustom lisp-minor-mode-mini-buffer nil
   "Enable 'lisp-minor-mode' in mini-buffer when it makes sense."
-  :type 'boolean
-  :group 'lisp-minor-mode)
-
-(defcustom lisp-minor-mode-prettify t
-  "Enable 'prettify-symbols-mode' in Lisp modes."
   :type 'boolean
   :group 'lisp-minor-mode)
 
@@ -95,28 +72,6 @@
     (lisp-minor-mode)))
 
 
-;;; Prettify
-
-(defun lisp-minor-mode-prettify-turn-on ()
-  "Turn on 'prettify-symbols-mode' for Lisp."
-  (let ((alist nil))
-    (dolist (binding (alist-get t lisp-minor-mode-prettify-symbols-alist))
-      (push binding alist))
-    (dolist (mode (lisp-minor-mode-current-modes))
-      (dolist (binding (lisp-minor-mode-alist-get mode lisp-minor-mode-prettify-symbols-alist))
-        (push binding alist)))
-    (set (make-local-variable 'prettify-symbols-alist) alist))
-  (prettify-symbols-mode 1))
-
-(defun lisp-minor-mode-prettify-turn-off ()
-  "Turn off 'prettify-symbols-mode' for Lisp."
-  (dolist (binding (alist-get t lisp-minor-mode-prettify-symbols-alist))
-    (delete binding prettify-symbols-alist))
-  (dolist (mode (lisp-minor-mode-current-modes))
-    (dolist (binding (lisp-minor-mode-alist-get mode lisp-minor-mode-prettify-symbols-alist))
-      (delete binding prettify-symbols-alist))))
-
-
 ;;; Setup
 
 (defun lisp-global-minor-mode-install-hooks ()
@@ -139,38 +94,35 @@
       (with-eval-after-load file
         (remove-hook hook #'lisp-minor-mode)))))
 
-
-;;; Minor modes
-;;;; Global
+;;; Global mode
 
 ;;;###autoload
 (define-minor-mode lisp-global-minor-mode
-  "Global minor mode for all thing lisp"
-  nil nil nil
+  "Global minor mode for all thing Lisp."
   :global t
+  :group 'Programming
   :keymap nil
   (if lisp-global-minor-mode
       (lisp-global-minor-mode-install-hooks)
     (lisp-global-minor-mode-remove-hooks)))
 
-;;;; Local
+
+;;; Minor mode
 
 (defvar lisp-minor-mode-map (make-sparse-keymap))
 
 (defun lisp-minor-mode-turn-on ()
   "Activation function."
-  (when lisp-minor-mode-prettify (lisp-minor-mode-prettify-turn-on))
   (when lisp-minor-mode-subword (subword-mode 1)))
 
 (defun lisp-minor-mode-turn-off ()
   "Deactivation function."
-  (when lisp-minor-mode-prettify (lisp-minor-mode-prettify-turn-off))
   (when lisp-minor-mode-subword (subword-mode -1)))
 
 ;;;###autoload
 (define-minor-mode lisp-minor-mode
-  "Minor mode for all things lisp"
-  nil " λ" nil
+  "Minor mode for all things Lisp."
+  :lighter " λ"
   :global nil
   :keymap lisp-minor-mode-map
   (if lisp-minor-mode

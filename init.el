@@ -35,18 +35,26 @@
 
 ;;; Configs
 
-(use-package private :demand t :load-path "./lib/" :if (file-exists-p "./lib/private.el"))
+;; (use-package private :demand t :load-path "./lib/" :if (file-exists-p "./lib/private.el"))
+
+;;;; Keybindings
+
+
+
+
+
+(require 'config-keybindings)
 
 (require 'config-theme)
+
 (require 'config-path)
-(require 'config-browser)
 (require 'config-buffers)
 (require 'config-completion)
+(require 'config-emacs)
 (require 'config-debug)
 (require 'config-defaults)
 (require 'config-doc)
 (require 'config-editing)
-(require 'config-elpa)
 (require 'config-files)
 (require 'config-font-lock)
 (when window-system
@@ -55,13 +63,9 @@
 (require 'config-gui)
 (require 'config-help)
 (require 'config-indentation)
-;; (require 'config-irc)
-(when (equal config-completion-system 'ivy)
-  (require 'config-ivy))
-(require 'config-marks)
 (require 'config-modeline)
 (require 'config-org)
-;; (require 'config-outlines)
+(require 'config-outlines)
 (require 'config-parsers)
 (require 'config-persistence)
 (require 'config-prog-mode)
@@ -77,14 +81,6 @@
 
 (require 'config-lsp)
 (require 'config-langs)
-
-;;;; Tools
-
-;; (require 'config-docker :disabled t)
-
-;;;; Keybindings
-
-(require 'config-keybindings)
 
 ;;;; WIP
 

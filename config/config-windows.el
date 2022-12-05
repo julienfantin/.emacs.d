@@ -25,6 +25,20 @@
 ;;; Code:
 (require 'use-package)
 
+;; Display rules
+
+;; - Info and documentation
+;; always select, so it can be dismissed quickly
+;; if in code -> new window
+;; if traversing from existing doc window -> reuse window
+
+;; - repl
+;; right side
+
+
+;; term
+;; from top whole width
+
 ;;; Config
 
 (defvar Φ (- 1 (/ 1 1.618033988749895)))
@@ -33,87 +47,101 @@
 
 (use-package emacs
   :custom
-  (scroll-preserve-screen-position t)
+  ;; (scroll-preserve-screen-position t)
   ;; Required for compatibility with windmove display actions
-  (switch-to-buffer-obey-display-actions t)
+  ;; (switch-to-buffer-obey-display-actions t)
   (cursor-in-non-selected-windows nil))
 
-(use-package emacs
+(use-package popper
   :disabled t
-  :hook
-  ((window-setup . -set-margins)
-   (window-state-change . -set-margins)
-   (window-configuration-change . -set-margins))
-  :preface
-  (defvar config-windows-margin-width 4)
-  :config
-  (defun -set-margins (&optional _)
-    (walk-windows
-     (lambda (window)
-       (with-current-buffer (window-buffer window)
-         (when (or (not (equal config-windows-margin-width left-margin-width))
-                   (not (equal config-windows-margin-width right-margin-width)))
-           (setq left-margin-width config-windows-margin-width)
-           (setq right-margin-width config-windows-margin-width)
-           (set-window-buffer window (current-buffer))))))))
+  :straight t
+  :bind (("C-`"   . popper-toggle-latest)
+         ("M-`"   . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "\\*Warnings\\*"
+          "\\*Compile-Log\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+          "\\*vterm\\*"
+          help-mode
+          compilation-mode))
+  (popper-mode +1)
+  (popper-echo-mode +1))
 
 (use-package emacs
-  :disabled t
   :custom
   (display-buffer-alist
-   `(;; bottom side window
-     ("\\*\\(Flycheck errors\\).*"
-      (display-buffer-in-side-window)
-      (window-height . ,(* Φ 0.5))
-      (side . bottom)
-      (slot . 0))
-     ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
-      (display-buffer-in-side-window)
-      (window-height . ,Φ)
-      (side . bottom)
-      (slot . -1))
-     (".*\\*\\(Completions\\|Embark Live Occur\\).*"
-      (display-buffer-in-side-window)
-      (window-height . ,Φ)
-      (side . bottom)
-      (slot . -2)
-      (window-parameters . ((no-other-window . t))))
+   `(;; ("\\`\\*Async Shell Command\\*\\'"
+     ;;  (display-buffer-no-window))
+     ;; ;; bottom side window
+     ;; ("\\*\\(Flycheck errors\\).*"
+     ;;  (display-buffer-in-side-window)
+     ;;  (window-height . ,(* Φ 0.5))
+     ;;  (side . bottom)
+     ;;  (slot . -1))
+     ;; ("\\*\\(Backtrace\\|Warnings\\|Compile-Log\\)\\*"
+     ;;  (display-buffer-in-side-window)
+     ;;  (window-height . ,Φ)
+     ;;  (side . bottom)
+     ;;  (slot . -1))
      ;; top side window
-     ("^\\(\\*e?shell\\|vterm\\).*"
-      (display-buffer-in-side-window)
-      (window-height . ,Φ)
-      (side . top)
-      (slot . 0))
+     ;; ("^\\(\\*e?shell\\|vterm\\).*"
+     ;;  (display-buffer-in-side-window)
+     ;;  (window-height . ,Φ)
+     ;;  (side . top)
+     ;;  (slot . 0))
      ;; Right side window
-     ("^\\(\\*Help.*\\|\\*cider.*\\)"
-      (display-buffer-in-side-window)
-      (window-width . (- 1 ,Φ))
-      (side . right)
-      (slot . 0))
+     ("^\\*\\(\\help\\|info\\).*"
+      (display-buffer-reuse-window display-buffer-same-window)
+      ;; (window-width . (- 1 ,Φ))
+      ;; (side . right)
+      ;; (slot . 0)
+      )
+     ;; ("^\\*cider.*"
+     ;;  (display-buffer-in-side-window)
+     ;;  (window-width . (- 1 ,Φ))
+     ;;  (side . right)
+     ;;  (slot . 0))
      ("\\*Custom.*"
-      (display-buffer-in-side-window)
+      (display-buffer-reuse-window)
       (window-width . ,Φ)
       (side . right)
-      (slot . 1))))
-  :hook ((help-mode . visual-line-mode)
-         (custom-mode . visual-line-mode))
-  :bind (("s-n" . next-buffer)
+      (slot . -2))))
+  :hook
+  ((help-mode . visual-line-mode)
+   (custom-mode . visual-line-mode))
+  :hook (after-init . global-visual-line-mode)
+  :bind (("s-d" . dedicated-mode)
+         ("s-n" . next-buffer)
          ("s-p" . previous-buffer)
          ("s-o" . other-window)
-         ("s-2" . split-window-below)
-         ("s-3" . split-window-right)
-         ("s-0" . delete-window)
-         ("s-1" . delete-other-windows)
+         ;; ("s-2" . split-window-below)
+         ;; ("s-3" . split-window-right)
+         ;; ("s-0" . delete-window)
+         ;; ("s-1" . delete-other-windows)
          ("s-\\" . balance-windows-area)
-         ("s-q" . window-toggle-side-windows)))
+         ("s-q" . window-toggle-side-windows))
+  :config
+  (define-minor-mode dedicated-mode
+    "Minor mode for dedicating windows.
+This minor mode dedicates the current window to the current buffer.
+The code is taken from here: https://github.com/skeeto/.emacs.d/blob/master/lisp/extras.el"
+    :init-value nil
+    :lighter " [D]"
+    (let* ((window (selected-window))
+           (dedicated (window-dedicated-p window)))
+      (set-window-dedicated-p window (not dedicated))
+      (message "Window %sdedicated to %s"
+               (if dedicated "no longer " "")
+               (buffer-name)))))
 
 (use-package tab-bar
-  :hook
-  (after-init . tab-bar-history-mode)
-  :bind
-  ("C-x t n" . tab-bar-switch-to-next-tab)
-  ("C-x t p" . tab-bar-switch-to-prev-tab)
-  ("C-x t <tab>" . tab-bar-switch-to-recent-tab))
+  :custom
+  (tab-bar-select-tab-modifiers '(super))
+  (tab-bar-show nil))
 
 (use-package windmove
   :bind (("s-h" . nil)
@@ -139,8 +167,8 @@
 (use-package winner
   :hook (after-init . winner-mode)
   :bind
-  (("s-U" . winner-undo)
-   ("s-R" . winner-redo))
+  (("s-u" . winner-undo)
+   ("s-r" . winner-redo))
   :custom
   (winner-dont-bind-my-keys t))
 
@@ -158,37 +186,20 @@
   (windresize-increment 10)
   (windresize-default-increment 10))
 
-(use-package ace-window
+(use-package winum
   :straight t
-  :hook (after-init . ace-window-display-mode)
-  :commands (aw-window-list aw-switch-to-window)
-  :preface
-  (dolist (n (number-sequence 1 10))
-    (eval
-     `(defun ,(intern (format "aw-switch-to-window-%s" n)) ()
-        (interactive)
-        ,(format "Switch to window at index %s" n)
-        (when-let (window (nth (- ,n 1) (aw-window-list)))
-          (aw-switch-to-window window)))))
+  :hook (after-init . winum-mode)
   :bind
-  (("C-c 1" . aw-switch-to-window-1)
-   ("C-c 2" . aw-switch-to-window-2)
-   ("C-c 3" . aw-switch-to-window-3)
-   ("C-c 4" . aw-switch-to-window-4)
-   ("C-c 5" . aw-switch-to-window-5)
-   ("C-c 6" . aw-switch-to-window-6)
-   ("C-c 7" . aw-switch-to-window-7)
-   ("C-c 8" . aw-switch-to-window-8)
-   ("C-c 9" . aw-switch-to-window-9)
-   ("C-c 0" . aw-switch-to-window-0))
-  :custom
-  (aw-keys '(?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9 ?0))
-  (aw-scope 'frame))
+  (("C-c 1" . winum-select-window-1)
+   ("C-c 2" . winum-select-window-2)
+   ("C-c 3" . winum-select-window-3)
+   ("C-c 4" . winum-select-window-4)
+   ("C-c 5" . winum-select-window-5)
+   ("C-c 6" . winum-select-window-6)
+   ("C-c 7" . winum-select-window-7)
+   ("C-c 8" . winum-select-window-8)
+   ("C-c 9" . winum-select-window-9)))
 
-(use-package zygospore
-  :straight t
-  :bind
-  ("C-x 1" . zygospore-toggle-delete-other-windows))
 
 ;;; Commands
 
@@ -204,30 +215,6 @@
       (select-window win))))
 
 (bind-key "s-<tab>" '-switch-to-last-window)
-
-;;;###autoload
-(defun -window-split-toggle ()
-  "Toggle between horizontal and vertical split."
-  (interactive)
-  (let ((done))
-    (dolist (dirs '((right . down) (down . right)))
-      (unless done
-        (let* ((win (selected-window))
-               (nextdir (car dirs))
-               (neighbour-dir (cdr dirs))
-               (next-win (windmove-find-other-window nextdir win))
-               (neighbour1 (windmove-find-other-window neighbour-dir win))
-               (neighbour2 (if next-win (with-selected-window next-win
-                                          (windmove-find-other-window neighbour-dir next-win)))))
-          (setq done (and (eq neighbour1 neighbour2)
-                          (not (eq (minibuffer-window) next-win))))
-          (if done
-              (let* ((other-buf (window-buffer next-win)))
-                (delete-window next-win)
-                (if (eq nextdir 'right)
-                    (split-window-vertically)
-                  (split-window-horizontally))
-                (set-window-buffer (windmove-find-other-window neighbour-dir) other-buf))))))))
 
 (provide 'config-windows)
 ;;; config-windows.el ends here

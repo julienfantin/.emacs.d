@@ -20,6 +20,9 @@
 
 ;;; Commentary:
 
+;; Interesting packages:
+;; https://github.com/mkcms/interactive-align
+
 ;;
 
 ;;; Code:
@@ -45,6 +48,26 @@
   :config
   (setq-default comment-auto-fill-only-comments t))
 
+(use-package view-mode
+  :disabled t
+  :bind (("C-c q" . view-mode)
+         :map view-mode-map
+         ("i" . view-exit)
+         ("n" . next-line)
+         ("p" . previous-line))
+  :preface
+  (defun config-editing-view-mode-update-cursor ()
+    (setq cursor-type (if view-mode 'box 'bar)))
+  (defun view-mode-activate ()
+    ;; autoloads cannot compile if the buffer is read-only?
+    (unless (string-match ".+-autoloads.el" (buffer-file-name))
+      
+      (view-mode 1)))
+  :init
+  (setq-default cursor-type 'bar)
+  (add-hook 'find-file-hook #'view-mode-activate)
+  (add-hook 'view-mode-hook #'config-editing-view-mode-update-cursor))
+
 ;;; Third-party
 
 (use-package goto-chg
@@ -54,6 +77,26 @@
 (use-package expand-region
   :straight t
   :bind ("C-c u" . er/expand-region))
+
+(use-package goggles
+  :straight t
+  :hook ((prog-mode text-mode) . goggles-mode)
+  :custom
+  (goggles-pulse-iterations 10))
+
+(use-package mwim
+  :straight t
+  :bind (("C-a" . mwim-beginning)
+         ("C-e" . mwim-end)))
+
+(use-package vundo
+  :straight t
+  :bind ("C-x u" . vundo)
+  :custom
+  (vundo-compact-display t))
+
+(use-package wgrep
+  :straight t)
 
 ;;; Commands
 
@@ -93,6 +136,13 @@
         ;; This would override `fill-column' if it's an integer.
         (emacs-lisp-docstring-fill-column t))
     (fill-paragraph nil region)))
+
+;;;###autoload
+(defun -delete-blank-lines ()
+  (interactive)
+  (let ((from (point)))
+    (replace-regexp "^\n\n+" "\n"  nil (point-min) (point-max) nil)
+    (goto-char from)))
 
 (provide 'config-editing)
 ;;; config-editing.el ends here

@@ -28,15 +28,21 @@
 
 ;;; Third-party
 
+(use-package all-the-icons
+  :straight t
+  :init
+  (setq all-the-icons-color-icons nil) )
+
 (use-package doom-modeline
   :straight t
   :init (doom-modeline-mode 1)
+  :config
+  (setq inhibit-compacting-font-caches t)
   :custom
+  (doom-modeline-hud t)
   (doom-modeline-icon (display-graphic-p)) ;; NOTE eval (all-the-icons-install-fonts)
-  (doom-modeline-bar-width 36)
-  (doom-modeline-height 24))
-
-(use-package hide-mode-line :straight t)
+  (doom-modeline-bar-width 4)
+  (doom-modeline-height 25))
 
 (use-package recursion-indicator
   :straight t

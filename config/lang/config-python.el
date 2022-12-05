@@ -100,7 +100,7 @@ $ autoflake --remove-all-unused-imports -i unused_imports.py"
 
 (use-package python
   :disabled t
-  :hook ((before-save-hook . config-python-autoflake-turn-on)))
+  :hook ((before-save . config-python-autoflake-turn-on)))
 
 (use-package pytest
   :disabled t

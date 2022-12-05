@@ -26,20 +26,29 @@
 
 (require 'use-package)
 
+(defvar config-project-backend 'projectile)
+
+(defvar config-project-owner-paths '("~/.emacs.d" "~/src/julienfantin"))
+
+(defun config-project-project-root (&optional dir)
+  (cl-case config-project-backend
+    (projectile (projectile-project-root dir))
+    (project (project-root dir))))
+
+(defun config-project-owner-p (&optional dir)
+  (let ((root (or dir (buffer-file-name))))
+    (cl-some
+     (lambda (path) (string-prefix-p path root))
+     (mapcar 'expand-file-name config-project-owner-paths))))
+
 ;;; Third-party
 
-(use-package direnv
-  :disabled t
-  :ensure-system-package direnv
-  :straight t
-  :hook (after-init . direnv-mode))
-
 (use-package editorconfig
-  :disabled t
   :straight t
   :hook (after-init . editorconfig-mode))
 
 (use-package projectile
+  :if (eq config-project-backend 'projectile)
   :straight t
   :after no-littering
   :bind ("C-c p" . projectile-command-map)
@@ -57,15 +66,6 @@
   (projectile-mode-line nil)
   (projectile-enable-caching nil)
   (projectile-create-missing-test-files t))
-
-(use-package counsel-projectile
-  :if (equal config-completion-system 'ivy)
-  :straight t
-  :after (counsel projectile)
-  :hook ((after-init . counsel-projectile-mode))
-  :custom
-  (counsel-projectile-remove-current-project t)
-  (counsel-projectile-remove-current-buffer t))
 
 (provide 'config-project)
 ;;; config-project.el ends here

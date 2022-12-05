@@ -38,23 +38,25 @@
         (cider-eval-last-sexp             . pulse-eval-highlight-sexp-advice)
         (cider-pprint-eval-last-sexp      . pulse-eval-highlight-sexp-advice)
         (cider-eval-defun-at-point        . pulse-eval-highlight-defun-advice)
-        (cider-pprint-eval-defun-at-point . pulse-eval-highlight-defun-advice))))
-  "Advices alist, (mode . (function . around-advice))"
+        (cider-pprint-eval-defun-at-point . pulse-eval-highlight-defun-advice)))
+    (lispy-mode
+     . ((lispy-eval . pulse-eval-highlight-forward-sexp-advice))))
+  "Advices alist, (mode . (function . around-advice))."
   :type 'alist
   :group 'pulse-eval)
 
 (defface pulse-eval-face
   '((t (:inherit pulse-highlight-start-face)))
-  "Face used for pulsing interactively evaluated code"
+  "Face used for pulsing interactively evaluated code."
   :group 'pulse-eval)
 
 (defface pulse-eval-error-face
   '((t (:inherit error)))
-  "Face used for pulsing interactively evaluated code"
+  "Face used for pulsing interactively evaluated code."
   :group 'pulse-eval)
 
 (defun pulse-eval--adjust-overlay-priority-advice (overlay &optional _)
-  "Advise 'pulse-momentary-highlight-overlay' to change 'OVERLAY' priority.
+  "Advise `pulse-momentary-highlight-overlay' to change `OVERLAY' priority.
 
 By setting a higher priority we prevent visually clashes with
 other overlay-based modes such as flycheck."

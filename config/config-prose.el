@@ -30,12 +30,13 @@
 (defvar config-prose-dicts-dir
   (expand-file-name "etc/dictionaries/" user-emacs-directory))
 
-(defvar config-prose-visual-fill-column 120)
+(defvar config-prose-visual-fill-column 100)
 
 ;;; Built-ins
 
 (use-package ispell
   :ensure-system-package (hunspell)
+  :bind (:map text-mode-map ("C-M-i" . nil))
   :custom (ispell-silently-savep t)
   :config
   (setenv "DICPATH" config-prose-dicts-dir)
@@ -61,21 +62,11 @@
 (use-package flyspell-lazy
   :straight t
   :hook (flyspell-mode . flyspell-lazy-mode)
+  :bind (:map flyspell-mode-map ("C-M-i" . nil))
   :config
   (defadvice flyspell-small-region (around flyspell-small-region-no-sit-for activate)
-    (flyspell-lazy--with-mocked-function 'sit-for t
-      ad-do-it)))
-
-(use-package flyspell-correct-ivy
-  :if (equal config-completion-system 'ivy)
-  :straight t
-  :after flyspell
-  :bind
-  (:map flyspell-mode-map
-        ("C-c x" . flyspell-auto-correct-word)
-        ("C-c c" . flyspell-correct-wrapper))
-  :custom
-  (flyspell-correct-interface #'flyspell-correct-ivy))
+    (flyspell-lazy--with-mocked-function
+        'sit-for t ad-do-it)))
 
 (use-package prose-minor-mode
   :hook ((org-mode         . prose-minor-mode)
@@ -84,7 +75,6 @@
          (prose-minor-mode . flyspell-mode)))
 
 (use-package adaptive-wrap
-  :disabled t
   :straight t
   :commands adaptive-wrap-prefix-mode
   :after prose-minor-mode
@@ -97,12 +87,6 @@
   :custom
   (visual-fill-column-width config-prose-visual-fill-column)
   (visual-fill-column-center-text t))
-
-(use-package writegood-mode
-  :disabled t
-  :straight t
-  :after prose-minor-mode
-  :hook (prose-minor-mode . writegood-mode))
 
 (use-package markdown-mode
   :straight t

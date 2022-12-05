@@ -34,33 +34,21 @@
 
 ;;; Third-party
 
-(use-package outshine
+(use-package outline-minor-faces
   :straight t
-  :commands
-  (outshine-hook-function outshine-insert-heading)
-  :hook (outline-minor-mode . config-outline-outshine-enable)
-  :preface
-  (defun config-outline-outshine-enable ()
-    (outshine-hook-function)
-    ;; With this config and the lispy remapping, navigating with n, p in lispy
-    ;; special will treat outlines as part of the normal
-    (when (bound-and-true-p lispy-outline)
-      (set (make-local-variable 'lispy-outline) (outshine-calc-outline-regexp))))
-  :custom
-  (outshine-fontify-whole-heading-line t)
-  (outline-cycle-emulate-tab t))
+  :after outline
+  :hook (outline-minor-mode . outline-minor-faces-add-font-lock-keywords))
 
-(use-package outline-magic :straight t)
+(use-package backline
+  :straight t
+  :after outline
+  :init (advice-add 'outline-flag-region :after 'backline-update))
 
-(use-package lispy
-  :after outline-minor-mode
-  :config
-  (defun config-outline-lispy-compat ()
-    (when outline-minor-mode
-      (outline-minor-mode -1)
-      (outline-minor-mode 1)))
-  :hook
-  ((lispy-mode . config-outline-lispy-compat)))
+(use-package bicycle
+  :straight t
+  :after outline
+  :bind (:map outline-minor-mode-map
+              ("C-c TAB" . bicycle-cycle)))
 
 (provide 'config-outlines)
 ;;; config-outlines.el ends here

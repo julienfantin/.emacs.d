@@ -25,15 +25,16 @@
 ;;; Code:
 
 (require 'use-package)
-(require 'config-path)
 
 ;;; Built-ins
 
 (use-package savehist
-  :disabled t
   :after no-littering
   :hook (after-init . savehist-mode)
   :custom
+  (history-length 1000)
+  (history-delete-duplicates t)
+  (savehist-save-minibuffer-history t)
   (savehist-additional-variables '(search-ring regexp-search-ring))
   (savehist-autosave-interval 60))
 

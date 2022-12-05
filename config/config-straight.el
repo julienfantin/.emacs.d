@@ -50,9 +50,11 @@
 
 ;;; System packages
 
+(use-package use-package-ensure-system-package
+  :straight t)
+
 (use-package system-packages
   :straight t
-  :demand t
   :custom
   (system-packages-use-sudo nil)
   (system-packages-package-manager 'brew))

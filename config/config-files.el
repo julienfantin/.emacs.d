@@ -26,10 +26,9 @@
 
 ;; From https://github.com/The-BigDaddy/.emacs.d
 (use-package autorevert
-  :hook ((focus-in . -auto-revert-buffers)
-         (after-save . -auto-revert-buffers))
+  :hook ((focus-in . config-files-auto-revert-buffers))
   :custom
-  (auto-revert-verbose t)
+  (auto-revert-verbose nil)
   (auto-revert-use-notify nil)
   (auto-revert-stop-on-user-input nil)
   :config
@@ -40,7 +39,7 @@
   ;; grind Emacs to a halt if you do expensive IO (outside of Emacs) on the
   ;; files you have open (like compression). We only really need revert changes
   ;; when we switch to a buffer or when we focus the Emacs frame.
-  (defun -auto-revert-buffers (&optional buffer-list)
+  (defun config-files-auto-revert-buffers (&optional buffer-list)
     (dolist (buf (cl-loop for buf in (or buffer-list (buffer-list))
                           when (get-buffer-window buf)
                           collect buf))
@@ -68,14 +67,14 @@
 
 (use-package files
   :preface
-  (defun config-files--create-buffer-file-parent-directories ()
+  (defun config-files-create-buffer-file-parent-directories ()
     (when buffer-file-name
       (let ((dir (file-name-directory buffer-file-name)))
         (when (and (not (file-exists-p dir))
                    (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
           (make-directory dir t)))))
   :hook
-  ((before-save . config-files--create-buffer-file-parent-directories)
+  ((before-save . config-files-create-buffer-file-parent-directories)
    (after-save  . executable-make-buffer-file-executable-if-script-p)))
 
 ;;; Third-party
@@ -98,36 +97,14 @@
 
 (use-package sudo-edit :straight t)
 
-(use-package dired-k
-  :disabled t
-  :straight t
-  :after dired
-  :hook ((dired-initial-position . dired-k)
-         (dired-after-readin     . dired-k-no-revert))
-  :custom
-  (dired-k-style nil)
-  (dired-listing-switches "-alh")
-  (dired-k-human-readable t))
+(use-package dired-gitignore
+  :straight (dired-gitignore :type git :host github :repo "johannes-mueller/dired-gitignore.el")
+  :hook (dired-mode . dired-gitignore-mode))
 
-(use-package dired-hacks-utils
-  :disabled t
-  :straight t
-  :after dired
-  :bind (:map dired-mode-map
-              (("n" . dired-hacks-next-file)
-               ("p" . dired-hacks-previous-file))))
-
-(use-package dired-narrow
-  :disabled t
-  :straight t
-  :after dired
-  :bind (:map dired-mode-map
-              ("/" . dired-narrow-fuzzy)))
-
-;;; Commands
+ ;;; Commands
 
 ;; https://emacs.stackexchange.com/questions/24459/revert-all-open-buffers-and-ignore-errors
-(defun -revert-all-file-buffers ()
+(defun config-files-revert-all-file-buffers ()
   "Refresh all open file buffers without confirmation.
 
 Buffers in modified (not yet saved) state in emacs will not be

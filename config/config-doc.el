@@ -29,24 +29,26 @@
 ;;; Built-ins
 
 (use-package eldoc
-  :straight t
   :hook (prog-mode . eldoc-mode)
   :custom
-  (eldoc-echo-area-use-multiline-p t)
-  (eldoc-idle-delay .5))
-
-;;; Third-party
-
-(use-package know-your-http-well :straight t)
-
-(use-package paredit
-  :after (paredit eldoc)
+  (eldoc-echo-area-use-multiline-p nil)
+  (eldoc-idle-delay 1.5)
   :config
   (eldoc-add-command
+   'puni-syntactic-forward-punct
+   'puni-syntactic-backward-punct
+   'puni-forward-sexp
+   'puni-backward-sexp
+   'puni-syntactic-forward-punct
+   'puni-syntactic-backward-punct
    'paredit-backward
    'paredit-forward
    'paredit-backward-delete
    'paredit-close-round))
+
+;;; Third-party
+
+(use-package know-your-http-well :straight t)
 
 (provide 'config-doc)
 ;;; config-doc.el ends here

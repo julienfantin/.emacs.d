@@ -48,75 +48,38 @@
   (show-paren-style 'expression)
   (show-paren-delay 0))
 
+;; Disabled Cmd-Ctrl-D on macos:
+;; defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 70 '<dict><key>enabled</key><false/></dict>'
+
+(use-package puni
+  :demand t
+  :straight t)
+
+(use-package puni-special
+  :after puni
+  :straight nil
+  :after (lisp-minor-mode)
+  :load-path "./lib"
+  :hook
+  ((lisp-minor-mode . puni-special-mode)
+   (puni-special-mode . electric-pair-mode)))
+
+(use-package puni-special-avy
+  :straight nil
+  :after (puni-special)
+  :load-path "./lib"
+  :demand t)
+
 ;;; Third-party
 
 (use-package lisp-minor-mode
   :load-path "./lib"
-  :hook (after-init . lisp-global-minor-mode)
-  :custom
-  (lisp-minor-mode-prettify nil))
+  :hook (after-init . lisp-global-minor-mode))
 
 (use-package pulse-eval
   :load-path "./lib"
   :after lisp-minor-mode
-  :hook (lisp-minor-mode . pulse-eval-mode)
-  :custom
-  (pulse-eval-iterations 1)
-  (pulse-eval-delay .2))
-
-(use-package paredit
-  :straight t
-  :after (lisp-minor-mode)
-  :hook (lisp-minor-mode . paredit-mode))
-
-(use-package pulse-eval
-  :after (pulse-eval lispy)
-  :config
-  (add-to-list
-   'pulse-eval-advices-alist
-   (cons 'lispy-mode '((lispy-eval . pulse-eval-highlight-forward-sexp-advice)))))
-
-(use-package lispy
-  :straight t
-  :after (lisp-minor-mode)
-  ;; :hook (lisp-minor-mode . lispy-mode)
-  :bind
-  (;; Some of the commands in the paredit map are not right
-   :map lispy-mode-map-paredit
-   ("C-M-f" . forward-sexp)
-   ("C-M-b" . backward-sexp)
-   :map lispy-mode-map
-   ;; Tweak the lispy map from hjkl to a keyboard arrows shape
-   ("h" . nil)
-   ("i" . special-lispy-up)
-   ("k" . special-lispy-down)
-   ("j" . special-lispy-left)
-   ("l" . special-lispy-right))
-  :custom
-  (lispy-no-permanent-semantic t)
-  (lispy-close-quotes-at-end-p t)
-  (lispy-eval-display-style 'overlay)
-  (lispy-visit-method 'projectile)
-  (lispy-compat '(edebug cider))
-  ;; Get the hints off of the symbols!
-  (lispy-avy-style-char 'at-full)
-  (lispy-avy-style-paren 'at-full)
-  (lispy-avy-style-symbol 'at-full)
-  (lispy-safe-actions-no-pull-delimiters-into-comments t)
-  (lispy-safe-copy t)
-  (lispy-safe-delete t)
-  (lispy-safe-paste t)
-  :config
-  ;; Enable the paredit map
-  (lispy-set-key-theme '(special c-digit lispy paredit))
-  ;; without this, lispy's special wrapping of "/" for lispy-splice, overrides
-  ;; cljr-slash so that / just self-inserts
-  ;; TODO make that a local change?
-  (lispy-define-key lispy-mode-map "/" 'lispy-splice :inserter 'cljr-slash)
-  (defun lispy-mini-buffer ()
-    (when (eq this-command 'eval-expression)
-      (lispy-mode 1)))
-  (add-hook 'minibuffer-setup-hook 'lispy-mini-buffer))
+  :hook (lisp-minor-mode . pulse-eval-mode))
 
 (provide 'config-sexp)
 ;;; config-sexp.el ends here

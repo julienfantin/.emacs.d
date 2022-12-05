@@ -51,15 +51,10 @@
 (use-package em-term
   :after eshell
   :custom
-  (eshell-destroy-buffer-when-process-dies t)
-  :config
-  (setq eshell-visual-commands
-        (append '("tmux" "screen" "ssh" "htop" "git log") eshell-visual-commands)))
+  (eshell-destroy-buffer-when-process-dies t))
 
 (use-package em-hist
   :after eshell
-  :bind (:map eshell-mode-map
-              ("M-r" . counsel-esh-history))
   :custom (eshell-hist-ignoredups t))
 
 ;;; Third-party
@@ -69,18 +64,11 @@
   :after eshell
   :init (require 'eshell-z nil t))
 
-(use-package eshell-prompt-extras
-  :straight t
-  :after em-prompt
-  :commands epe-theme-lambda
-  :custom
-  (eshell-highlight-prompt t)
-  (eshell-prompt-function #'epe-theme-lambda))
-
 (use-package vterm
   :straight t
   :custom
-  (vterm-always-compile-module t))
+  (vterm-always-compile-module t)
+  (vterm-environment '("VTERM=1")))
 
 (provide 'config-shell)
 ;;; config-shell.el ends here

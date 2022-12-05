@@ -40,7 +40,8 @@
 (use-package link-hint
   :straight t
   :bind
-  ("C-c o" . link-hint-open-link))
+  (("C-c o" . browse-url)
+   ("C-c C-o" . link-hint-open-link)))
 
 (provide 'config-help)
 ;;; config-help.el ends here

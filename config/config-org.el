@@ -109,48 +109,6 @@
 
 ;;; Third-party
 
-(use-package org-superstar
-  :disabled t
-  :straight t
-  :after org
-  :hook (org-mode . org-superstar-mode)
-  :custom
-  (org-superstar-remove-leading-stars t)
-  (org-superstar-headline-bullets-list '(" ")) ;; '("🞛" "◉" "○" "▷")
-  (org-superstar-item-bullet-alist
-   '((?+ . ?•)
-     (?* . ?➤)
-     (?- . ?–))))
-
-(use-package org-pretty-table
-  :straight (org-pretty-table :type git :host github :repo "Fuco1/org-pretty-table")
-  :hook (org-mode . org-pretty-table-mode))
-
-(use-package org-roam
-  :straight t
-  :after org
-  :hook (org-roam-buffer-prepare-hook . hide-mode-line-mode)
-  :custom
-  (org-roam-directory config-org-user-directory)
-  ;; https://github.com/org-roam/org-roam/issues/674
-  (org-roam-index-file (expand-file-name "org-roam.db" config-org-user-directory))
-  :bind
-  (("C-c n l" . org-roam)
-   ("C-c n b" . org-roam-switch-to-buffer)
-   ("C-c n f" . org-roam-find-file)
-   ("C-c n g" . org-roam-show-graph)
-   ("C-c n i" . org-roam-insert)))
-
-(use-package company-org-roam
-  :straight t
-  :after (org-mode org-roam compdef)
-  :hook (org-mode . company-mode)
-  :init
-  (compdef
-   :modes #'org-mode
-   :company '(company-org-roam company-yasnippet company-dabbrev company-capf)
-   :capf #'pcomplete-completions-at-point))
-
 (use-package org-journal
   :straight t
   :after org
@@ -172,17 +130,6 @@
   (deft-default-extension "org")
   (deft-recursive t)
   (deft-use-filter-string-for-filename t))
-
-(use-package side-notes
-  :straight t
-  :bind
-  ("C-c n t" . side-notes-toggle-notes)
-  :custom
-  (side-notes-file "notes.org")
-  (side-notes-secondary-file "todos.org")
-  (side-notes-display-alist
-   '((side . right)
-     (window-width . 0.3819660112501052))))
 
 (provide 'config-org)
 ;;; config-org.el ends here

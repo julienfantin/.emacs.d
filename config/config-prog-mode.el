@@ -27,14 +27,15 @@
 
 ;;; Third-party
 
-(use-package smart-jump
-  :straight t
-  :hook (after-init . smart-jump-setup-default-registers))
+(use-package topsy
+  :disabled t ;; messes up scrolling
+  :straight (topsy :fetcher github :repo "alphapapa/topsy.el")
+  :hook (prog-mode . topsy-mode))
 
 (use-package smart-jump
-  :after (smart-jump lispy)
-  :bind (:map lispy-mode-map
-              ([remap lispy-goto] . smart-jump-go)))
+  :disabled t
+  :straight t
+  :hook (after-init . smart-jump-setup-default-registers))
 
 (use-package iedit
   :straight t
@@ -111,48 +112,20 @@
         (-iedit-quit)
       (-iedit-ensure (not arg)))))
 
-(use-package iedit
-  :after (iedit lispy)
-  :bind
-  ((:map lispy-mode-map
-         ([remap lispy-iedit] . -iedit-ensure-function))
-   (:map lispy-mode-map-lispy
-         ([remap lispy-iedit] . -iedit-ensure-function))))
-
-(use-package emr
-  :disabled t
+(use-package separedit
   :straight t
-  :after prog-mode
-  :bind ((:map prog-mode-map
-               ("C-M-<return>" . emr-show-refactor-menu)))
-  :init (emr-initialize))
-
-(use-package poporg
-  :straight t
-  :bind ("C-c e o" . poporg-dwim))
-
-
-(use-package prog-mode
-  :config
-  (add-hook 'prog-mode-hook 'outline-minor-mode)
-  (add-hook 'prog-mode-hook 'hs-minor-mode))
-
-
-(use-package lispy
-  ;; Unbind lispy commands that insert non-standard headings, outshine already
-  ;; binds those keys to the right commands...
-  :bind ((:map lispy-mode-map
-               ("M-<return>" . nil))
-         (:map lispy-mode-map-lispy
-               ("M-<return>" . nil))))
-
-(provide 'config-prog-mode)
+  :bind ("C-c '" . #'separedit)
+  :custom
+  (separedit-default-mode 'markdown-mode))
 
 ;;; Built-ins
 
 (use-package prog-mode
   :hook ((prog-mode . auto-fill-mode)
-         (prog-mode . display-line-numbers-mode)))
+         (prog-mode . display-line-numbers-mode))
+  :custom
+  (display-line-numbers-width-start t)
+  (display-line-numbers-grow-only t))
 
 (use-package conf-mode
   :preface (defun config-prog-run-hooks () (run-hooks 'prog-mode-hook))
@@ -160,6 +133,8 @@
   :config (add-hook 'conf-mode-hook #'config-prog-run-hooks))
 
 (use-package autoinsert
+  :disabled t
   :hook (after-init . auto-insert-mode))
 
+(provide 'config-prog-mode)
 ;;; config-prog-mode.el ends here

@@ -53,10 +53,32 @@
 ;;; Third-party
 
 (use-package ws-butler
-  :straight t
+  :straight (ws-butler :host github :repo "hlissner/ws-butler")
   :hook ((prog-mode . ws-butler-mode)))
 
+(use-package electric-indent
+  :hook (prog-mode . electric-indent-mode)
+  :custom
+  (electric-indent-chars '(?\n ?\^?)))
+
+(use-package apheleia
+  :straight (apheleia :host github :repo "raxod502/apheleia")
+  :hook (after-init . apheleia-global-mode)
+  :config
+  (defun config-indentation-inhibit-auto-formatting-p (&rest _) (not (config-project-owner-p)))
+  (add-to-list 'apheleia-mode-alist '(emacs-lisp-mode . lisp-indent))
+  (add-to-list 'apheleia-inhibit-functions 'config-indentation-inhibit-auto-formatting-p))
+
+(use-package magnetic-indent
+  :straight nil
+  :after puni
+  :load-path "./lib"
+  :hook (prog-mode . magnetic-indent-mode))
+
 (use-package aggressive-indent
+  ;; Test this PR
+  ;; https://github.com/Malabarba/aggressive-indent-mode/pull/119/files
+  :disabled t
   :straight t
   :preface
   (defun config-indentation-aggressive-indent-skip-p ()

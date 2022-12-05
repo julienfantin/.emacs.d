@@ -26,7 +26,6 @@
 
 (require 'use-package)
 
-
 ;;; Built-ins
 
 (use-package vc
@@ -41,13 +40,24 @@
   (vc-follow-symlinks t))
 
 (use-package ediff
+  :config
+  (defun config-git-ediff-both ()
+    (interactive)
+    (ediff-copy-diff
+     ediff-current-difference nil 'C nil
+     (concat
+      (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+      (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+  (defun config-git-ediff-keymap-setup ()
+    (define-key ediff-mode-map "d" 'config-git-ediff-both))
+  (add-hook 'ediff-keymap-setup-hook 'config-git-ediff-keymap-setup)
   :custom
   ;; Remove noisy highlights
   (ediff-highlight-all-diffs nil)
-  ;; Avoid the crazy multi-frames setup
-  (ediff-window-setup-function 'ediff-setup-windows-plain)
   ;; Ignore whitespace
   (ediff-diff-options "-w")
+  ;; Avoid the crazy multi-frames setup
+  (ediff-window-setup-function 'ediff-setup-windows-plain)
   ;; Counter-intuitve naming here, but windows should be side-by-side...
   (ediff-split-window-function 'split-window-horizontally))
 
@@ -56,6 +66,7 @@
 (use-package magit
   :straight t
   :custom
+  (magit-diff-refine-ignore-whitespace t)
   (magit-save-repository-buffers 'dontask)
   (magit-display-buffer-function
    (lambda (buffer)
@@ -65,21 +76,45 @@
   :straight t
   :after magit)
 
+(use-package magit-todos
+  :straight t
+  :after magit
+  :config
+  (magit-todos-mode 1))
+
 (use-package dired-git-info
+  :disabled t
   :straight t
   :after dired
   :hook (dired-after-readin . dired-git-info-auto-enable))
+
+(use-package browse-at-remote
+  :straight t)
 
 (use-package git-commit
   :after magit
   :custom
   (git-commit-summary-max-length 72))
 
-(use-package git-timemachine :straight t)
+(use-package git-timemachine
+  :straight (:host github :repo "emacsmirror/git-timemachine" :branch "master"))
 
-(use-package gited :straight t)
+(use-package diff-hl
+  :straight t
+  :hook ((after-init . global-diff-hl-mode)
+         (dired-mode . diff-hl-dired-mode-unless-remote))
+  :custom
+  (diff-hl-draw-borders nil)
+  ;; there's a posframe version that shows a nicer diff but it gets corrupted
+  (diff-hl-show-hunk-function 'diff-hl-show-hunk-inline-popup)
+  :config
+  (global-diff-hl-show-hunk-mouse-mode))
 
-(use-package git-link :straight t)
+;; TODO
+(use-package consult-git-log-grep
+  :straight t
+  :custom
+  (consult-git-log-grep-open-function #'magit-show-commit))
 
 (provide 'config-git)
 ;;; config-git.el ends here

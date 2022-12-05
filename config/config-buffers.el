@@ -30,40 +30,11 @@
 
 ;;; Commands
 
-(defun --temp-buffers ()
-  "Return a list of temp buffers."
-  (cl-remove-if-not
-   (lambda (buffer)
-     (string-match-p  "\\*temp" (buffer-name buffer)))
-   (buffer-list)))
-
-;;;###autoload
-(defun -temp-buffer (arg)
-  "Create or switch to *temp* buffer.
-When called with 'ARG' always create a new temp buffer."
-  (interactive "P")
-  (let* ((n (if (equal '(4) arg) (length (--temp-buffers)) 0))
-         (name (format "*temp%s" (if (>= 0 n) "*" (format "-%s*" n))))
-         (buffer (get-buffer-create name))
-         (mode major-mode))
-    (with-current-buffer buffer
-      (funcall mode)
-      (switch-to-buffer buffer))))
-
 ;;;###autoload
 (defun -switch-to-last-buffer ()
   "Switch to the most recently used buffer."
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) t)))
-
-(defun -save-before-kill ()
-  "Save current file-visiting buffer."
-  (when buffer-file-name
-    (save-buffer)))
-
-;;; Advices
-
-(advice-add #'kill-this-buffer :before #'-save-before-kill)
 
 (provide 'config-buffers)
 ;;; config-buffers.el ends here

@@ -25,7 +25,6 @@
 ;;; Code:
 
 (require 'use-package)
-(require 'map)
 
 ;;; Built-ins
 
@@ -34,15 +33,6 @@
   (:map emacs-lisp-mode-map
         ("C-c C-k" . -eval-buffer)
         ("C-c C-p" . pp-eval-last-sexp)))
-
-(use-package simple
-  :after eldoc
-  :hook
-  (eval-expression-minibuffer-setup . eldoc-mode))
-
-(use-package simple
-  :after paredit
-  :hook (eval-expression-minibuffer-setup . paredit-mode))
 
 (use-package flycheck
   :after flycheck
@@ -56,11 +46,6 @@
   :hook ((lisp-mode . lisp-extra-font-lock-mode)
          (emacs-lisp-mode . lisp-extra-font-lock-mode)))
 
-(use-package elisp-def
-  :straight t
-  :hook ((emacs-lisp-mode . elisp-def-mode)
-         (ielm-mode . elisp-def-mode)))
-
 (use-package nameless
   :straight t
   :hook (emacs-lisp-mode . nameless-mode)
@@ -73,41 +58,10 @@
   ;; plists
   (nameless-prefix "/"))
 
-(use-package auto-compile
-  :disabled t
-  :straight t
-  :commands auto-compile-on-save-mode
-  :hook (emacs-lisp-mode . auto-compile-on-save-mode)
-  :config
-  (progn
-    (defun -auto-compile-load-after-compile (success)
-      "Reload the current emacs-lisp file after it's recompiled, if
-an older version is loaded."
-      (when (eq success t)
-        (let ((buffer-path (file-truename buffer-file-name)))
-          (when (assoc buffer-path load-history)
-            (load-file buffer-path)))))
-    (advice-add #'auto-compile-byte-compile :filter-return #'-auto-compile-load-after-compile))
-  :custom
-  (auto-compile-display-buffer nil)
-  (auto-compile-use-mode-line nil))
-
 (use-package elisp-demos
   :straight t
   :after helpful
   :init (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
-
-(use-package company-elisp
-  :after (company elisp-mode)
-  :custom
-  (company-elisp-detect-function-context nil))
-
-(use-package compdef
-  :after (company elisp-mode)
-  :init
-  (compdef
-   :modes #'emacs-lisp-mode
-   :company '(company-elisp)))
 
 ;;; Commands
 

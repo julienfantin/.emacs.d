@@ -94,8 +94,7 @@ Elements of REGEXPS can also be a list of '(\"match-pattern\"
           (seq-partition props 2)))))))
 
 (defvar theme-shorthands-alist
-  '((:fg  . :foreground)
-    (:f   . :foreground)
+  '((:f   . :foreground)
     (:bg  . :background)
     (:b   . :background)
     (:F   . :distant-foreground)
@@ -131,9 +130,9 @@ If 'KW' is a shorthand, it will be expanded according to
 (defun theme-custom-set-faces (theme bindings)
   "TODO integrate class from color palette"
   (thread-last bindings
-    (theme-expand-faces)
-    (theme-expand-colors)
-    (apply #'custom-theme-set-faces theme)))
+               (theme-expand-faces)
+               (theme-expand-colors)
+               (apply #'custom-theme-set-faces theme)))
 
 (provide 'theme-helpers)
 ;;; theme-helpers.el ends here

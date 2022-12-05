@@ -28,7 +28,13 @@
 ;;; Built-ins
 
 (toggle-debug-on-error)
+
 (add-hook 'after-init-hook #'toggle-debug-on-error)
+
+;;; Performance
+
+(use-package explain-pause-mode
+  :straight (explain-pause-mode :type git :host github :repo "lastquestion/explain-pause-mode"))
 
 ;;; Third-party
 

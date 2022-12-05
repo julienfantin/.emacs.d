@@ -11,12 +11,12 @@
 
 ;;; Customs
 
-(defcustom duotone-palette-blend 0.9
+(defcustom duotone-palette-blend 0.6
   "Default blend value."
   :group 'duotone
   :type 'float)
 
-(defcustom duotone-palette-mblend 0.6
+(defcustom duotone-palette-mblend 0.3
   "Default match blend value.
 
 Used in blending background of highlighted matches."
@@ -31,7 +31,7 @@ duotone-background-* options are enabled."
   :group 'duotone
   :type 'float)
 
-(defcustom duotone-palette-fade 0.4
+(defcustom duotone-palette-fade 0.3
   "Default fade value."
   :group 'duotone
   :type 'float)

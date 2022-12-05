@@ -32,7 +32,7 @@
 
 ;;; Third-party
 
-(defun config-scratch-get-buffer ()
+(defun config-scratch-show-buffer ()
   "Initialize the *scratch* buffer."
   (when-let (buffer (get-buffer "*scratch*"))
     (with-current-buffer buffer
@@ -42,7 +42,7 @@
 (use-package persistent-scratch
   :straight t
   :hook ((after-init . persistent-scratch-setup-default)
-         (after-init . config-scratch-get-buffer)))
+         (after-init . config-scratch-show-buffer)))
 
 (use-package unkillable-scratch
   :straight t

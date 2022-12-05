@@ -26,15 +26,14 @@
 
 (require 'use-package)
 
-(use-package config-ansible :disabled t :demand t)
-(use-package config-cl :demand t)
+(use-package config-cl :disabled t)
 (use-package config-clojure :demand t)
 (use-package config-emacs-lisp :demand t)
-(use-package config-js :demand t)
-(use-package config-ocaml :demand t)
-(use-package config-python :demand t)
-(use-package config-sql :demand t)
-(use-package config-web :demand t)
+(use-package config-js :disabled t)
+(use-package config-ocaml :disabled t)
+(use-package config-python :disabled t)
+(use-package config-sql :disabled t)
+(use-package config-web :disabled t)
 (use-package config-yaml :demand t)
 
 (provide 'config-langs)

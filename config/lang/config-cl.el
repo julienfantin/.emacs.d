@@ -36,10 +36,5 @@
   :config
   (slime-setup '(slime-company)))
 
-(use-package compdef
-  :after slime-company
-  :config
-  (compdef :modes #'slime-mode :company (slime-company)))
-
 (provide 'config-cl)
 ;;; config-cl.el ends here

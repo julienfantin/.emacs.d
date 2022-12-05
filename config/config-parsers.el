@@ -27,9 +27,12 @@
 (require 'use-package)
 (require 'config-completion)
 
+(defvar config-parsers-backend 'flymake)
+
 ;;; Built-ins
 
 (use-package edebug
+  :disabled t
   :after flycheck
   :config
   (defun config-parsers-flycheck-edebug-toggle ()
@@ -42,6 +45,7 @@
 ;;; Third-party
 
 (use-package flycheck
+  :if (eq config-parsers-backend 'flycheck)
   :straight t
   :hook ((prog-mode . flycheck-mode)
          (flycheck-mode . flycheck-set-indication-mode))
@@ -60,49 +64,22 @@
       (flycheck-buffer)))
   :custom
   (flycheck-emacs-lisp-load-path 'inherit)
-  (flycheck-indication-mode 'left-fringe))
+  (flycheck-indication-mode 'left-margin))
 
 (use-package flycheck-posframe
+  :if (eq config-parsers-backend 'flycheck)
+  :after (flycheck)
   :straight t
   :hook (flycheck-mode . flycheck-posframe-mode))
 
-(use-package company
-  :disabled t
-  ;; Let company display documentation in the modeline
-  :hook (((company-completion-started  . config-parsers-flycheck-turn-messages-off)
-          (company-completion-finished  . config-parsers-flycheck-turn-messages-on)
-          (company-completion-cancelled  . config-parsers-flycheck-turn-messages-on))))
+;; Flymake
 
-(use-package counsel
-  :if (equal config-completion-system 'ivy)
-  :after flycheck
-  :bind (("C-c l" . -counsel-flycheck))
-  :preface
-  (defvar -counsel-flycheck-history nil
-    "History for `-counsel-flycheck'")
-  :config
-  ;; https://github.com/nathankot/dotemacs/blob/ef76773c69cac36c04935edcfa631052bd2c679d/init.el#L566
-  (defun -counsel-flycheck ()
-    (interactive)
-    (if (not (bound-and-true-p flycheck-mode))
-        (message "Flycheck mode is not available or enabled")
-      (ivy-read "Flycheck: "
-                (let ((source-buffer (current-buffer)))
-                  (with-current-buffer (or (get-buffer flycheck-error-list-buffer)
-                                           (progn
-                                             (with-current-buffer
-                                                 (get-buffer-create flycheck-error-list-buffer)
-                                               (flycheck-error-list-mode)
-                                               (current-buffer))))
-                    (flycheck-error-list-set-source source-buffer)
-                    (flycheck-error-list-reset-filter)
-                    (revert-buffer t t t)
-                    (split-string (buffer-string) "\n" t " *")))
-                :action (lambda (_s &rest _)
-                          (-when-let* ((err (get-text-property 0 'tabulated-list-id s))
-                                       (pos (flycheck-error-pos err)) )
-                            (goto-char (flycheck-error-pos err))))
-                :history '-counsel-flycheck-history))))
+(use-package flymake-popon
+  :straight (flymake-popon :type git :repo "https://codeberg.org/akib/emacs-flymake-popon.git")
+  :if (eq config-parsers-backend 'flymake)
+  :hook (flymake-mode . flymake-popon-mode)
+  :custom
+  (flymake-popon-mode 'posframe))
 
 (provide 'config-parsers)
 ;;; config-parsers.el ends here

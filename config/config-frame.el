@@ -3,6 +3,8 @@
 ;; Copyright (C) 2016  Julien Fantin
 
 ;; Author: Julien Fantin <julienfantin@gmail.com>
+;; Version: 1.3.2
+;; Package-Requires: ((emacs "28") (use-package "2.4.4"))
 ;; Keywords: frames
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -24,35 +26,33 @@
 
 ;;; Code:
 
-(require 'use-package)
-
 ;;; Config
 
-(defvar config-frame-border-width 18)
+(defvar config-frame-border-width 0)
 
+;; TODO font config like
+;; (:family "Iosevka Custom" :height 140 :ligatures t :line-spacing 0.2)
 (defvar config-frame-mono-fonts
-  '("DejaVu Sans Mono" "Menlo" "Fira Code" "SF Mono" "IBM Plex Mono" "Source Code Pro"))
+  '("SF Mono-13"
+    "JetBrains Mono-13"
+    "Iosevka Custom-14"
+    "Hack"
+    "Input"
+    "Fira Code Retina"
+    "Menlo"
+    "DejaVu Sans Mono"
+    "Source Code Pro"))
 
 (defvar config-frame-variable-fonts
   '("DejaVu Sans" "ETBembo"))
 
-(defvar config-frame-default-mono-font-height 120)
+(defvar config-frame-default-mono-font-height 130)
 
-(defvar config-frame-default-variable-font-height 130)
-
-(defvar config-frame-frame-alist
-  `((fullscreen              . maximized)
-    (menu-bar-lines          . nil)
-    (tool-bar-lines          . nil)
-    (vertical-scroll-bars    . nil)
-    (scroll-bars             . nil)
-    (ns-transparent-titlebar . t)
-    (internal-border-width   . ,config-frame-border-width))
-  "The default and initial frame alist.")
+(defvar config-frame-default-variable-font-height config-frame-default-mono-font-height)
 
 (defun config-frame-font-exists-p (font)
   "Existing 'FONT' predicate."
-  (if (null (x-list-fonts font)) nil t))
+  (if (null (x-list-fonts (if (consp font) (car font) font))) nil t))
 
 (defun config-frame-mono-font ()
   (cl-find-if #'config-frame-font-exists-p config-frame-mono-fonts))
@@ -60,12 +60,27 @@
 (defun config-frame-variable-font ()
   (cl-find-if #'config-frame-font-exists-p config-frame-variable-fonts))
 
+(defvar config-frame-frame-alist
+  `((fullscreen              . maximized)
+    (tool-bar-lines          . nil)
+    (vertical-scroll-bars    . nil)
+    (scroll-bars             . nil)
+    (ns-transparent-titlebar . t)
+    (internal-border-width   . ,config-frame-border-width)
+    (font                    . ,(config-frame-mono-font))
+    (line-spacing            . 0.2))
+  "The default and initial frame alist.")
+
 (when-let ((font (config-frame-mono-font)))
-  (dolist (face '(default fixed-pitch))
-    (set-face-attribute face nil :font font :height config-frame-default-mono-font-height)))
+  (let ((font (if (consp font) (car font) font))
+        (height (if (consp font) (cdr font) config-frame-default-mono-font-height)))
+    (dolist (face '(default fixed-pitch))
+      (set-face-attribute face nil :font font :height height))))
 
 (when-let ((font (config-frame-variable-font)))
-  (set-face-attribute 'variable-pitch nil :font font :height config-frame-default-variable-font-height))
+  (let ((font (if (consp font) (car font) font))
+        (height (if (consp font) (cdr font) config-frame-default-variable-font-height)))
+    (set-face-attribute 'variable-pitch nil :font font :height height)))
 
 ;;; Built-ins
 
@@ -82,34 +97,41 @@
 ;; https://lists.gnu.org/archive/html/emacs-devel/2019-08/msg00659.html
 
 (use-package emacs
-  :preface
-  (defun config-frame-set-line-height ()
-    (setq-local default-text-properties '(line-spacing 0.25 line-height 1.25)))
-  :hook ((text-mode . config-frame-set-line-height)
-         (prog-mode .  config-frame-set-line-height))
+  :config
+  (setq cursor-type '(bar . 2))
   :custom
-  (default-truncate-lines t)
-  (cursor-type '(bar . 1))
-  (x-underline-at-descent-line t))
+  ;; Use font-level line-spacing to work around emacs bug
+  (default-text-properties '(line-spacing 0.2))
+  (x-underline-at-descent-line nil))
 
 (use-package frame
   :custom
-  (default-frame-alist config-frame-frame-alist)
-  (initial-frame-alist config-frame-frame-alist)
+  ;; don't resize when changing margins etc
+  (frame-inhibit-implied-resize t)
   (frame-resize-pixelwise t)
-  (window-divider-default-places 'right-only)
-  (window-divider-default-right-width 1)
-  :config
-  (modify-frame-parameters (selected-frame) config-frame-frame-alist)
-  (set-face-attribute 'window-divider nil :foreground (face-background 'mode-line))
-  (set-face-attribute 'window-divider-first-pixel nil :foreground (face-background 'default))
-  (set-face-attribute 'window-divider-last-pixel nil :foreground (face-background 'default)))
+  :init
+  (when (boundp 'pixel-scroll-precision-mode)
+    (pixel-scroll-precision-mode 1))
+  (modify-all-frames-parameters config-frame-frame-alist))
 
-(use-package mwheel
-  :custom
-  (mouse-wheel-flip-direction t)
-  ;; Use the trackpad to scroll the buffer horizontally
-  (mouse-wheel-tilt-scroll t))
+;;; Third-party
+
+(use-package ligature
+  :straight t
+  :hook (after-init . global-ligature-mode)
+  :config
+  (ligature-set-ligatures
+   'prog-mode
+   '("www" "**" "***" "**/" "*>" "*/" "\\\\" "\\\\\\" "{-" "::"
+     ":::" ":=" "!!" "!=" "!==" "-}" "----" "-->" "->" "->>"
+     "-<" "-<<" "-~" "#{" "#[" "##" "###" "####" "#(" "#?" "#_"
+     "#_(" ".-" ".=" ".." "..<" "..." "?=" "??" ";;" ";;;" "/*" "/**"
+     "/=" "/==" "/>" "//" "///" "&&" "||" "||=" "|=" "|>" "^=" "$>"
+     "++" "+++" "+>" "=:=" "==" "===" "==>" "=>" "=>>" "<="
+     "=<<" "=/=" ">-" ">=" ">=>" ">>" ">>-" ">>=" ">>>" "<*"
+     "<*>" "<|" "<|>" "<$" "<$>" "<!--" "<-" "<--" "<->" "<+"
+     "<+>" "<=" "<==" "<=>" "<=<" "<>" "<<" "<<-" "<<=" "<<<"
+     "<~" "<~~" "</" "</>" "~@" "~-" "~>" "~~" "~~>" "%%")))
 
 (use-package default-text-scale
   :straight t
