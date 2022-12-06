@@ -46,6 +46,16 @@
               ("c" . go-test-current-coverage)
               ("b" . go-test-current-test-benchmark)))
 
+(use-package lsp-go
+  :after lsp
+  :custom
+  (lsp-go-hover-kind "FullDocumentation")
+  (lsp-go-analyses '((fieldalignment . t)
+                     (nilness . t)
+                     (unusedparams . t)
+                     (unusedvariable . t)
+                     (unusedwrite . t))))
+
 (use-package gopls
   :if config-lsp-frontend
   :ensure-system-package "gopls")

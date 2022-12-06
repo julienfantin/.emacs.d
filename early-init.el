@@ -29,6 +29,9 @@
 
 ;;; Performance
 
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.6)
+
 ;; Use a hook so the message doesn't get clobbered by other messages.
 (add-hook
  'emacs-startup-hook

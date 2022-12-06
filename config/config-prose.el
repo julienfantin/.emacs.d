@@ -24,6 +24,7 @@
 
 ;;; Code:
 (require 'use-package)
+(require 'config-lsp)
 
 ;;; Config
 

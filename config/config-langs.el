@@ -27,6 +27,7 @@
 (require 'use-package)
 
 (use-package config-cl :disabled t)
+(use-package config-go :demand t)
 (use-package config-clojure :demand t)
 (use-package config-emacs-lisp :demand t)
 (use-package config-js :disabled t)
