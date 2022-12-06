@@ -344,11 +344,15 @@
                ("C-n" . company-select-next)
                ("C-p" . company-select-previous)))
   :custom
+  (company-global-modes
+   '((not magit-mode)
+     (not org-mode)
+     (not markdown-mode)))
   (company-backends
-   '((company-capf :with company-yasnippet)
-     company-files
+   '(company-files
      (company-dabbrev-code company-keywords)
-     company-dabbrev))
+     company-dabbrev
+     (company-capf :with company-yasnippet)))
   (company-frontends '(company-quickhelp-frontend))
   (company-idle-delay 0)
   (company-minimum-prefix-length 2)
@@ -382,11 +386,11 @@
   (prescient-persist-mode 1))
 
 (use-package company-box
-  :if (eq config-completion-completion-at-point 'company)
+  :if (and window-system (eq config-completion-completion-at-point 'company))
   :straight t
   :hook (company-mode . company-box-mode)
   :custom
-  (company-box-doc-delay 0)
+  (company-box-doc-delay 0.2)
   (company-box-show-single-candidate t)
   :config
   (add-to-list 'company-box-frame-parameters '(internal-border-width . 1))
