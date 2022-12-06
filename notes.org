@@ -1,15 +1,6 @@
-* Principles
-** Straight
-** Standard packages
-    - ivy & counsel -> icomplete
-    - eyebrowse & perspective -> tab-bar
-    - multiple cursors -> rectangular commands or macros
-      C-x C-k r apply-macro to region lines, this is better than trying to write a looping macro
-
-    As of Emacs 24.1, there’s a new command ‘C-x r N’ (‘rectangle-number-lines’), that can be used to number the lines. Just mark a region which you want numbered and hit ‘C-x r N’. ‘C-u’ prefix works to start from any number you choose.
-* TODO Emacs modal editing
-* DONE iedit / highlight-symbol integration
-* DONE Window configurations
-* DONE Spacebar as C-c
-* DONE Cmd is ctrl
-* DONE Hydra -> Hercules
+* Issues
+** TODO Company stealing tab in magit and org-mode
+** TODO Disable auto-completion in prose mode
+** TODO Eldoc mode with LSP
+** TODO Show documentation at point with LSP
+** TODO Code coverage
