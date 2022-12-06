@@ -1,6 +1,7 @@
 * Issues
-** TODO Company stealing tab in magit and org-mode
-** TODO Disable auto-completion in prose mode
+** DONE Company stealing tab in magit and org-mode
+** DONE Disable auto-completion in prose mode
 ** TODO Eldoc mode with LSP
 ** TODO Show documentation at point with LSP
 ** TODO Code coverage
+

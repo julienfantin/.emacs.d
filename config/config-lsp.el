@@ -89,6 +89,7 @@
   :straight t
   :hook
   ((lsp-mode . lsp-ui-mode)
+   (lsp-mode . lsp-ui-doc-mode)
    (lsp-mode . lsp-diagnostics-mode)
    (lsp-mode . lsp-completion-mode))
   :custom
@@ -104,10 +105,10 @@
   ;; lsp-ui-doc - on hover dialogs
   (lsp-headerline-breadcrumb-enable nil)
   (lsp-ui-doc-enable t)
-  (lsp-ui-doc-delay 1.5)
-  (lsp-ui-doc-show-with-cursor nil)
+  (lsp-ui-doc-delay 1.2)
+  (lsp-ui-doc-show-with-cursor t)
   (lsp-ui-doc-show-with-mouse t)
-  (lsp-ui-doc-use-webkit (featurep 'xwidget-internal))
+  (lsp-ui-doc-use-webkit nil)
   (lsp-ui-doc-include-signature nil)
   (lsp-ui-doc-position 'at-point)
   (lsp-ui-doc-border nil)

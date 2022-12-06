@@ -53,7 +53,18 @@
 
 (use-package puni
   :demand t
-  :straight t)
+  :straight t
+  :bind
+  ( :map puni-mode-map
+    ("C-)"   . puni-slurp-forward)
+    ("C-("   . puni-slurp-backward)
+    ("C-M-)" . puni-barf-forward)
+    ("C-M-(" . puni-barf-backward)
+    ("C-="   . puni-expand-region)
+    ("M-k"   . puni-kill-line)
+    ("M-r"   . puni-raise)
+    ("M-s"   . puni-splice)
+    ("C-M-t" . puni-transpose)))
 
 (use-package puni-special
   :after puni

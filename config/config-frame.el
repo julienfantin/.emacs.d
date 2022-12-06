@@ -33,9 +33,9 @@
 ;; TODO font config like
 ;; (:family "Iosevka Custom" :height 140 :ligatures t :line-spacing 0.2)
 (defvar config-frame-mono-fonts
-  '("SF Mono-13"
-    "JetBrains Mono-13"
+  '("JetBrains Mono-13"
     "Iosevka Custom-14"
+    "SF Mono-13"
     "Hack"
     "Input"
     "Fira Code Retina"
@@ -98,7 +98,7 @@
 
 (use-package emacs
   :config
-  (setq cursor-type '(bar . 2))
+  (setq-default cursor-type '(bar . 2))
   :custom
   ;; Use font-level line-spacing to work around emacs bug
   (default-text-properties '(line-spacing 0.2))

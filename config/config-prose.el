@@ -93,5 +93,11 @@
   :mode "\\.md\\'"
   :custom (markdown-fontify-code-blocks-natively t))
 
+(use-package markdown-mode
+  :if (eq config-lsp-frontend 'lsp-mode)
+  :hook (markdown-mode . lsp)
+  :config
+  (require 'lsp-marksman))
+
 (provide 'config-prose)
 ;;; config-prose.el ends here

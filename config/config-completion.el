@@ -542,11 +542,9 @@
 (use-package copilot
   :straight (copilot :host github :repo "zerolfx/copilot.el" :files ("*.el" "dist"))
   :hook (prog-mode . copilot-mode)
-  :bind (("C-TAB" . 'copilot-accept-completion-by-word)
-         ("C-<tab>" . 'copilot-accept-completion-by-word)
-         :map copilot-completion-map
-         ("<tab>" . 'copilot-accept-completion)
-         ("TAB" . 'copilot-accept-completion))
+  :bind (:map copilot-completion-map
+              ("C-M-i" . 'copilot-accept-completion-by-word)
+              ("C-M-I" . 'copilot-accept-completion))
   :config
   (setq copilot-node-executable (expand-file-name "~/.nvm/versions/node/v17.9.1/bin/node")))
 

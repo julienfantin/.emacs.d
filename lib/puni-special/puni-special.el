@@ -246,7 +246,7 @@ Acts on the region when active. With C-u insert a newline before sexp."
     (define-key map (kbd "C-(") #'puni-slurp-backward)
     (define-key map (kbd "C-M-)") #'puni-barf-forward)
     (define-key map (kbd "C-M-(") #'puni-barf-backward)
-    (define-key map (kbd "M-RET") #'puni-expand-region)
+    (define-key map (kbd "C-=") #'puni-expand-region)
     ;; Macro edits
     (define-key map (kbd "M-k") #'puni-kill-line)
     (define-key map (kbd "M-r") #'puni-raise)

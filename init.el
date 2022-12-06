@@ -52,7 +52,6 @@
 (require 'config-completion)
 (require 'config-emacs)
 (require 'config-debug)
-(require 'config-defaults)
 (require 'config-doc)
 (require 'config-editing)
 (require 'config-files)
