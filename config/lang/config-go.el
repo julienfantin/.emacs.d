@@ -36,8 +36,9 @@
   :straight t
   :ensure-system-package "go")
 
-(use-package go-test
+(use-package gotest
   :straight t
+  :bind-keymap ("C-c t" . config-go-test-map)
   :bind (:map config-go-test-map
               ("t" . go-test-current-test)
               ("f" . go-test-current-file)

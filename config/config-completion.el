@@ -548,7 +548,7 @@
          ("<tab>" . 'copilot-accept-completion)
          ("TAB" . 'copilot-accept-completion))
   :config
-  (setq copilot-node-executable "/Users/julien/.nvm/versions/node/v17.9.1/bin/node"))
+  (setq copilot-node-executable (expand-file-name "~/.nvm/versions/node/v17.9.1/bin/node")))
 
 (provide 'config-completion)
 ;;; config-completion.el ends here

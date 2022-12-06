@@ -112,6 +112,7 @@
 
 ;; TODO
 (use-package consult-git-log-grep
+  :disabled t
   :straight t
   :custom
   (consult-git-log-grep-open-function #'magit-show-commit))
