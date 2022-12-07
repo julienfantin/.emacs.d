@@ -1,0 +1,16 @@
+# name: tests
+# key: tests
+# --
+tests := []struct {
+        name string
+	expected interface{}
+}{
+	{
+                name: "$1",
+                expected: nil,
+         },
+}
+for n, tt := range tests {
+	actual := "TODO"
+        assert.Equal(t, tt.expected, actual)
+}
