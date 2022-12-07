@@ -336,7 +336,7 @@
   :bind ((:map company-mode-map
                ("TAB" . company-indent-or-complete-common))
          (:map company-active-map
-               ("TAB" . company-complete-common-or-cycle)
+               ("TAB" . company-complete-selection)
                ("C-n" . company-select-next)
                ("C-p" . company-select-previous)
                ("M-/" . company-other-backend))
@@ -347,15 +347,17 @@
   (company-global-modes
    '((not magit-mode)
      (not org-mode)
-     (not markdown-mode)))
+     (not markdown-mode)
+     (not snippet-mode)))
   (company-backends
    '(company-files
      (company-dabbrev-code company-keywords)
      company-dabbrev
      (company-capf :with company-yasnippet)))
-  (company-frontends '(company-quickhelp-frontend))
-  (company-idle-delay 0)
-  (company-minimum-prefix-length 2)
+  ;; use company-box
+  (company-frontends nil)
+  (company-idle-delay 0.2)
+  (company-minimum-prefix-length 1)
   (company-require-match nil)
   (company-search-regexp-function 'company-search-words-in-any-order-regexp)
   (company-show-numbers nil)
@@ -393,7 +395,8 @@
   (company-box-doc-delay 0.2)
   (company-box-show-single-candidate t)
   :config
-  (add-to-list 'company-box-frame-parameters '(internal-border-width . 1))
+  (add-to-list 'company-box-doc-frame-parameters '(internal-border-width . 0))
+  (add-to-list 'company-box-frame-parameters '(internal-border-width . 0))
   (defun company-box-doc (selection frame)
     (when company-box-doc-enable
       ;; stop flickering while typing
@@ -409,9 +412,20 @@
 
 (use-package company-elisp
   :if (eq config-completion-completion-at-point 'company)
-  :after (company elisp-mode)
+  :after company
+  :hook (emacs-lisp-mode . config-completion-company-elisp)
+  :preface
+  (defun config-completion-company-elisp ()
+    (setq-local company-backends (cons '(company-elisp :with company-yasnippet) company-backends)))
+  :commands config-completion-company-elisp
   :custom
-  (company-elisp-detect-function-context nil))
+  (company-elisp-detect-function-context t))
+
+(use-package company-lsp
+  :straight nil
+  :after (company lsp-mode)
+  :preface
+  )
 
 ;; Corfu
 

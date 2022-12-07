@@ -46,7 +46,20 @@
               ("c" . go-test-current-coverage)
               ("b" . go-test-current-test-benchmark)))
 
+(use-package eglot
+  :if (equal config-lsp-frontend 'eglot)
+  :after go-mode
+  :hook (go-mode . eglot-ensure))
+
+(use-package lsp-mode
+  :straight t
+  :if (eq config-lsp-frontend 'lsp-mode)
+  :after go-mode
+  :hook (go-mode . lsp))
+
 (use-package lsp-go
+  :if (eq config-lsp-frontend 'lsp-mode)
+  :ensure-system-package gopls
   :after lsp
   :custom
   (lsp-go-hover-kind "FullDocumentation")
@@ -56,27 +69,10 @@
                      (unusedvariable . t)
                      (unusedwrite . t))))
 
-(use-package gopls
-  :if config-lsp-frontend
-  :ensure-system-package "gopls")
-
-(use-package eglot
-  :if (equal config-lsp-frontend 'eglot)
-  :after go-mode
-  :hook (go-mode . eglot-ensure))
-
-(use-package lsp-mode
-  :straight t
-  :if (equal config-lsp-frontend 'lsp-mode)
-  :after go-mode
-  :hook (go-mode . lsp))
-
-(use-package dap-mode
-  :straight t
-  :if (equal config-lsp-frontend 'lsp-mode)
-  :after go-mode
-  :config
-  (require dap-dlv-go))
+(use-package dap-go
+  :if (eq config-lsp-frontend 'lsp-mode)
+  :after (go-mode lsp-mode dap-mode)
+  :init (require dap-dlv-go))
 
 (provide 'config-go)
 ;;; config-go.el ends here
