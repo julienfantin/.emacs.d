@@ -28,6 +28,12 @@
 (eval-when-compile
   (require 'cl-lib))
 
+;;; Third-party packages
+
+(use-package pulsar
+  :straight t
+  :hook (after-init . pulsar-global-mode))
+
 ;;; Commands
 
 ;;;###autoload
