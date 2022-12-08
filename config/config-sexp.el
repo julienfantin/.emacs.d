@@ -57,24 +57,23 @@
   :hook ((prog-mode . puni-mode)
          (puni-mode . electric-pair-mode))
   :bind
-  ( :map puni-mode-map
-    ("C-)"   . puni-slurp-forward)
-    ("C-("   . puni-slurp-backward)
-    ("C-M-)" . puni-barf-forward)
-    ("C-M-(" . puni-barf-backward)
-    ("C-="   . puni-expand-region)
-    ("M-k"   . puni-kill-line)
-    ("M-r"   . puni-raise)
-    ("M-s"   . puni-splice)
-    ("C-M-t" . puni-transpose)))
+  (:map puni-mode-map
+        ("C-)"   . puni-slurp-forward)
+        ("C-("   . puni-slurp-backward)
+        ("C-M-)" . puni-barf-forward)
+        ("C-M-(" . puni-barf-backward)
+        ("C-="   . puni-expand-region)
+        ("M-k"   . puni-kill-line)
+        ("M-r"   . puni-raise)
+        ("M-s"   . puni-splice)
+        ("C-M-t" . puni-transpose)))
 
 (use-package puni-special
   :after puni
   :straight nil
   :after (lisp-minor-mode)
   :load-path "./lib"
-  :hook
-  ((lisp-minor-mode . puni-special-mode)))
+  :hook (lisp-minor-mode . puni-special-mode))
 
 (use-package puni-special-avy
   :straight nil
