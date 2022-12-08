@@ -32,7 +32,7 @@
   :hook (prog-mode . eldoc-mode)
   :custom
   (eldoc-echo-area-use-multiline-p nil)
-  (eldoc-idle-delay 1.5)
+  (eldoc-idle-delay 0.2)
   :config
   (eldoc-add-command
    'puni-syntactic-forward-punct

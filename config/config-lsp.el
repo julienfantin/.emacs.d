@@ -109,9 +109,9 @@
   ;; lsp-ui-doc - on hover dialogs
   (lsp-headerline-breadcrumb-enable nil)
   (lsp-ui-doc-enable t)
-  (lsp-ui-doc-delay 1.2)
   (lsp-ui-doc-max-width 80)
   (lsp-ui-doc-max-height 100)
+  (lsp-ui-doc-delay 0.2)
   (lsp-ui-doc-show-with-cursor t)
   (lsp-ui-doc-show-with-mouse nil)
   (lsp-ui-doc-use-webkit nil)

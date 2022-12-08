@@ -568,7 +568,9 @@
               ("C-M-n" . copilot-next-completion)
               ("C-M-p" . copilot-previous-completion))
   :config
-  (setq copilot-node-executable (expand-file-name "~/.nvm/versions/node/v17.9.1/bin/node")))
+  (setq copilot-node-executable (expand-file-name "~/.nvm/versions/node/v17.9.1/bin/node"))
+  :custom
+  (copilot-idle-delay 0.2))
 
 (provide 'config-completion)
 ;;; config-completion.el ends here
