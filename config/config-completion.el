@@ -336,7 +336,7 @@
   :bind ((:map company-mode-map
                ("TAB" . company-indent-or-complete-common))
          (:map company-active-map
-               ("TAB" . company-complete-selection)
+               ("<tab>" . company-complete-selection)
                ("C-n" . company-select-next)
                ("C-p" . company-select-previous)
                ("M-/" . company-other-backend))
@@ -424,8 +424,11 @@
 (use-package company-lsp
   :straight nil
   :after (company lsp-mode)
+  :hook (lsp-mode . config-completion-company-lsp)
   :preface
-  )
+  (defun config-completion-company-lsp ()
+    (setq-local company-backends
+                (cons '(company-capf :with company-yasnippet) company-backends))))
 
 ;; Corfu
 
