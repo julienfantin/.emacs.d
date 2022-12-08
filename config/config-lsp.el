@@ -92,6 +92,10 @@
    (lsp-mode . lsp-ui-doc-mode)
    (lsp-mode . lsp-diagnostics-mode)
    (lsp-mode . lsp-completion-mode))
+  :bind
+  (:map lsp-ui-mode-map
+        ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+        ([remap xref-find-references] . lsp-ui-peek-find-references))
   :custom
   ;; completion
   (lsp-enable-snippet t)
