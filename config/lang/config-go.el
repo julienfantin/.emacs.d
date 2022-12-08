@@ -60,7 +60,8 @@
 (use-package lsp-go
   :if (eq config-lsp-frontend 'lsp-mode)
   :ensure-system-package gopls
-  :after lsp
+  :after (lsp-mode go-mode)
+  :demand t
   :custom
   (lsp-go-hover-kind "FullDocumentation")
   (lsp-go-analyses '((fieldalignment . t)
