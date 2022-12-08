@@ -88,13 +88,13 @@
   :after dired
   :hook (dired-after-readin . dired-git-info-auto-enable))
 
-(use-package browse-at-remote
-  :straight t)
+(use-package git-link
+  :straight t
+  :custom
+  (git-link-use-commit t))
 
 (use-package git-commit
-  :after magit
-  :custom
-  (git-commit-summary-max-length 72))
+  :after magit)
 
 (use-package git-timemachine
   :straight (:host github :repo "emacsmirror/git-timemachine" :branch "master"))
