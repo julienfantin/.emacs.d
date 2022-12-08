@@ -42,6 +42,17 @@
 
 ;;; Third-party
 
+(use-package consult
+  :if (eq config-completion-system 'vertico)
+  :straight nil
+  :ensure-system-package (rg . ripgrep)
+  :bind ("C-c f e" . consult-ripgrep-emacs.d)
+  :preface
+  (defun consult-ripgrep-emacs.d ()
+    "Search in Emacs configuration files."
+    (interactive)
+    (consult-ripgrep user-emacs-directory)))
+
 (use-package anzu
   :straight t
   :hook (after-init . global-anzu-mode)
