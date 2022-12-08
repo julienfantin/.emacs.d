@@ -54,6 +54,8 @@
 (use-package puni
   :demand t
   :straight t
+  :hook ((prog-mode . puni-mode)
+         (puni-mode . electric-pair-mode))
   :bind
   ( :map puni-mode-map
     ("C-)"   . puni-slurp-forward)
@@ -72,8 +74,7 @@
   :after (lisp-minor-mode)
   :load-path "./lib"
   :hook
-  ((lisp-minor-mode . puni-special-mode)
-   (puni-special-mode . electric-pair-mode)))
+  ((lisp-minor-mode . puni-special-mode)))
 
 (use-package puni-special-avy
   :straight nil
