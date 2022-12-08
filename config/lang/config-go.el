@@ -34,7 +34,8 @@
 
 (use-package go-mode
   :straight t
-  :ensure-system-package "go")
+  :ensure-system-package go
+  :hook (go-mode . subword-mode))
 
 (use-package gotest
   :straight t
@@ -45,6 +46,18 @@
               ("p" . go-test-current-project)
               ("c" . go-test-current-coverage)
               ("b" . go-test-current-test-benchmark)))
+
+(use-package super-save
+  :config
+  (add-to-list 'super-save-predicates
+               (lambda () (not (eq major-mode 'go-mode)))))
+
+(use-package go-gen-test
+  :after go-mode
+  :straight t
+  :bind (:map config-go-test-map
+              ("g" . go-gen-test-dwim))
+  :ensure-system-package (gotests . "go get -u github.com/cweill/gotests/..."))
 
 (use-package eglot
   :if (equal config-lsp-frontend 'eglot)
@@ -72,8 +85,9 @@
 
 (use-package dap-go
   :if (eq config-lsp-frontend 'lsp-mode)
+  :ensure-system-package (dlv . "go install github.com/go-delve/delve/cmd/dlv@latest")
   :after (go-mode lsp-mode dap-mode)
-  :init (require dap-dlv-go))
+  :init (require 'dap-dlv-go))
 
 (provide 'config-go)
 ;;; config-go.el ends here
