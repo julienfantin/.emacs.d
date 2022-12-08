@@ -322,7 +322,7 @@
 
   ;; Enable indentation+completion using the TAB key.
   ;; `completion-at-point' is often bound to M-TAB.
-  (setq tab-always-indent 'complete))
+  (setq tab-always-indent t))
 
 (use-package prescient
   :straight t)
@@ -345,10 +345,12 @@
                ("C-p" . company-select-previous)))
   :custom
   (company-global-modes
-   '((not magit-mode)
-     (not org-mode)
-     (not markdown-mode)
-     (not snippet-mode)))
+   '(not dired-mode
+         git-commit-mode
+         magit-status-mode
+         markdown-mode
+         org-mode
+         snippet-mode))
   (company-backends
    '(company-files
      (company-dabbrev-code company-keywords)
@@ -419,7 +421,7 @@
     (setq-local company-backends (cons '(company-elisp :with company-yasnippet) company-backends)))
   :commands config-completion-company-elisp
   :custom
-  (company-elisp-detect-function-context t))
+  (company-elisp-detect-function-context nil))
 
 (use-package company-lsp
   :straight nil
@@ -551,8 +553,6 @@
   :defer 2
   :if (eq config-completion-templates 'yasnippet)
   :hook (after-init . yas-global-mode)
-  ;; :config
-  ;; (yas-reload-all)
   :custom
   (yas-snippet-dirs (list (expand-file-name "etc/snippets/" user-emacs-directory))))
 
@@ -560,8 +560,10 @@
   :straight (copilot :host github :repo "zerolfx/copilot.el" :files ("*.el" "dist"))
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
-              ("C-M-i" . 'copilot-accept-completion-by-word)
-              ("C-M-I" . 'copilot-accept-completion))
+              ("C-M-i" . copilot-accept-completion-by-word)
+              ("C-M-I" . copilot-accept-completion)
+              ("C-M-n" . copilot-next-completion)
+              ("C-M-p" . copilot-previous-completion))
   :config
   (setq copilot-node-executable (expand-file-name "~/.nvm/versions/node/v17.9.1/bin/node")))
 
