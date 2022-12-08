@@ -35,7 +35,10 @@
 (use-package go-mode
   :straight t
   :ensure-system-package go
-  :hook (go-mode . subword-mode))
+  :hook (go-mode . subword-mode)
+  :custom
+  (tab-width 4))
+
 
 (use-package gotest
   :straight t
