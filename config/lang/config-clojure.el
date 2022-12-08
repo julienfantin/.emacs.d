@@ -87,7 +87,9 @@
   (cider-preferred-build-tool 'clojure-cli)
   (cider-connection-message-fn #'cider-random-tip)
   (cider-invert-insert-eval-p t)
-  (cider-print-fn 'puget)
+  ;; Fipp has issues display reified objects correctly
+  ;; https://github.com/metosin/malli/issues/789#issuecomment-1342146886
+  (cider-print-fn 'pprint)
   (cider-save-file-on-load t)
   (cider-save-files-on-cider-refresh t)
   (cider-repl-prompt-function #'cider-repl-prompt-newline))
