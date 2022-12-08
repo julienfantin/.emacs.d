@@ -350,7 +350,8 @@
          magit-status-mode
          markdown-mode
          org-mode
-         snippet-mode))
+         snippet-mode
+         text-mode))
   (company-backends
    '(company-files
      (company-dabbrev-code company-keywords)
