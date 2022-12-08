@@ -47,10 +47,14 @@
 
 (use-package emacs
   :custom
-  ;; (scroll-preserve-screen-position t)
+  (scroll-preserve-screen-position t)
   ;; Required for compatibility with windmove display actions
   ;; (switch-to-buffer-obey-display-actions t)
-  (cursor-in-non-selected-windows nil))
+  (cursor-in-non-selected-windows nil)
+  ;; always select the help window so we can dismiss it quickly
+  (help-window-select t)
+  ;; evenly split windows
+  (window-combination-resize t))
 
 (use-package popper
   :disabled t
