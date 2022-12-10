@@ -97,11 +97,7 @@
 
 (use-package sudo-edit :straight t)
 
-(use-package dired-gitignore
-  :straight (dired-gitignore :type git :host github :repo "johannes-mueller/dired-gitignore.el")
-  :hook (dired-mode . dired-gitignore-mode))
-
- ;;; Commands
+;;; Commands
 
 ;; https://emacs.stackexchange.com/questions/24459/revert-all-open-buffers-and-ignore-errors
 (defun config-files-revert-all-file-buffers ()
