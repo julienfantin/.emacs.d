@@ -426,15 +426,6 @@
   :custom
   (company-elisp-detect-function-context nil))
 
-(use-package company-lsp
-  :straight nil
-  :after (company lsp-mode)
-  :hook (lsp-mode . config-completion-company-lsp)
-  :preface
-  (defun config-completion-company-lsp ()
-    (setq-local company-backends
-                (cons '(company-capf :with company-yasnippet) company-backends))))
-
 ;; Corfu
 
 (use-package corfu

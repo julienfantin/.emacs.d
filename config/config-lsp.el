@@ -32,7 +32,7 @@
 
 (defun config-lsp-run-before-save-hooks ()
   "Run `config-lsp-on-save-hooks'."
-  (when (config-project-owner-p)
+  (when (and lsp-mode (config-project-owner-p))
     (run-hooks 'config-lsp-on-save-hooks)))
 
 (defun config-lsp-action-organize-imports ()
@@ -99,8 +99,8 @@
   :custom
   ;; completion
   (lsp-enable-snippet t)
-  (lsp-completion-provider
-   (if (eq config-completion-completion-at-point 'company) :capf :none))
+  ;; lsp uses capf, we handle the config ourselves to enable yasnippet
+  (lsp-completion-provider :none)
   (lsp-completion-show-kind t)
   (lsp-completion-show-detail t)
   (lsp-enable-completion-at-point t)
@@ -113,7 +113,6 @@
   (lsp-ui-doc-max-height 100)
   (lsp-ui-doc-delay 0.2)
   (lsp-ui-doc-show-with-cursor t)
-  (lsp-ui-doc-show-with-mouse nil)
   (lsp-ui-doc-use-webkit nil)
   (lsp-ui-doc-include-signature t)
   (lsp-ui-doc-position 'at-point)
@@ -126,9 +125,9 @@
   ;; Sideline code actions
   (lsp-ui-sideline-enable t)
   (lsp-ui-sideline-delay 0.2)
-  (lsp-ui-sideline-show-hover nil)
+  (lsp-ui-sideline-show-hover )
   (lsp-ui-sideline-show-code-actions nil)
-  (lsp-ui-sideline-show-symbol nil)
+  (lsp-ui-sideline-show-symbol t)
   (lsp-ui-sideline-show-diagnostics nil) ; prefer posframe
 
   ;; breadcrumbs
