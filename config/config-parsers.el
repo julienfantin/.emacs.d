@@ -79,7 +79,11 @@
   :if (eq config-parsers-backend 'flymake)
   :hook (flymake-mode . flymake-popon-mode)
   :custom
-  (flymake-popon-mode 'posframe))
+  (flymake-popon-mode 'posframe)
+  ;; avoid overlap with lsp-ui-mode
+  (flymake-popon-posframe-extra-arguments
+   '( :poshandler posframe-poshandler-point-bottom-left-corner
+      :internal-border-width 20)))
 
 (provide 'config-parsers)
 ;;; config-parsers.el ends here
