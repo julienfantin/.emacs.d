@@ -69,40 +69,19 @@
   (add-to-list 'apheleia-mode-alist '(emacs-lisp-mode . lisp-indent))
   (add-to-list 'apheleia-inhibit-functions 'config-indentation-inhibit-auto-formatting-p))
 
+(use-package aggressive-indent
+  :straight t
+  :hook (after-init . global-aggressive-indent-mode)
+  :custom
+  (aggressive-indent-comments-too t)
+  (aggressive-indent-sit-for-time 0))
+
 (use-package magnetic-indent
+  :disabled t
   :straight nil
   :after puni
   :load-path "./lib"
   :hook (prog-mode . magnetic-indent-mode))
-
-(use-package aggressive-indent
-  ;; Test this PR
-  ;; https://github.com/Malabarba/aggressive-indent-mode/pull/119/files
-  :disabled t
-  :straight t
-  :preface
-  (defun config-indentation-aggressive-indent-skip-p ()
-    "Return true if the current defun is longer than
-'config-indentation-aggressive-indent-max-lines'."
-    (save-excursion
-      (ignore-errors
-        (let ((b (progn (beginning-of-defun) (line-number-at-pos)))
-              (e (progn (end-of-defun) (line-number-at-pos))))
-          (and b e (<= config-indentation-aggressive-indent-max-lines (- e b)))))))
-  :commands aggressive-indent-mode
-  :hook (prog-mode . aggressive-indent-mode)
-  :config
-  (progn
-    ;; Skip large forms
-    (add-to-list 'aggressive-indent-dont-indent-if '(config-indentation-aggressive-indent-skip-p))
-    ;; Disabled commands
-    (dolist (command '(next-line previous-line))
-      (add-to-list 'aggressive-indent-protected-commands command))
-    ;; Disabled modes
-    (dolist (mode '(makefile-mode tuareg-mode reason-mode cider-repl-mode))
-      (add-to-list 'aggressive-indent-excluded-modes mode)))
-  :custom
-  (aggressive-indent-comments-too t))
 
 (provide 'config-indentation)
 ;;; config-indentation.el ends here
