@@ -66,6 +66,8 @@
 (use-package magit
   :straight t
   :custom
+  ;; sort branches by most recent commit
+  (magit-list-refs-sortby "-creatordate")
   (magit-diff-refine-ignore-whitespace t)
   (magit-save-repository-buffers 'dontask)
   (magit-display-buffer-function
