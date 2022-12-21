@@ -30,7 +30,7 @@
 ;;; Performance
 
 (setq gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 0.6)
+      gc-cons-percentage 1.0)
 
 ;; Use a hook so the message doesn't get clobbered by other messages.
 (add-hook
@@ -44,9 +44,6 @@
 
 ;; Straight setup recommendation
 (setq package-enable-at-startup nil)
-
-;; Allow loading from the package cache.
-(setq package-quickstart t)
 
 ;; Do not resize the frame at this early stage.
 (setq frame-inhibit-implied-resize t)
