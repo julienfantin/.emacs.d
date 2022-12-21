@@ -256,7 +256,9 @@
   :bind
   (("C-." . embark-act)
    ("C-;" . embark-dwim)
-   ("C-h B" . embark-bindings))
+   ("C-h B" . embark-bindings)
+   :map embark-file-map
+   ("g" . magit-status))
 
   :init
   ;; Optionally replace the key help with a completing-read interface
