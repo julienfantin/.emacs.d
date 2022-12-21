@@ -26,10 +26,6 @@
 
 (require 'use-package)
 
-;;; Config
-
-(defvar config-indentation-aggressive-indent-max-lines 100)
-
 ;;; Built-ins
 
 (use-package emacs
