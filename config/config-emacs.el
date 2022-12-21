@@ -36,6 +36,9 @@
 
 (use-package emacs
   :custom
+  (bidi-inhibit-bpa t)
+  (bidi-redisplay-reordering nil)
+  (y-or-n-p-use-read-key t)
   (scroll-conservatively 101)
   (scroll-margin 3)
   (ring-bell-function 'ignore)
